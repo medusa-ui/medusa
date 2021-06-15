@@ -49,7 +49,6 @@ public enum HTMLInjector {
                         "clientWebSocket.onopen = function() {\n"+
                         "    console.log(\"clientWebSocket.onopen\", clientWebSocket);\n"+
                         "    console.log(\"clientWebSocket.readyState\", \"websocketstatus\");\n"+
-                        "    clientWebSocket.send('{\"content\": \"event-me-from-browser\"}');\n"+
                         "}\n"+
                         "clientWebSocket.onclose = function(error) {\n"+
                         "    console.log(\"clientWebSocket.onclose\", clientWebSocket, error);\n"+
@@ -59,16 +58,17 @@ public enum HTMLInjector {
                         "    console.log(\"clientWebSocket.onerror\", clientWebSocket, error);\n"+
                         "    events(\"An error occured\");\n"+
                         "}\n"+
-                        "clientWebSocket.onmessage = function(error) {\n"+
-                        "    console.log(\"clientWebSocket.onmessage\", clientWebSocket, error);\n"+
-                        "    events(error.data);\n"+
+                        "clientWebSocket.onmessage = function(message) {\n"+
+                        "    console.log(\"clientWebSocket.onmessage\", clientWebSocket, message);\n"+
                         "}\n"+
                         "function events(responseEvent) {\n"+
                         "    console.log(responseEvent);\n"+
                         "}"+
                 "\n" +
 
-                "function sE(e) { console.log(e); }</script>\n</body>");
+                "function sE(e) { clientWebSocket.send(e); }</script>\n</body>");
         return htmlString;
+
+
     }
 }
