@@ -41,33 +41,34 @@ public enum HTMLInjector {
             htmlString = htmlString.replace(entrySet.getKey(), entrySet.getValue());
         }
 
-        // ws://localhost:8080/event-emitter
 
-        /*
-        var stompClient = null;
-
-        function connect() {
-            var socket = new SockJS("/secured/room");
-            stompClient = Stomp.over(socket);
-            stompClient.debug = null;
-            stompClient.connect({}, function (frame) {
-                let splitTransportUrl = stompClient.ws._transport.url.split("/");
-                sessionId = splitTransportUrl[splitTransportUrl.length-2];
-                console.log("Your current session is: " + sessionId);
-            });
-        }*/
-
-        //add script
+        //add script via embedded files
         htmlString = htmlString.replaceFirst("</body>",
-                "<script>" +
-                        "var stompClient = null;"+
-                        "function connect() {"+
-                        " var socket = new SockJS(\"/secured/room\");"+
-                        " "+
-                        "</script>" +
-                "\n<script src=\"/webjars/sockjs-client/sockjs.min.js\"></script>\n" +
-                "<script src=\"/webjars/stomp-websocket/stomp.min.js\"></script>\n" +
-                "<script>function sE(e) { console.log(e); }</script>\n</body>");
+                "<script>\n" +
+                        "var clientWebSocket = new WebSocket(\"ws://localhost:8080/event-emitter\");\n" +
+                        "clientWebSocket.onopen = function() {\n"+
+                        "    console.log(\"clientWebSocket.onopen\", clientWebSocket);\n"+
+                        "    console.log(\"clientWebSocket.readyState\", \"websocketstatus\");\n"+
+                        "    clientWebSocket.send('{\"content\": \"event-me-from-browser\"}');\n"+
+                        "}\n"+
+                        "clientWebSocket.onclose = function(error) {\n"+
+                        "    console.log(\"clientWebSocket.onclose\", clientWebSocket, error);\n"+
+                        "    events(\"Closing connection\");\n"+
+                        "}\n"+
+                        "clientWebSocket.onerror = function(error) {\n"+
+                        "    console.log(\"clientWebSocket.onerror\", clientWebSocket, error);\n"+
+                        "    events(\"An error occured\");\n"+
+                        "}\n"+
+                        "clientWebSocket.onmessage = function(error) {\n"+
+                        "    console.log(\"clientWebSocket.onmessage\", clientWebSocket, error);\n"+
+                        "    events(error.data);\n"+
+                        "}\n"+
+                        "function events(responseEvent) {\n"+
+                        "    console.log(responseEvent);\n"+
+                        "}"+
+                "\n" +
+
+                "function sE(e) { console.log(e); }</script>\n</body>");
         return htmlString;
     }
 }
