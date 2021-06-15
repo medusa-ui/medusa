@@ -41,8 +41,33 @@ public enum HTMLInjector {
             htmlString = htmlString.replace(entrySet.getKey(), entrySet.getValue());
         }
 
+        // ws://localhost:8080/event-emitter
+
+        /*
+        var stompClient = null;
+
+        function connect() {
+            var socket = new SockJS("/secured/room");
+            stompClient = Stomp.over(socket);
+            stompClient.debug = null;
+            stompClient.connect({}, function (frame) {
+                let splitTransportUrl = stompClient.ws._transport.url.split("/");
+                sessionId = splitTransportUrl[splitTransportUrl.length-2];
+                console.log("Your current session is: " + sessionId);
+            });
+        }*/
+
         //add script
-        htmlString = htmlString.replaceFirst("</body>", "<script>function sE(e) { console.log(e); }</script>\n</body>");
+        htmlString = htmlString.replaceFirst("</body>",
+                "<script>" +
+                        "var stompClient = null;"+
+                        "function connect() {"+
+                        " var socket = new SockJS(\"/secured/room\");"+
+                        " "+
+                        "</script>" +
+                "\n<script src=\"/webjars/sockjs-client/sockjs.min.js\"></script>\n" +
+                "<script src=\"/webjars/stomp-websocket/stomp.min.js\"></script>\n" +
+                "<script>function sE(e) { console.log(e); }</script>\n</body>");
         return htmlString;
     }
 }
