@@ -34,8 +34,9 @@ public class MedusaApplication {
 	}
 
 	@Bean
-	public RouterFunction<ServerResponse> htmlRouter(@Value("classpath:/hello-world.html") Resource html) {
-		return route(GET("/"), request -> ok().contentType(MediaType.TEXT_HTML).bodyValue(INSTANCE.inject(html)));
+	public RouterFunction<ServerResponse> htmlRouter(@Value("classpath:/hello-world.html") Resource html,
+													 @Value("classpath:/websocket.js") Resource scripts) {
+		return route(GET("/"), request -> ok().contentType(MediaType.TEXT_HTML).bodyValue(INSTANCE.inject(html, scripts)));
 	}
 
 	@Bean

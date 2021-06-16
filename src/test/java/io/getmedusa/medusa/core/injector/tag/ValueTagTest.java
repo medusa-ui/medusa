@@ -26,9 +26,9 @@ public class ValueTagTest {
 
     @Test
     void testReplacement() {
-        final String fullMatch = "[$counter-value]";
-        String replacedHTML = TAG.substitutionLogic(fullMatch, "counter-value");
-        Assertions.assertEquals("<span id=\"some-id\" from-value=\'counter-value\'>0</span>", replacedHTML);
+        final String fullMatch = "[$counter-123]";
+        String replacedHTML = TAG.substitutionLogic(fullMatch, "counter-123");
+        Assertions.assertEquals("<span from-value=\'counter-123\'>0</span>", replacedHTML);
     }
 
     @Test

@@ -16,6 +16,6 @@ public class ValueTag extends AbstractTag {
 
     @Override
     String substitutionLogic(String fullMatch, String tagContent) {
-        return "<span id=\"" + UUID.randomUUID().toString() + "\" from-value=\'" + tagContent + "\'>0</span>";
+        return "<span from-value=\'" + tagContent + "\'>0</span>";
     }
 }
