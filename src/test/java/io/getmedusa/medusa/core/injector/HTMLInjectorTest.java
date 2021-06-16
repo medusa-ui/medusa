@@ -1,5 +1,6 @@
 package io.getmedusa.medusa.core.injector;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 public class HTMLInjectorTest {
@@ -21,6 +22,9 @@ public class HTMLInjectorTest {
                 "\n" +
                 "</body>\n" +
                 "</html>");
+
+        Assertions.assertFalse(result.contains("m-click"));
+        Assertions.assertTrue(result.contains("var clientWebSocket = new WebSocket"));
 
         System.out.println(result);
     }

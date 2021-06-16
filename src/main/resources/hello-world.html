@@ -2,14 +2,16 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Hello Medusa</title>
+    <title>Hello Medusa [$counter-value]</title>
 </head>
 <body>
 
 <h1>Hello Medusa</h1>
 
-<p>Counter: <span></span></p>
+<p>Counter: [$counter-value]</p>
+
 <button m-click="increaseCounter(2)">Increase counter</button>
 
+<footer>Counter is now at [$counter-value], a value determined serverside</footer>
 </body>
 </html>

@@ -1,21 +1,30 @@
 package io.getmedusa.medusa.core.injector;
 
+import io.getmedusa.medusa.core.injector.tag.ClickTag;
+import io.getmedusa.medusa.core.injector.tag.InjectionResult;
+import io.getmedusa.medusa.core.injector.tag.ValueTag;
 import org.springframework.core.io.Resource;
 import org.springframework.util.StreamUtils;
 
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public enum HTMLInjector {
 
     INSTANCE;
 
+    public static final Charset CHARSET = StandardCharsets.UTF_8;
+
+    private final ClickTag clickTag;
+    private final ValueTag valueTag;
+    HTMLInjector() {
+        this.clickTag = new ClickTag();
+        this.valueTag = new ValueTag();
+    }
+
     public String inject(Resource html) {
         try {
-            String htmlString = StreamUtils.copyToString(html.getInputStream(), StandardCharsets.UTF_8);
+            String htmlString = StreamUtils.copyToString(html.getInputStream(), CHARSET);
             return htmlStringInject(htmlString);
         } catch (Exception e) {
             e.printStackTrace();
@@ -24,26 +33,13 @@ public enum HTMLInjector {
     }
 
     protected String htmlStringInject(String htmlString) {
-        final String tag = "m-click";
-        Pattern pattern = Pattern.compile(tag + "=(\"|').*(\"|')", Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(htmlString);
+        InjectionResult result = clickTag.inject(htmlString);
+        result = valueTag.inject(result);
+        return injectScript(result);
+    }
 
-        Map<String, String> replacements = new HashMap<>();
-        while (matcher.find()) {
-            String fullMatch = matcher.group(0);
-            String tagContent = fullMatch.replaceFirst(tag + "=", "");
-            tagContent = tagContent.substring(1, tagContent.length() - 1);
-
-            replacements.put(fullMatch, "onclick=\"sE('"+tagContent+"')\"");
-        }
-
-        for(Map.Entry<String, String> entrySet : replacements.entrySet()) {
-            htmlString = htmlString.replace(entrySet.getKey(), entrySet.getValue());
-        }
-
-
-        //add script via embedded files
-        htmlString = htmlString.replaceFirst("</body>",
+    private String injectScript(InjectionResult html) {
+        return html.replaceFinal("</body>",
                 "<script>\n" +
                         "var clientWebSocket = new WebSocket(\"ws://localhost:8080/event-emitter\");\n" +
                         "clientWebSocket.onopen = function() {\n"+
@@ -59,16 +55,15 @@ public enum HTMLInjector {
                         "    events(\"An error occured\");\n"+
                         "}\n"+
                         "clientWebSocket.onmessage = function(message) {\n"+
-                        "    console.log(\"clientWebSocket.onmessage\", clientWebSocket, message);\n"+
+                        "    console.log(\"clientWebSocket.onmessage\", clientWebSocket, message);\n" +
+                        "    vR(JSON.parse(message.data));\n"+
                         "}\n"+
                         "function events(responseEvent) {\n"+
                         "    console.log(responseEvent);\n"+
                         "}"+
                 "\n" +
-
-                "function sE(e) { clientWebSocket.send(e); }</script>\n</body>");
-        return htmlString;
-
-
+                "function vR(e) { e.forEach(k => document.querySelectorAll(\"[from-value=\"+k.f+\"]\").forEach(function(e) { e.innerText = k.v; })); }\n" +
+                "function sE(e) { clientWebSocket.send(e); }</script>\n" +
+                "</body>");
     }
 }
