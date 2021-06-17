@@ -1,8 +1,9 @@
 package io.getmedusa.medusa.core.injector;
 
 import io.getmedusa.medusa.core.injector.tag.ClickTag;
-import io.getmedusa.medusa.core.injector.tag.InjectionResult;
+import io.getmedusa.medusa.core.injector.tag.meta.InjectionResult;
 import io.getmedusa.medusa.core.injector.tag.ValueTag;
+import io.getmedusa.medusa.core.registry.PageTitleRegistry;
 import org.springframework.core.io.Resource;
 import org.springframework.util.StreamUtils;
 
@@ -14,6 +15,7 @@ public enum HTMLInjector {
     INSTANCE;
 
     public static final Charset CHARSET = StandardCharsets.UTF_8;
+    public static final String EVENT_EMITTER = "/event-emitter/";
     private String script = null;
 
     private final ClickTag clickTag;
@@ -28,20 +30,24 @@ public enum HTMLInjector {
         try {
             if(script == null) script = StreamUtils.copyToString(scripts.getInputStream(), CHARSET);
             String htmlString = StreamUtils.copyToString(html.getInputStream(), CHARSET);
-            return htmlStringInject(htmlString);
+            PageTitleRegistry.getInstance().addTitle(html, htmlString);
+            return htmlStringInject(html.getFilename(), htmlString);
         } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
     }
 
-    protected String htmlStringInject(String htmlString) {
+    protected String htmlStringInject(String filename, String htmlString) {
         InjectionResult result = clickTag.inject(htmlString);
         result = valueTag.inject(result);
-        return injectScript(result);
+        return injectScript(filename, result);
     }
 
-    private String injectScript(InjectionResult html) {
-        return html.replaceFinal("</body>", "<script>\n" + script + "</script>\n</body>");
+    private String injectScript(String filename, InjectionResult html) {
+        return html.replaceFinal("</body>",
+                "<script>\n" +
+                script.replaceFirst("%WEBSOCKET_URL%", "ws://localhost:8080" + EVENT_EMITTER + filename)
+                + "</script>\n</body>");
     }
 }

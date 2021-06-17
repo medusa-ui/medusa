@@ -1,5 +1,7 @@
 package io.getmedusa.medusa.core.injector.tag;
 
+import io.getmedusa.medusa.core.injector.tag.meta.InjectionResult;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;

@@ -7,7 +7,7 @@ public class HTMLInjectorTest {
 
     @Test
     void test() {
-        String result = HTMLInjector.INSTANCE.htmlStringInject("<!DOCTYPE html>\n" +
+        String result = HTMLInjector.INSTANCE.htmlStringInject("test.html", "<!DOCTYPE html>\n" +
                 "<html lang=\"en\">\n" +
                 "<head>\n" +
                 "    <meta charset=\"UTF-8\">\n" +

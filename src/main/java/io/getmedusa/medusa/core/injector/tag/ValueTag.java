@@ -1,7 +1,5 @@
 package io.getmedusa.medusa.core.injector.tag;
 
-import java.util.UUID;
-
 public class ValueTag extends AbstractTag {
 
     @Override
@@ -11,7 +9,7 @@ public class ValueTag extends AbstractTag {
 
     @Override
     String pattern() {
-        return "\\[\\$.*\\]";
+        return "\\[\\$.+\\]";
     }
 
     @Override

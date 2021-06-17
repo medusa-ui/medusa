@@ -12,7 +12,7 @@ function retryConnection() {
         }
 
         try{
-            ws = new WebSocket("ws://localhost:8080/event-emitter");
+            ws = new WebSocket("%WEBSOCKET_URL%");
             if(ws.readyState === ws.CLOSED || ws.readyState === ws.CLOSING) {
                 retryConnection();
             }
@@ -33,6 +33,7 @@ function retryConnection() {
                 vR(JSON.parse(message.data));
             }
         } catch (e) {
+            console.log(e);
             retryConnection();
         }
     }, timeoutTimer);
@@ -43,7 +44,13 @@ function log(responseEvent) {
 }
 
 function vR(e) {
-    e.forEach(k => document.querySelectorAll("[from-value="+k.f+"]").forEach(function(e) { e.innerText = k.v; })); 
+    e.forEach(k => {
+        if(k.t === null) {
+            document.querySelectorAll("[from-value="+k.f+"]").forEach(function(e) { e.innerText = k.v; });
+        } else if (k.t === 0) {
+            document.title = k.v;
+        }
+    });
 }
 
 function sE(e) { 
