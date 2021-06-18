@@ -9,7 +9,7 @@ public class ValueTag extends AbstractTag {
 
     @Override
     String pattern() {
-        return "\\[\\$.+\\]";
+        return "\\[\\$.+?\\]";
     }
 
     @Override

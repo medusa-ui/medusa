@@ -45,7 +45,7 @@ function log(responseEvent) {
 
 function vR(e) {
     e.forEach(k => {
-        if(k.t === null) {
+        if(k.t === undefined) {
             document.querySelectorAll("[from-value="+k.f+"]").forEach(function(e) { e.innerText = k.v; });
         } else if (k.t === 0) {
             document.title = k.v;

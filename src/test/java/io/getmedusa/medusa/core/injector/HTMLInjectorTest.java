@@ -23,10 +23,12 @@ public class HTMLInjectorTest {
                 "</body>\n" +
                 "</html>");
 
+        System.out.println(result);
+
         Assertions.assertFalse(result.contains("m-click"));
         //Assertions.assertTrue(result.contains("var clientWebSocket = new WebSocket"));
 
-        System.out.println(result);
+
     }
 
 }

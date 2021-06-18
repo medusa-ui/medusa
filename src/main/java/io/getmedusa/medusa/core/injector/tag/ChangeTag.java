@@ -3,7 +3,7 @@ package io.getmedusa.medusa.core.injector.tag;
 import org.springframework.stereotype.Component;
 
 @Component
-public class ClickTag extends AbstractTag {
+public class ChangeTag extends AbstractTag {
 
     @Override
     String pattern() {
@@ -12,11 +12,11 @@ public class ClickTag extends AbstractTag {
 
     @Override
     String substitutionLogic(String fullMatch, String tagContent) {
-        return "onclick=\"sE('"+tagContent+"')\"";
+        return "oninput=\"sE('"+tagContent+"')\"";
     }
 
     @Override
     String tagValue() {
-        return "m-click";
+        return "m-change";
     }
 }

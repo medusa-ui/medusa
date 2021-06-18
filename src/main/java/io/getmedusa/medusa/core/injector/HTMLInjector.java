@@ -1,5 +1,6 @@
 package io.getmedusa.medusa.core.injector;
 
+import io.getmedusa.medusa.core.injector.tag.ChangeTag;
 import io.getmedusa.medusa.core.injector.tag.ClickTag;
 import io.getmedusa.medusa.core.injector.tag.meta.InjectionResult;
 import io.getmedusa.medusa.core.injector.tag.ValueTag;
@@ -19,10 +20,12 @@ public enum HTMLInjector {
     private String script = null;
 
     private final ClickTag clickTag;
+    private final ChangeTag changeTag;
     private final ValueTag valueTag;
 
     HTMLInjector() {
         this.clickTag = new ClickTag();
+        this.changeTag = new ChangeTag();
         this.valueTag = new ValueTag();
     }
 
@@ -40,14 +43,18 @@ public enum HTMLInjector {
 
     protected String htmlStringInject(String filename, String htmlString) {
         InjectionResult result = clickTag.inject(htmlString);
+        result = changeTag.inject(result.getHtml());
         result = valueTag.inject(result);
         return injectScript(filename, result);
     }
 
     private String injectScript(String filename, InjectionResult html) {
-        return html.replaceFinal("</body>",
-                "<script>\n" +
-                script.replaceFirst("%WEBSOCKET_URL%", "ws://localhost:8080" + EVENT_EMITTER + filename)
-                + "</script>\n</body>");
+        if(script != null) {
+            return html.replaceFinal("</body>",
+                    "<script>\n" +
+                            script.replaceFirst("%WEBSOCKET_URL%", "ws://localhost:8080" + EVENT_EMITTER + filename)
+                            + "</script>\n</body>");
+        }
+        return html.getHtml();
     }
 }

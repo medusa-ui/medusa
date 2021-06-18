@@ -1,5 +1,6 @@
 package io.getmedusa.medusa.core.websocket;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.getmedusa.medusa.core.injector.DOMChange;
 import io.getmedusa.medusa.core.registry.PageTitleRegistry;
@@ -15,7 +16,13 @@ import java.util.List;
 @Component
 public class ReactiveWebSocketHandler implements WebSocketHandler {
 
-    public static final ObjectMapper MAPPER = new ObjectMapper();
+    public static final ObjectMapper MAPPER = setupObjectMapper();
+
+    private static ObjectMapper setupObjectMapper() {
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+        return objectMapper;
+    }
 
     private final UIEventRegistry registry = UIEventRegistry.getInstance();
 
@@ -49,13 +56,17 @@ public class ReactiveWebSocketHandler implements WebSocketHandler {
     private void evaluateTitleChange(WebSocketSession session, List<DOMChange> domChanges) throws Exception {
         String unmappedTitle = PageTitleRegistry.getInstance().getTitle(session);
         if(unmappedTitle != null) {
+            boolean hasAChange = false;
             for(DOMChange domChange : domChanges) {
                 String searchKey = "[$" + domChange.getF() + "]";
                 if(unmappedTitle.contains(searchKey)) {
+                    hasAChange = true;
                     unmappedTitle = unmappedTitle.replaceAll("\\[\\$"+domChange.getF()+"\\]", domChange.getV());
                 }
             }
-            domChanges.add(new DOMChange(null, unmappedTitle, DOMChange.DOMChangeType.TITLE));
+            if(hasAChange) {
+                domChanges.add(new DOMChange(null, unmappedTitle, DOMChange.DOMChangeType.TITLE));
+            }
         }
     }
 
