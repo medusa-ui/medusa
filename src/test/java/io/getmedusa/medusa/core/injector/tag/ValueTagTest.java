@@ -28,7 +28,7 @@ public class ValueTagTest {
     void testReplacement() {
         final String fullMatch = "[$counter-123]";
         String replacedHTML = TAG.substitutionLogic(fullMatch, "counter-123");
-        Assertions.assertEquals("<span from-value=\'counter-123\'>0</span>", replacedHTML);
+        Assertions.assertEquals("<span from-value=\'counter-123\'>[$counter-123]</span>", replacedHTML);
     }
 
     @Test

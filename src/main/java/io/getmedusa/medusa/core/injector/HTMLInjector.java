@@ -61,7 +61,7 @@ public enum HTMLInjector {
         if(script != null) {
             return html.replaceFinal("</body>",
                     "<script>\n" +
-                    script.replaceFirst("%WEBSOCKET_URL%", "ws://localhost:8080" + EVENT_EMITTER + FilenameHandler.removeExtension(filename)) +
+                    script.replaceFirst("%WEBSOCKET_URL%", EVENT_EMITTER + FilenameHandler.removeExtension(filename)) +
                     "</script>\n</body>");
         }
         return html.getHtml();

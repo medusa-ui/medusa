@@ -12,7 +12,7 @@ function retryConnection() {
         }
 
         try{
-            ws = new WebSocket("%WEBSOCKET_URL%");
+            ws = new WebSocket("ws://" + window.location.host + "%WEBSOCKET_URL%");
             if(ws.readyState === ws.CLOSED || ws.readyState === ws.CLOSING) {
                 retryConnection();
             }
