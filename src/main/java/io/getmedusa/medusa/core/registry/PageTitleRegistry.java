@@ -29,9 +29,15 @@ public class PageTitleRegistry {
         }
     }
 
-    public String getTitle(WebSocketSession session) throws Exception {
+    public String getTitle(WebSocketSession session) {
         String uri = session.getHandshakeInfo().getUri().toString();
-        String pageKey = uri.substring(uri.indexOf(HTMLInjector.EVENT_EMITTER) + HTMLInjector.EVENT_EMITTER.length());
+        int indexOfEventEmitter = uri.indexOf(HTMLInjector.EVENT_EMITTER);
+        if(-1 == indexOfEventEmitter) return null;
+        String pageKey = uri.substring(indexOfEventEmitter + HTMLInjector.EVENT_EMITTER.length());
         return registry.get(pageKey);
+    }
+
+    public void clear() {
+        registry.clear();
     }
 }
