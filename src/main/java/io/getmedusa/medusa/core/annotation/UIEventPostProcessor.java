@@ -1,5 +1,6 @@
 package io.getmedusa.medusa.core.annotation;
 
+import io.getmedusa.medusa.core.registry.RouteRegistry;
 import io.getmedusa.medusa.core.registry.UIEventRegistry;
 import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.BeansException;
@@ -16,9 +17,11 @@ public class UIEventPostProcessor implements BeanPostProcessor {
 
     @Override
     public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
-        UIEventController uiEventControllerAnnotation = AnnotationUtils.getAnnotation(bean.getClass(), UIEventController.class);
-        if(null != uiEventControllerAnnotation) {
+        if(bean instanceof UIEventController) {
             Class<?> clazz = getTargetClass(bean);
+
+            RouteRegistry.getInstance().add(((UIEventController) bean).setupPage());
+
             for (Method m : clazz.getDeclaredMethods()) {
                 if (m.isAnnotationPresent(UIEvent.class)) {
                     registry.addMethod(m.getName(), bean, m);

@@ -37,7 +37,7 @@ public enum HTMLInjector {
             return htmlStringInject(html.getFilename(), htmlString);
         } catch (Exception e) {
             e.printStackTrace();
-            return null;
+            throw new RuntimeException(e);
         }
     }
 
@@ -52,8 +52,8 @@ public enum HTMLInjector {
         if(script != null) {
             return html.replaceFinal("</body>",
                     "<script>\n" +
-                            script.replaceFirst("%WEBSOCKET_URL%", "ws://localhost:8080" + EVENT_EMITTER + filename)
-                            + "</script>\n</body>");
+                    script.replaceFirst("%WEBSOCKET_URL%", "ws://localhost:8080" + EVENT_EMITTER + filename.substring(0, filename.length()-5)) +
+                    "</script>\n</body>");
         }
         return html.getHtml();
     }

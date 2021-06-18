@@ -1,28 +1,35 @@
 package io.getmedusa.medusa;
 
-import io.getmedusa.medusa.core.annotation.UIEvent;
+import io.getmedusa.medusa.core.annotation.PageSetup;
 import io.getmedusa.medusa.core.annotation.UIEventController;
+import io.getmedusa.medusa.core.annotation.UIEvent;
 import io.getmedusa.medusa.core.injector.DOMChange;
+import org.springframework.stereotype.Component;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
-@UIEventController
-public class ExampleEventHandler {
+@Component
+public class ExampleEventHandler implements UIEventController {
+
+    private int counter = 0;
+
+    @Override
+    public PageSetup setupPage() {
+        return new PageSetup(
+                "/",
+                "hello-world",
+                Collections.singletonMap("counter-value", counter));
+    }
 
     @UIEvent
     public List<DOMChange> exampleEvent(List<String> parameters) {
         return null;
     }
 
-    @UIEvent
+    @UIEvent(value = "exampleEvent3")
     public List<DOMChange> exampleEvent2(List<String> parameters) {
         return null;
     }
-
-    private int counter = 0;
 
     @UIEvent
     public List<DOMChange> increaseCounter(List<String> parameters) {
@@ -37,8 +44,8 @@ public class ExampleEventHandler {
         return Collections.singletonList(new DOMChange("counter-value", Integer.toString(counter)));
     }
 
-    @UIEvent
-    public List<DOMChange> search(List<String> parameters) {
-        return Arrays.asList(new DOMChange("search", UUID.randomUUID().toString()));
+    @UIEvent("search")
+    public List<DOMChange> searchExample(List<String> parameters) {
+        return Collections.singletonList(new DOMChange("search", UUID.randomUUID().toString()));
     }
 }
