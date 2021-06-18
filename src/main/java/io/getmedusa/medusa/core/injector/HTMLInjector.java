@@ -5,6 +5,7 @@ import io.getmedusa.medusa.core.injector.tag.ClickTag;
 import io.getmedusa.medusa.core.injector.tag.meta.InjectionResult;
 import io.getmedusa.medusa.core.injector.tag.ValueTag;
 import io.getmedusa.medusa.core.registry.PageTitleRegistry;
+import io.getmedusa.medusa.core.util.FilenameHandler;
 import org.springframework.core.io.Resource;
 import org.springframework.util.StreamUtils;
 
@@ -52,7 +53,7 @@ public enum HTMLInjector {
         if(script != null) {
             return html.replaceFinal("</body>",
                     "<script>\n" +
-                    script.replaceFirst("%WEBSOCKET_URL%", "ws://localhost:8080" + EVENT_EMITTER + filename.substring(0, filename.length()-5)) +
+                    script.replaceFirst("%WEBSOCKET_URL%", "ws://localhost:8080" + EVENT_EMITTER + FilenameHandler.removeExtension(filename)) +
                     "</script>\n</body>");
         }
         return html.getHtml();

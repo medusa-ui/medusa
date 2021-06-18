@@ -24,7 +24,11 @@ public class UIEventPostProcessor implements BeanPostProcessor {
 
             for (Method m : clazz.getDeclaredMethods()) {
                 if (m.isAnnotationPresent(UIEvent.class)) {
-                    registry.addMethod(m.getName(), bean, m);
+                    UIEvent uiEvent = AnnotationUtils.getAnnotation(m, UIEvent.class);
+                    if(uiEvent == null) throw new IllegalStateException("Annotation UIEvent is present, so should never have to deal with a null value here");
+                    String uiEventName = uiEvent.value();
+                    if("".equals(uiEventName)) uiEventName = m.getName();
+                    registry.addMethod(uiEventName, bean, m);
                 }
             }
 

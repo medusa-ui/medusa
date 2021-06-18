@@ -2,6 +2,7 @@ package io.getmedusa.medusa.core.registry;
 
 
 import io.getmedusa.medusa.core.injector.HTMLInjector;
+import io.getmedusa.medusa.core.util.FilenameHandler;
 import org.springframework.core.io.Resource;
 import org.springframework.web.reactive.socket.WebSocketSession;
 
@@ -25,7 +26,7 @@ public class PageTitleRegistry {
         Matcher matcher = PATTERN.matcher(htmlString);
         if (matcher.find()) {
             final String titleTag = matcher.group(0).replaceFirst("<title>", "").replaceFirst("</title>", "");
-            this.registry.put(html.getFilename(), titleTag);
+            this.registry.put(FilenameHandler.removeExtension(html.getFilename()), titleTag);
         }
     }
 
