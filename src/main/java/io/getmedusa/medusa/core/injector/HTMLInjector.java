@@ -5,6 +5,7 @@ import io.getmedusa.medusa.core.injector.tag.ClickTag;
 import io.getmedusa.medusa.core.injector.tag.meta.InjectionResult;
 import io.getmedusa.medusa.core.injector.tag.ValueTag;
 import io.getmedusa.medusa.core.registry.PageTitleRegistry;
+import io.getmedusa.medusa.core.registry.RouteRegistry;
 import io.getmedusa.medusa.core.util.FilenameHandler;
 import org.springframework.core.io.Resource;
 import org.springframework.util.StreamUtils;
@@ -30,6 +31,12 @@ public enum HTMLInjector {
         this.valueTag = new ValueTag();
     }
 
+    /**
+     * On page load
+     * @param html
+     * @param scripts
+     * @return
+     */
     public String inject(Resource html, Resource scripts) {
         try {
             if(script == null) script = StreamUtils.copyToString(scripts.getInputStream(), CHARSET);
@@ -45,7 +52,8 @@ public enum HTMLInjector {
     protected String htmlStringInject(String filename, String htmlString) {
         InjectionResult result = clickTag.inject(htmlString);
         result = changeTag.inject(result.getHtml());
-        result = valueTag.inject(result);
+        result = valueTag.injectWithVariables(result, RouteRegistry.getInstance().getVariables(filename));
+        result = removeTagsFromTitle(result);
         return injectScript(filename, result);
     }
 
@@ -57,5 +65,9 @@ public enum HTMLInjector {
                     "</script>\n</body>");
         }
         return html.getHtml();
+    }
+
+    protected InjectionResult removeTagsFromTitle(InjectionResult html) {
+        return html.removeFromTitle("<span.+?from-value=.+?>").removeFromTitle("<\\/span>");
     }
 }

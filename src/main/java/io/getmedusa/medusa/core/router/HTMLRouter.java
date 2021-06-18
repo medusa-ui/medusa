@@ -54,7 +54,6 @@ public class HTMLRouter {
                 .forEach(file -> map.put(HTMLInjector.EVENT_EMITTER + file, handler));
         mapping.setUrlMap(map);
         mapping.setOrder(Ordered.HIGHEST_PRECEDENCE);
-        RouteRegistry.getInstance().clear();
         return mapping;
     }
 }

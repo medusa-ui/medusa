@@ -37,6 +37,16 @@ public class InjectionResult {
         return this;
     }
 
+    public InjectionResult removeFromTitle(String regex) {
+        String[] splitHTML = getHtml().split("</title>");
+
+        if(splitHTML.length == 2) {
+            setHtml(splitHTML[0].replaceFirst(regex, "") + "</title>" + splitHTML[1]);
+        }
+
+        return this;
+    }
+
     public String replaceFinal(String key, String value) {
         setHtml(getHtml().replaceFirst(key, value));
         //TODO add scripts

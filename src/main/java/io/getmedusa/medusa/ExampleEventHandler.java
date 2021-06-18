@@ -15,10 +15,13 @@ public class ExampleEventHandler implements UIEventController {
 
     @Override
     public PageSetup setupPage() {
+        Map<String, Object> modelMap = new HashMap<>();
+        modelMap.put("counter-value", counter);
+        modelMap.put("search", "initial value!");
         return new PageSetup(
                 "/",
                 "hello-world",
-                Collections.singletonMap("counter-value", counter));
+                modelMap);
     }
 
     @UIEvent

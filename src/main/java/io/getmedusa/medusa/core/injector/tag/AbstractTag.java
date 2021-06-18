@@ -19,6 +19,11 @@ public abstract class AbstractTag {
         return pattern.matcher(html);
     }
 
+    /**
+     * Replaces the m-tags in HTML with usable HTML tags on pageload
+     * @param result
+     * @return
+     */
     public InjectionResult inject(InjectionResult result) {
         Matcher matcher = buildMatcher(result.getHtml());
 
@@ -29,7 +34,7 @@ public abstract class AbstractTag {
         }
 
         for(Map.Entry<String, String> entrySet : replacements.entrySet()) {
-            result = result.replace(entrySet.getKey(), entrySet.getValue());
+            result = result.replace(entrySet.getKey(),  entrySet.getValue());
         }
         return result;
     }
@@ -46,5 +51,4 @@ public abstract class AbstractTag {
         InjectionResult result = new InjectionResult(html);
         return inject(result);
     }
-
 }

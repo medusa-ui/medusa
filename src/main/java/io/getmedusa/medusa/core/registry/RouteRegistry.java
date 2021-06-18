@@ -1,9 +1,9 @@
 package io.getmedusa.medusa.core.registry;
 
 import io.getmedusa.medusa.core.annotation.PageSetup;
+import io.getmedusa.medusa.core.util.FilenameHandler;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class RouteRegistry {
 
@@ -13,18 +13,19 @@ public class RouteRegistry {
         return INSTANCE;
     }
 
-    private final List<PageSetup> pageSetups = new ArrayList<>();
+    private final Map<String, PageSetup> pageSetups = new HashMap<>();
 
     public void add(PageSetup pageSetup) {
-        pageSetups.add(pageSetup);
+        pageSetups.put(pageSetup.getHtmlFile(), pageSetup);
     }
 
-    public List<PageSetup> getAllPageSetups() {
-        return pageSetups;
+    public Collection<PageSetup> getAllPageSetups() {
+        return pageSetups.values();
     }
 
-    public void clear() {
-        pageSetups.clear();
+    public Map<String, Object> getVariables(String filename) {
+        final PageSetup pageSetup = pageSetups.get(FilenameHandler.removeExtension(filename));
+        if(null == pageSetup) return new HashMap<>();
+        return pageSetup.getPageVariables();
     }
-
 }

@@ -23,10 +23,14 @@ public class PageTitleRegistry {
     private final Map<String, String> registry = new HashMap<>();
 
     public void addTitle(Resource html, String htmlString) {
-        Matcher matcher = PATTERN.matcher(htmlString);
-        if (matcher.find()) {
-            final String titleTag = matcher.group(0).replaceFirst("<title>", "").replaceFirst("</title>", "");
-            this.registry.put(FilenameHandler.removeExtension(html.getFilename()), titleTag);
+        final String fileName = FilenameHandler.removeExtension(html.getFilename());
+        if(!registry.containsKey(fileName)) {
+            Matcher matcher = PATTERN.matcher(htmlString);
+            if (matcher.find()) {
+                final String titleTag = matcher.group(0).replaceFirst("<title>", "").replaceFirst("</title>", "");
+
+                this.registry.put(fileName, titleTag);
+            }
         }
     }
 
