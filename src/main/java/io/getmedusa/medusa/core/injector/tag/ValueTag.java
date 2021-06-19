@@ -25,13 +25,17 @@ public class ValueTag extends AbstractTag {
         result = inject(result);
 
         for(Map.Entry<String, Object> variableEntrySet : variables.entrySet()) {
-            if(variableEntrySet.getValue() != null) result.replace(wrapWithMarkers(variableEntrySet.getKey()), variableEntrySet.getValue().toString());
+            if(variableEntrySet.getValue() != null) result.replaceAll(wrapWithRegexMarkers(variableEntrySet.getKey()), variableEntrySet.getValue().toString());
         }
 
         return result;
     }
 
     private String wrapWithMarkers(String stringToWrap) {
-        return "[$" + stringToWrap + "]";
+        return "[$"+stringToWrap+"]";
+    }
+
+    private String wrapWithRegexMarkers(String stringToWrap) {
+        return "\\[\\$\\s*?"+stringToWrap+"\\s*?\\]";
     }
 }

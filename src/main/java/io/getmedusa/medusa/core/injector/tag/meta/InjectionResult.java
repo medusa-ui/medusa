@@ -52,4 +52,9 @@ public class InjectionResult {
         //TODO add scripts
         return this.getHtml();
     }
+
+    public InjectionResult replaceAll(String key, String value) {
+        setHtml(getHtml().replaceAll(key, value));
+        return this;
+    }
 }
