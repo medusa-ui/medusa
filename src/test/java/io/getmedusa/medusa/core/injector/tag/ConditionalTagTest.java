@@ -26,7 +26,7 @@ class ConditionalTagTest {
     private String conditionalHTMLMulti = "<p>test</p>\n" +
             "[$if($counter-value > 5)]\n" +
             "    <p>Counter is above 5</p>\n" +
-            "[$else($counter-value < 5)]\n" +
+            "[$else]\n" + //if($counter-value < 5)
             "    <p>Counter is under 5</p>\n" +
             "[$end]";
 
@@ -54,5 +54,12 @@ class ConditionalTagTest {
 
         Assertions.assertTrue(parsedHTML.getHtml().startsWith("<h1>Hello Medusa 1</h1>\n" + "<div id=\"if-"));
         Assertions.assertTrue(parsedHTML.getHtml().endsWith("\">\n    <p>Visible?</p>\n</div>\n<p>Hello Medusa 1</p>"));
+    }
+
+    @Test
+    void testElse() {
+        InjectionResult parsedHTML = conditionalTag.injectWithVariables(new InjectionResult(conditionalHTMLMulti), Collections.singletonMap("counter-value", "10"));
+        System.out.println(parsedHTML.getHtml());
+        Assertions.assertFalse(parsedHTML.getHtml().contains("$else"));
     }
 }

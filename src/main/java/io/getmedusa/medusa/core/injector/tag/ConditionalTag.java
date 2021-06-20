@@ -3,8 +3,7 @@ package io.getmedusa.medusa.core.injector.tag;
 import io.getmedusa.medusa.core.injector.tag.meta.InjectionResult;
 import io.getmedusa.medusa.core.registry.ConditionalRegistry;
 
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -13,23 +12,43 @@ public class ConditionalTag {
 
     public static final Pattern patternFullIf = Pattern.compile("\\[\\$if\\(.+].*?\\[\\$end]", Pattern.DOTALL);
     public static final Pattern patternIfStart = Pattern.compile("\\[\\$if\\(.+]", Pattern.CASE_INSENSITIVE);
+    public static final Pattern patternElse = Pattern.compile("\\[\\$ ?else ?(if\\(.+)?]", Pattern.CASE_INSENSITIVE);
 
     public InjectionResult injectWithVariables(InjectionResult html, Map<String, Object> variables) {
-        final String ifBlock = patternMatch(patternFullIf, html.getHtml()); //TODO ability to handle multiple if statements
-        if(null != ifBlock) {
-            final String conditionParsed = parseCondition(ifBlock);
-            final String divId = generateDivID(ifBlock);
+        final List<String> ifBlocks = patternMatchAll(patternFullIf, html.getHtml());
 
-            CONDITIONAL_REGISTRY.add(divId, conditionParsed);
-            String wrapperStart = "<div id=\""+divId+"\">";
-            String wrapperEnd = "</div>";
-            if(!CONDITIONAL_REGISTRY.evaluate(divId, variables)) {
-                wrapperStart = wrapperStart.replace(">", " style=\"display:none;\">");
+        for(String ifBlock : ifBlocks){
+            final String conditionParsed = parseCondition(ifBlock);
+            handleIfBlock(html, variables, ifBlock, conditionParsed);
+
+            final List<String> elseParts = patternMatchAll(patternElse, ifBlock);
+            for(String elsePart : elseParts) {
+                if(elsePart.contains("if(")) {
+                    handleIfBlock(html, variables, elsePart, parseCondition(elsePart));
+                } else {
+                    handleIfBlock(html, variables, elsePart, "!(" + conditionParsed + ")");
+                }
             }
-            html.replace(ifBlock, ifBlock.replaceFirst(patternIfStart.pattern(), wrapperStart).replace("[$end]", wrapperEnd));
         }
 
         return html;
+    }
+
+    private void handleIfBlock(InjectionResult html, Map<String, Object> variables, String ifBlock, String conditionParsed) {
+        final String divId = generateDivID(ifBlock);
+
+        CONDITIONAL_REGISTRY.add(divId, conditionParsed);
+        String wrapperStart = "<div id=\""+divId+"\">";
+        String wrapperEnd = "</div>";
+        if(!CONDITIONAL_REGISTRY.evaluate(divId, variables)) {
+            wrapperStart = wrapperStart.replace(">", " style=\"display:none;\">");
+        }
+
+        if(ifBlock.startsWith("[$else")) {
+            html.replace(ifBlock, wrapperEnd + ifBlock.replaceFirst(patternElse.pattern(), wrapperStart).replace("[$end]", wrapperEnd));
+        } else {
+            html.replace(ifBlock, ifBlock.replaceFirst(patternIfStart.pattern(), wrapperStart).replace("[$end]", wrapperEnd));
+        }
     }
 
     private String generateDivID(String ifBlock) {
@@ -48,5 +67,14 @@ public class ConditionalTag {
             return matcher.group(0);
         }
         return null;
+    }
+
+    protected List<String> patternMatchAll(Pattern pattern, String htmlToMatch) {
+        List<String> matches = new ArrayList<>();
+        Matcher matcher = pattern.matcher(htmlToMatch);
+        while (matcher.find()) {
+            matches.add(matcher.group(0));
+        }
+        return matches;
     }
 }

@@ -12,6 +12,8 @@
 
 [$if($counter-value > 5)]
     <p>Counter is above 5</p>
+[$else]
+    <p>Counter is below 5</p>
 [$end]
 
 <button m-click="increaseCounter(1)">Increase counter</button>
