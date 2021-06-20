@@ -54,7 +54,7 @@ function eventHandler(e) {
             let condition = k.c;
             const found = condition.match(new RegExp("\\$\\w+-?\\w*"));
             for(const toReplace of found) {
-                condition = condition.replace(toReplace, variables[toReplace.substring(1)]);
+                condition = condition.replaceAll(toReplace, variables[toReplace.substring(1)]);
             }
 
             if(evalCondition(condition)) {

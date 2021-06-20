@@ -18,20 +18,40 @@ public class ConditionalTag {
         final List<String> ifBlocks = patternMatchAll(patternFullIf, html.getHtml());
 
         for(String ifBlock : ifBlocks){
+            Set<String> conditions = new HashSet<>();
+
             final String conditionParsed = parseCondition(ifBlock);
+            conditions.add(conditionParsed);
             handleIfBlock(html, variables, ifBlock, conditionParsed);
 
             final List<String> elseParts = patternMatchAll(patternElse, ifBlock);
             for(String elsePart : elseParts) {
                 if(elsePart.contains("if(")) {
-                    handleIfBlock(html, variables, elsePart, parseCondition(elsePart));
+                    String elseCondition = parseCondition(elsePart);
+                    conditions.add(elseCondition);
+                    handleIfBlock(html, variables, elsePart, elseCondition);
                 } else {
-                    handleIfBlock(html, variables, elsePart, "!(" + conditionParsed + ")");
+                    handleIfBlock(html, variables, elsePart, combineConditions(conditions));
                 }
             }
         }
 
         return html;
+    }
+
+    private String combineConditions(Set<String> conditions) {
+        StringBuilder builder = new StringBuilder();
+        builder.append("(");
+        String appender = "";
+        for(String condition : conditions) {
+            builder.append(appender);
+            builder.append("!(");
+            builder.append(condition);
+            builder.append(")");
+            appender = " && ";
+        }
+        builder.append(")");
+        return builder.toString();
     }
 
     private void handleIfBlock(InjectionResult html, Map<String, Object> variables, String ifBlock, String conditionParsed) {
@@ -57,8 +77,11 @@ public class ConditionalTag {
 
     protected String parseCondition(String ifBlock) {
         String ifStart = patternMatch(patternIfStart, ifBlock);
+        if(ifStart == null && ifBlock.contains("$else")) {
+            ifStart = patternMatch(patternElse, ifBlock);
+        }
         if(ifStart == null) throw new IllegalStateException("If block must contain a condition");
-        return ifStart.substring(5, ifStart.length()-2).trim();
+        return ifStart.substring(ifStart.indexOf("if(") + 3, ifStart.length()-2).trim();
     }
 
     protected String patternMatch(Pattern pattern, String htmlToMatch) {
