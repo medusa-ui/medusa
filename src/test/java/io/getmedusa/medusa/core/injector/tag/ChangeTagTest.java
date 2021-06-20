@@ -30,7 +30,7 @@ public class ChangeTagTest {
         final String tagContent = "search()";
 
         String replacedHTML = TAG.substitutionLogic(fullMatch, tagContent);
-        Assertions.assertEquals("oninput=\"sE('search()')\"", replacedHTML);
+        Assertions.assertEquals("oninput=\"sendEvent('search()')\"", replacedHTML);
     }
 
     @Test

@@ -24,7 +24,7 @@ public class UIEventRegistry {
         this.registry.put(key, new RegistryItem(bean, method));
     }
 
-    public List<DOMChange> execute(String key, List<String> parameters) throws Exception {
+    public List<DOMChange> execute(String key, List<Object> parameters) throws Exception {
         RegistryItem registryItem = registry.get(key);
         return new ArrayList<>((List<DOMChange>) registryItem.getMethod().invoke(registryItem.getBean(), parameters));
     }

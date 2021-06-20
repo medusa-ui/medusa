@@ -12,7 +12,7 @@ public class ClickTag extends AbstractTag {
 
     @Override
     String substitutionLogic(String fullMatch, String tagContent) {
-        return "onclick=\"sE('"+tagContent+"')\"";
+        return "onclick=\"sendEvent('"+tagContent+"')\"";
     }
 
     @Override

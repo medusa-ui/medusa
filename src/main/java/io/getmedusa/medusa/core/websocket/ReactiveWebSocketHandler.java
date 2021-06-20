@@ -1,9 +1,12 @@
 package io.getmedusa.medusa.core.websocket;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.getmedusa.medusa.core.injector.DOMChange;
+import io.getmedusa.medusa.core.registry.ConditionalRegistry;
 import io.getmedusa.medusa.core.registry.PageTitleRegistry;
+import io.getmedusa.medusa.core.registry.RouteRegistry;
 import io.getmedusa.medusa.core.registry.UIEventRegistry;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.socket.WebSocketHandler;
@@ -11,12 +14,15 @@ import org.springframework.web.reactive.socket.WebSocketSession;
 import reactor.core.publisher.Mono;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Component
 public class ReactiveWebSocketHandler implements WebSocketHandler {
 
     public static final ObjectMapper MAPPER = setupObjectMapper();
+    private static final ConditionalRegistry CONDITIONAL_REGISTRY = ConditionalRegistry.getInstance();
 
     private static ObjectMapper setupObjectMapper() {
         ObjectMapper objectMapper = new ObjectMapper();
@@ -28,28 +34,52 @@ public class ReactiveWebSocketHandler implements WebSocketHandler {
 
     @Override
     public Mono<Void> handle(WebSocketSession session) {
+        System.out.println("START of session : " + session.getId());
         return session.send(session.receive()
                         .map(msg -> interpretEvent(session, msg.getPayloadAsText()))
-                        .map(session::textMessage));
+                        .map(session::textMessage).doFinally(sig -> {
+                            System.out.println("END of session : " + session.getId());
+                }));
     }
 
     private String interpretEvent(final WebSocketSession session, final String event) {
         String function = event;
-        String parameter = null;
+        Object parameter = null;
 
         if(event.contains("(") && event.endsWith(")")) {
             String[] split = event.split("\\(");
             function = split[0];
-            parameter = split[1].replace(")", "");
+            try {
+                parameter = MAPPER.readValue(split[1].replace(")", ""), Object.class); //TODO multiple parameters
+            } catch (Exception e) {
+                throw new IllegalArgumentException(e);
+            }
         }
 
         try {
-            List<DOMChange> domChanges = registry.execute(function, Arrays.asList(parameter));
+            final List<DOMChange> domChanges = registry.execute(function, Arrays.asList(parameter));
             evaluateTitleChange(session, domChanges);
+            evaluateConditionalChange(domChanges);
             return MAPPER.writeValueAsString(domChanges);
         } catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException(e);
+        }
+    }
+
+    private void evaluateConditionalChange(List<DOMChange> domChanges) {
+        final Set<String> impactedDivIds = new HashSet<>();
+        for(DOMChange domChange : domChanges) {
+            if(domChange.getF() != null) {
+               List<String> locallyImpactedIds = CONDITIONAL_REGISTRY.findByConditionField(domChange.getF());
+               impactedDivIds.addAll(locallyImpactedIds);
+            }
+        }
+
+        for(String impactedDivId : impactedDivIds) {
+            DOMChange conditionCheck = new DOMChange(null, impactedDivId, DOMChange.DOMChangeType.CONDITION);
+            conditionCheck.setC(CONDITIONAL_REGISTRY.get(impactedDivId));
+            domChanges.add(conditionCheck);
         }
     }
 
@@ -61,7 +91,7 @@ public class ReactiveWebSocketHandler implements WebSocketHandler {
                 String searchKey = "[$" + domChange.getF() + "]";
                 if(unmappedTitle.contains(searchKey)) {
                     hasAChange = true;
-                    unmappedTitle = unmappedTitle.replaceAll("\\[\\$"+domChange.getF()+"\\]", domChange.getV());
+                    unmappedTitle = unmappedTitle.replaceAll("\\[\\$"+domChange.getF()+"\\]", domChange.getV().toString());
                 }
             }
             if(hasAChange) {

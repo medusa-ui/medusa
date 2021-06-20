@@ -25,30 +25,30 @@ public class ExampleEventHandler implements UIEventController {
     }
 
     @UIEvent
-    public List<DOMChange> exampleEvent(List<String> parameters) {
+    public List<DOMChange> exampleEvent(List<Object> parameters) {
         return null;
     }
 
     @UIEvent(value = "exampleEvent3")
-    public List<DOMChange> exampleEvent2(List<String> parameters) {
+    public List<DOMChange> exampleEvent2(List<Object> parameters) {
         return null;
     }
 
     @UIEvent
-    public List<DOMChange> increaseCounter(List<String> parameters) {
-        String parameter = parameters.get(0);
-        if (parameter == null) parameter = "0";
+    public List<DOMChange> increaseCounter(List<Object> parameters) {
+        Object parameter = parameters.get(0);
+        if (parameter == null) parameter = 0;
 
-        counter += Integer.parseInt(parameter);
+        counter += (Integer) parameter;
         if(counter > 10) {
             counter = 0;
         }
 
-        return Collections.singletonList(new DOMChange("counter-value", Integer.toString(counter)));
+        return Collections.singletonList(new DOMChange("counter-value", counter));
     }
 
     @UIEvent("search")
-    public List<DOMChange> searchExample(List<String> parameters) {
+    public List<DOMChange> searchExample(List<Object> parameters) {
         return Collections.singletonList(new DOMChange("search", UUID.randomUUID().toString()));
     }
 }

@@ -1,8 +1,14 @@
 package io.getmedusa.medusa.core.injector;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import io.getmedusa.medusa.core.injector.tag.meta.InjectionResult;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import static io.getmedusa.medusa.core.websocket.ReactiveWebSocketHandler.MAPPER;
 
 class HTMLInjectorTest {
 
@@ -18,6 +24,9 @@ class HTMLInjectorTest {
                 "\n" +
                 "<h1>Hello Medusa</h1>\n" +
                 "\n" +
+                "[$if(3 > 5)]\n" +
+                "<p>Counter is above 5</p>\n" +
+                "[$end]\n" +
                 "<p>Counter: <span></span></p>\n" +
                 "<button m-click=\"increaseCounter(2)\">Increase counter</button>\n" +
                 "\n" +
@@ -49,5 +58,14 @@ class HTMLInjectorTest {
         String title = "<body><span from-value='counter-value'>0</span></body>";
         InjectionResult cleanedTitle = HTMLInjector.INSTANCE.removeTagsFromTitle(new InjectionResult(title));
         Assertions.assertEquals("<body><span from-value='counter-value'>0</span></body>", cleanedTitle.getHtml());
+    }
+
+    @Test
+    void generateVariableMap() throws JsonProcessingException {
+        Map<String, Object> variables = new HashMap<>();
+        variables.put("exampleString", "Hello Mesuda");
+        variables.put("exampleInteger", 12);
+        String json = "let variables = " + MAPPER.writeValueAsString(variables) + ";";
+        System.out.println(json);
     }
 }

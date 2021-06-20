@@ -2,16 +2,17 @@ package io.getmedusa.medusa.core.injector;
 
 public class DOMChange {
 
-    private String f;
-    private String v;
-    private Integer t;
+    private String f; //field
+    private Object v; //value (value or relevant id)
+    private Integer t; //type
+    private String c; //condition
 
-    public DOMChange(String field, String value) {
+    public DOMChange(String field, Object value) {
         this.f = field;
         this.v = value;
     }
 
-    public DOMChange(String field, String value, DOMChangeType type) {
+    public DOMChange(String field, Object value, DOMChangeType type) {
         this.f = field;
         this.v = value;
         this.t = type.ordinal();
@@ -25,11 +26,11 @@ public class DOMChange {
         this.f = f;
     }
 
-    public String getV() {
+    public Object getV() {
         return v;
     }
 
-    public void setV(String v) {
+    public void setV(Object v) {
         this.v = v;
     }
 
@@ -37,7 +38,16 @@ public class DOMChange {
 
     public void setT(Integer t) { this.t = t; }
 
+    public String getC() {
+        return c;
+    }
+
+    public void setC(String c) {
+        this.c = c;
+    }
+
     public enum DOMChangeType {
-        TITLE;
+        TITLE,
+        CONDITION;
     }
 }

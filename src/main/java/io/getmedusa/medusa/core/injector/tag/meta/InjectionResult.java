@@ -48,8 +48,10 @@ public class InjectionResult {
     }
 
     public String replaceFinal(String key, String value) {
-        setHtml(getHtml().replaceFirst(key, value));
-        //TODO add scripts
+        setHtml(getHtml().replace(key, value));
+        for(String script : scripts) {
+            replace("<script id=\"websocket-setup\">", "<script>" + script + "</script>\n<script id=\"websocket-setup\">");
+        }
         return this.getHtml();
     }
 

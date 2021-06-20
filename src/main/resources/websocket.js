@@ -1,5 +1,5 @@
-var ws;
-var timeoutTimer = 0;
+let ws;
+let timeoutTimer = 0;
 
 retryConnection();
 
@@ -30,7 +30,7 @@ function retryConnection() {
             }
             ws.onmessage = function(message) {
                 console.log("ws.onmessage", ws, message);
-                vR(JSON.parse(message.data));
+                eventHandler(JSON.parse(message.data));
             }
         } catch (e) {
             console.log(e);
@@ -43,16 +43,33 @@ function log(responseEvent) {
     console.log(responseEvent);
 }
 
-function vR(e) {
+function eventHandler(e) {
     e.forEach(k => {
         if(k.t === undefined) {
+            variables[k.f] = k.v;
             document.querySelectorAll("[from-value="+k.f+"]").forEach(function(e) { e.innerText = k.v; });
-        } else if (k.t === 0) {
+        } else if (k.t === 0) { //DOCUMENT TITLE CHANGE
             document.title = k.v;
+        } else if (k.t === 1) { //CONDITION CHECK
+            let condition = k.c;
+            const found = condition.match(new RegExp("\\$\\w+-?\\w*"));
+            for(const toReplace of found) {
+                condition = condition.replace(toReplace, variables[toReplace.substring(1)]);
+            }
+
+            if(evalCondition(condition)) {
+                document.getElementById(k.v).style.display = null;
+            } else {
+                document.getElementById(k.v).style.display = "none";
+            }
         }
     });
 }
 
-function sE(e) { 
+function evalCondition(condition){
+    return Function('"use strict";return (' + condition + ')')();
+}
+
+function sendEvent(e) {
     ws.send(e); 
 }
