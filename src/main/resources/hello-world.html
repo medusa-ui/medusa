@@ -10,10 +10,10 @@
 
 <p>Counter: [$counter-value]</p>
 
-[$if($counter-value > 2)]
-    <p>Counter is above 2</p>
-[$else if($counter-value > 5)]
+[$if($counter-value > 5)]
     <p>Counter is above 5</p>
+[$else if($counter-value > 2)]
+    <p>Counter is above 2</p>
 [$else]
     <p>Counter is below 2 and 5</p>
 [$end]

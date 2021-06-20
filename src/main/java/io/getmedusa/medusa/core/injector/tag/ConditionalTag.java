@@ -28,8 +28,8 @@ public class ConditionalTag {
             for(String elsePart : elseParts) {
                 if(elsePart.contains("if(")) {
                     String elseCondition = parseCondition(elsePart);
+                    handleIfBlock(html, variables, elsePart, combineConditions(conditions) + " && " + elseCondition);
                     conditions.add(elseCondition);
-                    handleIfBlock(html, variables, elsePart, elseCondition);
                 } else {
                     handleIfBlock(html, variables, elsePart, combineConditions(conditions));
                 }

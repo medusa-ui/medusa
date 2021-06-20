@@ -44,6 +44,7 @@ function log(responseEvent) {
 }
 
 function eventHandler(e) {
+    console.clear();
     e.forEach(k => {
         if(k.t === undefined) {
             variables[k.f] = k.v;
@@ -58,8 +59,10 @@ function eventHandler(e) {
             }
 
             if(evalCondition(condition)) {
+                console.log("#" + k.v + " // visible || " + condition);
                 document.getElementById(k.v).style.display = null;
             } else {
+                console.log("#" + k.v + " // hidden || " + condition);
                 document.getElementById(k.v).style.display = "none";
             }
         }
