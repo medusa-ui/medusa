@@ -7,6 +7,7 @@ import io.getmedusa.medusa.core.websocket.ReactiveWebSocketHandler;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.Ordered;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
@@ -14,6 +15,7 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.HandlerMapping;
 import org.springframework.web.reactive.function.server.RouterFunction;
+import org.springframework.web.reactive.function.server.RouterFunctions;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import org.springframework.web.reactive.handler.SimpleUrlHandlerMapping;
 
@@ -43,6 +45,12 @@ public class HTMLRouter {
         })
         .reduce(RouterFunction::and)
         .orElse(null);
+    }
+
+    @Bean
+    public RouterFunction<ServerResponse> resourcesRouter() {
+        return RouterFunctions
+                .resources("/static/**", new ClassPathResource("static/"));
     }
 
     @Bean

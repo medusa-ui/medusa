@@ -50,8 +50,12 @@ public class ReactiveWebSocketHandler implements WebSocketHandler {
             String[] split = event.split("\\(");
             function = split[0];
             try {
-                parameter = MAPPER.readValue(split[1].replace(")", ""), Object.class); //TODO multiple parameters
+                final String unparsedParameter = split[1].replace(")", "").trim();
+                if(!unparsedParameter.isEmpty()) {
+                    parameter = MAPPER.readValue(unparsedParameter, Object.class); //TODO multiple parameters
+                }
             } catch (Exception e) {
+                e.printStackTrace();
                 throw new IllegalArgumentException(e);
             }
         }
