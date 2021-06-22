@@ -22,8 +22,7 @@ public class PageTitleRegistry {
 
     private final Map<String, String> registry = new HashMap<>();
 
-    public void addTitle(Resource html, String htmlString) {
-        final String fileName = FilenameHandler.removeExtension(html.getFilename());
+    public void addTitle(String fileName, String htmlString) {
         if(!registry.containsKey(fileName)) {
             Matcher matcher = PATTERN.matcher(htmlString);
             if (matcher.find()) {

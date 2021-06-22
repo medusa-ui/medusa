@@ -3,6 +3,13 @@ let timeoutTimer = 0;
 
 retryConnection();
 
+window.addEventListener( "popstate", function ( event ) {
+    let perfEntries = performance.getEntriesByType("navigation");
+    if (perfEntries[0].type === "reload" || perfEntries[0].type === "back_forward") {
+        window.location.reload();
+    }
+});
+
 function retryConnection() {
     setTimeout(function() {
         if(timeoutTimer < 1000) {
@@ -44,7 +51,6 @@ function log(responseEvent) {
 }
 
 function eventHandler(e) {
-    console.clear();
     e.forEach(k => {
         if(k.t === undefined) {
             variables[k.f] = k.v;
@@ -65,6 +71,12 @@ function eventHandler(e) {
                 console.log("#" + k.v + " // hidden || " + condition);
                 document.getElementById(k.v).style.display = "none";
             }
+        } else if (k.t === 2) { //PAGE CHANGE
+            document.querySelector('html').innerHTML = k.v;
+            //k.c => not the best choice here, just temp
+            window.history.pushState(null, k.f, k.c);
+            document.title = k.f;
+            //TODO: we get a white flash when styles change, so we should be able to deal with that
         }
     });
 }
@@ -74,5 +86,9 @@ function evalCondition(condition){
 }
 
 function sendEvent(e) {
-    ws.send(e); 
+    ws.send(e);
+}
+
+function changePage(e) {
+    ws.send("changePage(\""+e+"\")");
 }

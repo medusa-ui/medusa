@@ -2,10 +2,10 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Hello Medusa [$counter-value]</title>
+    <title>Medusa demo :: [$counter-value]</title>
+    <link href="static/stylesheet.css" rel="stylesheet">
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter&family=Merriweather&display=swap" rel="stylesheet">
-    <link href="static/stylesheet.css" rel="stylesheet">
 </head>
 <body>
 
@@ -25,6 +25,8 @@
 
 <p>Searched for: [$ search ]</p>
 <form><input m-change="search()" name="term" value="[$counter-value]" /></form>
+
+<a m-href="/page2">Detail page</a>
 
 <footer>Counter is now at [$ counter-value], a value determined serverside</footer>
 </body>

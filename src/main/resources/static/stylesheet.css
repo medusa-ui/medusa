@@ -42,3 +42,10 @@ input {
     outline: none;
     margin-bottom: 0.5em;
 }
+
+a:link, a:visited {
+    color: #5bb2f1;
+}
+a:hover, a:active {
+    color: #fd57ff;
+}

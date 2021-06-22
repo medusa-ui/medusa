@@ -72,7 +72,7 @@ public class ConditionalTag {
     }
 
     private String generateDivID(String ifBlock) {
-        return "if-" + ifBlock.hashCode();
+        return "if-" + Math.abs(ifBlock.hashCode()); //TODO: Hashcode does not ensure uniqueness, but making this purely random seems to cause issues betwn instances; needs to be reliable
     }
 
     protected String parseCondition(String ifBlock) {

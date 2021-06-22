@@ -25,7 +25,7 @@ class PageTitleRegistryTest {
     void testAddFullTitle() {
         Resource resource = Mockito.mock(Resource.class);
         Mockito.when(resource.getFilename()).thenReturn("test");
-        registry.addTitle(resource, "<title>[$counter-value]</title>");
+        registry.addTitle("test", "<title>[$counter-value]</title>");
         Assertions.assertEquals("[$counter-value]", getTitleViaRegistry("test"));
     }
 
@@ -33,7 +33,7 @@ class PageTitleRegistryTest {
     void testAddPartialTitle() {
         Resource resource = Mockito.mock(Resource.class);
         Mockito.when(resource.getFilename()).thenReturn("test");
-        registry.addTitle(resource, "<title>Hello [$counter-value] Medusa</title>");
+        registry.addTitle("test", "<title>Hello [$counter-value] Medusa</title>");
         Assertions.assertEquals("Hello [$counter-value] Medusa", getTitleViaRegistry("test"));
     }
 
@@ -41,7 +41,7 @@ class PageTitleRegistryTest {
     void testAddTitleWithHTMLWithNoTitle() {
         Resource resource = Mockito.mock(Resource.class);
         Mockito.when(resource.getFilename()).thenReturn("test");
-        registry.addTitle(resource, "<html></html>");
+        registry.addTitle("test", "<html></html>");
         Assertions.assertNull(getTitleViaRegistry("test"));
     }
 

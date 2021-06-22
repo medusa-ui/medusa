@@ -1,9 +1,10 @@
 package io.getmedusa.medusa.core.websocket;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.getmedusa.medusa.core.annotation.PageSetup;
 import io.getmedusa.medusa.core.injector.DOMChange;
+import io.getmedusa.medusa.core.injector.HTMLInjector;
 import io.getmedusa.medusa.core.registry.ConditionalRegistry;
 import io.getmedusa.medusa.core.registry.PageTitleRegistry;
 import io.getmedusa.medusa.core.registry.RouteRegistry;
@@ -13,10 +14,9 @@ import org.springframework.web.reactive.socket.WebSocketHandler;
 import org.springframework.web.reactive.socket.WebSocketSession;
 import reactor.core.publisher.Mono;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Component
 public class ReactiveWebSocketHandler implements WebSocketHandler {
@@ -61,9 +61,14 @@ public class ReactiveWebSocketHandler implements WebSocketHandler {
         }
 
         try {
-            final List<DOMChange> domChanges = registry.execute(function, Arrays.asList(parameter));
-            evaluateTitleChange(session, domChanges);
-            evaluateConditionalChange(domChanges);
+            final List<DOMChange> domChanges;
+            if(event.startsWith("changePage(")) {
+                domChanges = loadPage(parameter);
+            } else {
+                domChanges = registry.execute(function, Arrays.asList(parameter));
+                evaluateTitleChange(session, domChanges);
+                evaluateConditionalChange(domChanges);
+            }
             return MAPPER.writeValueAsString(domChanges);
         } catch (Exception e) {
             e.printStackTrace();
@@ -102,6 +107,30 @@ public class ReactiveWebSocketHandler implements WebSocketHandler {
                 domChanges.add(new DOMChange(null, unmappedTitle, DOMChange.DOMChangeType.TITLE));
             }
         }
+    }
+
+    private List<DOMChange> loadPage(Object parameter) {
+        List<DOMChange> domChanges = new ArrayList<>();
+
+        PageSetup file = RouteRegistry.getInstance().getPageSetupFromPath(parameter.toString());
+        final String fileName = file.getHtmlFile();
+        final String htmlLoaded = HTMLInjector.INSTANCE.inject(file.getGetPath(), fileName, null);
+        final String title = parseTitle(htmlLoaded);
+        final DOMChange pageLoad = new DOMChange(title, htmlLoaded);
+        pageLoad.setT(DOMChange.DOMChangeType.PAGE_CHANGE.ordinal());
+        pageLoad.setC(file.getGetPath());
+        domChanges.add(pageLoad);
+
+        return domChanges;
+    }
+
+    private String parseTitle(String htmlLoaded) {
+        String title = null;
+        Matcher matcher = Pattern.compile("<title>.*?</title>").matcher(htmlLoaded);
+        if (matcher.find()) {
+            title = matcher.group(0);
+        }
+        return title;
     }
 
 }

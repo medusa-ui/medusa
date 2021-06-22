@@ -1,16 +1,10 @@
 package io.getmedusa.medusa.core.injector;
 
-import io.getmedusa.medusa.core.injector.tag.ChangeTag;
-import io.getmedusa.medusa.core.injector.tag.ClickTag;
-import io.getmedusa.medusa.core.injector.tag.ConditionalTag;
+import io.getmedusa.medusa.core.cache.HTMLCache;
+import io.getmedusa.medusa.core.injector.tag.*;
 import io.getmedusa.medusa.core.injector.tag.meta.InjectionResult;
-import io.getmedusa.medusa.core.injector.tag.ValueTag;
-import io.getmedusa.medusa.core.registry.PageTitleRegistry;
 import io.getmedusa.medusa.core.registry.RouteRegistry;
 import io.getmedusa.medusa.core.util.FilenameHandler;
-import io.getmedusa.medusa.core.websocket.ReactiveWebSocketHandler;
-import org.springframework.core.io.Resource;
-import org.springframework.util.StreamUtils;
 
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -30,38 +24,41 @@ public enum HTMLInjector {
     private final ChangeTag changeTag;
     private final ValueTag valueTag;
     private final ConditionalTag conditionalTag;
+    private final LinkTag linkTag;
 
     HTMLInjector() {
         this.clickTag = new ClickTag();
         this.changeTag = new ChangeTag();
         this.valueTag = new ValueTag();
         this.conditionalTag = new ConditionalTag();
+        this.linkTag = new LinkTag();
     }
 
     /**
      * On page load
-     * @param html
-     * @param scripts
+     * @param getPath
+     * @param fileName
+     * @param script
      * @return
      */
-    public String inject(Resource html, Resource scripts) {
+    public String inject(String getPath, String fileName, String script) {
         try {
-            if(script == null) script = StreamUtils.copyToString(scripts.getInputStream(), CHARSET);
-            String htmlString = StreamUtils.copyToString(html.getInputStream(), CHARSET);
-            PageTitleRegistry.getInstance().addTitle(html, htmlString);
-            return htmlStringInject(html.getFilename(), htmlString);
+            if(this.script == null) this.script = script;
+            String htmlString = HTMLCache.getInstance().getHTML(fileName);
+            return htmlStringInject(getPath, fileName, htmlString);
         } catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException(e);
         }
     }
 
-    protected String htmlStringInject(String filename, String htmlString) {
-        final Map<String, Object> variables = RouteRegistry.getInstance().getVariables(filename);
+    protected String htmlStringInject(String getPath, String filename, String htmlString) {
+        final Map<String, Object> variables = RouteRegistry.getInstance().getVariables(getPath);
 
         InjectionResult result = clickTag.inject(htmlString);
         result = conditionalTag.injectWithVariables(result, variables);
         result = changeTag.inject(result.getHtml());
+        result = linkTag.inject(result.getHtml());
         result = valueTag.injectWithVariables(result, variables);
         result = removeTagsFromTitle(result);
         injectVariablesInScript(result, variables);
