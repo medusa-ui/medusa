@@ -3,6 +3,7 @@ let timeoutTimer = 0;
 
 retryConnection();
 
+//this makes sure that when a back button is used, it not only changes the url but then also reloads the page
 window.addEventListener( "popstate", function ( event ) {
     let perfEntries = performance.getEntriesByType("navigation");
     if (perfEntries[0].type === "reload" || perfEntries[0].type === "back_forward") {
@@ -72,11 +73,14 @@ function eventHandler(e) {
                 document.getElementById(k.v).style.display = "none";
             }
         } else if (k.t === 2) { //PAGE CHANGE
-            document.querySelector('html').innerHTML = k.v;
-            //k.c => not the best choice here, just temp
+            let parser = new DOMParser();
+            let doc = parser.parseFromString(k.v, 'text/html');
+            document.querySelector('body').innerHTML = doc.body.innerHTML;
+            //k.c = url => not the best choice here, just temp
             window.history.pushState(null, k.f, k.c);
             document.title = k.f;
-            //TODO: we get a white flash when styles change, so we should be able to deal with that
+            //with a full replace we get a white flash when styles change, so we should be able to deal with that
+            //maybe we could change the body first (which we do now) and only the details of the head if any changes occur (and what about scripts?)
         }
     });
 }

@@ -128,7 +128,7 @@ public class ReactiveWebSocketHandler implements WebSocketHandler {
         String title = null;
         Matcher matcher = Pattern.compile("<title>.*?</title>").matcher(htmlLoaded);
         if (matcher.find()) {
-            title = matcher.group(0);
+            title = matcher.group(0).replace("<title>", "").replace("</title>", "");
         }
         return title;
     }
