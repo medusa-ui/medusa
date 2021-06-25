@@ -44,7 +44,7 @@ public class ReactiveWebSocketHandler implements WebSocketHandler {
 
     private String interpretEvent(final WebSocketSession session, final String event) {
         String function = event;
-        Object parameter = null;
+        List<Object> parameters = new ArrayList<>();
 
         if(event.contains("(") && event.endsWith(")")) {
             String[] split = event.split("\\(");
@@ -52,7 +52,10 @@ public class ReactiveWebSocketHandler implements WebSocketHandler {
             try {
                 final String unparsedParameter = split[1].replace(")", "").trim();
                 if(!unparsedParameter.isEmpty()) {
-                    parameter = MAPPER.readValue(unparsedParameter, Object.class); //TODO multiple parameters
+                    final String[] splitUnparsed = unparsedParameter.split(",");
+                    for(String unparsedFromSplit : splitUnparsed) {
+                        parameters.add(MAPPER.readValue(unparsedFromSplit.replace("'", "\""), Object.class));
+                    }
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -63,9 +66,9 @@ public class ReactiveWebSocketHandler implements WebSocketHandler {
         try {
             final List<DOMChange> domChanges;
             if(event.startsWith("changePage(")) {
-                domChanges = loadPage(parameter);
+                domChanges = loadPage(parameters);
             } else {
-                domChanges = registry.execute(function, Arrays.asList(parameter));
+                domChanges = registry.execute(function, parameters);
                 evaluateTitleChange(session, domChanges);
                 evaluateConditionalChange(domChanges);
             }
@@ -109,10 +112,10 @@ public class ReactiveWebSocketHandler implements WebSocketHandler {
         }
     }
 
-    private List<DOMChange> loadPage(Object parameter) {
+    private List<DOMChange> loadPage(List<Object> parameters) {
         List<DOMChange> domChanges = new ArrayList<>();
 
-        PageSetup file = RouteRegistry.getInstance().getPageSetupFromPath(parameter.toString());
+        PageSetup file = RouteRegistry.getInstance().getPageSetupFromPath(parameters.get(0).toString());
         final String fileName = file.getHtmlFile();
         final String htmlLoaded = HTMLInjector.INSTANCE.inject(file.getGetPath(), fileName, null);
         final String title = parseTitle(htmlLoaded);

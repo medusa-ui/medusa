@@ -12,7 +12,7 @@ public class ClickTagTest {
             "<!DOCTYPE html>\n" +
             "<html lang=\"en\">\n" +
             "<body>\n" +
-            "<button m-click=\"increaseCounter(2)\">Increase counter</button>\n" +
+            "<button m-click=\"increaseCounter('2')\">Increase counter</button>\n" +
             "</body>\n" +
             "</html>";
 
@@ -20,17 +20,17 @@ public class ClickTagTest {
     void testMatcher() {
         Matcher matcher = TAG.buildMatcher(HTML);
         Assertions.assertTrue(matcher.find());
-        Assertions.assertEquals("m-click=\"increaseCounter(2)\"", matcher.group(0));
+        Assertions.assertEquals("m-click=\"increaseCounter('2')\"", matcher.group(0));
         Assertions.assertFalse(matcher.find());
     }
 
     @Test
     void testReplacement() {
-        final String fullMatch = "m-click=\"increaseCounter(2)\"";
-        final String tagContent = "increaseCounter(2)";
+        final String fullMatch = "m-click=\"increaseCounter('2')\"";
+        final String tagContent = "increaseCounter('2')";
 
         String replacedHTML = TAG.substitutionLogic(fullMatch, tagContent);
-        Assertions.assertEquals("onclick=\"sendEvent('increaseCounter(2)')\"", replacedHTML);
+        Assertions.assertEquals("onclick=\"sendEvent('increaseCounter(\\'2\\')')\"", replacedHTML);
     }
 
     @Test
