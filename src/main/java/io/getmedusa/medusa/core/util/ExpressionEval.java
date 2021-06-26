@@ -5,6 +5,8 @@ import org.codehaus.commons.compiler.IExpressionEvaluator;
 
 public class ExpressionEval {
 
+    private ExpressionEval(){}
+
     public static boolean eval(String condition) {
         boolean isVisible;
         try {

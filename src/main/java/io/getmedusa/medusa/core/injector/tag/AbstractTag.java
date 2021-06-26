@@ -19,6 +19,11 @@ public abstract class AbstractTag {
         return pattern.matcher(html);
     }
 
+    protected String standardPattern() {
+        return tagValue() + "=(\").+?(\")";
+    }
+
+
     /**
      * Replaces the m-tags in HTML with usable HTML tags on pageload
      * @param result

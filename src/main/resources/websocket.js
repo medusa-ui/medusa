@@ -1,5 +1,6 @@
 let ws;
 let timeoutTimer = 0;
+let debugMode = true;
 
 retryConnection();
 
@@ -25,68 +26,78 @@ function retryConnection() {
                 retryConnection();
             }
             ws.onopen = function() {
-                console.log("ws.onopen", ws);
-                console.log("ws.readyState", "wsstatus");
+                debug("ws.onopen", ws);
+                debug("ws.readyState", "wsstatus");
             }
             ws.onclose = function(error) {
-                console.log("ws.onclose", ws, error);
+                debug("ws.onclose", ws, error);
                 retryConnection();
             }
             ws.onerror = function(error) {
-                console.log("ws.onerror", ws, error);
+                debug("ws.onerror", ws, error);
                 log("An error occured");
             }
             ws.onmessage = function(message) {
-                console.log("ws.onmessage", ws, message);
+                debug("ws.onmessage", ws, message);
                 eventHandler(JSON.parse(message.data));
             }
         } catch (e) {
-            console.log(e);
+            debug(e);
             retryConnection();
         }
     }, timeoutTimer);
 }
 
 function log(responseEvent) {
-    console.log(responseEvent);
+    debug(responseEvent);
 }
 
 function eventHandler(e) {
+    //e = full event, k = individual event per key, k.f = field, k.v = value or relevant id, k.t = type, k.c = condition
     e.forEach(k => {
-        if(k.t === undefined) {
-            variables[k.f] = k.v;
-            document.querySelectorAll("[from-value="+k.f+"]").forEach(function(e) { e.innerText = k.v; });
+        if(k.t === undefined) { //the default event, a value change, contains the least amount of data, so it has no 'type'
+            handleDefaultEvent(k);
         } else if (k.t === 0) { //DOCUMENT TITLE CHANGE
-            document.title = k.v;
+            handleTitleChangeEvent(k);
         } else if (k.t === 1) { //CONDITION CHECK
-            let condition = k.c;
-            const found = condition.match(new RegExp("\\$\\w+-?\\w*"));
-            for(const toReplace of found) {
-                condition = condition.replaceAll(toReplace, variables[toReplace.substring(1)]);
-            }
-
-            if(evalCondition(condition)) {
-                console.log("#" + k.v + " // visible || " + condition);
-                document.getElementById(k.v).style.display = null;
-            } else {
-                console.log("#" + k.v + " // hidden || " + condition);
-                document.getElementById(k.v).style.display = "none";
-            }
-        } else if (k.t === 2) { //PAGE CHANGE
-            let parser = new DOMParser();
-            let doc = parser.parseFromString(k.v, 'text/html');
-            document.querySelector('body').innerHTML = doc.body.innerHTML;
-            //k.c = url => not the best choice here, just temp
-            window.history.pushState(null, k.f, k.c);
-            document.title = k.f;
-            //with a full replace we get a white flash when styles change, so we should be able to deal with that
-            //maybe we could change the body first (which we do now) and only the details of the head if any changes occur (and what about scripts?)
+            handleConditionCheckEvent(k);
         }
     });
 }
 
+function handleDefaultEvent(k) {
+    variables[k.f] = k.v;
+    document.querySelectorAll("[from-value="+k.f+"]").forEach(function(e) { e.innerText = k.v; });
+}
+
+function handleTitleChangeEvent(k) {
+    document.title = k.v;
+}
+
+function handleConditionCheckEvent(k) {
+    let condition = k.c;
+    const found = condition.match(new RegExp("\\$\\w+-?\\w*"));
+    for(const toReplace of found) {
+        condition = condition.replaceAll(toReplace, variables[toReplace.substring(1)]);
+    }
+
+    if(evalCondition(condition)) {
+        debug("#" + k.v + " // visible || " + condition);
+        document.getElementById(k.v).style.display = null;
+    } else {
+        debug("#" + k.v + " // hidden || " + condition);
+        document.getElementById(k.v).style.display = "none";
+    }
+}
+
 function evalCondition(condition){
     return Function('"use strict";return (' + condition + ')')();
+}
+
+function debug(textToLog, fullObject) {
+    if(debugMode) {
+        console.log(textToLog, fullObject);
+    }
 }
 
 function sendEvent(e) {

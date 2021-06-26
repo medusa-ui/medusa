@@ -10,17 +10,15 @@ import java.util.Map;
 public class ConditionalRegistry {
 
     private static final ConditionalRegistry INSTANCE = new ConditionalRegistry();
-
+    private static final String PREFIX = "$";
     public static ConditionalRegistry getInstance() {
         return INSTANCE;
     }
-
-    private Map<String, String> registry = new HashMap<>();
+    private final Map<String, String> registry = new HashMap<>();
 
     public void add(String divId, String condition){
         registry.put(divId, condition);
     }
-
     public String get(String divId) { return registry.get(divId); }
 
     public boolean evaluate(String divId, Map<String, Object> variables) {
@@ -30,20 +28,22 @@ public class ConditionalRegistry {
 
     }
 
-    public String parseCondition(String conditionParsed, Map<String, Object> variables) {
-        for(Map.Entry<String, Object> variableEntryset : variables.entrySet()) {
-            conditionParsed = conditionParsed.replace("$" + variableEntryset.getKey(), variableEntryset.getValue().toString());
+    private String parseCondition(String conditionParsed, Map<String, Object> variables) {
+        for(Map.Entry<String, Object> variableEntrySet : variables.entrySet()) {
+            conditionParsed = conditionParsed.replace(PREFIX + variableEntrySet.getKey(), variableEntrySet.getValue().toString());
         }
         return conditionParsed;
     }
 
     public List<String> findByConditionField(String fieldWithChange) {
-        List<String> ids = new ArrayList<>();
-        for(Map.Entry<String, String> entrySet : registry.entrySet()) {
-            if(entrySet.getValue().contains("$" + fieldWithChange)) {
-                ids.add(entrySet.getKey());
+        final String prefixedField = PREFIX + fieldWithChange;
+        final List<String> ids = new ArrayList<>();
+
+        registry.forEach((key, value) -> {
+            if (value.contains(prefixedField)) {
+                ids.add(key);
             }
-        }
+        });
         return ids;
     }
 }

@@ -7,12 +7,12 @@ public class ClickTag extends AbstractTag {
 
     @Override
     String pattern() {
-        return tagValue() + "=(\").+?(\")";
+        return standardPattern();
     }
 
     @Override
     String substitutionLogic(String fullMatch, String tagContent) {
-        tagContent = tagContent.replaceAll("'", "\\\\'");
+        tagContent = tagContent.replace("'", "\\'");
         return "onclick=\"sendEvent('"+tagContent+"')\"";
     }
 

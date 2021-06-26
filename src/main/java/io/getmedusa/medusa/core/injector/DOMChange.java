@@ -48,7 +48,6 @@ public class DOMChange {
 
     public enum DOMChangeType {
         TITLE,
-        CONDITION,
-        PAGE_CHANGE;
+        CONDITION;
     }
 }

@@ -18,7 +18,7 @@ public class ValueTag extends AbstractTag {
 
     @Override
     String substitutionLogic(String fullMatch, String tagContent) {
-        return "<span from-value=\'" + tagContent + "\'>" + wrapWithMarkers(tagContent) + "</span>";
+        return "<span from-value='" + tagContent + "'>" + wrapWithMarkers(tagContent) + "</span>";
     }
 
     public InjectionResult injectWithVariables(InjectionResult result, Map<String, Object> variables) {

@@ -1,17 +1,22 @@
 package io.getmedusa.medusa.core.injector;
 
+import io.getmedusa.medusa.core.annotation.UIEventController;
 import io.getmedusa.medusa.core.cache.HTMLCache;
 import io.getmedusa.medusa.core.injector.tag.*;
 import io.getmedusa.medusa.core.injector.tag.meta.InjectionResult;
-import io.getmedusa.medusa.core.registry.RouteRegistry;
+import io.getmedusa.medusa.core.registry.EventHandlerRegistry;
 import io.getmedusa.medusa.core.util.FilenameHandler;
 
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
 import java.util.Map;
 
 import static io.getmedusa.medusa.core.websocket.ReactiveWebSocketHandler.MAPPER;
 
+/**
+ * Handles translation from Medusa expressions to HTML/JS
+ */
 public enum HTMLInjector {
 
     INSTANCE;
@@ -33,25 +38,26 @@ public enum HTMLInjector {
     }
 
     /**
-     * On page load
-     * @param getPath
-     * @param fileName
-     * @param script
-     * @return
+     * On page load, inject cached unparsed HTML with parsed values
+     * @param fileName html filename
+     * @param script cached websocket script
+     * @return parsed html
      */
-    public String inject(String getPath, String fileName, String script) {
+    public String inject(String fileName, String script) {
         try {
             if(this.script == null) this.script = script;
             String htmlString = HTMLCache.getInstance().getHTML(fileName);
-            return htmlStringInject(getPath, fileName, htmlString);
+            return htmlStringInject(fileName, htmlString);
         } catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException(e);
         }
     }
 
-    protected String htmlStringInject(String getPath, String filename, String htmlString) {
-        final Map<String, Object> variables = RouteRegistry.getInstance().getVariables(getPath);
+    protected String htmlStringInject(String filename, String htmlString) {
+        final Map<String, Object> variables = new HashMap<>();
+        final UIEventController uiEventController = EventHandlerRegistry.getInstance().get(filename);
+        if(null != uiEventController) variables.putAll(uiEventController.setupPage().getPageVariables());
 
         InjectionResult result = clickTag.inject(htmlString);
         result = conditionalTag.injectWithVariables(result, variables);
@@ -82,6 +88,8 @@ public enum HTMLInjector {
         return html.getHtml();
     }
 
+    //TODO: hacky solution
+    @Deprecated
     protected InjectionResult removeTagsFromTitle(InjectionResult html) {
         return html.removeFromTitle("<span.+?from-value=.+?>").removeFromTitle("<\\/span>");
     }

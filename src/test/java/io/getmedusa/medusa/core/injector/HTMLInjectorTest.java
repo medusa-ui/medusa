@@ -2,6 +2,7 @@ package io.getmedusa.medusa.core.injector;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.getmedusa.medusa.core.injector.tag.meta.InjectionResult;
+import io.getmedusa.medusa.core.registry.EventHandlerRegistry;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -14,7 +15,7 @@ class HTMLInjectorTest {
 
     @Test
     void test() {
-        String result = HTMLInjector.INSTANCE.htmlStringInject("/", "test.html", "<!DOCTYPE html>\n" +
+        String result = HTMLInjector.INSTANCE.htmlStringInject( "test.html", "<!DOCTYPE html>\n" +
                 "<html lang=\"en\">\n" +
                 "<head>\n" +
                 "    <meta charset=\"UTF-8\">\n" +

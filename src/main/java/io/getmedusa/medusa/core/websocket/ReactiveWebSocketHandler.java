@@ -18,6 +18,10 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * Handles the lifecycle of the websocket session
+ * Mostly contains logic on what to do when an event arrives serverside
+ */
 @Component
 public class ReactiveWebSocketHandler implements WebSocketHandler {
 
@@ -25,12 +29,22 @@ public class ReactiveWebSocketHandler implements WebSocketHandler {
     private static final ConditionalRegistry CONDITIONAL_REGISTRY = ConditionalRegistry.getInstance();
     private static final SpelExpressionParser SPEL_EXPRESSION_PARSER = new SpelExpressionParser();
 
+    /**
+     * JSON mapper setup
+     * @return ObjectMapper
+     */
     private static ObjectMapper setupObjectMapper() {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
         return objectMapper;
     }
 
+    /**
+     * Mono impl of the entire websocket session lifecycle. We send a response event (all changes due to event) to any event we receive.
+     * Spring Reactive knows to kill the session as appropriate, which in turn will trigger the doFinally()
+     * @param session active websocket session
+     * @return full mono impl
+     */
     @Override
     public Mono<Void> handle(WebSocketSession session) {
         System.out.println("START of session : " + session.getId());
@@ -39,18 +53,18 @@ public class ReactiveWebSocketHandler implements WebSocketHandler {
                         .map(session::textMessage).doFinally(sig -> System.out.println("END of session : " + session.getId())));
     }
 
+    /**
+     * Chain of actions to trigger on an incoming event
+     * @param session active websocket session
+     * @param event incoming event as an unparsed string()
+     * @return JSON version of all changes due to the event, to be sent as a websocket response
+     */
     private String interpretEvent(final WebSocketSession session, final String event) {
         try {
-            final List<DOMChange> domChanges = new ArrayList<>();
-            final Expression parsedExpression = SPEL_EXPRESSION_PARSER.parseExpression(event);
-            if(event.startsWith("changePage(")) {
-                domChanges.addAll((List<DOMChange>) parsedExpression.getValue(this));
-            } else {
-                final UIEventController eventController = EventHandlerRegistry.getInstance().get(session);
-                domChanges.addAll((List<DOMChange>) parsedExpression.getValue(eventController));
-                evaluateTitleChange(session, domChanges);
-                evaluateConditionalChange(domChanges);
-            }
+            List<DOMChange> domChanges = executeEvent(session, event);
+            evaluateTitleChange(session, domChanges);
+            evaluateConditionalChange(domChanges);
+
             return MAPPER.writeValueAsString(domChanges);
         } catch (Exception e) {
             e.printStackTrace();
@@ -58,6 +72,25 @@ public class ReactiveWebSocketHandler implements WebSocketHandler {
         }
     }
 
+    /**
+     * Execute incoming event as a SpelExpression on the current UIEventController the WebSocketSession is attached to
+     * @param session active websocket session
+     * @param event incoming event as an unparsed string()
+     * @return list of changes
+     */
+    private List<DOMChange> executeEvent(WebSocketSession session, String event) {
+        List<DOMChange> domChanges = new ArrayList<>();
+        final Expression parsedExpression = SPEL_EXPRESSION_PARSER.parseExpression(event);
+        final UIEventController eventController = EventHandlerRegistry.getInstance().get(session);
+        @SuppressWarnings("unchecked") final List<DOMChange> parsedExpressionValues = (List<DOMChange>) parsedExpression.getValue(eventController);
+        if(parsedExpressionValues != null) domChanges = new ArrayList<>(parsedExpressionValues);
+        return domChanges;
+    }
+
+    /**
+     * Evaluate if any of the value changes would impact a condition. If so, send a CONDITION_CHECK back so that the UI can retry it
+     * @param domChanges, potentially with added CONDITION_CHECK changes
+     */
     private void evaluateConditionalChange(List<DOMChange> domChanges) {
         final Set<String> impactedDivIds = new HashSet<>();
         for(DOMChange domChange : domChanges) {
@@ -74,7 +107,12 @@ public class ReactiveWebSocketHandler implements WebSocketHandler {
         }
     }
 
-    private void evaluateTitleChange(WebSocketSession session, List<DOMChange> domChanges) throws Exception {
+    /**
+     * Evaluate if any of the changes would affect the title. If so, return a TITLE event so the UI can reparse it
+     * @param session active websocket session
+     * @param domChanges domChanges so far, can additional be appended with TITLE events
+     */
+    private void evaluateTitleChange(WebSocketSession session, List<DOMChange> domChanges) {
         String unmappedTitle = PageTitleRegistry.getInstance().getTitle(session);
         if(unmappedTitle != null) {
             boolean hasAChange = false;
@@ -89,30 +127,6 @@ public class ReactiveWebSocketHandler implements WebSocketHandler {
                 domChanges.add(new DOMChange(null, unmappedTitle, DOMChange.DOMChangeType.TITLE));
             }
         }
-    }
-
-    public List<DOMChange> changePage(String endpoint) {
-        List<DOMChange> domChanges = new ArrayList<>();
-
-        PageSetup file = RouteRegistry.getInstance().getPageSetupFromPath(endpoint);
-        final String fileName = file.getHtmlFile();
-        final String htmlLoaded = HTMLInjector.INSTANCE.inject(file.getGetPath(), fileName, null);
-        final String title = parseTitle(htmlLoaded);
-        final DOMChange pageLoad = new DOMChange(title, htmlLoaded);
-        pageLoad.setT(DOMChange.DOMChangeType.PAGE_CHANGE.ordinal());
-        pageLoad.setC(file.getGetPath());
-        domChanges.add(pageLoad);
-
-        return domChanges;
-    }
-
-    private String parseTitle(String htmlLoaded) {
-        String title = null;
-        Matcher matcher = Pattern.compile("<title>.*?</title>").matcher(htmlLoaded);
-        if (matcher.find()) {
-            title = matcher.group(0).replace("<title>", "").replace("</title>", "");
-        }
-        return title;
     }
 
 }

@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class Event {
 
-    private String content;
+    private final String content;
 
     @JsonCreator
     public Event(@JsonProperty("content") String content) {

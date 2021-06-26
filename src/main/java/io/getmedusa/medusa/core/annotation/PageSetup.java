@@ -9,11 +9,6 @@ public class PageSetup {
     private final String htmlFile;
     private final Map<String, Object> pageVariables = new HashMap<>();
 
-    public PageSetup(String getPath, String htmlFile) {
-        this.getPath = getPath;
-        this.htmlFile = htmlFile;
-    }
-
     public PageSetup(String getPath, String htmlFile, Map<String, Object> pageVariables) {
         this.getPath = getPath;
         this.htmlFile = htmlFile;

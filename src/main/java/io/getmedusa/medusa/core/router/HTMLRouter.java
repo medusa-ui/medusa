@@ -1,6 +1,5 @@
 package io.getmedusa.medusa.core.router;
 
-import io.getmedusa.medusa.core.annotation.PageSetup;
 import io.getmedusa.medusa.core.cache.HTMLCache;
 import io.getmedusa.medusa.core.injector.HTMLInjector;
 import io.getmedusa.medusa.core.registry.PageTitleRegistry;
@@ -42,11 +41,11 @@ public class HTMLRouter {
     @Bean
     public RouterFunction<ServerResponse> htmlRouter(@Value("classpath:/websocket.js") Resource scripts) {
         final String script = loadScript(scripts);
-        return RouteRegistry.getInstance().getAllPageSetups().stream().map(pageSetup -> {
-            String fileName = FilenameHandler.removeExtension(loadHTMLIntoCache(pageSetup).getFilename());
+        return RouteRegistry.getInstance().getRoutesWithHTMLFile().stream().map(route -> {
+            String fileName = FilenameHandler.removeExtension(loadHTMLIntoCache(route.getValue()).getFilename());
             return route(
-                    GET(pageSetup.getGetPath()),
-                    request -> ok().contentType(MediaType.TEXT_HTML).bodyValue(INSTANCE.inject(pageSetup.getGetPath(), fileName, script)));
+                    GET(route.getKey()),
+                    request -> ok().contentType(MediaType.TEXT_HTML).bodyValue(INSTANCE.inject(fileName, script)));
         })
         .reduce(RouterFunction::and)
         .orElse(null);
@@ -61,8 +60,8 @@ public class HTMLRouter {
         }
     }
 
-    private Resource loadHTMLIntoCache(PageSetup pageSetup) {
-        String resourcePath = pageSetup.getHtmlFile();
+    private Resource loadHTMLIntoCache(String htmlFile) {
+        String resourcePath = htmlFile;
         if(!resourcePath.endsWith(".html")) resourcePath = resourcePath + ".html";
         Resource html = resourceLoader.getResource("classpath:/" + resourcePath);
         try {
@@ -84,10 +83,7 @@ public class HTMLRouter {
     @Bean
     public HandlerMapping handlerMapping(ReactiveWebSocketHandler handler) {
         Map<String, ReactiveWebSocketHandler> map = new HashMap<>();
-        RouteRegistry.getInstance().getAllPageSetups()
-                .stream()
-                .map(PageSetup::getHtmlFile)
-                .forEach(file -> map.put(HTMLInjector.EVENT_EMITTER + file, handler));
+        RouteRegistry.getInstance().getRoutesWithHTMLFile().forEach(route -> map.put(HTMLInjector.EVENT_EMITTER + route.getValue(), handler));
         mapping.setUrlMap(map);
         mapping.setOrder(Ordered.HIGHEST_PRECEDENCE);
         return mapping;

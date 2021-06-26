@@ -5,6 +5,8 @@ import org.springframework.web.reactive.socket.WebSocketSession;
 
 public class SessionToHTMLFileName {
 
+    private SessionToHTMLFileName() {}
+
     public static String parse(WebSocketSession session) {
         String uri = session.getHandshakeInfo().getUri().toString();
         int indexOfEventEmitter = uri.indexOf(HTMLInjector.EVENT_EMITTER);
