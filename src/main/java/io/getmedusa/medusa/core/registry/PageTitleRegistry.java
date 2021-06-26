@@ -1,9 +1,7 @@
 package io.getmedusa.medusa.core.registry;
 
 
-import io.getmedusa.medusa.core.injector.HTMLInjector;
-import io.getmedusa.medusa.core.util.FilenameHandler;
-import org.springframework.core.io.Resource;
+import io.getmedusa.medusa.core.util.SessionToHTMLFileName;
 import org.springframework.web.reactive.socket.WebSocketSession;
 
 import java.util.HashMap;
@@ -34,11 +32,7 @@ public class PageTitleRegistry {
     }
 
     public String getTitle(WebSocketSession session) {
-        String uri = session.getHandshakeInfo().getUri().toString();
-        int indexOfEventEmitter = uri.indexOf(HTMLInjector.EVENT_EMITTER);
-        if(-1 == indexOfEventEmitter) return null;
-        String pageKey = uri.substring(indexOfEventEmitter + HTMLInjector.EVENT_EMITTER.length());
-        return registry.get(pageKey);
+        return registry.get(SessionToHTMLFileName.parse(session));
     }
 
     public void clear() {

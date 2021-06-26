@@ -7,7 +7,7 @@ public class ChangeTag extends AbstractTag {
 
     @Override
     String pattern() {
-        return tagValue() + "=(\"|').+?(\"|')";
+        return tagValue() + "=(\").+?(\")";
     }
 
     @Override

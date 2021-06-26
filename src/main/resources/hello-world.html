@@ -26,11 +26,12 @@
 <p>Last bought : [$last_bought]</p>
 <button m-click="buy('coffee')">Buy some coffee</button>
 <button m-click="buy('tea', 'sugar', 3,'cookie')">Buy some tea and sugar</button>
+<button m-click="buy('coffee, sugar but no cream','cookies (2 pieces)')">Breaking stuff</button>
 
 <p>Searched for: [$ search ]</p>
 <form><input m-change="search()" name="term" autocomplete="off" /></form>
 
-<a m-href="/page2">Detail page</a>
+<a href="/page2">Detail page</a>
 
 <footer>Counter is now at [$ counter-value], a value determined serverside</footer>
 </body>

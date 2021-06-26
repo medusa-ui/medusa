@@ -3,12 +3,12 @@ package io.getmedusa.medusa.core.websocket;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.getmedusa.medusa.core.annotation.PageSetup;
+import io.getmedusa.medusa.core.annotation.UIEventController;
 import io.getmedusa.medusa.core.injector.DOMChange;
 import io.getmedusa.medusa.core.injector.HTMLInjector;
-import io.getmedusa.medusa.core.registry.ConditionalRegistry;
-import io.getmedusa.medusa.core.registry.PageTitleRegistry;
-import io.getmedusa.medusa.core.registry.RouteRegistry;
-import io.getmedusa.medusa.core.registry.UIEventRegistry;
+import io.getmedusa.medusa.core.registry.*;
+import org.springframework.expression.Expression;
+import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.socket.WebSocketHandler;
 import org.springframework.web.reactive.socket.WebSocketSession;
@@ -23,6 +23,7 @@ public class ReactiveWebSocketHandler implements WebSocketHandler {
 
     public static final ObjectMapper MAPPER = setupObjectMapper();
     private static final ConditionalRegistry CONDITIONAL_REGISTRY = ConditionalRegistry.getInstance();
+    private static final SpelExpressionParser SPEL_EXPRESSION_PARSER = new SpelExpressionParser();
 
     private static ObjectMapper setupObjectMapper() {
         ObjectMapper objectMapper = new ObjectMapper();
@@ -30,45 +31,23 @@ public class ReactiveWebSocketHandler implements WebSocketHandler {
         return objectMapper;
     }
 
-    private final UIEventRegistry registry = UIEventRegistry.getInstance();
-
     @Override
     public Mono<Void> handle(WebSocketSession session) {
         System.out.println("START of session : " + session.getId());
         return session.send(session.receive()
                         .map(msg -> interpretEvent(session, msg.getPayloadAsText()))
-                        .map(session::textMessage).doFinally(sig -> {
-                            System.out.println("END of session : " + session.getId());
-                }));
+                        .map(session::textMessage).doFinally(sig -> System.out.println("END of session : " + session.getId())));
     }
 
     private String interpretEvent(final WebSocketSession session, final String event) {
-        String function = event;
-        List<Object> parameters = new ArrayList<>();
-
-        if(event.contains("(") && event.endsWith(")")) {
-            String[] split = event.split("\\(");
-            function = split[0];
-            try {
-                final String unparsedParameter = split[1].replace(")", "").trim();
-                if(!unparsedParameter.isEmpty()) {
-                    final String[] splitUnparsed = unparsedParameter.split(",");
-                    for(String unparsedFromSplit : splitUnparsed) {
-                        parameters.add(MAPPER.readValue(unparsedFromSplit.replace("'", "\""), Object.class));
-                    }
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-                throw new IllegalArgumentException(e);
-            }
-        }
-
         try {
-            final List<DOMChange> domChanges;
+            final List<DOMChange> domChanges = new ArrayList<>();
+            final Expression parsedExpression = SPEL_EXPRESSION_PARSER.parseExpression(event);
             if(event.startsWith("changePage(")) {
-                domChanges = loadPage(parameters);
+                domChanges.addAll((List<DOMChange>) parsedExpression.getValue(this));
             } else {
-                domChanges = registry.execute(function, parameters);
+                final UIEventController eventController = EventHandlerRegistry.getInstance().get(session);
+                domChanges.addAll((List<DOMChange>) parsedExpression.getValue(eventController));
                 evaluateTitleChange(session, domChanges);
                 evaluateConditionalChange(domChanges);
             }
@@ -112,10 +91,10 @@ public class ReactiveWebSocketHandler implements WebSocketHandler {
         }
     }
 
-    private List<DOMChange> loadPage(List<Object> parameters) {
+    public List<DOMChange> changePage(String endpoint) {
         List<DOMChange> domChanges = new ArrayList<>();
 
-        PageSetup file = RouteRegistry.getInstance().getPageSetupFromPath(parameters.get(0).toString());
+        PageSetup file = RouteRegistry.getInstance().getPageSetupFromPath(endpoint);
         final String fileName = file.getHtmlFile();
         final String htmlLoaded = HTMLInjector.INSTANCE.inject(file.getGetPath(), fileName, null);
         final String title = parseTitle(htmlLoaded);

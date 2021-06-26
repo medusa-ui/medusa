@@ -1,7 +1,6 @@
 package io.getmedusa.medusa;
 
 import io.getmedusa.medusa.core.annotation.PageSetup;
-import io.getmedusa.medusa.core.annotation.UIEvent;
 import io.getmedusa.medusa.core.annotation.UIEventController;
 import io.getmedusa.medusa.core.injector.DOMChange;
 import org.springframework.stereotype.Component;
@@ -19,6 +18,11 @@ public class Page2EventHandler implements UIEventController {
                 "/page2",
                 "page2",
                 modelMap);
+    }
+
+    //second method with same signature to check if page switching works correctly
+    public List<DOMChange> buy(Object... parameters) {
+        return Collections.singletonList(new DOMChange("example-value", "this store is closed!"));
     }
 
 }

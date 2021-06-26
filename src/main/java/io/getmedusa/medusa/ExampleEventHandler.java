@@ -2,7 +2,6 @@ package io.getmedusa.medusa;
 
 import io.getmedusa.medusa.core.annotation.PageSetup;
 import io.getmedusa.medusa.core.annotation.UIEventController;
-import io.getmedusa.medusa.core.annotation.UIEvent;
 import io.getmedusa.medusa.core.injector.DOMChange;
 import org.springframework.stereotype.Component;
 
@@ -25,12 +24,8 @@ public class ExampleEventHandler implements UIEventController {
                 modelMap);
     }
 
-    @UIEvent
-    public List<DOMChange> increaseCounter(List<Object> parameters) {
-        Object parameter = parameters.get(0);
-        if (parameter == null) parameter = 0;
-
-        counter += (Integer) parameter;
+    public List<DOMChange> increaseCounter(Integer parameter) {
+        counter += parameter;
         if(counter > 10) {
             counter = 0;
         }
@@ -38,8 +33,7 @@ public class ExampleEventHandler implements UIEventController {
         return Collections.singletonList(new DOMChange("counter-value", counter));
     }
 
-    @UIEvent
-    public List<DOMChange> buy(List<Object> parameters) {
+    public List<DOMChange> buy(Object... parameters) {
         StringBuilder itemsBought = new StringBuilder();
         String appender = "";
         for(Object param : parameters) {
@@ -51,8 +45,7 @@ public class ExampleEventHandler implements UIEventController {
         return Collections.singletonList(new DOMChange("last_bought", itemsBought.toString()));
     }
 
-    @UIEvent("search")
-    public List<DOMChange> searchExample(List<Object> parameters) {
+    public List<DOMChange> search() {
         return Collections.singletonList(new DOMChange("search", UUID.randomUUID().toString()));
     }
 }
