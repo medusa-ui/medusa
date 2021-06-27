@@ -85,11 +85,12 @@ function handleIterationCheck(k) {
 
     for(v of variables[k.v]) {
         let newDiff = document.createElement("div");
+        let currentEachValue = variables[k.v][index];
         newDiff.setAttribute("index", index++);
         newDiff.setAttribute("template-id", k.f);
-        newDiff.innerHTML = template.innerHTML;
+        newDiff.innerHTML = template.innerHTML.replaceAll("[$each]", currentEachValue)
 
-        template.parentNode.insertBefore(newDiff, template.nextSibling);
+        template.parentNode.insertBefore(newDiff, template);
     }
 }
 

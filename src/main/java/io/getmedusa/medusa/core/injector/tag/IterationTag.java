@@ -10,6 +10,7 @@ import java.util.regex.Pattern;
 
 public class IterationTag {
 
+    private static final String $_EACH = "[$each]";
     private final Pattern blockPattern = Pattern.compile("\\[\\$foreach .+?].*?\\[\\$end]", Pattern.DOTALL);
 
     public InjectionResult injectWithVariables(InjectionResult injectionResult, Map<String, Object> variables) {
@@ -27,9 +28,10 @@ public class IterationTag {
             String condition = parseCondition(block);
             IterationRegistry.getInstance().add(templateID, condition);
 
-            Collection<Object> iterationCondition = parseCondition(condition, variables);
-            for (int i = 0; i < iterationCondition.size(); i++) {
-                String iteration = "\n<div index=\"" + i + "\" template-id=\"" + templateID + "\">\n" + blockInner + "\n</div>\n";
+            Object[] iterationCondition = parseCondition(condition, variables).toArray();
+            for (int i = 0; i < iterationCondition.length; i++) {
+                String eachValue = iterationCondition[i].toString();
+                String iteration = "\n<div index=\"" + i + "\" template-id=\"" + templateID + "\">\n" + blockInner.replace($_EACH, eachValue) + "\n</div>\n";
                 iterations.append(iteration);
             }
             html = html.replace(block, iterations.toString());
@@ -42,6 +44,7 @@ public class IterationTag {
     @SuppressWarnings("unchecked")
     private Collection<Object> parseCondition(String condition, Map<String, Object> variables) {
         final Object variable = variables.getOrDefault(condition, new ArrayList<>());
+        if(variable == null) return Collections.emptyList();
         if (variable instanceof Collection) {
             return (Collection<Object>) variable;
         } else {

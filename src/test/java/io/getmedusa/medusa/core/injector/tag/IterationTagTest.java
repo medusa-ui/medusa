@@ -18,6 +18,14 @@ class IterationTagTest {
             "</body>\n" +
             "</html>";
 
+    public static final String HTML_W_ELEMENT =
+            "<!DOCTYPE html>\n" +
+            "<html lang=\"en\">\n" +
+            "<body>\n" +
+            "[$foreach $list-of-values]<p>Bought [$each]</p>[$end]" +
+            "</body>\n" +
+            "</html>";
+
     @Test
     void testMatcher() {
         Matcher matcher = TAG.buildBlockMatcher(HTML);
@@ -68,6 +76,19 @@ class IterationTagTest {
         Assertions.assertTrue(result.getHtml().contains("<template") && result.getHtml().contains("</template>"));
         Assertions.assertEquals(6, countOccurrences(result.getHtml()));
 
+    }
+
+    @Test
+    void testForEachWithElement() {
+        Map<String, Object> variables = new HashMap<>();
+        variables.put("list-of-values", Arrays.asList(1,2,3,4,5));
+        InjectionResult result = TAG.injectWithVariables(new InjectionResult(HTML_W_ELEMENT), variables);
+        System.out.println(result.getHtml());
+        Assertions.assertFalse(result.getHtml().contains("$foreach"));
+        Assertions.assertTrue(result.getHtml().contains("<template") && result.getHtml().contains("</template>"));
+        for (int i = 1; i <= 5; i++) {
+            Assertions.assertTrue(result.getHtml().contains("<p>Bought " + i + "</p>"));
+        }
     }
 
     long countOccurrences(String block) {
