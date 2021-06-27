@@ -28,8 +28,12 @@
 <button m-click="buy('tea', 'sugar', 3,'cookie')">Buy some tea and sugar</button>
 <button m-click="buy('coffee, sugar but no cream','cookies (2 pieces)')">Breaking stuff</button>
 
+[$foreach $items-bought]
+    <p>Medusa</p>
+[$end]
+
 <p>Searched for: [$ search ]</p>
-<form><input m-change="search()" name="term" autocomplete="off" /></form>
+<form><input m-change="search()" type="text" name="term" autocomplete="off" /></form>
 
 <a href="/page2">Detail page</a>
 

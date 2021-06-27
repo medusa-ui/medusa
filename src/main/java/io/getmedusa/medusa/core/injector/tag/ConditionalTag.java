@@ -2,6 +2,7 @@ package io.getmedusa.medusa.core.injector.tag;
 
 import io.getmedusa.medusa.core.injector.tag.meta.InjectionResult;
 import io.getmedusa.medusa.core.registry.ConditionalRegistry;
+import io.getmedusa.medusa.core.util.IdentifierGenerator;
 
 import java.util.*;
 import java.util.regex.Matcher;
@@ -55,7 +56,7 @@ public class ConditionalTag {
     }
 
     private void handleIfBlock(InjectionResult html, Map<String, Object> variables, String ifBlock, String conditionParsed) {
-        final String divId = generateDivID(ifBlock);
+        final String divId = IdentifierGenerator.generateIfID();
 
         CONDITIONAL_REGISTRY.add(divId, conditionParsed);
         String wrapperStart = "<div id=\""+divId+"\">";
@@ -69,10 +70,6 @@ public class ConditionalTag {
         } else {
             html.replace(ifBlock, ifBlock.replaceFirst(patternIfStart.pattern(), wrapperStart).replace("[$end]", wrapperEnd));
         }
-    }
-
-    private String generateDivID(String ifBlock) {
-        return "if-" + Math.abs(ifBlock.hashCode()); //TODO: Hashcode does not ensure uniqueness, but making this purely random seems to cause issues betwn instances; needs to be reliable
     }
 
     protected String parseCondition(String ifBlock) {

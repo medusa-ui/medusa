@@ -53,6 +53,7 @@ function log(responseEvent) {
 }
 
 function eventHandler(e) {
+    debug(e);
     //e = full event, k = individual event per key, k.f = field, k.v = value or relevant id, k.t = type, k.c = condition
     e.forEach(k => {
         if(k.t === undefined) { //the default event, a value change, contains the least amount of data, so it has no 'type'
@@ -61,6 +62,8 @@ function eventHandler(e) {
             handleTitleChangeEvent(k);
         } else if (k.t === 1) { //CONDITION CHECK
             handleConditionCheckEvent(k);
+        } else if (k.t === 2) { //ITERATION CHECK
+            handleIterationCheck(k);
         }
     });
 }
@@ -72,6 +75,22 @@ function handleDefaultEvent(k) {
 
 function handleTitleChangeEvent(k) {
     document.title = k.v;
+}
+
+function handleIterationCheck(k) {
+    let template = document.getElementById(k.f);
+    let index = 0;
+
+    document.querySelectorAll("[template-id="+k.f+"]").forEach(function(e) { e.remove(); });
+
+    for(v of variables[k.v]) {
+        let newDiff = document.createElement("div");
+        newDiff.setAttribute("index", index++);
+        newDiff.setAttribute("template-id", k.f);
+        newDiff.innerHTML = template.innerHTML;
+
+        template.parentNode.insertBefore(newDiff, template.nextSibling);
+    }
 }
 
 function handleConditionCheckEvent(k) {

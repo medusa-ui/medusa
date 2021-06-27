@@ -8,6 +8,7 @@ import io.getmedusa.medusa.core.injector.DOMChange;
 import io.getmedusa.medusa.core.injector.HTMLInjector;
 import io.getmedusa.medusa.core.registry.*;
 import org.springframework.expression.Expression;
+import org.springframework.expression.spel.SpelEvaluationException;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.socket.WebSocketHandler;
@@ -17,6 +18,7 @@ import reactor.core.publisher.Mono;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * Handles the lifecycle of the websocket session
@@ -64,6 +66,7 @@ public class ReactiveWebSocketHandler implements WebSocketHandler {
             List<DOMChange> domChanges = executeEvent(session, event);
             evaluateTitleChange(session, domChanges);
             evaluateConditionalChange(domChanges);
+            evaluateIterationChange(domChanges);
 
             return MAPPER.writeValueAsString(domChanges);
         } catch (Exception e) {
@@ -79,12 +82,16 @@ public class ReactiveWebSocketHandler implements WebSocketHandler {
      * @return list of changes
      */
     private List<DOMChange> executeEvent(WebSocketSession session, String event) {
-        List<DOMChange> domChanges = new ArrayList<>();
-        final Expression parsedExpression = SPEL_EXPRESSION_PARSER.parseExpression(event);
-        final UIEventController eventController = EventHandlerRegistry.getInstance().get(session);
-        @SuppressWarnings("unchecked") final List<DOMChange> parsedExpressionValues = (List<DOMChange>) parsedExpression.getValue(eventController);
-        if(parsedExpressionValues != null) domChanges = new ArrayList<>(parsedExpressionValues);
-        return domChanges;
+        try {
+            List<DOMChange> domChanges = new ArrayList<>();
+            final Expression parsedExpression = SPEL_EXPRESSION_PARSER.parseExpression(event);
+            final UIEventController eventController = EventHandlerRegistry.getInstance().get(session);
+            @SuppressWarnings("unchecked") final List<DOMChange> parsedExpressionValues = (List<DOMChange>) parsedExpression.getValue(eventController);
+            if (parsedExpressionValues != null) domChanges = new ArrayList<>(parsedExpressionValues);
+            return domChanges;
+        } catch (SpelEvaluationException e) {
+            throw new IllegalArgumentException("Event '" + event + "' could not be executed", e);
+        }
     }
 
     /**
@@ -105,6 +112,26 @@ public class ReactiveWebSocketHandler implements WebSocketHandler {
             conditionCheck.setC(CONDITIONAL_REGISTRY.get(impactedDivId));
             domChanges.add(conditionCheck);
         }
+    }
+
+    /**
+     * Evaluate if any of the value changes would impact an iteration. If so, send a ITERATION back so that the UI can retry it
+     * @param domChanges, potentially with added ITERATION changes
+     */
+    private void evaluateIterationChange(List<DOMChange> domChanges) {
+        Map<String, String> templatesToUpdate = new HashMap<>();
+        for(DOMChange domChange : domChanges) {
+            List<String> relatedTemplates = IterationRegistry.getInstance().findRelatedToValue(domChange.getF());
+            if(relatedTemplates != null) {
+                for (String relatedTemplate : relatedTemplates) {
+                    templatesToUpdate.put(relatedTemplate, domChange.getF());
+                }
+            }
+        }
+
+        domChanges.addAll(templatesToUpdate.entrySet().stream()
+                .map(entry -> new DOMChange(entry.getKey(), entry.getValue(), DOMChange.DOMChangeType.ITERATION))
+                .collect(Collectors.toList()));
     }
 
     /**

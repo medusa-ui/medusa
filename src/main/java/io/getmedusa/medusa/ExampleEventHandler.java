@@ -11,12 +11,14 @@ import java.util.*;
 public class ExampleEventHandler implements UIEventController {
 
     private int counter = 0;
+    private final List<String> listOfItemsBought = new ArrayList<>();
 
     @Override
     public PageSetup setupPage() {
         Map<String, Object> modelMap = new HashMap<>();
         modelMap.put("counter-value", counter);
         modelMap.put("last_bought", "Nothing yet!");
+        modelMap.put("items-bought", listOfItemsBought);
         modelMap.put("search", "initial value!");
         return new PageSetup(
                 "/",
@@ -41,8 +43,10 @@ public class ExampleEventHandler implements UIEventController {
             itemsBought.append(param.toString());
             appender = ", ";
         }
-
-        return Collections.singletonList(new DOMChange("last_bought", itemsBought.toString()));
+        listOfItemsBought.add(itemsBought.toString());
+        return Arrays.asList(
+                new DOMChange("items-bought", listOfItemsBought),
+                new DOMChange("last_bought", itemsBought.toString()));
     }
 
     public List<DOMChange> search() {

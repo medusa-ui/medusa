@@ -29,12 +29,14 @@ public enum HTMLInjector {
     private final ChangeTag changeTag;
     private final ValueTag valueTag;
     private final ConditionalTag conditionalTag;
+    private final IterationTag iterationTag;
 
     HTMLInjector() {
         this.clickTag = new ClickTag();
         this.changeTag = new ChangeTag();
         this.valueTag = new ValueTag();
         this.conditionalTag = new ConditionalTag();
+        this.iterationTag = new IterationTag();
     }
 
     /**
@@ -60,6 +62,7 @@ public enum HTMLInjector {
         if(null != uiEventController) variables.putAll(uiEventController.setupPage().getPageVariables());
 
         InjectionResult result = clickTag.inject(htmlString);
+        result = iterationTag.injectWithVariables(result, variables);
         result = conditionalTag.injectWithVariables(result, variables);
         result = changeTag.inject(result.getHtml());
         result = valueTag.injectWithVariables(result, variables);
