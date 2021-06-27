@@ -56,7 +56,7 @@ public class ConditionalTag {
     }
 
     private void handleIfBlock(InjectionResult html, Map<String, Object> variables, String ifBlock, String conditionParsed) {
-        final String divId = IdentifierGenerator.generateIfID();
+        final String divId = IdentifierGenerator.generateIfID(ifBlock);
 
         CONDITIONAL_REGISTRY.add(divId, conditionParsed);
         String wrapperStart = "<div id=\""+divId+"\">";

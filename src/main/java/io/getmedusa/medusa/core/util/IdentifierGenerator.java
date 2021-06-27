@@ -4,18 +4,15 @@ public class IdentifierGenerator {
 
     private IdentifierGenerator() {}
 
-    private static int counter = 0;
+    //TODO: Not ideal, IDs should be unique but also reproducable
+    //Hash is not guaranteed unique, especially based on content (same content = same id)
 
-    public static String generateIfID() {
-        return "if-" + counter++;
+    public static String generateIfID(String value) {
+        return "if-" + Math.abs(value.hashCode());
     }
 
-    public static String generateTemplateID() {
-        return "t-" + counter++;
-    }
-
-    public static String generateIterationID() {
-        return "i-" + counter++;
+    public static String generateTemplateID(String value) {
+        return "t-" + Math.abs(value.hashCode());
     }
 
 }

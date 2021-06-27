@@ -20,7 +20,7 @@ public class IterationTag {
             String block = matcher.group(0);
             String blockInner = parseInnerBlock(block);
 
-            final String templateID = IdentifierGenerator.generateTemplateID();
+            final String templateID = IdentifierGenerator.generateTemplateID(blockInner);
             String template = "\n<template id=\"" + templateID + "\">\n" + blockInner + "\n</template>\n";
             StringBuilder iterations = new StringBuilder(template);
 
