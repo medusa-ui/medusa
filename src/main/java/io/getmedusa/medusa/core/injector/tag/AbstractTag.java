@@ -20,7 +20,7 @@ public abstract class AbstractTag {
     }
 
     protected String standardPattern() {
-        return tagValue() + "=[(\")|(')].+[?(\")|?(')]";
+        return "("+tagValue() + "=\".+?\")|("+tagValue() + "='.+?')";
     }
 
 

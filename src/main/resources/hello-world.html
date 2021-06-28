@@ -26,8 +26,10 @@
 <p>Last bought : [$last_bought]</p>
 <button m-click="buy('coffee')">Buy some coffee</button>
 <button m-click="buy('tea', 'sugar', 3,'cookie')">Buy some tea and sugar</button>
-<button m-click="buy('coffee, sugar but no cream','cookies (2 pieces)')">SpelExpression advantage</button>
-<button m-click='buy("coffee, sugar but no cream","cookies (2 pieces)")'>Breaking stuff</button>
+
+<button m-click="buy('coffee, sugar but no cream','cookies (1 piece)')" type="button">Breaking stuff 1</button>
+<button m-click='buy("coffee, sugar but no cream","cookies (2 pieces)")' type='button'>Breaking stuff 2</button>
+<button m-click='buy("coffee, sugar but no cream","cookies (3 pieces)")' type="button">Breaking stuff 3</button>
 
 [$foreach $items-bought]
     <p>Bought [$each]</p>
