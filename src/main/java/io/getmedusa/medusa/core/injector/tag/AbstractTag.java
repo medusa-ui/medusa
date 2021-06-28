@@ -20,7 +20,7 @@ public abstract class AbstractTag {
     }
 
     protected String standardPattern() {
-        return tagValue() + "=(\").+?(\")";
+        return tagValue() + "=[(\")|(')].+[?(\")|?(')]";
     }
 
 
@@ -49,6 +49,7 @@ public abstract class AbstractTag {
         if(tagContent.contains("=")) tagContent = tagContent.replaceFirst(tagValue() + "=", "");
         if(tagContent.startsWith("\"")) tagContent = tagContent.substring(1, tagContent.length() - 1);
         if(tagContent.startsWith("[$")) tagContent = tagContent.substring(2, tagContent.length() - 1);
+        if(tagContent.startsWith("'")) tagContent = tagContent.substring(1, tagContent.length() - 1).replace("\"","'");
         return tagContent.trim();
     }
 
