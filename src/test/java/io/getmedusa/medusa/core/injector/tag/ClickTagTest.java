@@ -34,6 +34,15 @@ public class ClickTagTest {
     }
 
     @Test
+    void testReplacementSingleQuotedAction() {
+        final String fullMatch = "m-click='increaseCounter(\"2\")'";
+        final String tagContent = "increaseCounter('2')";
+
+        String replacedHTML = TAG.substitutionLogic(fullMatch, tagContent);
+        Assertions.assertEquals("onclick=\"sendEvent('increaseCounter(\\'2\\')')\"", replacedHTML);
+    }
+
+    @Test
     void testFullToTag() {
         final String fullMatch = "m-click=\"increaseCounter(2)\"";
         final String tagContent = "increaseCounter(2)";
