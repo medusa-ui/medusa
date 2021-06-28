@@ -52,4 +52,9 @@ public class ExampleEventHandler implements UIEventController {
     public List<DOMChange> search() {
         return Collections.singletonList(new DOMChange("search", UUID.randomUUID().toString()));
     }
+
+    public List<DOMChange> clear() {
+        listOfItemsBought.clear();
+        return Collections.singletonList(new DOMChange("items-bought", listOfItemsBought));
+    }
 }
