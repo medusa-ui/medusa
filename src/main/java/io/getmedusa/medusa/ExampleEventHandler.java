@@ -12,7 +12,8 @@ public class ExampleEventHandler implements UIEventController {
 
     private int counter = 0;
     private final List<String> listOfItemsBought = new ArrayList<>();
-    private final List<Order> orders = Arrays.asList(new Order(new Product("Whitewood"),5),new Order(new Product("Darkwoods"),3));
+    private final List<Order> orders = new ArrayList<>(Arrays.asList(new Order(new Product("Whitewood"),5),new Order(new Product("Darkwoods"),3)));
+    private final Product product =  new Product("Blue Sky");
 
     @Override
     public PageSetup setupPage() {
@@ -21,6 +22,7 @@ public class ExampleEventHandler implements UIEventController {
         modelMap.put("last_bought", "Nothing yet!");
         modelMap.put("items-bought", listOfItemsBought);
         modelMap.put("orders", orders);
+        modelMap.put("blue-sky", product.name);
         modelMap.put("search", "initial value!");
         return new PageSetup(
                 "/",
@@ -35,6 +37,11 @@ public class ExampleEventHandler implements UIEventController {
         }
 
         return Collections.singletonList(new DOMChange("counter-value", counter));
+    }
+
+    public List<DOMChange> order() {
+        orders.add(new Order(product, 1));
+        return Collections.singletonList(new DOMChange("orders", orders));
     }
 
     public List<DOMChange> buy(Object... parameters) {
