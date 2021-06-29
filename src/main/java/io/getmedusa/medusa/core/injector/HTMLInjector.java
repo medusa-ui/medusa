@@ -66,7 +66,6 @@ public enum HTMLInjector {
         result = conditionalTag.injectWithVariables(result, variables);
         result = changeTag.inject(result.getHtml());
         result = valueTag.injectWithVariables(result, variables);
-        result = removeTagsFromTitle(result);
         injectVariablesInScript(result, variables);
 
         return injectScript(filename, result);
@@ -89,11 +88,5 @@ public enum HTMLInjector {
                     "</script>\n</body>");
         }
         return html.getHtml();
-    }
-
-    //TODO: hacky solution
-    @Deprecated
-    protected InjectionResult removeTagsFromTitle(InjectionResult html) {
-        return html.removeFromTitle("<span.+?from-value=.+?>").removeFromTitle("<\\/span>");
     }
 }

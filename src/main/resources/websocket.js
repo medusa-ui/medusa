@@ -70,7 +70,14 @@ function eventHandler(e) {
 
 function handleDefaultEvent(k) {
     variables[k.f] = k.v;
-    document.querySelectorAll("[from-value="+k.f+"]").forEach(function(e) { e.innerText = k.v; });
+    document.querySelectorAll("[from-value="+k.f+"]").forEach(function(e) {
+        if(e.hasAttribute("value")) {
+            e.setAttribute("value", k.v);
+            e.dispatchEvent(new Event('input'));
+        } else {
+            e.innerText = k.v;
+        }
+    });
 }
 
 function handleTitleChangeEvent(k) {
