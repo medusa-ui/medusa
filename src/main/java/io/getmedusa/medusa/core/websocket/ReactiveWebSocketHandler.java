@@ -7,6 +7,7 @@ import io.getmedusa.medusa.core.annotation.UIEventController;
 import io.getmedusa.medusa.core.injector.DOMChange;
 import io.getmedusa.medusa.core.injector.HTMLInjector;
 import io.getmedusa.medusa.core.registry.*;
+import io.getmedusa.medusa.core.util.PropertyAccessor;
 import org.springframework.expression.Expression;
 import org.springframework.expression.spel.SpelEvaluationException;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
@@ -29,7 +30,6 @@ public class ReactiveWebSocketHandler implements WebSocketHandler {
 
     public static final ObjectMapper MAPPER = setupObjectMapper();
     private static final ConditionalRegistry CONDITIONAL_REGISTRY = ConditionalRegistry.getInstance();
-    private static final SpelExpressionParser SPEL_EXPRESSION_PARSER = new SpelExpressionParser();
 
     /**
      * JSON mapper setup
@@ -84,9 +84,8 @@ public class ReactiveWebSocketHandler implements WebSocketHandler {
     private List<DOMChange> executeEvent(WebSocketSession session, String event) {
         try {
             List<DOMChange> domChanges = new ArrayList<>();
-            final Expression parsedExpression = SPEL_EXPRESSION_PARSER.parseExpression(event);
             final UIEventController eventController = EventHandlerRegistry.getInstance().get(session);
-            @SuppressWarnings("unchecked") final List<DOMChange> parsedExpressionValues = (List<DOMChange>) parsedExpression.getValue(eventController);
+            @SuppressWarnings("unchecked") final List<DOMChange> parsedExpressionValues = PropertyAccessor.getValue(event, eventController, domChanges.getClass());
             if (parsedExpressionValues != null) domChanges = new ArrayList<>(parsedExpressionValues);
             return domChanges;
         } catch (SpelEvaluationException e) {

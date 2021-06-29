@@ -3,6 +3,7 @@ package io.getmedusa.medusa.core.injector.tag;
 import io.getmedusa.medusa.core.injector.tag.meta.InjectionResult;
 import io.getmedusa.medusa.core.registry.IterationRegistry;
 import io.getmedusa.medusa.core.util.IdentifierGenerator;
+import io.getmedusa.medusa.core.util.PropertyAccessor;
 
 import java.util.*;
 import java.util.regex.Matcher;
@@ -11,6 +12,7 @@ import java.util.regex.Pattern;
 public class IterationTag {
 
     private static final String $_EACH = "[$each]";
+    private final Pattern propertyPattern =  Pattern.compile("\\[\\$each\\.(.*?])", Pattern.DOTALL + Pattern.CASE_INSENSITIVE);
     private final Pattern blockPattern = Pattern.compile("\\[\\$foreach .+?].*?\\[\\$end]", Pattern.DOTALL);
 
     public InjectionResult injectWithVariables(InjectionResult injectionResult, Map<String, Object> variables) {
@@ -30,8 +32,8 @@ public class IterationTag {
 
             Object[] iterationCondition = parseCondition(condition, variables).toArray();
             for (int i = 0; i < iterationCondition.length; i++) {
-                String eachValue = iterationCondition[i].toString();
-                String iteration = "\n<div index=\"" + i + "\" template-id=\"" + templateID + "\">\n" + blockInner.replace($_EACH, eachValue) + "\n</div>\n";
+                Object eachValue = iterationCondition[i];
+                String iteration = "\n<div index=\"" + i + "\" template-id=\"" + templateID + "\">\n" + parseLine(blockInner, eachValue) + "\n</div>\n";
                 iterations.append(iteration);
             }
             html = html.replace(block, iterations.toString());
@@ -39,6 +41,20 @@ public class IterationTag {
 
         injectionResult.setHtml(html);
         return injectionResult;
+    }
+
+    private String parseLine(String line, Object value ) {
+        String result = line;
+        result = line.replace($_EACH, value.toString());
+
+        Matcher matcher = propertyPattern.matcher(result);
+        while (matcher.find()) {
+            final String replace = matcher.group(); // $[each.property]
+            final String group = matcher.group(1);  // property]
+            final String property = group.substring(0, group.length()-1);  // property
+            result = result.replace(replace, PropertyAccessor.getValue(property,value));
+        }
+        return result;
     }
 
     @SuppressWarnings("unchecked")

@@ -39,6 +39,11 @@
 <p>[$search]</p>
 <form><input m-change="search()" type="text" name="term" autocomplete="off" value="[$counter-value]" /></form>
 
+<h5>Orders</h5>
+[$foreach $orders]
+<div>Product: [$each.product.name] Number: [$each.number] <code>[$each]</code></div>
+[$end]
+<br/>
 <a href="/page2">Detail page</a>
 
 <footer>Counter is now at [$ counter-value], a value determined serverside</footer>
