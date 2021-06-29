@@ -14,6 +14,7 @@ class ValueTagTest {
     public static final String HTML = "<p>Counter: [$counter-value]</p>";
     public static final String HTML_VALUE_AS_ATTRIBUTE = "<input type=\"text\" value=\"[$counter-value]\" />";
     public static final String HTML_WRAPPED_IN_TAG = "<p>[$counter-value]</p>";
+    public static final String HTML_TITLE = "<title>Welcome to Medusa :: [$counter-value] :: More title</title>";
 
     @Test
     void testWithValueAsAttribute() {
@@ -48,4 +49,12 @@ class ValueTagTest {
         Assertions.assertFalse(html.contains("span"));
     }
 
+    @Test
+    void testWrappedInTitle() {
+        Map<String, Object> variables = new HashMap<>();
+        variables.put("counter-value", 4564);
+        String html = TAG.injectWithVariables(new InjectionResult(HTML_TITLE), variables).getHtml();
+        System.out.println(html);
+        Assertions.assertEquals("<title>Welcome to Medusa :: 4564 :: More title</title>", html);
+    }
 }

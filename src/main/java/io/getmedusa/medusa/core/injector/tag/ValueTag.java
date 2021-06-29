@@ -14,8 +14,9 @@ public class ValueTag {
 
     public InjectionResult injectWithVariables(InjectionResult result, Map<String, Object> variables) {
         String html = result.getHtml();
-        Matcher matcher = pattern.matcher(html);
+        html = replaceTitle(html, variables);
 
+        Matcher matcher = pattern.matcher(html);
         Map<String, String> replacements = new HashMap<>();
 
         while (matcher.find()) {
@@ -39,11 +40,33 @@ public class ValueTag {
 
         for(Map.Entry<String, String> replacement : replacements.entrySet()) {
             final String key = replacement.getKey().replace("[$", "\\[\\$").replace("]", "\\]");
-            html = html.replaceAll(key, replacement.getValue()); //TODO replaceAll feels odd here
+            html = html.replaceAll(key, replacement.getValue());
         }
 
         result.setHtml(html);
         return result;
+    }
+
+    private String replaceTitle(String html, Map<String, Object> variables) {
+        Pattern titlePattern = Pattern.compile("<title>.+</title>", Pattern.CASE_INSENSITIVE);
+        Matcher titleMatcher = titlePattern.matcher(html);
+
+        if (titleMatcher.find()) {
+            final String title = titleMatcher.group(0);
+            String titleCopy = title;
+
+            Matcher matcher = pattern.matcher(html);
+
+            while (matcher.find()) {
+                final String match = matcher.group(0);
+                final String variableKey = match.substring(2, match.length() - 1).trim();
+                final String value = variables.get(variableKey).toString();
+                titleCopy = titleCopy.replace(match, value);
+            }
+            html = html.replace(title, titleCopy);
+        }
+
+        return html;
     }
 
     private Context determineContext(String html, Matcher matcher) {
