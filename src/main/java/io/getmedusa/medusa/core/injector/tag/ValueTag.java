@@ -29,8 +29,10 @@ public class ValueTag {
             if(context.equals(Context.AS_ATTRIBUTE)) {
                 final String replacement = value + DOUBLE_QUOTE + " from-value=\"" + variableKey + "\"";
                 replacements.put(match + DOUBLE_QUOTE, replacement);
+            } else if(context.equals(Context.AS_WRAPPED_IN_TAG)) {
+                final String replacement = " from-value=\"" + variableKey + "\">" + value;
+                replacements.put(">" + match, replacement);
             } else {
-                //TODO AS_WRAPPED_IN_TAG
                 replacements.put(match, "<span from-value=\"" + variableKey + "\">"+value+"</span>");
             }
         }
