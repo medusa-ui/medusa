@@ -1,21 +1,46 @@
 package io.getmedusa.medusa.core;
 
-import io.getmedusa.medusa.core.util.PropertyAccessor;
+import io.getmedusa.medusa.core.util.SpelExpressionParserHelper;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.time.Year;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.function.BooleanSupplier;
 
-public class PropertyAccessorTest {
+public class SpelExpressionParserHelperTest {
 
     @Test
-    public void basics(){
-
-        String value = PropertyAccessor.getValue("41 + 1");
+    public void basics() {
+        // 42
+        String value = SpelExpressionParserHelper.getStringValue("41 + 1");
         Assertions.assertEquals("42", value);
 
-        String year = PropertyAccessor.getValue("T(java.time.Year).now()");
+        Integer sum = SpelExpressionParserHelper.getValue("41 + 1");
+        Assertions.assertEquals(42, sum);
+
+        // current year
+        String year = SpelExpressionParserHelper.getStringValue("T(java.time.Year).now()");
         Assertions.assertEquals(Year.now().toString(),year);
+
+        Year currentYear = SpelExpressionParserHelper.getValue("T(java.time.Year).now()");
+        Assertions.assertEquals(Year.now(), currentYear);
+
+        // lists
+        List empty = Collections.emptyList();
+        Boolean isEmpty = SpelExpressionParserHelper.getValue("isEmpty()", empty);
+        Integer size = SpelExpressionParserHelper.getValue("size()", empty);
+        Assertions.assertTrue(isEmpty);
+        Assertions.assertEquals(size, 0);
+
+        List<Country> countries = Arrays.asList(new Country("Belgium"), new Country("USA"));
+        isEmpty = SpelExpressionParserHelper.getValue("isEmpty()", countries);
+        size = SpelExpressionParserHelper.getValue("size()", countries);
+        Assertions.assertFalse(isEmpty);
+        Assertions.assertEquals(size, 2);
     }
 
     @Test
@@ -25,11 +50,11 @@ public class PropertyAccessorTest {
         Person dirk = new Person("Dirk",55, new Country("Belgium"));
 
         // then
-        String age = PropertyAccessor.getValue("age", kevin);
+        String age = SpelExpressionParserHelper.getStringValue("age", kevin);
         Assertions.assertEquals("30", age);
 
         // and
-        String location = PropertyAccessor.getValue("location.name", dirk);
+        String location = SpelExpressionParserHelper.getStringValue("location.name", dirk);
         Assertions.assertEquals("Belgium", location);
     }
 
@@ -40,10 +65,9 @@ public class PropertyAccessorTest {
         Person kevin = new Person("Kevin",30, usa);
 
         // then
-        Country location = PropertyAccessor.getValue("location", kevin, Country.class);
+        Country location = SpelExpressionParserHelper.getValue("location", kevin);
         Assertions.assertEquals(usa, location);
     }
-
 
 }
 

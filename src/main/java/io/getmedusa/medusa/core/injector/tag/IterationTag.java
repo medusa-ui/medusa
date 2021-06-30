@@ -3,7 +3,7 @@ package io.getmedusa.medusa.core.injector.tag;
 import io.getmedusa.medusa.core.injector.tag.meta.InjectionResult;
 import io.getmedusa.medusa.core.registry.IterationRegistry;
 import io.getmedusa.medusa.core.util.IdentifierGenerator;
-import io.getmedusa.medusa.core.util.PropertyAccessor;
+import io.getmedusa.medusa.core.util.SpelExpressionParserHelper;
 
 import java.util.*;
 import java.util.regex.Matcher;
@@ -52,7 +52,7 @@ public class IterationTag {
             final String replace = matcher.group(); // $[each.property]
             final String group = matcher.group(1);  // property]
             final String property = group.substring(0, group.length()-1);  // property
-            result = result.replace(replace, PropertyAccessor.getValue(property,value));
+            result = result.replace(replace, SpelExpressionParserHelper.getStringValue(property,value));
         }
         return result;
     }
