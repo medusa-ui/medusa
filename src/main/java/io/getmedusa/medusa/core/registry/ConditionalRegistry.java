@@ -25,7 +25,6 @@ public class ConditionalRegistry {
         String condition = registry.get(divId);
         if(null == condition) return false;
         return ExpressionEval.eval(parseCondition(condition, variables));
-
     }
 
     private String parseCondition(String conditionParsed, Map<String, Object> variables) {
