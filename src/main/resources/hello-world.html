@@ -13,16 +13,14 @@
 
 <p>Counter: [$counter-value]</p>
 
-[$if($counter-value > 5)]
-    <p>Counter is above 5</p>
-[$else if($counter-value > 2)]
-    <p>Counter is above 2</p>
-[$else]
-    <p>Counter is below 2 and 5</p>
-[$end]
-
 <button m-click="increaseCounter(1)">Increase counter</button>
-
+[$if($counter-value > 5)]
+<p>Counter is above 5</p>
+[$else if($counter-value > 2)]
+<p>Counter is above 2</p>
+[$else]
+<p>Counter is below 2 and 5</p>
+[$end]
 <p>Last bought : [$last_bought]</p>
 <button m-click="buy('coffee')">Buy some coffee</button>
 <button m-click="buy('tea', 'sugar', 3,'cookie')">Buy some tea and sugar</button>
@@ -30,7 +28,15 @@
 <button m-click='buy("coffee, sugar but no cream","cookies (2 pieces)")' type='button'>Breaking stuff 2</button>
 <button m-click='buy("coffee, sugar but no cream","cookies (3 pieces)")' type="button">Breaking stuff 3</button>
 <button m-click="clear()">Clear</button>
-
+[$if($items-bought.isEmpty() )]
+<p>Looks like you need a Coffee!</p>
+[$else if($items-bought.size() == 1)]
+<p>Thanks for buying a Coffee</p>
+[$else if($items-bought.size() > 1 && $items-bought.size() < 4)]
+<p>You really like Coffee, don't you?</p>
+[$else if($items-bought.size() > 3 && 1 == 1)]
+<p>Your are Coffee addict!</p>
+[$end]
 [$foreach $items-bought]
     <p>Bought [$each]</p>
 [$end]

@@ -51,6 +51,7 @@ public enum HTMLInjector {
             String htmlString = HTMLCache.getInstance().getHTML(fileName);
             return htmlStringInject(fileName, htmlString);
         } catch (Exception e) {
+
             e.printStackTrace();
             throw new RuntimeException(e);
         }
