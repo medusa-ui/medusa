@@ -60,7 +60,7 @@ public class ValueTag {
             while (matcher.find()) {
                 final String match = matcher.group(0);
                 final String variableKey = match.substring(2, match.length() - 1).trim();
-                final String value = variables.get(variableKey).toString();
+                final String value = variables.getOrDefault(variableKey,"").toString();
                 titleCopy = titleCopy.replace(match, value);
             }
             html = html.replace(title, titleCopy);
