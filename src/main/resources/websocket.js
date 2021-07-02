@@ -116,7 +116,7 @@ function recursiveObjectUpdate(diff, obj, path) {
 
 function handleConditionCheckEvent(k) {
     let condition = k.c;
-    const found = condition.match(new RegExp("\\$\\w+-?\\w*"));
+    const found = condition.match(new RegExp("\\$\\w+(-?\\w*)*"));
     for(const toReplace of found) {
         condition = condition.replaceAll(toReplace, variables[toReplace.substring(1)]);
     }

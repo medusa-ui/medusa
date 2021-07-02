@@ -11,6 +11,7 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
 
 import static io.getmedusa.medusa.core.websocket.ReactiveWebSocketHandler.MAPPER;
 
@@ -58,7 +59,7 @@ public enum HTMLInjector {
     }
 
     protected String htmlStringInject(String filename, String htmlString) {
-        final Map<String, Object> variables = new HashMap<>();
+        final Map<String, Object> variables = newLargestFirstMap();
         final UIEventController uiEventController = EventHandlerRegistry.getInstance().get(filename);
         if(null != uiEventController) variables.putAll(uiEventController.setupPage().getPageVariables());
 
@@ -89,5 +90,17 @@ public enum HTMLInjector {
                     "</script>\n</body>");
         }
         return html.getHtml();
+    }
+
+    private TreeMap<String, Object> newLargestFirstMap() {
+        return new TreeMap<>((s1, s2) -> {
+            if(s1.length() < s2.length()) {
+                return 1;
+            } else if(s1.length() > s2.length()) {
+                return -1;
+            } else {
+                return s1.compareTo(s2);
+            }
+        });
     }
 }

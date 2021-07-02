@@ -10,7 +10,7 @@ import java.util.regex.Pattern;
 public class ValueTag {
 
     private static final char DOUBLE_QUOTE = '\"';
-    protected final Pattern pattern = Pattern.compile("\\[\\$(?!each).*\\]", Pattern.CASE_INSENSITIVE);
+    protected final Pattern pattern = Pattern.compile("\\[\\$(?!each|if|else|end).*\\]", Pattern.CASE_INSENSITIVE);
 
     public InjectionResult injectWithVariables(InjectionResult result, Map<String, Object> variables) {
         String html = result.getHtml();
@@ -60,8 +60,10 @@ public class ValueTag {
             while (matcher.find()) {
                 final String match = matcher.group(0);
                 final String variableKey = match.substring(2, match.length() - 1).trim();
-                final String value = variables.getOrDefault(variableKey,"").toString();
-                titleCopy = titleCopy.replace(match, value);
+                final Object value = variables.get(variableKey);
+                if(value == null) throw new IllegalStateException("Variable key '" + variableKey + "' should either exist or shows an error in internal parsing logic.");
+                final String valueAsString = value.toString();
+                titleCopy = titleCopy.replace(match, valueAsString);
             }
             html = html.replace(title, titleCopy);
         }

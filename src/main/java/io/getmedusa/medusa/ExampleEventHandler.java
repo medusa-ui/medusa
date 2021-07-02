@@ -21,6 +21,7 @@ public class ExampleEventHandler implements UIEventController {
         modelMap.put("counter-value", counter);
         modelMap.put("last_bought", "Nothing yet!");
         modelMap.put("items-bought", listOfItemsBought);
+        modelMap.put("items-bought-size", listOfItemsBought.size());
         modelMap.put("orders", orders);
         modelMap.put("blue-sky", product.name);
         modelMap.put("search", "initial value!");
@@ -55,7 +56,8 @@ public class ExampleEventHandler implements UIEventController {
         listOfItemsBought.add(itemsBought.toString());
         return Arrays.asList(
                 new DOMChange("items-bought", listOfItemsBought),
-                new DOMChange("last_bought", itemsBought.toString()));
+                new DOMChange("last_bought", itemsBought.toString()),
+                new DOMChange("items-bought-size", listOfItemsBought.size()));
     }
 
     public List<DOMChange> search() {
@@ -64,7 +66,9 @@ public class ExampleEventHandler implements UIEventController {
 
     public List<DOMChange> clear() {
         listOfItemsBought.clear();
-        return Collections.singletonList(new DOMChange("items-bought", listOfItemsBought));
+        return Arrays.asList(
+                new DOMChange("items-bought", listOfItemsBought),
+                new DOMChange("items-bought-size", 0));
     }
 }
 

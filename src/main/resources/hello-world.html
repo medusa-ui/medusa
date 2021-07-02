@@ -28,14 +28,14 @@
 <button m-click='buy("coffee, sugar but no cream","cookies (2 pieces)")' type='button'>Breaking stuff 2</button>
 <button m-click='buy("coffee, sugar but no cream","cookies (3 pieces)")' type="button">Breaking stuff 3</button>
 <button m-click="clear()">Clear</button>
-[$if($items-bought.isEmpty() )]
+[$if($items-bought-size == 0 )]
 <p>Looks like you need a Coffee!</p>
-[$else if($items-bought.size() == 1)]
+[$else if($items-bought-size == 1)]
 <p>Thanks for buying a Coffee</p>
-[$else if($items-bought.size() > 1 && $items-bought.size() < 4)]
+[$else if($items-bought-size > 1 && $items-bought-size < 4)]
 <p>You really like Coffee, don't you?</p>
-[$else if($items-bought.size() > 3 && 1 == 1)]
-<p>Your are Coffee addict!</p>
+[$else if($items-bought-size > 3 && 1 == 1)]
+<p>You are a Coffee addict!</p>
 [$end]
 [$foreach $items-bought]
     <p>Bought [$each]</p>
