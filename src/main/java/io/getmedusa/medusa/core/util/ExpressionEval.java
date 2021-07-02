@@ -3,9 +3,7 @@ package io.getmedusa.medusa.core.util;
 import org.codehaus.commons.compiler.CompilerFactoryFactory;
 import org.codehaus.commons.compiler.IExpressionEvaluator;
 
-public class ExpressionEval {
-
-    private ExpressionEval(){}
+public abstract class ExpressionEval {
 
     public static boolean eval(String condition) {
         boolean isVisible;
@@ -15,7 +13,7 @@ public class ExpressionEval {
             ee.cook(condition);
             isVisible = (Boolean) ee.evaluate();
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Cannot eval '"+condition+"'", e);
         }
         return isVisible;
     }

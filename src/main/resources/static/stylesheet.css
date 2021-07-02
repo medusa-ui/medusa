@@ -49,3 +49,6 @@ a:link, a:visited {
 a:hover, a:active {
     color: #fd57ff;
 }
+code {
+    color: #5bb2f1;
+}

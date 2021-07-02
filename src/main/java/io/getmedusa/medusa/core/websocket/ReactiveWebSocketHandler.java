@@ -2,22 +2,17 @@ package io.getmedusa.medusa.core.websocket;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.getmedusa.medusa.core.annotation.PageSetup;
 import io.getmedusa.medusa.core.annotation.UIEventController;
 import io.getmedusa.medusa.core.injector.DOMChange;
-import io.getmedusa.medusa.core.injector.HTMLInjector;
 import io.getmedusa.medusa.core.registry.*;
-import org.springframework.expression.Expression;
+import io.getmedusa.medusa.core.util.SpelExpressionParserHelper;
 import org.springframework.expression.spel.SpelEvaluationException;
-import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.socket.WebSocketHandler;
 import org.springframework.web.reactive.socket.WebSocketSession;
 import reactor.core.publisher.Mono;
 
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -29,7 +24,6 @@ public class ReactiveWebSocketHandler implements WebSocketHandler {
 
     public static final ObjectMapper MAPPER = setupObjectMapper();
     private static final ConditionalRegistry CONDITIONAL_REGISTRY = ConditionalRegistry.getInstance();
-    private static final SpelExpressionParser SPEL_EXPRESSION_PARSER = new SpelExpressionParser();
 
     /**
      * JSON mapper setup
@@ -84,9 +78,8 @@ public class ReactiveWebSocketHandler implements WebSocketHandler {
     private List<DOMChange> executeEvent(WebSocketSession session, String event) {
         try {
             List<DOMChange> domChanges = new ArrayList<>();
-            final Expression parsedExpression = SPEL_EXPRESSION_PARSER.parseExpression(event);
             final UIEventController eventController = EventHandlerRegistry.getInstance().get(session);
-            @SuppressWarnings("unchecked") final List<DOMChange> parsedExpressionValues = (List<DOMChange>) parsedExpression.getValue(eventController);
+            @SuppressWarnings("unchecked") final List<DOMChange> parsedExpressionValues = SpelExpressionParserHelper.getValue(event, eventController);
             if (parsedExpressionValues != null) domChanges = new ArrayList<>(parsedExpressionValues);
             return domChanges;
         } catch (SpelEvaluationException e) {

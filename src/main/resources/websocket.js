@@ -95,15 +95,28 @@ function handleIterationCheck(k) {
         let currentEachValue = variables[k.v][index];
         newDiff.setAttribute("index", index++);
         newDiff.setAttribute("template-id", k.f);
-        newDiff.innerHTML = template.innerHTML.replaceAll("[$each]", currentEachValue)
+
+        newDiff.innerHTML = template.innerHTML;
+        recursiveObjectUpdate(newDiff, currentEachValue, "$each");
 
         template.parentNode.insertBefore(newDiff, template);
     }
 }
 
+function recursiveObjectUpdate(diff, obj, path) {
+    if(typeof obj === 'object' && obj !== null) {
+        diff.innerHTML = diff.innerHTML.replaceAll("["+path+"]", JSON.stringify(obj));
+        for(const objKey of Object.keys(obj)) {
+            recursiveObjectUpdate(diff, obj[objKey], path + "." + objKey);
+        }
+    } else {
+        diff.innerHTML = diff.innerHTML.replaceAll("["+path+"]", obj);
+    }
+}
+
 function handleConditionCheckEvent(k) {
     let condition = k.c;
-    const found = condition.match(new RegExp("\\$\\w+-?\\w*"));
+    const found = condition.match(new RegExp("\\$\\w+(-?\\w*)*"));
     for(const toReplace of found) {
         condition = condition.replaceAll(toReplace, variables[toReplace.substring(1)]);
     }

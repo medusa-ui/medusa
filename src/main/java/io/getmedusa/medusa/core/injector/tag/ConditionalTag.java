@@ -11,9 +11,9 @@ import java.util.regex.Pattern;
 public class ConditionalTag {
     private static final ConditionalRegistry CONDITIONAL_REGISTRY = ConditionalRegistry.getInstance();
 
-    public static final Pattern patternFullIf = Pattern.compile("\\[\\$if\\(.+].*?\\[\\$end]", Pattern.DOTALL);
-    public static final Pattern patternIfStart = Pattern.compile("\\[\\$if\\(.+]", Pattern.CASE_INSENSITIVE);
-    public static final Pattern patternElse = Pattern.compile("\\[\\$ ?else ?(if\\(.+)?]", Pattern.CASE_INSENSITIVE);
+    public static final Pattern patternFullIf = Pattern.compile("\\[\\$if\\(.+?].*?\\[\\$end]", Pattern.DOTALL);
+    public static final Pattern patternIfStart = Pattern.compile("\\[\\$if\\(.+?]", Pattern.CASE_INSENSITIVE);
+    public static final Pattern patternElse = Pattern.compile("\\[\\$ ?else ?(if\\(.+?)?]", Pattern.CASE_INSENSITIVE);
 
     public InjectionResult injectWithVariables(InjectionResult html, Map<String, Object> variables) {
         final List<String> ifBlocks = patternMatchAll(patternFullIf, html.getHtml());
