@@ -121,12 +121,15 @@ function handleConditionCheckEvent(k) {
         condition = condition.replaceAll(toReplace, variables[toReplace.substring(1)]);
     }
 
-    if(evalCondition(condition)) {
-        debug("#" + k.v + " // visible || " + condition);
-        document.getElementById(k.v).style.display = null;
-    } else {
-        debug("#" + k.v + " // hidden || " + condition);
-        document.getElementById(k.v).style.display = "none";
+    const elem = document.getElementById(k.v);
+    if(elem != null) {
+        if(evalCondition(condition)) {
+            debug("#" + k.v + " // visible || " + condition);
+            elem.style.display = null;
+        } else {
+            debug("#" + k.v + " // hidden || " + condition);
+            elem.style.display = "none";
+        }
     }
 }
 
