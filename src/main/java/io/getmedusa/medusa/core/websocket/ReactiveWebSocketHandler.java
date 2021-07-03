@@ -79,7 +79,7 @@ public class ReactiveWebSocketHandler implements WebSocketHandler {
         try {
             List<DOMChange> domChanges = new ArrayList<>();
             final UIEventController eventController = EventHandlerRegistry.getInstance().get(session);
-            @SuppressWarnings("unchecked") final List<DOMChange> parsedExpressionValues = SpelExpressionParserHelper.getValue(event, eventController);
+            final List<DOMChange> parsedExpressionValues = SpelExpressionParserHelper.getValue(event, eventController);
             if (parsedExpressionValues != null) domChanges = new ArrayList<>(parsedExpressionValues);
             return domChanges;
         } catch (SpelEvaluationException e) {
@@ -114,7 +114,7 @@ public class ReactiveWebSocketHandler implements WebSocketHandler {
     private void evaluateIterationChange(List<DOMChange> domChanges) {
         Map<String, String> templatesToUpdate = new HashMap<>();
         for(DOMChange domChange : domChanges) {
-            List<String> relatedTemplates = IterationRegistry.getInstance().findRelatedToValue(domChange.getF());
+            Set<String> relatedTemplates = IterationRegistry.getInstance().findRelatedToValue(domChange.getF());
             if(relatedTemplates != null) {
                 for (String relatedTemplate : relatedTemplates) {
                     templatesToUpdate.put(relatedTemplate, domChange.getF());

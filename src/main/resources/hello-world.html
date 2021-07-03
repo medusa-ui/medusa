@@ -14,13 +14,15 @@
 <p>Counter: [$counter-value]</p>
 
 <button m-click="increaseCounter(1)">Increase counter</button>
-[$if($counter-value > 5)]
-<p>Counter is above 5</p>
-[$else if($counter-value > 2)]
-<p>Counter is above 2</p>
-[$else]
-<p>Counter is below 2 and 5</p>
-[$end]
+[$foreach $items-bought]
+    [$if($counter-value > 5)]
+        <p>Counter is above 5</p>
+    [$else if($counter-value > 2)]
+        <p>Counter is above 2</p>
+    [$else]
+        <p>Counter is below 2 and 5</p>
+    [$end if]
+[$end for]
 <p>Last bought : [$last_bought]</p>
 <button m-click="buy('coffee')">Buy some coffee</button>
 <button m-click="buy('tea', 'sugar', 3,'cookie')">Buy some tea and sugar</button>
@@ -36,10 +38,10 @@
 <p>You really like Coffee, don't you?</p>
 [$else if($items-bought-size > 3 && 1 == 1)]
 <p>You are a Coffee addict!</p>
-[$end]
+[$end if]
 [$foreach $items-bought]
     <p>Bought [$each]</p>
-[$end]
+[$end for]
 
 <p>Searched for: [$ search ]</p>
 <p>[$search]</p>
@@ -49,7 +51,7 @@
 <button m-click='order()' type="button">Order [$blue-sky]</button>
 [$foreach $orders]
 <div>Product: [$each.product.name] Number: [$each.number]</div>
-[$end]
+[$end for]
 <br/>
 <a href="/page2">Detail page</a>
 

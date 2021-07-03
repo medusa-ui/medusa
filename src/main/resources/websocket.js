@@ -121,14 +121,30 @@ function handleConditionCheckEvent(k) {
         condition = condition.replaceAll(toReplace, variables[toReplace.substring(1)]);
     }
 
-    const elem = document.getElementById(k.v);
-    if(elem != null) {
-        if(evalCondition(condition)) {
-            debug("#" + k.v + " // visible || " + condition);
-            elem.style.display = null;
+    let conditionEval = evalCondition(condition);
+    let elems = document.getElementsByClassName(k.v);
+    handleVisibilityConditionals(elems, conditionEval);
+
+    //update templates if needed
+    let templates = document.getElementsByTagName("template");
+    if(null !== templates && templates.length !== 0) {
+        for(const template of templates) {
+            const templateElems = template.content.querySelectorAll("." + k.v);
+            handleVisibilityConditionals(templateElems, conditionEval);
+        }
+    }
+}
+
+function handleVisibilityConditionals(elems, conditionEval) {
+    if(null !== elems && elems.length !== 0) {
+        if(conditionEval) {
+            for(let elem of elems) {
+                elem.style.display = null;
+            }
         } else {
-            debug("#" + k.v + " // hidden || " + condition);
-            elem.style.display = "none";
+            for(let elem of elems) {
+                elem.style.display = "none";
+            }
         }
     }
 }

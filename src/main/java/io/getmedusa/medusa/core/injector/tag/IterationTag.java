@@ -13,7 +13,7 @@ public class IterationTag {
 
     private static final String $_EACH = "[$each]";
     private final Pattern propertyPattern =  Pattern.compile("\\[\\$each\\.(.*?])", Pattern.DOTALL + Pattern.CASE_INSENSITIVE);
-    private final Pattern blockPattern = Pattern.compile("\\[\\$foreach .+?].*?\\[\\$end]", Pattern.DOTALL);
+    private final Pattern blockPattern = Pattern.compile("\\[\\$foreach .+?].*?\\[\\$end for]", Pattern.DOTALL);
 
     public InjectionResult injectWithVariables(InjectionResult injectionResult, Map<String, Object> variables) {
         String html = injectionResult.getHtml();
@@ -73,7 +73,7 @@ public class IterationTag {
     }
 
     protected String parseInnerBlock(String block) {
-        return block.substring(block.indexOf("]") + 1, block.indexOf("[$end]"));
+        return block.substring(block.indexOf("]") + 1, block.indexOf("[$end for]"));
     }
 
     protected String parseCondition(String block) {

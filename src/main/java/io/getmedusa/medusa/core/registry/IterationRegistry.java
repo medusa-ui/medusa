@@ -1,9 +1,6 @@
 package io.getmedusa.medusa.core.registry;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class IterationRegistry {
 
@@ -11,15 +8,15 @@ public class IterationRegistry {
     public static IterationRegistry getInstance() {
         return INSTANCE;
     }
-    private final Map<String, List<String>> registry = new HashMap<>();
+    private final Map<String, Set<String>> registry = new HashMap<>();
 
     public void add(String templateId, String condition){
-        List<String> templates = registry.getOrDefault(condition, new ArrayList<>());
+        Set<String> templates = registry.getOrDefault(condition, new HashSet<>());
         templates.add(templateId);
         registry.put(condition, templates);
     }
 
-    public List<String> findRelatedToValue(String condition) {
+    public Set<String> findRelatedToValue(String condition) {
         return registry.get(condition);
     }
 

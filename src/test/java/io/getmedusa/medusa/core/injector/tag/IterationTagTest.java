@@ -14,7 +14,7 @@ class IterationTagTest {
             "<!DOCTYPE html>\n" +
             "<html lang=\"en\">\n" +
             "<body>\n" +
-            "[$foreach $list-of-values]<p>Medusa</p>[$end]" +
+            "[$foreach $list-of-values]<p>Medusa</p>[$end for]" +
             "</body>\n" +
             "</html>";
 
@@ -22,7 +22,7 @@ class IterationTagTest {
             "<!DOCTYPE html>\n" +
             "<html lang=\"en\">\n" +
             "<body>\n" +
-            "[$foreach $list-of-values]<p>Bought [$each]</p>[$end]" +
+            "[$foreach $list-of-values]<p>Bought [$each]</p>[$end for]" +
             "</body>\n" +
             "</html>";
 
@@ -30,13 +30,13 @@ class IterationTagTest {
     void testMatcher() {
         Matcher matcher = TAG.buildBlockMatcher(HTML);
         Assertions.assertTrue(matcher.find());
-        Assertions.assertEquals("[$foreach $list-of-values]<p>Medusa</p>[$end]", matcher.group(0));
+        Assertions.assertEquals("[$foreach $list-of-values]<p>Medusa</p>[$end for]", matcher.group(0));
         Assertions.assertFalse(matcher.find());
     }
 
     @Test
     void testParse() {
-        String block = "[$foreach $list-of-values]<p>Medusa</p>[$end]<p>Medusa</p>[$end]";
+        String block = "[$foreach $list-of-values]<p>Medusa</p>[$end for]<p>Medusa</p>[$end for]";
         String condition = TAG.parseCondition(block);
         Assertions.assertEquals("list-of-values", condition);
 

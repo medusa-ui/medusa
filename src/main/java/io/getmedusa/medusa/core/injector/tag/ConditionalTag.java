@@ -11,7 +11,7 @@ import java.util.regex.Pattern;
 public class ConditionalTag {
     private static final ConditionalRegistry CONDITIONAL_REGISTRY = ConditionalRegistry.getInstance();
 
-    public static final Pattern patternFullIf = Pattern.compile("\\[\\$if\\(.+?].*?\\[\\$end]", Pattern.DOTALL);
+    public static final Pattern patternFullIf = Pattern.compile("\\[\\$if\\(.+?].*?\\[\\$end if]", Pattern.DOTALL);
     public static final Pattern patternIfStart = Pattern.compile("\\[\\$if\\(.+?]", Pattern.CASE_INSENSITIVE);
     public static final Pattern patternElse = Pattern.compile("\\[\\$ ?else ?(if\\(.+?)?]", Pattern.CASE_INSENSITIVE);
 
@@ -59,16 +59,16 @@ public class ConditionalTag {
         final String divId = IdentifierGenerator.generateIfID(ifBlock);
 
         CONDITIONAL_REGISTRY.add(divId, conditionParsed);
-        String wrapperStart = "<div id=\""+divId+"\">";
+        String wrapperStart = "<div class=\""+divId+"\">";
         String wrapperEnd = "</div>";
         if(!CONDITIONAL_REGISTRY.evaluate(divId, variables)) {
             wrapperStart = wrapperStart.replace(">", " style=\"display:none;\">");
         }
 
         if(ifBlock.startsWith("[$else")) {
-            html.replace(ifBlock, wrapperEnd + ifBlock.replaceFirst(patternElse.pattern(), wrapperStart).replace("[$end]", wrapperEnd));
+            html.replace(ifBlock, wrapperEnd + ifBlock.replaceFirst(patternElse.pattern(), wrapperStart).replace("[$end if]", wrapperEnd));
         } else {
-            html.replace(ifBlock, ifBlock.replaceFirst(patternIfStart.pattern(), wrapperStart).replace("[$end]", wrapperEnd));
+            html.replace(ifBlock, ifBlock.replaceFirst(patternIfStart.pattern(), wrapperStart).replace("[$end if]", wrapperEnd));
         }
     }
 
