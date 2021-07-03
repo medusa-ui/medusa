@@ -33,12 +33,6 @@ class ConditionalTagTest {
     private final ConditionalTag conditionalTag = new ConditionalTag();
 
     @Test
-    void testPatternMatch() {
-        String html = conditionalTag.patternMatch(ConditionalTag.patternFullIf, complexerHTML);
-        System.out.println(html);
-    }
-
-    @Test
     void testConditionalSimpleInvisible() {
         InjectionResult parsedHTML = conditionalTag.injectWithVariables(new InjectionResult(conditionalHTMLSingle), Collections.singletonMap("counter-value", "1"));
         System.out.println(parsedHTML.getHtml());

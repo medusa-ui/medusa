@@ -11,12 +11,12 @@ import java.util.regex.Pattern;
 public class ConditionalTag {
     private static final ConditionalRegistry CONDITIONAL_REGISTRY = ConditionalRegistry.getInstance();
 
-    public static final Pattern patternFullIf = Pattern.compile("\\[\\$if\\(.+?].*?\\[\\$end if]", Pattern.DOTALL);
     public static final Pattern patternIfStart = Pattern.compile("\\[\\$if\\(.+?]", Pattern.CASE_INSENSITIVE);
     public static final Pattern patternElse = Pattern.compile("\\[\\$ ?else ?(if\\(.+?)?]", Pattern.CASE_INSENSITIVE);
+    public static final Pattern patternIfEnd = Pattern.compile("\\[\\$end if]", Pattern.CASE_INSENSITIVE);
 
     public InjectionResult injectWithVariables(InjectionResult html, Map<String, Object> variables) {
-        final List<String> ifBlocks = patternMatchAll(patternFullIf, html.getHtml());
+        final List<String> ifBlocks = determineIfBlocksWithNoInnerBlocks(html.getHtml());
 
         for(String ifBlock : ifBlocks){
             Set<String> conditions = new HashSet<>();
@@ -37,7 +37,28 @@ public class ConditionalTag {
             }
         }
 
+        //if any still present, we're dealing with inner ifs and need to parse these again
+        if(html.getHtml().contains("[$if(")) return injectWithVariables(html, variables);
+
         return html;
+    }
+
+    private List<String> determineIfBlocksWithNoInnerBlocks(String html) {
+        List<String> matches = new ArrayList<>();
+        Matcher matcherIfStart = patternIfStart.matcher(html);
+        while (matcherIfStart.find()) {
+            final String firstPartSplitIf = html.substring(matcherIfStart.end());
+            Matcher matcherIfEnd = patternIfEnd.matcher(firstPartSplitIf);
+            if (matcherIfEnd.find()) {
+                final String htmlSplit = firstPartSplitIf.substring(0, matcherIfEnd.start());
+
+                if(!htmlSplit.contains("[$if")) {
+                    final String ifBlock = html.substring(matcherIfStart.start(), matcherIfStart.end() + matcherIfEnd.end());
+                    matches.add(ifBlock);
+                }
+            }
+        }
+        return matches;
     }
 
     private String combineConditions(Set<String> conditions) {

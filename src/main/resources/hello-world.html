@@ -14,15 +14,17 @@
 <p>Counter: [$counter-value]</p>
 
 <button m-click="increaseCounter(1)">Increase counter</button>
-[$foreach $items-bought]
-    [$if($counter-value > 5)]
-        <p>Counter is above 5</p>
-    [$else if($counter-value > 2)]
-        <p>Counter is above 2</p>
-    [$else]
-        <p>Counter is below 2 and 5</p>
-    [$end if]
-[$end for]
+[$if($counter-value > 0)]
+    [$foreach $items-bought]
+        [$if($counter-value > 5)]
+            <p>Counter is above 5</p>
+        [$else if($counter-value > 2)]
+            <p>Counter is above 2</p>
+        [$else]
+            <p>Counter is below 2 and 5</p>
+        [$end if]
+    [$end for]
+[$end if]
 <p>Last bought : [$last_bought]</p>
 <button m-click="buy('coffee')">Buy some coffee</button>
 <button m-click="buy('tea', 'sugar', 3,'cookie')">Buy some tea and sugar</button>

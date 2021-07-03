@@ -1,11 +1,14 @@
 package io.getmedusa.medusa.core.injector;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import io.getmedusa.medusa.core.annotation.PageSetup;
+import io.getmedusa.medusa.core.annotation.UIEventController;
 import io.getmedusa.medusa.core.injector.tag.meta.InjectionResult;
 import io.getmedusa.medusa.core.registry.EventHandlerRegistry;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -46,5 +49,30 @@ class HTMLInjectorTest {
         variables.put("exampleInteger", 12);
         String json = "let variables = " + MAPPER.writeValueAsString(variables) + ";";
         System.out.println(json);
+    }
+
+
+    @Test
+    void testNestedIfs() {
+        EventHandlerRegistry.getInstance().add("nestedifs.html", new HandlerImpl());
+        String nestedIf = "[$if($counter-value > 2)]\n" +
+                "    [$if($counter-value > 5)]\n" +
+                "        <p>Counter is above 5</p>\n" +
+                "    [$end if]\n" +
+                "[$end if]";
+
+        String result = HTMLInjector.INSTANCE.htmlStringInject("nestedifs.html", nestedIf);
+        System.out.println(result);
+
+        Assertions.assertFalse(result.contains("[$if"));
+        Assertions.assertFalse(result.contains("[$end"));
+    }
+
+    class HandlerImpl implements UIEventController {
+
+        @Override
+        public PageSetup setupPage() {
+            return new PageSetup("/test", "nestedifs.html", Collections.singletonMap("counter-value", 3));
+        }
     }
 }

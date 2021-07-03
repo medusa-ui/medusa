@@ -9,7 +9,6 @@ import io.getmedusa.medusa.core.util.FilenameHandler;
 
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
