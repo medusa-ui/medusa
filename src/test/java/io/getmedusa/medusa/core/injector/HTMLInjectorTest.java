@@ -30,7 +30,7 @@ class HTMLInjectorTest {
                 "\n" +
                 "[$if(3 > 5)]\n" +
                 "<p>Counter is above 5</p>\n" +
-                "[$end]\n" +
+                "[$end if]\n" +
                 "<p>Counter: <span></span></p>\n" +
                 "<button m-click=\"increaseCounter(2)\">Increase counter</button>\n" +
                 "\n" +
