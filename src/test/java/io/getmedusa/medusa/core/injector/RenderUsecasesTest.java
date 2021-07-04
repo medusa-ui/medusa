@@ -6,6 +6,7 @@ import io.getmedusa.medusa.core.registry.EventHandlerRegistry;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Map;
 import java.util.UUID;
@@ -98,6 +99,44 @@ class RenderUsecasesTest {
         Assertions.assertFalse(result.contains("[$foreach"));
         Assertions.assertFalse(result.contains("[$end"));
         Assertions.assertEquals(2+1, countOccurences(result, "Hello, Medusa")); //1 template + counter-value
+    }
+
+    @Test
+    void testForeachWithObjectAsEach() {
+        final String htmlFileName = randomizedFileName();
+        EventHandlerRegistry.getInstance().add(htmlFileName, new HandlerImpl(htmlFileName, Collections.singletonMap("counter-list", Arrays.asList("Zeus", "Poseidon", "Hera"))));
+        String nestedIf = "[$foreach $counter-list]\n" +
+                "<p>Hello, [$each]</p>\n" +
+                "[$end for]";
+
+        String result = HTMLInjector.INSTANCE.htmlStringInject(htmlFileName, nestedIf);
+        System.out.println(result);
+
+        Assertions.assertFalse(result.contains("[$foreach"));
+        Assertions.assertFalse(result.contains("[$end"));
+
+        Assertions.assertTrue(result.contains("Hello, Zeus</p>"));
+        Assertions.assertTrue(result.contains("Hello, Poseidon</p>"));
+        Assertions.assertTrue(result.contains("Hello, Hera</p>"));
+    }
+
+    @Test
+    void testForeachWithIndexAsEach() {
+        final String htmlFileName = randomizedFileName();
+        EventHandlerRegistry.getInstance().add(htmlFileName, new HandlerImpl(htmlFileName, Collections.singletonMap("counter-value", 3)));
+        String nestedIf = "[$foreach $counter-value]\n" +
+                "<p>Hello, Medusa [$each]</p>\n" +
+                "[$end for]";
+
+        String result = HTMLInjector.INSTANCE.htmlStringInject(htmlFileName, nestedIf);
+        System.out.println(result);
+
+        Assertions.assertFalse(result.contains("[$foreach"));
+        Assertions.assertFalse(result.contains("[$end"));
+        Assertions.assertEquals(3+1, countOccurences(result, "Hello, Medusa")); //1 template + counter-value
+        Assertions.assertTrue(result.contains("Medusa 0</p>"));
+        Assertions.assertTrue(result.contains("Medusa 1</p>"));
+        Assertions.assertTrue(result.contains("Medusa 2</p>"));
     }
 
 
