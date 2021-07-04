@@ -139,6 +139,25 @@ class RenderUsecasesTest {
         Assertions.assertTrue(result.contains("Medusa 2</p>"));
     }
 
+    @Test
+    void testForeachWithTraversableObjectAsEach() {
+        final String htmlFileName = randomizedFileName();
+        EventHandlerRegistry.getInstance().add(htmlFileName, new HandlerImpl(htmlFileName, Collections.singletonMap("object-list", Arrays.asList(new ExampleClass(new ExampleClass(3355)), new ExampleClass(new ExampleClass(4512))))));
+        String nestedIf = "[$foreach $object-list]\n" +
+                "<p>Hello, [$each.innerClass.number]</p>\n" +
+                "[$end for]";
+
+        String result = HTMLInjector.INSTANCE.htmlStringInject(htmlFileName, nestedIf);
+        System.out.println(result);
+
+        Assertions.assertFalse(result.contains("[$foreach"));
+        Assertions.assertFalse(result.contains("[$end"));
+
+        Assertions.assertTrue(result.contains("Hello, 3355</p>"));
+        Assertions.assertTrue(result.contains("Hello, 4512</p>"));
+    }
+
+    //$each.number
 
     // utility
 
@@ -148,6 +167,30 @@ class RenderUsecasesTest {
 
     private String randomizedFileName() {
         return UUID.randomUUID().toString();
+    }
+
+    static class ExampleClass {
+
+        private final ExampleClass innerClass;
+        private final int number;
+
+        public ExampleClass(ExampleClass innerClass) {
+            this.number = 0;
+            this.innerClass = innerClass;
+        }
+
+        public ExampleClass(int number) {
+            this.number = number;
+            this.innerClass = null;
+        }
+
+        public int getNumber() {
+            return number;
+        }
+
+        public ExampleClass getInnerClass() {
+            return innerClass;
+        }
     }
 
     static class HandlerImpl implements UIEventController {

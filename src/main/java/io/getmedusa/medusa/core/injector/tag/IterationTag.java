@@ -86,7 +86,7 @@ public class IterationTag {
     }
 
     protected String parseCondition(String block) {
-        return block.substring("[$foreach".length(), block.indexOf("]")).trim().substring(1);
+        return block.substring("[$foreach".length(), block.indexOf("]")).trim().substring(1); //TODO error if condition does not start with $
     }
 
 }
