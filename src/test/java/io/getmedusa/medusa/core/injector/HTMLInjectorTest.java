@@ -18,7 +18,7 @@ class HTMLInjectorTest {
 
     @Test
     void test() {
-        String result = HTMLInjector.INSTANCE.htmlStringInject( "test.html", "<!DOCTYPE html>\n" +
+        String result = HTMLInjector.INSTANCE.htmlStringInject("test.html", "<!DOCTYPE html>\n" +
                 "<html lang=\"en\">\n" +
                 "<head>\n" +
                 "    <meta charset=\"UTF-8\">\n" +
@@ -49,30 +49,5 @@ class HTMLInjectorTest {
         variables.put("exampleInteger", 12);
         String json = "let variables = " + MAPPER.writeValueAsString(variables) + ";";
         System.out.println(json);
-    }
-
-
-    @Test
-    void testNestedIfs() {
-        EventHandlerRegistry.getInstance().add("nestedifs.html", new HandlerImpl());
-        String nestedIf = "[$if($counter-value > 2)]\n" +
-                "    [$if($counter-value > 5)]\n" +
-                "        <p>Counter is above 5</p>\n" +
-                "    [$end if]\n" +
-                "[$end if]";
-
-        String result = HTMLInjector.INSTANCE.htmlStringInject("nestedifs.html", nestedIf);
-        System.out.println(result);
-
-        Assertions.assertFalse(result.contains("[$if"));
-        Assertions.assertFalse(result.contains("[$end"));
-    }
-
-    class HandlerImpl implements UIEventController {
-
-        @Override
-        public PageSetup setupPage() {
-            return new PageSetup("/test", "nestedifs.html", Collections.singletonMap("counter-value", 3));
-        }
     }
 }

@@ -30,17 +30,30 @@ public class IterationTag {
             String condition = parseCondition(block);
             IterationRegistry.getInstance().add(templateID, condition);
 
-            Object[] iterationCondition = parseCondition(condition, variables).toArray();
-            for (int i = 0; i < iterationCondition.length; i++) {
-                Object eachValue = iterationCondition[i];
-                String iteration = "\n<div index=\"" + i + "\" template-id=\"" + templateID + "\">\n" + parseLine(blockInner, eachValue) + "\n</div>\n";
-                iterations.append(iteration);
+            Object conditionParsed = parseCondition(condition, variables);
+            if (conditionParsed instanceof Collection) {
+                Object[] iterationCondition = ((Collection<Object>)conditionParsed).toArray();
+                for (int i = 0; i < iterationCondition.length; i++) {
+                    Object eachValue = iterationCondition[i];
+                    addIteration(blockInner, templateID, iterations, i, eachValue);
+                }
+            } else {
+                for (int i = 0; i < (int) conditionParsed; i++) {
+                    Object eachValue = i;
+                    addIteration(blockInner, templateID, iterations, i, eachValue);
+                }
             }
+
             html = html.replace(block, iterations.toString());
         }
 
         injectionResult.setHtml(html);
         return injectionResult;
+    }
+
+    private void addIteration(String blockInner, String templateID, StringBuilder iterations, int i, Object eachValue) {
+        String iteration = "\n<div index=\"" + i + "\" template-id=\"" + templateID + "\">\n" + parseLine(blockInner, eachValue) + "\n</div>\n";
+        iterations.append(iteration);
     }
 
     private String parseLine(String line, Object value ) {
@@ -58,14 +71,10 @@ public class IterationTag {
     }
 
     @SuppressWarnings("unchecked")
-    private Collection<Object> parseCondition(String condition, Map<String, Object> variables) {
+    private Object parseCondition(String condition, Map<String, Object> variables) {
         final Object variable = variables.getOrDefault(condition, new ArrayList<>());
         if(variable == null) return Collections.emptyList();
-        if (variable instanceof Collection) {
-            return (Collection<Object>) variable;
-        } else {
-            return Collections.singletonList(variable);
-        }
+        return variable;
     }
 
     protected Matcher buildBlockMatcher(String html) {
