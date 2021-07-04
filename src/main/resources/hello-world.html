@@ -31,7 +31,7 @@
 <button m-click="buy('coffee, sugar but no cream','cookies (1 piece)')" type="button">Breaking stuff 1</button>
 <button m-click='buy("coffee, sugar but no cream","cookies (2 pieces)")' type='button'>Breaking stuff 2</button>
 <button m-click='buy("coffee, sugar but no cream","cookies (3 pieces)")' type="button">Breaking stuff 3</button>
-<button m-click="clear()">Clear</button>
+<button m-click="clear()" m-disabled="$items-bought-size == 0">Clear</button>
 [$if($items-bought-size == 0 )]
 <p>Looks like you need a Coffee!</p>
 [$else if($items-bought-size == 1)]

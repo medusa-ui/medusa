@@ -28,6 +28,7 @@ function retryConnection() {
             ws.onopen = function() {
                 debug("ws.onopen", ws);
                 debug("ws.readyState", "wsstatus");
+                handleMAttributes();
             }
             ws.onclose = function(error) {
                 debug("ws.onclose", ws, error);
@@ -40,6 +41,7 @@ function retryConnection() {
             ws.onmessage = function(message) {
                 debug("ws.onmessage", ws, message);
                 eventHandler(JSON.parse(message.data));
+                handleMAttributes();
             }
         } catch (e) {
             debug(e);
@@ -54,6 +56,7 @@ function log(responseEvent) {
 
 function eventHandler(e) {
     debug(e);
+    handleMAttributes();
     //e = full event, k = individual event per key, k.f = field, k.v = value or relevant id, k.t = type, k.c = condition
     e.forEach(k => {
         if(k.t === undefined) { //the default event, a value change, contains the least amount of data, so it has no 'type'
@@ -64,6 +67,25 @@ function eventHandler(e) {
             handleConditionCheckEvent(k);
         } else if (k.t === 2) { //ITERATION CHECK
             handleIterationCheck(k);
+        }
+    });
+}
+
+function handleMAttributes(){
+    let disabled = document.querySelectorAll("[m-disabled]");
+    disabled.forEach(function(e) {
+        let condition = e.getAttribute("m-disabled");
+
+        const found = condition.match(new RegExp("\\$\\w+(-?\\w*)*"));
+        for(const toReplace of found) {
+            condition = condition.replaceAll(toReplace, variables[toReplace.substring(1)]);
+        }
+        let conditionEval = evalCondition(condition);
+        debug(conditionEval)
+        if (conditionEval) {
+            e.setAttribute("disabled", true);
+        } else {
+            e.removeAttribute("disabled");
         }
     });
 }
@@ -117,11 +139,13 @@ function recursiveObjectUpdate(diff, obj, path) {
 function handleConditionCheckEvent(k) {
     let condition = k.c;
     const found = condition.match(new RegExp("\\$\\w+(-?\\w*)*"));
+//console.log("condition: ",condition, "found: ", found)
     for(const toReplace of found) {
         condition = condition.replaceAll(toReplace, variables[toReplace.substring(1)]);
     }
 
     let conditionEval = evalCondition(condition);
+// console.log("condition ",evalCondition)
     let elems = document.getElementsByClassName(k.v);
     handleVisibilityConditionals(elems, conditionEval);
 
