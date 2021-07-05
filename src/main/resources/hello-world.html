@@ -50,9 +50,9 @@
 <form><input m-change="search()" type="text" name="term" autocomplete="off" value="[$counter-value]" /></form>
 
 <h5>Orders</h5>
-<button m-click='order()' type="button">Order [$blue-sky]</button>
+<button m-click='order()' type="button" m-hide="$three-items">Order [$blue-sky]</button>
 [$foreach $orders]
-<div>Product: [$each.product.name] Number: [$each.number]</div>
+<div><p>Product: [$each.product.name] Number: [$each.number] <button m-click="cancelOrder('[$each.id]')">Remove</button> </p></div>
 [$end for]
 <br/>
 <a href="/page2">Detail page</a>

@@ -72,22 +72,27 @@ function eventHandler(e) {
 }
 
 function handleMAttributes(){
-    let disabled = document.querySelectorAll("[m-disabled]");
-    disabled.forEach(function(e) {
-        let condition = e.getAttribute("m-disabled");
+    handleMAttribute("m-disabled", (e) => { e.setAttribute("disabled", true); } ,  (e) => { e.removeAttribute("disabled"); } );
+    handleMAttribute("m-hide", (e) => {  e.style.display = "none"; } ,  (e) => {  e.style.display = null; } );
+}
 
-        const found = condition.match(new RegExp("\\$\\w+(-?\\w*)*",'g'));
-        for(const toReplace of found) {
-            condition = condition.replaceAll(toReplace, variables[toReplace.substring(1)]);
-        }
-        let conditionEval = evalCondition(condition);
-        debug(conditionEval)
-        if (conditionEval) {
-            e.setAttribute("disabled", true);
-        } else {
-            e.removeAttribute("disabled");
-        }
-    });
+function handleMAttribute(attribute, trueFunc, falseFunc ) {
+    document.querySelectorAll("[" + attribute + "]")
+            .forEach(function(elem) {
+                let condition = elem.getAttribute(attribute);
+
+                const found = condition.match(new RegExp("\\$\\w+(-?\\w*)*",'g'));
+                for(const toReplace of found) {
+                    condition = condition.replaceAll(toReplace, variables[toReplace.substring(1)]);
+                }
+                let conditionEval = evalCondition(condition);
+                debug(conditionEval)
+                if (conditionEval) {
+                   trueFunc(elem);
+                } else {
+                   falseFunc(elem);
+                }
+            });
 }
 
 function handleDefaultEvent(k) {
