@@ -1,20 +1,17 @@
-package io.getmedusa.medusa.core;
+package io.getmedusa.medusa.core.util;
 
-import io.getmedusa.medusa.core.util.SpelExpressionParserHelper;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.time.Year;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.function.BooleanSupplier;
 
-public class SpelExpressionParserHelperTest {
+class SpelExpressionParserHelperTest {
 
     @Test
-    public void basics() {
+    void basics() {
         // 42
         String value = SpelExpressionParserHelper.getStringValue("41 + 1");
         Assertions.assertEquals("42", value);
@@ -44,7 +41,7 @@ public class SpelExpressionParserHelperTest {
     }
 
     @Test
-    public void objectPropertiesAsString(){
+    void objectPropertiesAsString(){
         // given
         Person kevin = new Person("Kevin",30, new Country("USA"));
         Person dirk = new Person("Dirk",55, new Country("Belgium"));
@@ -59,7 +56,7 @@ public class SpelExpressionParserHelperTest {
     }
 
     @Test
-    public void objectProperties(){
+    void objectProperties(){
         // given
         Country usa = new Country("USA");
         Person kevin = new Person("Kevin",30, usa);

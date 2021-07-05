@@ -2,8 +2,8 @@ package io.getmedusa.medusa.core.injector.tag;
 
 import io.getmedusa.medusa.core.injector.tag.meta.InjectionResult;
 import io.getmedusa.medusa.core.registry.IterationRegistry;
+import io.getmedusa.medusa.core.util.ExpressionEval;
 import io.getmedusa.medusa.core.util.IdentifierGenerator;
-import io.getmedusa.medusa.core.util.SpelExpressionParserHelper;
 
 import java.util.*;
 import java.util.regex.Matcher;
@@ -32,7 +32,7 @@ public class IterationTag {
 
             Object conditionParsed = parseCondition(condition, variables);
             if (conditionParsed instanceof Collection) {
-                Object[] iterationCondition = ((Collection<Object>)conditionParsed).toArray();
+                @SuppressWarnings("unchecked") Object[] iterationCondition = ((Collection<Object>)conditionParsed).toArray();
                 for (int i = 0; i < iterationCondition.length; i++) {
                     Object eachValue = iterationCondition[i];
                     addIteration(blockInner, templateID, iterations, i, eachValue);
@@ -56,21 +56,19 @@ public class IterationTag {
         iterations.append(iteration);
     }
 
-    private String parseLine(String line, Object value ) {
-        String result = line;
-        result = line.replace($_EACH, value.toString());
+    private String parseLine(String line, Object value) {
+        String result = line.replace($_EACH, value.toString());
 
         Matcher matcher = propertyPattern.matcher(result);
         while (matcher.find()) {
             final String replace = matcher.group(); // $[each.property]
             final String group = matcher.group(1);  // property]
             final String property = group.substring(0, group.length()-1);  // property
-            result = result.replace(replace, SpelExpressionParserHelper.getStringValue(property,value));
+            result = result.replace(replace, ExpressionEval.evalObject(property, value));
         }
         return result;
     }
 
-    @SuppressWarnings("unchecked")
     private Object parseCondition(String condition, Map<String, Object> variables) {
         final Object variable = variables.getOrDefault(condition, new ArrayList<>());
         if(variable == null) return Collections.emptyList();

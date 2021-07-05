@@ -1,6 +1,7 @@
 package io.getmedusa.medusa.core.injector.tag;
 
 import io.getmedusa.medusa.core.injector.tag.meta.InjectionResult;
+import io.getmedusa.medusa.core.util.ExpressionEval;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -10,7 +11,7 @@ import java.util.regex.Pattern;
 public class ValueTag {
 
     private static final char DOUBLE_QUOTE = '\"';
-    protected final Pattern pattern = Pattern.compile("\\[\\$(?!each|if|else|end).*\\]", Pattern.CASE_INSENSITIVE);
+    protected final Pattern pattern = Pattern.compile("\\[\\$(?!each|if|else|end).*?\\]", Pattern.CASE_INSENSITIVE);
 
     public InjectionResult injectWithVariables(InjectionResult result, Map<String, Object> variables) {
         String html = result.getHtml();
@@ -23,9 +24,8 @@ public class ValueTag {
             Context context = determineContext(html, matcher);
 
             final String match = matcher.group(0);
+            final String value = ExpressionEval.eval(match.substring(1, match.length() - 1).trim(), variables);
             final String variableKey = match.substring(2, match.length() - 1).trim();
-            if(!variables.containsKey(variableKey)) continue;
-            final String value = variables.get(variableKey).toString();
 
             if(context.equals(Context.AS_ATTRIBUTE)) {
                 final String replacement = value + DOUBLE_QUOTE + " from-value=\"" + variableKey + "\"";

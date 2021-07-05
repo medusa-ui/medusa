@@ -4,8 +4,11 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.getmedusa.medusa.core.annotation.UIEventController;
 import io.getmedusa.medusa.core.injector.DOMChange;
-import io.getmedusa.medusa.core.registry.*;
-import io.getmedusa.medusa.core.util.SpelExpressionParserHelper;
+import io.getmedusa.medusa.core.registry.ConditionalRegistry;
+import io.getmedusa.medusa.core.registry.EventHandlerRegistry;
+import io.getmedusa.medusa.core.registry.IterationRegistry;
+import io.getmedusa.medusa.core.registry.PageTitleRegistry;
+import io.getmedusa.medusa.core.util.ExpressionEval;
 import org.springframework.expression.spel.SpelEvaluationException;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.socket.WebSocketHandler;
@@ -79,7 +82,7 @@ public class ReactiveWebSocketHandler implements WebSocketHandler {
         try {
             List<DOMChange> domChanges = new ArrayList<>();
             final UIEventController eventController = EventHandlerRegistry.getInstance().get(session);
-            final List<DOMChange> parsedExpressionValues = SpelExpressionParserHelper.getValue(event, eventController);
+            final List<DOMChange> parsedExpressionValues = ExpressionEval.evalEventController(event, eventController);
             if (parsedExpressionValues != null) domChanges = new ArrayList<>(parsedExpressionValues);
             return domChanges;
         } catch (SpelEvaluationException e) {
