@@ -13,7 +13,7 @@ import java.util.regex.Pattern;
 
 public abstract class ExpressionEval {
 
-    protected static final Pattern pattern = Pattern.compile("\\$\\w+((-|\\.)\\w+)*", Pattern.CASE_INSENSITIVE);
+    protected static final Pattern pattern = Pattern.compile("\\$\\s?\\w+((-|\\.)\\w+)*", Pattern.CASE_INSENSITIVE);
 
     public static boolean eval(String condition) {
         boolean isVisible;

@@ -15,4 +15,8 @@ public class IdentifierGenerator {
         return "t-" + Math.abs(value.hashCode());
     }
 
+    public static String generateClassConditionalID(String value) {
+        return "c-" + Math.abs(value.hashCode());
+    }
+
 }

@@ -60,7 +60,7 @@ code {
     background: crimson;
     margin-top: 1em;
     margin-bottom: 1em;
-    transition: width 2s, height 2s, transform 2s;
+    transition: width 1s, height 1s, transform 1s;
 }
 
 .wide {

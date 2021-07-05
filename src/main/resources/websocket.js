@@ -64,6 +64,8 @@ function eventHandler(e) {
             handleConditionCheckEvent(k);
         } else if (k.t === 2) { //ITERATION CHECK
             handleIterationCheck(k);
+        } else if (k.t === 3) { //CONDITIONAL CLASS CHECK
+            handleConditionalClass(k);
         }
     });
 }
@@ -77,6 +79,11 @@ function handleDefaultEvent(k) {
         } else {
             e.innerText = k.v;
         }
+    });
+
+    document.querySelectorAll("[data-from*="+k.f+"]").forEach(function(e) {
+        //e.setAttribute("value", k.v);
+        console.log(e);
     });
 }
 
@@ -147,6 +154,24 @@ function handleVisibilityConditionals(elems, conditionEval) {
             }
         }
     }
+}
+
+function handleConditionalClass(k) {
+    let condition = k.c;
+    const found = condition.match(new RegExp("\\$\\w+(-?\\w*)*"));
+    for(const toReplace of found) {
+        condition = condition.replaceAll(toReplace, variables[toReplace.substring(1)]);
+    }
+
+    const conditionEval = evalCondition(condition);
+    const relevantElem = document.querySelector("[data-from='"+k.v+"']");
+
+    let fullClasses = "";
+    if(undefined !== relevantElem.dataset.baseClass) {
+        fullClasses = relevantElem.dataset.baseClass + " ";
+    }
+    fullClasses += conditionEval;
+    relevantElem.className = fullClasses.trim();
 }
 
 function evalCondition(condition){

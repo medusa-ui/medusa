@@ -49,6 +49,7 @@ public class DOMChange {
     public enum DOMChangeType {
         TITLE,
         CONDITION,
-        ITERATION;
+        ITERATION,
+        CONDITIONAL_CLASS;
     }
 }

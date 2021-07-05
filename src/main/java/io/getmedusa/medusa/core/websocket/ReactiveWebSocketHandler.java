@@ -4,10 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.getmedusa.medusa.core.annotation.UIEventController;
 import io.getmedusa.medusa.core.injector.DOMChange;
-import io.getmedusa.medusa.core.registry.ConditionalRegistry;
-import io.getmedusa.medusa.core.registry.EventHandlerRegistry;
-import io.getmedusa.medusa.core.registry.IterationRegistry;
-import io.getmedusa.medusa.core.registry.PageTitleRegistry;
+import io.getmedusa.medusa.core.registry.*;
 import io.getmedusa.medusa.core.util.ExpressionEval;
 import org.springframework.expression.spel.SpelEvaluationException;
 import org.springframework.stereotype.Component;
@@ -27,6 +24,7 @@ public class ReactiveWebSocketHandler implements WebSocketHandler {
 
     public static final ObjectMapper MAPPER = setupObjectMapper();
     private static final ConditionalRegistry CONDITIONAL_REGISTRY = ConditionalRegistry.getInstance();
+    private static final ConditionalClassRegistry CONDITIONAL_CLASS_REGISTRY = ConditionalClassRegistry.getInstance();
 
     /**
      * JSON mapper setup
@@ -63,6 +61,7 @@ public class ReactiveWebSocketHandler implements WebSocketHandler {
             List<DOMChange> domChanges = executeEvent(session, event);
             evaluateTitleChange(session, domChanges);
             evaluateConditionalChange(domChanges);
+            evaluateConditionalClassChange(domChanges);
             evaluateIterationChange(domChanges);
 
             return MAPPER.writeValueAsString(domChanges);
@@ -106,6 +105,26 @@ public class ReactiveWebSocketHandler implements WebSocketHandler {
         for(String impactedDivId : impactedDivIds) {
             DOMChange conditionCheck = new DOMChange(null, impactedDivId, DOMChange.DOMChangeType.CONDITION);
             conditionCheck.setC(CONDITIONAL_REGISTRY.get(impactedDivId));
+            domChanges.add(conditionCheck);
+        }
+    }
+
+    /**
+     * Evaluate if any of the value changes would impact a condition. If so, send a CONDITION_CHECK back so that the UI can retry it
+     * @param domChanges, potentially with added CONDITION_CHECK changes
+     */
+    private void evaluateConditionalClassChange(List<DOMChange> domChanges) {
+        final Set<String> impactedDivIds = new HashSet<>();
+        for(DOMChange domChange : domChanges) {
+            if(domChange.getF() != null) {
+                List<String> locallyImpactedIds = CONDITIONAL_CLASS_REGISTRY.findByConditionField(domChange.getF());
+                impactedDivIds.addAll(locallyImpactedIds);
+            }
+        }
+
+        for(String impactedDivId : impactedDivIds) {
+            DOMChange conditionCheck = new DOMChange(null, impactedDivId, DOMChange.DOMChangeType.CONDITIONAL_CLASS);
+            conditionCheck.setC(CONDITIONAL_CLASS_REGISTRY.get(impactedDivId));
             domChanges.add(conditionCheck);
         }
     }
