@@ -156,7 +156,18 @@ class RenderUsecasesTest {
 
     @Test
     void testIfWithObjectTraversal() {
-        //TODO Assertions.fail();
+        final String htmlFileName = randomizedFileName();
+        EventHandlerRegistry.getInstance().add(htmlFileName, new HandlerImpl(htmlFileName, Collections.singletonMap("obj-value", new ExampleClass(987))));
+        String nestedIf =
+                "[$if($obj-value.number > 5)]\n" +
+                "   <p>Counter is above 5</p>\n" +
+                "[$end if]";
+
+        String result = HTMLInjector.INSTANCE.htmlStringInject(htmlFileName, nestedIf);
+        System.out.println(result);
+
+        Assertions.assertFalse(result.contains("[$if"));
+        Assertions.assertFalse(result.contains("[$end"));
     }
 
     @Test
@@ -216,8 +227,16 @@ class RenderUsecasesTest {
     }
 
     @Test
-    void testConditionalWithObjectTraversal() {
-        //TODO Assertions.fail();
+    void testConditionalClassWithObjectTraversal() {
+        final String htmlFileName = randomizedFileName();
+        EventHandlerRegistry.getInstance().add(htmlFileName, new HandlerImpl(htmlFileName, Collections.singletonMap("wrapper1", new ExampleClass(14132))));
+        String nestedIf = "<div id=\"example-color-block\" class=\"color-block\" m-class-append=\"$wrapper1.number > 2 ? 'wide' : 'square'\"></div>";
+
+        String result = HTMLInjector.INSTANCE.htmlStringInject(htmlFileName, nestedIf);
+        System.out.println("result: " + result);
+
+        Assertions.assertFalse(result.contains("m-class-append"));
+        Assertions.assertTrue(result.startsWith("<div id=\"example-color-block\" class=\"color-block wide\" data-base-class=\"color-block\" data-from=\""));
     }
 
     // utility
