@@ -1,6 +1,7 @@
 package io.getmedusa.medusa.core;
 
 import io.getmedusa.medusa.core.injector.DOMChange;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -15,6 +16,7 @@ import java.util.List;
 public class SpelExpressionTest {
 
     @Autowired SpelController myController;
+
 
     @Test
     public void ctrlSay() {
