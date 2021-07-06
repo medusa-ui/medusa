@@ -2,8 +2,8 @@ package io.getmedusa.medusa.core.injector.tag;
 
 import io.getmedusa.medusa.core.injector.tag.meta.InjectionResult;
 import io.getmedusa.medusa.core.registry.IterationRegistry;
+import io.getmedusa.medusa.core.util.ExpressionEval;
 import io.getmedusa.medusa.core.util.IdentifierGenerator;
-import io.getmedusa.medusa.core.util.SpelExpressionParserHelper;
 
 import java.util.*;
 import java.util.regex.Matcher;
@@ -30,12 +30,20 @@ public class IterationTag {
             String condition = parseCondition(block);
             IterationRegistry.getInstance().add(templateID, condition);
 
-            Object[] iterationCondition = parseCondition(condition, variables).toArray();
-            for (int i = 0; i < iterationCondition.length; i++) {
-                Object eachValue = iterationCondition[i];
-                String iteration = "\n<div index=\"" + i + "\" template-id=\"" + templateID + "\">\n" + parseLine(blockInner, eachValue) + "\n</div>\n";
-                iterations.append(iteration);
+            Object conditionParsed = parseCondition(condition, variables);
+            if (conditionParsed instanceof Collection) {
+                @SuppressWarnings("unchecked") Object[] iterationCondition = ((Collection<Object>)conditionParsed).toArray();
+                for (int i = 0; i < iterationCondition.length; i++) {
+                    Object eachValue = iterationCondition[i];
+                    addIteration(blockInner, templateID, iterations, i, eachValue);
+                }
+            } else {
+                for (int i = 0; i < (int) conditionParsed; i++) {
+                    Object eachValue = i;
+                    addIteration(blockInner, templateID, iterations, i, eachValue);
+                }
             }
+
             html = html.replace(block, iterations.toString());
         }
 
@@ -43,29 +51,28 @@ public class IterationTag {
         return injectionResult;
     }
 
-    private String parseLine(String line, Object value ) {
-        String result = line;
-        result = line.replace($_EACH, value.toString());
+    private void addIteration(String blockInner, String templateID, StringBuilder iterations, int i, Object eachValue) {
+        String iteration = "\n<div index=\"" + i + "\" template-id=\"" + templateID + "\">\n" + parseLine(blockInner, eachValue) + "\n</div>\n";
+        iterations.append(iteration);
+    }
+
+    private String parseLine(String line, Object value) {
+        String result = line.replace($_EACH, value.toString());
 
         Matcher matcher = propertyPattern.matcher(result);
         while (matcher.find()) {
             final String replace = matcher.group(); // $[each.property]
             final String group = matcher.group(1);  // property]
             final String property = group.substring(0, group.length()-1);  // property
-            result = result.replace(replace, SpelExpressionParserHelper.getStringValue(property,value));
+            result = result.replace(replace, ExpressionEval.evalObject(property, value));
         }
         return result;
     }
 
-    @SuppressWarnings("unchecked")
-    private Collection<Object> parseCondition(String condition, Map<String, Object> variables) {
+    private Object parseCondition(String condition, Map<String, Object> variables) {
         final Object variable = variables.getOrDefault(condition, new ArrayList<>());
         if(variable == null) return Collections.emptyList();
-        if (variable instanceof Collection) {
-            return (Collection<Object>) variable;
-        } else {
-            return Collections.singletonList(variable);
-        }
+        return variable;
     }
 
     protected Matcher buildBlockMatcher(String html) {
@@ -77,7 +84,7 @@ public class IterationTag {
     }
 
     protected String parseCondition(String block) {
-        return block.substring("[$foreach".length(), block.indexOf("]")).trim().substring(1);
+        return block.substring("[$foreach".length(), block.indexOf("]")).trim().substring(1); //TODO error if condition does not start with $
     }
 
 }

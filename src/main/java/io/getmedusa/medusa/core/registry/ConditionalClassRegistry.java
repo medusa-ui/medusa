@@ -1,32 +1,28 @@
 package io.getmedusa.medusa.core.registry;
 
-import io.getmedusa.medusa.core.util.ExpressionEval;
+import io.getmedusa.medusa.core.util.IdentifierGenerator;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class ConditionalRegistry {
-    private static final ConditionalRegistry INSTANCE = new ConditionalRegistry();
+public class ConditionalClassRegistry {
+
+    private static final ConditionalClassRegistry INSTANCE = new ConditionalClassRegistry();
     private static final String PREFIX = "$";
 
-    private ConditionalRegistry() { }
-
-    public static ConditionalRegistry getInstance() {
+    private ConditionalClassRegistry() { }
+    public static ConditionalClassRegistry getInstance() {
         return INSTANCE;
     }
+
     private final Map<String, String> registry = new HashMap<>();
 
-    public void add(String divId, String condition){
-        registry.put(divId, condition);
-    }
-    public String get(String divId) { return registry.get(divId); }
-
-    public boolean evaluate(String divId, Map<String, Object> variables) {
-        String condition = registry.get(divId);
-        if(null == condition) return false;
-        return Boolean.parseBoolean(ExpressionEval.eval(condition, variables));
+    public String add(String condition) {
+        final String key = IdentifierGenerator.generateClassConditionalID(condition);
+        registry.put(key, condition);
+        return key;
     }
 
     public List<String> findByConditionField(String fieldWithChange) {
@@ -41,5 +37,9 @@ public class ConditionalRegistry {
             }
         }
         return ids;
+    }
+
+    public String get(String impactedDivId) {
+        return registry.get(impactedDivId);
     }
 }

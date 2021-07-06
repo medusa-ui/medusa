@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.getmedusa.medusa.core.annotation.UIEventController;
 import io.getmedusa.medusa.core.injector.DOMChange;
 import io.getmedusa.medusa.core.registry.*;
-import io.getmedusa.medusa.core.util.SpelExpressionParserHelper;
+import io.getmedusa.medusa.core.util.ExpressionEval;
 import org.springframework.expression.spel.SpelEvaluationException;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.socket.WebSocketHandler;
@@ -24,6 +24,7 @@ public class ReactiveWebSocketHandler implements WebSocketHandler {
 
     public static final ObjectMapper MAPPER = setupObjectMapper();
     private static final ConditionalRegistry CONDITIONAL_REGISTRY = ConditionalRegistry.getInstance();
+    private static final ConditionalClassRegistry CONDITIONAL_CLASS_REGISTRY = ConditionalClassRegistry.getInstance();
 
     /**
      * JSON mapper setup
@@ -60,6 +61,7 @@ public class ReactiveWebSocketHandler implements WebSocketHandler {
             List<DOMChange> domChanges = executeEvent(session, event);
             evaluateTitleChange(session, domChanges);
             evaluateConditionalChange(domChanges);
+            evaluateConditionalClassChange(domChanges);
             evaluateIterationChange(domChanges);
 
             return MAPPER.writeValueAsString(domChanges);
@@ -79,7 +81,7 @@ public class ReactiveWebSocketHandler implements WebSocketHandler {
         try {
             List<DOMChange> domChanges = new ArrayList<>();
             final UIEventController eventController = EventHandlerRegistry.getInstance().get(session);
-            final List<DOMChange> parsedExpressionValues = SpelExpressionParserHelper.getValue(event, eventController);
+            final List<DOMChange> parsedExpressionValues = ExpressionEval.evalEventController(event, eventController);
             if (parsedExpressionValues != null) domChanges = new ArrayList<>(parsedExpressionValues);
             return domChanges;
         } catch (SpelEvaluationException e) {
@@ -103,6 +105,26 @@ public class ReactiveWebSocketHandler implements WebSocketHandler {
         for(String impactedDivId : impactedDivIds) {
             DOMChange conditionCheck = new DOMChange(null, impactedDivId, DOMChange.DOMChangeType.CONDITION);
             conditionCheck.setC(CONDITIONAL_REGISTRY.get(impactedDivId));
+            domChanges.add(conditionCheck);
+        }
+    }
+
+    /**
+     * Evaluate if any of the value changes would impact a condition. If so, send a CONDITION_CHECK back so that the UI can retry it
+     * @param domChanges, potentially with added CONDITION_CHECK changes
+     */
+    private void evaluateConditionalClassChange(List<DOMChange> domChanges) {
+        final Set<String> impactedDivIds = new HashSet<>();
+        for(DOMChange domChange : domChanges) {
+            if(domChange.getF() != null) {
+                List<String> locallyImpactedIds = CONDITIONAL_CLASS_REGISTRY.findByConditionField(domChange.getF());
+                impactedDivIds.addAll(locallyImpactedIds);
+            }
+        }
+
+        for(String impactedDivId : impactedDivIds) {
+            DOMChange conditionCheck = new DOMChange(null, impactedDivId, DOMChange.DOMChangeType.CONDITIONAL_CLASS);
+            conditionCheck.setC(CONDITIONAL_CLASS_REGISTRY.get(impactedDivId));
             domChanges.add(conditionCheck);
         }
     }

@@ -52,3 +52,18 @@ a:hover, a:active {
 code {
     color: #5bb2f1;
 }
+
+#example-color-block {
+    display: block;
+    width: 100px;
+    height: 100px;
+    background: crimson;
+    margin-top: 1em;
+    margin-bottom: 1em;
+    transition: width 1s, height 1s, transform 1s;
+}
+
+.wide {
+    width: 200px !important;
+    height: 50px !important;
+}
