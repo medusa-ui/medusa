@@ -1,5 +1,7 @@
 package io.getmedusa.medusa.core.util;
 
+import org.springframework.expression.spel.SpelEvaluationException;
+import org.springframework.expression.spel.SpelParseException;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 
 /**
@@ -51,6 +53,15 @@ abstract class SpelExpressionParserHelper {
      */
     public static String getStringValue(String expression) {
         return SPEL_EXPRESSION_PARSER.parseExpression(expression).getValue().toString();
+    }
+
+    public static boolean isExpression(String expression) {
+        try {
+            SPEL_EXPRESSION_PARSER.parseExpression(expression).getValue();
+            return true;
+        } catch (SpelParseException | SpelEvaluationException e) {
+            return false;
+        }
     }
 
 }

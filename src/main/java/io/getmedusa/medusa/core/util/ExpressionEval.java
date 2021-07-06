@@ -33,15 +33,11 @@ public abstract class ExpressionEval {
         while (matcher.find()) {
             expressionToInterpret = expressionToInterpret.replace(matcher.group(), interpretValue(matcher.group(), variables));
         }
-        if(isStillAnExpressionToInterpret(expressionToInterpret)) {
+        if(SpelExpressionParserHelper.isExpression(expressionToInterpret)) {
             return SpelExpressionParserHelper.getStringValue(expressionToInterpret);
         } else {
             return expressionToInterpret;
         }
-    }
-
-    private static boolean isStillAnExpressionToInterpret(String expressionToInterpret) {
-        return expressionToInterpret.contains(" ? ");
     }
 
     private static String interpretValue(String value, Map<String, Object> variables) {
