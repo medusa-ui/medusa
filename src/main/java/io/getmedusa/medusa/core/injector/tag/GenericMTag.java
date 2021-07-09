@@ -36,8 +36,12 @@ public class GenericMTag {
                     GenericMAttribute attribute = GenericMAttribute.findValueByTagName(tagName);
                     classesToAdd.add(GenericMRegistry.getInstance().add(expression, attribute));
 
-                    newTag = newTag.replace(matcherTag.group(), ExpressionEval.evalAsBool(expression, variables) ? attribute.getValueWhenTrue() : attribute.getValueWhenFalse());
-                    //TODO what if a style is already defined? what if we add a class here?
+                    final String addition = ExpressionEval.evalAsBool(expression, variables) ? attribute.getValueWhenTrue() : attribute.getValueWhenFalse();
+                    if(tagAlreadyExists(newTag, addition)) {
+                        newTag = mergeTags(newTag, matcherTag.group(), addition);
+                    } else {
+                        newTag = newTag.replace(matcherTag.group(), addition);
+                    }
                 }
             }
 
@@ -48,6 +52,17 @@ public class GenericMTag {
 
         html.setHtml(htmlString);
         return html;
+    }
+
+    private String mergeTags(String fullTag, String group, String addition) {
+        String[] additionSplit = addition.split("=\"");
+        String attribute = additionSplit[0];
+        String content = additionSplit[1].substring(0, additionSplit[1].length()-1);
+        return fullTag.replace(group, "").replace(attribute + "=\"", attribute + "=\"" + content + " ");
+    }
+
+    private boolean tagAlreadyExists(String fullTag, String addition) {
+        return addition.contains("=\"") && fullTag.contains(" " + addition.split("=")[0] + "=");
     }
 
     private String addMIdClasses(String newTag, Set<String> classesToAdd) {

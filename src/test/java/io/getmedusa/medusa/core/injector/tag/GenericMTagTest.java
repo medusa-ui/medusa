@@ -15,6 +15,8 @@ class GenericMTagTest {
     public static final String HTML_WITHOUT_CLASS = "<span m-hide=\"$three-items\" m-disabled=\"$items-bought-size == 0\" m-irrelevant=\"true\" m-ignore>Example</span>";
     public static final String HTML_WITH_CLASS = "<span m-hide=\"$three-items\" class=\"red\" m-disabled=\"$items-bought-size == 0\" m-irrelevant=\"true\" m-ignore>Example</span>";
 
+    public static final String HTML_WITH_STYLE_HIDE = "<span m-hide=\"$three-items\" style=\"color:red;\">Example</span>";
+
     @Test
     void testParsingWithoutClass() {
         Map<String, Object> variables = new HashMap<>();
@@ -25,7 +27,7 @@ class GenericMTagTest {
 
         Assertions.assertFalse(parsedHTML.contains("m-disabled"));
         Assertions.assertFalse(parsedHTML.contains("m-hide"));
-        Assertions.assertEquals(1, countOccurrences(parsedHTML));
+        Assertions.assertEquals(1, countOccurrences(parsedHTML, "class="));
         Assertions.assertTrue(parsedHTML.contains("class=\"m-"));
         Assertions.assertTrue(parsedHTML.contains("m-irrelevant=\"true\""));
         Assertions.assertFalse(parsedHTML.contains("disabled"));
@@ -43,12 +45,23 @@ class GenericMTagTest {
         Assertions.assertFalse(parsedHTML.contains("m-hide"));
         Assertions.assertTrue(parsedHTML.contains("class=\""));
         Assertions.assertTrue(parsedHTML.contains("m-irrelevant=\"true\""));
-        Assertions.assertEquals(1, countOccurrences(parsedHTML));
+        Assertions.assertEquals(1, countOccurrences(parsedHTML, "class="));
         Assertions.assertTrue(parsedHTML.contains("disabled=\"true\""));
         Assertions.assertTrue(parsedHTML.contains("style=\"display:none;\""));
     }
 
-    long countOccurrences(String block) {
-        return Arrays.stream(block.split("class=")).count()-1;
+    @Test
+    void testParsingWithStyleAndHTML() {
+        Map<String, Object> variables = new HashMap<>();
+        variables.put("three-items", true);
+        String parsedHTML = TAG.injectWithVariables(new InjectionResult(HTML_WITH_STYLE_HIDE), variables).getHtml();
+        System.out.println(parsedHTML);
+
+        Assertions.assertEquals(1, countOccurrences(parsedHTML, "style="));
+    }
+
+
+    long countOccurrences(String block, String element) {
+        return Arrays.stream(block.split(element)).count()-1;
     }
 }
