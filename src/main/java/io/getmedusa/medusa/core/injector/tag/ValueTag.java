@@ -40,7 +40,7 @@ public class ValueTag {
         }
 
         for(Map.Entry<String, String> replacement : replacements.entrySet()) {
-           while(html.contains(replacement.getKey())) {
+           while(html.contains(replacement.getKey()) && !replacement.getValue().contains(replacement.getKey())) {
                 html = html.replace(replacement.getKey(), replacement.getValue());
             }
         }
