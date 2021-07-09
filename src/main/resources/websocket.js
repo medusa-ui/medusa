@@ -81,7 +81,7 @@ function handleMAttributeChange(k) {
             handleMAttribute(k.v,(e) => { e.setAttribute("disabled", true); } ,(e) => { e.removeAttribute("disabled"); }, expressionEval);
             break;
         case "HIDE":
-            handleVisibilityConditionals(document.getElementsByClassName(k.v), expressionEval)
+            handleVisibilityConditionals(document.getElementsByClassName(k.v), !expressionEval)
             break;
         default:
         // code block
@@ -173,9 +173,9 @@ function handleConditionCheckEvent(k) {
     }
 }
 
-function handleVisibilityConditionals(elems, conditionEval) {
+function handleVisibilityConditionals(elems, isVisible) {
     if(null !== elems && elems.length !== 0) {
-        if(conditionEval) {
+        if(isVisible) {
             for(let elem of elems) {
                 elem.style.display = null;
             }

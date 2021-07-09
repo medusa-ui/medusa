@@ -2,7 +2,7 @@ package io.getmedusa.medusa.core.injector;
 
 public enum GenericMAttribute {
 
-    DISABLED("disabled=\"true\"", "disabled=\"false\""),
+    DISABLED("disabled=\"true\""),
     HIDE("style=\"display:none;\"");
 
     private final String valueWhenTrue;
