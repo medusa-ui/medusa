@@ -40,8 +40,9 @@ public class ValueTag {
         }
 
         for(Map.Entry<String, String> replacement : replacements.entrySet()) {
-            final String key = replacement.getKey().replace("[$", "\\[\\$").replace("]", "\\]");
-            html = html.replaceAll(key, replacement.getValue());
+           while(html.contains(replacement.getKey())) {
+                html = html.replace(replacement.getKey(), replacement.getValue());
+            }
         }
 
         result.setHtml(html);

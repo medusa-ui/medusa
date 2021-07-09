@@ -15,6 +15,7 @@ class ValueTagTest {
     public static final String HTML_VALUE_AS_ATTRIBUTE = "<input type=\"text\" value=\"[$counter-value]\" />";
     public static final String HTML_WRAPPED_IN_TAG = "<p>[$counter-value]</p>";
     public static final String HTML_TITLE = "<title>Welcome to Medusa :: [$counter-value] :: More title</title>";
+    public static final String HTML_WITH_SPACES = "<p>Counter: [$ counter-value]</p>";
 
     @Test
     void testWithValueAsAttribute() {
@@ -56,5 +57,16 @@ class ValueTagTest {
         String html = TAG.injectWithVariables(new InjectionResult(HTML_TITLE), variables).getHtml();
         System.out.println(html);
         Assertions.assertEquals("<title>Welcome to Medusa :: 4564 :: More title</title>", html);
+    }
+
+    @Test
+    void testWithValueWithSpaces() {
+        Map<String, Object> variables = new HashMap<>();
+        variables.put("counter-value", 321);
+        String html = TAG.injectWithVariables(new InjectionResult(HTML_WITH_SPACES), variables).getHtml();
+        System.out.println(html);
+        Assertions.assertTrue(html.contains("321"));
+        Assertions.assertTrue(html.contains("from-value=\"counter-value\""));
+        Assertions.assertTrue(html.contains("<span"));
     }
 }
