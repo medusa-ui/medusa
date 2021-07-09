@@ -50,6 +50,7 @@ public class DOMChange {
         TITLE,
         CONDITION,
         ITERATION,
-        CONDITIONAL_CLASS;
+        CONDITIONAL_CLASS,
+        M_ATTR;
     }
 }

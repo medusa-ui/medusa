@@ -31,6 +31,7 @@ public enum HTMLInjector {
     private final ConditionalTag conditionalTag;
     private final IterationTag iterationTag;
     private final ClassAppendTag classAppendTag;
+    private final GenericMTag genericMTag;
 
     HTMLInjector() {
         this.clickTag = new ClickTag();
@@ -39,6 +40,7 @@ public enum HTMLInjector {
         this.conditionalTag = new ConditionalTag();
         this.iterationTag = new IterationTag();
         this.classAppendTag = new ClassAppendTag();
+        this.genericMTag = new GenericMTag();
     }
 
     /**
@@ -70,6 +72,7 @@ public enum HTMLInjector {
         result = changeTag.inject(result.getHtml());
         result = valueTag.injectWithVariables(result, variables);
         result = classAppendTag.injectWithVariables(result, variables);
+        result = genericMTag.injectWithVariables(result, variables);
         injectVariablesInScript(result, variables);
 
         return injectScript(filename, result);

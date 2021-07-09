@@ -19,4 +19,8 @@ public class IdentifierGenerator {
         return "c-" + Math.abs(value.hashCode());
     }
 
+    public static String generateGenericMId(String value) {
+        return "m-" + Math.abs(value.hashCode());
+    }
+
 }
