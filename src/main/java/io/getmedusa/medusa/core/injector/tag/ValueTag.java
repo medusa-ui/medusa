@@ -24,7 +24,8 @@ public class ValueTag {
             Context context = determineContext(html, matcher);
 
             final String match = matcher.group(0);
-            final String value = ExpressionEval.eval(match.substring(1, match.length() - 1).trim(), variables);
+            final String searchKey = toSearchKey(match);
+            final String value = ExpressionEval.eval(searchKey, variables);
             final String variableKey = match.substring(2, match.length() - 1).trim();
 
             if(context.equals(Context.AS_ATTRIBUTE)) {
@@ -45,6 +46,14 @@ public class ValueTag {
 
         result.setHtml(html);
         return result;
+    }
+
+    private String toSearchKey(String match) {
+        String key = match.substring(1, match.length() - 1).trim();
+        if(key.contains("$ ")) {
+            key = key.replace("$ ", "$");
+        }
+        return key;
     }
 
     private String replaceTitle(String html, Map<String, Object> variables) {
