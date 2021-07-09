@@ -28,7 +28,7 @@ class GenericMTagTest {
         Assertions.assertEquals(1, countOccurrences(parsedHTML));
         Assertions.assertTrue(parsedHTML.contains("class=\"m-"));
         Assertions.assertTrue(parsedHTML.contains("m-irrelevant=\"true\""));
-        Assertions.assertTrue(parsedHTML.contains("disabled=\"false\""));
+        Assertions.assertFalse(parsedHTML.contains("disabled"));
     }
 
     @Test
