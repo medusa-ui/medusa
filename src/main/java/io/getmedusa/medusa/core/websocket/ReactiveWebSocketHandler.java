@@ -63,6 +63,7 @@ public class ReactiveWebSocketHandler implements WebSocketHandler {
             evaluateConditionalChange(domChanges);
             evaluateConditionalClassChange(domChanges);
             evaluateIterationChange(domChanges);
+            evaluateGenericMAttributesChanged(domChanges);
 
             return MAPPER.writeValueAsString(domChanges);
         } catch (Exception e) {
@@ -125,6 +126,27 @@ public class ReactiveWebSocketHandler implements WebSocketHandler {
         for(String impactedDivId : impactedDivIds) {
             DOMChange conditionCheck = new DOMChange(null, impactedDivId, DOMChange.DOMChangeType.CONDITIONAL_CLASS);
             conditionCheck.setC(CONDITIONAL_CLASS_REGISTRY.get(impactedDivId));
+            domChanges.add(conditionCheck);
+        }
+    }
+
+    /**
+     * Evaluate if any of the value changes would impact a generic m-attribute. If so, send an M-ATTR back so that the UI can retry it
+     * @param domChanges, potentially with added M-ATTR changes
+     */
+    private void evaluateGenericMAttributesChanged(List<DOMChange> domChanges) {
+        final Set<String> impactedDivIds = new HashSet<>();
+        for(DOMChange domChange : domChanges) {
+            if(domChange.getF() != null) {
+                List<String> locallyImpactedIds = GenericMRegistry.getInstance().findByConditionField(domChange.getF());
+                impactedDivIds.addAll(locallyImpactedIds);
+            }
+        }
+
+        for(String impactedDivId : impactedDivIds) {
+            GenericMRegistry.RegistryItem registryItem = GenericMRegistry.getInstance().get(impactedDivId);
+            DOMChange conditionCheck = new DOMChange(registryItem.attribute.name(), impactedDivId, DOMChange.DOMChangeType.M_ATTR);
+            conditionCheck.setC(registryItem.expression);
             domChanges.add(conditionCheck);
         }
     }

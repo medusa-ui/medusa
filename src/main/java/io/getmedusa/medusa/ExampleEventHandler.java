@@ -13,7 +13,7 @@ public class ExampleEventHandler implements UIEventController {
     private int counter = 0;
     private final List<String> listOfItemsBought = new ArrayList<>();
     private final List<Order> orders = new ArrayList<>(Arrays.asList(new Order(new Product("Whitewood"),5),new Order(new Product("Darkwoods"),3)));
-    private final Product product =  new Product("Blue Sky");
+    private Product blueSky =  new Product("Blue Sky");
 
     @Override
     public PageSetup setupPage() {
@@ -23,7 +23,8 @@ public class ExampleEventHandler implements UIEventController {
         modelMap.put("items-bought", listOfItemsBought);
         modelMap.put("items-bought-size", listOfItemsBought.size());
         modelMap.put("orders", orders);
-        modelMap.put("blue-sky", product.name);
+        modelMap.put("blue-sky", blueSky.name);
+        modelMap.put("three-items", orders.size() == 3 );
         modelMap.put("search", "initial value!");
         return new PageSetup(
                 "/",
@@ -41,8 +42,17 @@ public class ExampleEventHandler implements UIEventController {
     }
 
     public List<DOMChange> order() {
-        orders.add(new Order(product, 1));
-        return Collections.singletonList(new DOMChange("orders", orders));
+        orders.add(new Order(blueSky, 1));
+        return Arrays.asList(new DOMChange("orders", orders), new DOMChange("three-items", orders.size() == 3 ));
+    }
+
+    public List<DOMChange> cancelOrder(String orderId) {
+        Iterator<Order> iterator = orders.iterator();
+        while (iterator.hasNext()) {
+            Order order = iterator.next();
+            if (order.id.equals(orderId)) iterator.remove();
+        }
+        return Arrays.asList(new DOMChange("orders", orders), new DOMChange("three-items", orders.size() == 3 ));
     }
 
     public List<DOMChange> buy(Object... parameters) {
@@ -82,22 +92,21 @@ class Product {
     public String getName() {
         return name;
     }
-
-    @Override
-    public String toString() {
-        return "Product{" +
-                "name='" + name + '\'' +
-                '}';
-    }
 }
 
 class Order {
+    String id;
     Product product;
     Integer number;
 
     public Order(Product product, Integer number) {
+        this.id = UUID.randomUUID().toString();
         this.product = product;
         this.number = number;
+    }
+
+    public String getId() {
+        return id;
     }
 
     public Integer getNumber() {
@@ -108,11 +117,4 @@ class Order {
         return product;
     }
 
-    @Override
-    public String toString() {
-        return "Order{" +
-                "product='" + product + '\'' +
-                ", number=" + number +
-                '}';
-    }
 }

@@ -54,6 +54,7 @@ function log(responseEvent) {
 
 function eventHandler(e) {
     debug(e);
+
     //e = full event, k = individual event per key, k.f = field, k.v = value or relevant id, k.t = type, k.c = condition
     e.forEach(k => {
         if(k.t === undefined) { //the default event, a value change, contains the least amount of data, so it has no 'type'
@@ -66,8 +67,44 @@ function eventHandler(e) {
             handleIterationCheck(k);
         } else if (k.t === 3) { //CONDITIONAL CLASS CHECK
             handleConditionalClass(k);
+        } else if (k.t === 4) { //M ATTR CHECK
+            handleMAttributeChange(k);
         }
     });
+}
+
+function handleMAttributeChange(k) {
+    console.log(k);
+    const expressionEval = evalCondition(injectVariablesIntoExpression(k.c));
+    switch(k.f) {
+        case "DISABLED":
+            handleMAttribute(k.v,(e) => { e.setAttribute("disabled", true); } ,(e) => { e.removeAttribute("disabled"); }, expressionEval);
+            break;
+        case "HIDE":
+            handleVisibilityConditionals(document.getElementsByClassName(k.v), !expressionEval)
+            break;
+        default:
+        // code block
+    }
+}
+
+function injectVariablesIntoExpression(expression) {
+    const found = expression.match(new RegExp("\\$\\w+(-?\\w*)*"));
+    for(const toReplace of found) {
+        expression = expression.replaceAll(toReplace, variables[toReplace.substring(1)]);
+    }
+    return expression;
+}
+
+function handleMAttribute(mId, trueFunc, falseFunc, evalValue) {
+    const list = document.getElementsByClassName(mId);
+    for (let elem of list) {
+        if (evalValue) {
+            trueFunc(elem);
+        } else {
+            falseFunc(elem);
+        }
+    }
 }
 
 function handleDefaultEvent(k) {
@@ -122,13 +159,7 @@ function recursiveObjectUpdate(diff, obj, path) {
 }
 
 function handleConditionCheckEvent(k) {
-    let condition = k.c;
-    const found = condition.match(new RegExp("\\$\\w+(-?\\w*)*"));
-    for(const toReplace of found) {
-        condition = condition.replaceAll(toReplace, variables[toReplace.substring(1)]);
-    }
-
-    let conditionEval = evalCondition(condition);
+    let conditionEval = evalCondition(injectVariablesIntoExpression(k.c));
     let elems = document.getElementsByClassName(k.v);
     handleVisibilityConditionals(elems, conditionEval);
 
@@ -142,9 +173,9 @@ function handleConditionCheckEvent(k) {
     }
 }
 
-function handleVisibilityConditionals(elems, conditionEval) {
+function handleVisibilityConditionals(elems, isVisible) {
     if(null !== elems && elems.length !== 0) {
-        if(conditionEval) {
+        if(isVisible) {
             for(let elem of elems) {
                 elem.style.display = null;
             }
