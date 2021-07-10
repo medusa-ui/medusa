@@ -30,7 +30,7 @@ public class ClickTagTest {
         final String tagContent = "increaseCounter('2')";
 
         String replacedHTML = TAG.substitutionLogic(fullMatch, tagContent);
-        Assertions.assertEquals("onclick=\"sendEvent(this, 'increaseCounter(\\'2\\')')\"", replacedHTML);
+        Assertions.assertEquals("onclick=\"_M.sendEvent(this, 'increaseCounter(\\'2\\')')\"", replacedHTML);
     }
 
     @Test
@@ -39,7 +39,7 @@ public class ClickTagTest {
         final String tagContent = "increaseCounter('2')";
 
         String replacedHTML = TAG.substitutionLogic(fullMatch, tagContent);
-        Assertions.assertEquals("onclick=\"sendEvent(this, 'increaseCounter(\\'2\\')')\"", replacedHTML);
+        Assertions.assertEquals("onclick=\"_M.sendEvent(this, 'increaseCounter(\\'2\\')')\"", replacedHTML);
     }
 
     @Test

@@ -50,7 +50,7 @@ public class InjectionResult {
     public String replaceFinal(String key, String value) {
         setHtml(getHtml().replace(key, value));
         for(String script : scripts) {
-            replace("<script id=\"websocket-setup\">", "<script>" + script + "</script>\n<script id=\"websocket-setup\">");
+            replace("<script id=\"m-variable-setup\"></script>", "<script id=\"m-variable-setup\">" + script + "</script>");
         }
         return this.getHtml();
     }

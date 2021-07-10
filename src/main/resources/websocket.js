@@ -1,94 +1,94 @@
-let ws;
-let timeoutTimer = 0;
-let debugMode = true;
+var _M = _M || {};
 
-retryConnection();
+_M.ws = null;
+_M.timeoutTimer = 0;
+_M.debugMode = true;
 
-function retryConnection() {
+_M.retryConnection = function () {
     setTimeout(function() {
-        if(timeoutTimer < 1000) {
-            timeoutTimer += 150;
+        if(_M.timeoutTimer < 1000) {
+            _M.timeoutTimer += 150;
         } else {
-            timeoutTimer = 1000;
+            _M.timeoutTimer = 1000;
         }
 
         try{
-            ws = new WebSocket("ws://" + window.location.host + "%WEBSOCKET_URL%");
-            if(ws.readyState === ws.CLOSED || ws.readyState === ws.CLOSING) {
+            _M.ws = new WebSocket("ws://" + window.location.host + "%WEBSOCKET_URL%");
+            if(_M.ws.readyState === _M.ws.CLOSED || _M.ws.readyState === _M.ws.CLOSING) {
                 retryConnection();
             }
-            ws.onopen = function() {
-                debug("ws.onopen", ws);
-                debug("ws.readyState", "wsstatus");
+            _M.ws.onopen = function() {
+                _M.debug("ws.onopen", _M.ws);
+                _M.debug("ws.readyState", "wsstatus");
             }
-            ws.onclose = function(error) {
-                debug("ws.onclose", ws, error);
+            _M.ws.onclose = function(error) {
+                _M.debug("ws.onclose", _M.ws, error);
                 retryConnection();
             }
-            ws.onerror = function(error) {
-                debug("ws.onerror", ws, error);
-                log("An error occured");
+            _M.ws.onerror = function(error) {
+                _M.debug("ws.onerror", _M.ws, error);
+                _M.log("An error occured");
             }
-            ws.onmessage = function(message) {
-                debug("ws.onmessage", ws, message);
-                eventHandler(JSON.parse(message.data));
+            _M.ws.onmessage = function(message) {
+                _M.debug("ws.onmessage", _M.ws, message);
+                _M.eventHandler(JSON.parse(message.data));
             }
         } catch (e) {
-            debug(e);
+            _M.debug(e);
             retryConnection();
         }
-    }, timeoutTimer);
-}
+    }, _M.timeoutTimer);
+};
 
-function log(responseEvent) {
-    debug(responseEvent);
-}
+_M.log = function(responseEvent) {
+    _M.debug(responseEvent);
+};
 
-function eventHandler(e) {
-    debug(e);
+_M.eventHandler = function(e) {
+    _M.debug(e);
 
     //e = full event, k = individual event per key, k.f = field, k.v = value or relevant id, k.t = type, k.c = condition
     e.forEach(k => {
         if(k.t === undefined) { //the default event, a value change, contains the least amount of data, so it has no 'type'
-            handleDefaultEvent(k);
+            _M.handleDefaultEvent(k);
         } else if (k.t === 0) { //DOCUMENT TITLE CHANGE
-            handleTitleChangeEvent(k);
+            _M.handleTitleChangeEvent(k);
         } else if (k.t === 1) { //CONDITION CHECK
-            handleConditionCheckEvent(k);
+            _M.handleConditionCheckEvent(k);
         } else if (k.t === 2) { //ITERATION CHECK
-            handleIterationCheck(k);
+            _M.handleIterationCheck(k);
         } else if (k.t === 3) { //CONDITIONAL CLASS CHECK
-            handleConditionalClass(k);
+            _M.handleConditionalClass(k);
         } else if (k.t === 4) { //M ATTR CHECK
-            handleMAttributeChange(k);
+            _M.handleMAttributeChange(k);
         }
     });
 }
 
-function handleMAttributeChange(k) {
-    debug(k);
-    const expressionEval = evalCondition(injectVariablesIntoExpression(k.c));
+_M.handleMAttributeChange = function (k) {
+    _M.debug(k);
+    const expressionEval = _M.evalCondition(_M.injectVariablesIntoExpression(k.c));
     switch(k.f) {
         case "DISABLED":
-            handleMAttribute(k.v,(e) => { e.setAttribute("disabled", true); } ,(e) => { e.removeAttribute("disabled"); }, expressionEval);
+            _M.handleMAttribute(k.v,(e) => { e.setAttribute("disabled", true); } ,(e) => { e.removeAttribute("disabled"); }, expressionEval);
             break;
         case "HIDE":
-            handleVisibilityConditionals(document.getElementsByClassName(k.v), !expressionEval)
+            _M.handleVisibilityConditionals(document.getElementsByClassName(k.v), !expressionEval)
             break;
         default:
         // code block
     }
-}
+};
 
-function injectVariablesIntoExpression(expression) {
+_M.injectVariablesIntoExpression = function(expression) {
     const found = expression.match(new RegExp("\\$\\w+(-?\\w*)*"));
     for(const toReplace of found) {
-        expression = expression.replaceAll(toReplace, variables[toReplace.substring(1)]);
+        expression = expression.replaceAll(toReplace, _M.variables[toReplace.substring(1)]);
     }
     return expression;
-}
+};
 
-function handleMAttribute(mId, trueFunc, falseFunc, evalValue) {
+_M.handleMAttribute = function (mId, trueFunc, falseFunc, evalValue) {
     const list = document.getElementsByClassName(mId);
     for (let elem of list) {
         if (evalValue) {
@@ -97,10 +97,10 @@ function handleMAttribute(mId, trueFunc, falseFunc, evalValue) {
             falseFunc(elem);
         }
     }
-}
+};
 
-function handleDefaultEvent(k) {
-    variables[k.f] = k.v;
+_M.handleDefaultEvent = function(k) {
+    _M.variables[k.f] = k.v;
     document.querySelectorAll("[from-value="+k.f+"]").forEach(function(e) {
         if(e.hasAttribute("value")) {
             e.setAttribute("value", k.v);
@@ -110,73 +110,73 @@ function handleDefaultEvent(k) {
         }
     });
 
-    handleWaitingForEnabled();
-}
+    _M.handleWaitingForEnabled();
+};
 
-function handleWaitingForEnabled() {
-    for (let index = 0; index < waitingForEnable.length; index++) {
-        const objWaitingForEnable = waitingForEnable[index];
-        if(evalCondition(injectVariablesIntoExpression(objWaitingForEnable.expression))) {
+_M.handleWaitingForEnabled = function() {
+    for (let index = 0; index < _M.waitingForEnable.length; index++) {
+        const objWaitingForEnable = _M.waitingForEnable[index];
+        if(_M.evalCondition(_M.injectVariablesIntoExpression(objWaitingForEnable.expression))) {
             objWaitingForEnable.elem.disabled = false;
-            waitingForEnable.splice(index, 1);
+            _M.waitingForEnable.splice(index, 1);
         }
     }
 
-    if(waitingForEnable.length === 0) {
-        handleVisibilityConditionals([document.getElementById("m-top-load-bar")], false);
-        handleVisibilityConditionals([document.getElementById("m-full-loader")], false);
+    if(_M.waitingForEnable.length === 0) {
+        _M.handleVisibilityConditionals([document.getElementById("m-top-load-bar")], false);
+        _M.handleVisibilityConditionals([document.getElementById("m-full-loader")], false);
     }
-}
+};
 
-function handleTitleChangeEvent(k) {
+_M.handleTitleChangeEvent = function(k) {
     document.title = k.v;
-}
+};
 
-function handleIterationCheck(k) {
+_M.handleIterationCheck = function (k) {
     let template = document.getElementById(k.f);
     let index = 0;
 
     document.querySelectorAll("[template-id="+k.f+"]").forEach(function(e) { e.remove(); });
 
-    for(const currentEachValue of variables[k.v]) {
+    for(const currentEachValue of _M.variables[k.v]) {
         let newDiff = document.createElement("div");
-        newDiff.setAttribute("index", index++);
+        newDiff.setAttribute("index", (index++).toString());
         newDiff.setAttribute("template-id", k.f);
 
         newDiff.innerHTML = template.innerHTML;
-        recursiveObjectUpdate(newDiff, currentEachValue, "$each");
+        _M.recursiveObjectUpdate(newDiff, currentEachValue, "$each");
 
         template.parentNode.insertBefore(newDiff, template);
     }
-}
+};
 
-function recursiveObjectUpdate(diff, obj, path) {
+_M.recursiveObjectUpdate = function(diff, obj, path) {
     if(typeof obj === 'object' && obj !== null) {
         diff.innerHTML = diff.innerHTML.replaceAll("["+path+"]", JSON.stringify(obj));
         for(const objKey of Object.keys(obj)) {
-            recursiveObjectUpdate(diff, obj[objKey], path + "." + objKey);
+            _M.recursiveObjectUpdate(diff, obj[objKey], path + "." + objKey);
         }
     } else {
         diff.innerHTML = diff.innerHTML.replaceAll("["+path+"]", obj);
     }
-}
+};
 
-function handleConditionCheckEvent(k) {
-    let conditionEval = evalCondition(injectVariablesIntoExpression(k.c));
+_M.handleConditionCheckEvent = function(k) {
+    let conditionEval = _M.evalCondition(_M.injectVariablesIntoExpression(k.c));
     let elems = document.getElementsByClassName(k.v);
-    handleVisibilityConditionals(elems, conditionEval);
+    _M.handleVisibilityConditionals(elems, conditionEval);
 
     //update templates if needed
     let templates = document.getElementsByTagName("template");
     if(null !== templates && templates.length !== 0) {
         for(const template of templates) {
             const templateElems = template.content.querySelectorAll("." + k.v);
-            handleVisibilityConditionals(templateElems, conditionEval);
+            _M.handleVisibilityConditionals(templateElems, conditionEval);
         }
     }
-}
+};
 
-function handleVisibilityConditionals(elems, isVisible) {
+_M.handleVisibilityConditionals = function (elems, isVisible) {
     if(null !== elems && elems.length !== 0) {
         if(isVisible) {
             for(let elem of elems) {
@@ -188,16 +188,16 @@ function handleVisibilityConditionals(elems, isVisible) {
             }
         }
     }
-}
+};
 
-function handleConditionalClass(k) {
+_M.handleConditionalClass = function(k) {
     let condition = k.c;
     const found = condition.match(new RegExp("\\$\\w+(-?\\w*)*"));
     for(const toReplace of found) {
-        condition = condition.replaceAll(toReplace, variables[toReplace.substring(1)]);
+        condition = condition.replaceAll(toReplace, _M.variables[toReplace.substring(1)]);
     }
 
-    const conditionEval = evalCondition(condition);
+    const conditionEval = _M.evalCondition(condition);
     const relevantElem = document.querySelector("[data-from='"+k.v+"']");
 
     let fullClasses = "";
@@ -206,30 +206,33 @@ function handleConditionalClass(k) {
     }
     fullClasses += conditionEval;
     relevantElem.className = fullClasses.trim();
-}
+};
 
-function evalCondition(condition){
+_M.evalCondition = function(condition){
     return Function('"use strict";return (' + condition + ')')();
-}
+};
 
-function debug(textToLog, fullObject) {
-    if(debugMode) {
+_M.debug = function(textToLog, fullObject) {
+    if(_M.debugMode) {
         console.log(textToLog, fullObject);
     }
-}
-let waitingForEnable = [];
-function sendEvent(origin, e) {
+};
+
+_M.waitingForEnable = [];
+_M.sendEvent = function(origin, e) {
     const disableOnClick = origin.attributes["m-disable-on-click-until"];
     if(disableOnClick !== undefined) {
         const loadingStyle = origin.attributes["m-loading-style"];
 
-        waitingForEnable.push({"elem": origin, "expression": disableOnClick.value});
+        _M.waitingForEnable.push({"elem": origin, "expression": disableOnClick.value});
         origin.disabled = true;
         if(loadingStyle === undefined || loadingStyle.value === "top") {
-            handleVisibilityConditionals([document.getElementById("m-top-load-bar")], true);
+            _M.handleVisibilityConditionals([document.getElementById("m-top-load-bar")], true);
         } else if (loadingStyle.value === "full") {
-            handleVisibilityConditionals([document.getElementById("m-full-loader")], true);
+            _M.handleVisibilityConditionals([document.getElementById("m-full-loader")], true);
         }
     }
-    ws.send(e);
-}
+    _M.ws.send(e);
+};
+
+_M.retryConnection();

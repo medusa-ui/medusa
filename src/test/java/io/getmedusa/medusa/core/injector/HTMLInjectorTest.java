@@ -47,7 +47,7 @@ class HTMLInjectorTest {
         Map<String, Object> variables = new HashMap<>();
         variables.put("exampleString", "Hello Mesuda");
         variables.put("exampleInteger", 12);
-        String json = "let variables = " + MAPPER.writeValueAsString(variables) + ";";
+        String json = "_M.variables = " + MAPPER.writeValueAsString(variables) + ";";
         System.out.println(json);
     }
 }

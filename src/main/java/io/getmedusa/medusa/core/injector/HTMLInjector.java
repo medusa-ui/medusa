@@ -82,7 +82,7 @@ public enum HTMLInjector {
 
     private void injectVariablesInScript(InjectionResult result, Map<String, Object> variables) {
         try {
-            String variablesAsScript = "let variables = " + MAPPER.writeValueAsString(variables) + ";";
+            String variablesAsScript = "_M.variables = " + MAPPER.writeValueAsString(variables) + ";";
             result.addScript(variablesAsScript);
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -93,9 +93,9 @@ public enum HTMLInjector {
         String injectedHTML = html.getHtml();
         if(script != null) {
             injectedHTML = html.replaceFinal("</body>",
-                    "<script id=\"websocket-setup\">\n" +
+                    "<script id=\"m-websocket-setup\">\n" +
                     script.replaceFirst("%WEBSOCKET_URL%", EVENT_EMITTER + FilenameHandler.removeExtension(filename)) +
-                    "</script>\n</body>");
+                    "</script>\n<script id=\"m-variable-setup\"></script>\n</body>");
         }
         injectedHTML = addStyling(injectedHTML);
 
