@@ -24,6 +24,7 @@ public enum HTMLInjector {
     public static final Charset CHARSET = StandardCharsets.UTF_8;
     public static final String EVENT_EMITTER = "/event-emitter/";
     private String script = null;
+    private String styling = null;
 
     private final ClickTag clickTag;
     private final ChangeTag changeTag;
@@ -49,9 +50,10 @@ public enum HTMLInjector {
      * @param script cached websocket script
      * @return parsed html
      */
-    public String inject(String fileName, String script) {
+    public String inject(String fileName, String script, String styling) {
         try {
             if(this.script == null) this.script = script;
+            if(this.styling == null) this.styling = styling;
             String htmlString = HTMLCache.getInstance().getHTML(fileName);
             return htmlStringInject(fileName, htmlString);
         } catch (Exception e) {
@@ -88,13 +90,29 @@ public enum HTMLInjector {
     }
 
     private String injectScript(String filename, InjectionResult html) {
+        String injectedHTML = html.getHtml();
         if(script != null) {
-            return html.replaceFinal("</body>",
+            injectedHTML = html.replaceFinal("</body>",
                     "<script id=\"websocket-setup\">\n" +
                     script.replaceFirst("%WEBSOCKET_URL%", EVENT_EMITTER + FilenameHandler.removeExtension(filename)) +
                     "</script>\n</body>");
         }
-        return html.getHtml();
+        injectedHTML = addStyling(injectedHTML);
+
+        return injectedHTML;
+    }
+
+    private String addStyling(String injectedHTML) {
+        if(styling != null) {
+            injectedHTML = injectedHTML.replace("</head>", styling + "\n</head>");
+            if(injectedHTML.contains("m-loading-style=\"top\"")) {
+                injectedHTML = injectedHTML.replace("<body>", "<body>\n<div id=\"m-top-load-bar\" class=\"progress-line\" style=\"display:none;\"></div>");
+            }
+            if(injectedHTML.contains("m-loading-style=\"full\"")) {
+                injectedHTML = injectedHTML.replace("<body>", "<body>\n<div id=\"m-full-loader\" style=\"display:none;\">Loading ...</div>");
+            }
+        }
+        return injectedHTML;
     }
 
     private TreeMap<String, Object> newLargestFirstMap() {

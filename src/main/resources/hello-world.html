@@ -8,7 +8,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter&family=Merriweather&display=swap" rel="stylesheet">
 </head>
 <body>
-
 <h1>🦑 Hello Medusa</h1>
 
 <p>Counter: [$counter-value]</p>
@@ -56,6 +55,16 @@
 [$end for]
 <br/>
 <a href="/page2">Detail page</a>
+
+<br><br>
+
+<button m-click="waitSeconds(4)" m-disable-on-click-until="$done-waiting" m-loading-style="full">This is a 4 seconds call with a full page loader</button>
+<button m-click="waitSeconds(5)" m-disable-on-click-until="$done-waiting" m-loading-style="top">This is a 5 seconds call with a top page loader</button>
+
+[$if($done-waiting)]
+<p>Call completed!</p>
+[$end if]
+<br><br>
 
 <div id="example-color-block" class="color-block" m-class-append="$counter-value > 2 ? 'wide' : 'square'"></div>
 

@@ -39,13 +39,14 @@ public class HTMLRouter {
     private final SimpleUrlHandlerMapping mapping = new SimpleUrlHandlerMapping();
 
     @Bean
-    public RouterFunction<ServerResponse> htmlRouter(@Value("classpath:/websocket.js") Resource scripts) {
+    public RouterFunction<ServerResponse> htmlRouter(@Value("classpath:/websocket.js") Resource scripts, @Value("classpath:/medusa-default-styling.css") Resource style) {
         final String script = loadScript(scripts);
+        final String styling = "<style>" + loadScript(style) + "</style>";
         return RouteRegistry.getInstance().getRoutesWithHTMLFile().stream().map(route -> {
             String fileName = FilenameHandler.removeExtension(loadHTMLIntoCache(route.getValue()).getFilename());
             return route(
                     GET(route.getKey()),
-                    request -> ok().contentType(MediaType.TEXT_HTML).bodyValue(INSTANCE.inject(fileName, script)));
+                    request -> ok().contentType(MediaType.TEXT_HTML).bodyValue(INSTANCE.inject(fileName, script, styling)));
         })
         .reduce(RouterFunction::and)
         .orElse(null);

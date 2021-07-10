@@ -12,7 +12,7 @@ public class ChangeTag extends AbstractTag {
 
     @Override
     String substitutionLogic(String fullMatch, String tagContent) {
-        return "oninput=\"sendEvent('"+tagContent+"')\"";
+        return "oninput=\"sendEvent(this, '"+tagContent+"')\"";
     }
 
     @Override

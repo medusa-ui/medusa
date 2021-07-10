@@ -26,6 +26,7 @@ public class ExampleEventHandler implements UIEventController {
         modelMap.put("blue-sky", blueSky.name);
         modelMap.put("three-items", orders.size() == 3 );
         modelMap.put("search", "initial value!");
+        modelMap.put("done-waiting", false);
         return new PageSetup(
                 "/",
                 "hello-world",
@@ -39,6 +40,11 @@ public class ExampleEventHandler implements UIEventController {
         }
 
         return Collections.singletonList(new DOMChange("counter-value", counter));
+    }
+
+    public List<DOMChange> waitSeconds(int secondsToWait) {
+        try { Thread.sleep(secondsToWait * 1000L); } catch (Exception e) {}
+        return Collections.singletonList(new DOMChange("done-waiting", true));
     }
 
     public List<DOMChange> order() {

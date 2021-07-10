@@ -4,14 +4,6 @@ let debugMode = true;
 
 retryConnection();
 
-//this makes sure that when a back button is used, it not only changes the url but then also reloads the page
-window.addEventListener( "popstate", function ( event ) {
-    let perfEntries = performance.getEntriesByType("navigation");
-    if (perfEntries[0].type === "reload" || perfEntries[0].type === "back_forward") {
-        window.location.reload();
-    }
-});
-
 function retryConnection() {
     setTimeout(function() {
         if(timeoutTimer < 1000) {
@@ -74,7 +66,7 @@ function eventHandler(e) {
 }
 
 function handleMAttributeChange(k) {
-    console.log(k);
+    debug(k);
     const expressionEval = evalCondition(injectVariablesIntoExpression(k.c));
     switch(k.f) {
         case "DISABLED":
@@ -118,10 +110,22 @@ function handleDefaultEvent(k) {
         }
     });
 
-    document.querySelectorAll("[data-from*="+k.f+"]").forEach(function(e) {
-        //e.setAttribute("value", k.v);
-        console.log(e);
-    });
+    handleWaitingForEnabled();
+}
+
+function handleWaitingForEnabled() {
+    for (let index = 0; index < waitingForEnable.length; index++) {
+        const objWaitingForEnable = waitingForEnable[index];
+        if(evalCondition(injectVariablesIntoExpression(objWaitingForEnable.expression))) {
+            objWaitingForEnable.elem.disabled = false;
+            waitingForEnable.splice(index, 1);
+        }
+    }
+
+    if(waitingForEnable.length === 0) {
+        handleVisibilityConditionals([document.getElementById("m-top-load-bar")], false);
+        handleVisibilityConditionals([document.getElementById("m-full-loader")], false);
+    }
 }
 
 function handleTitleChangeEvent(k) {
@@ -134,9 +138,8 @@ function handleIterationCheck(k) {
 
     document.querySelectorAll("[template-id="+k.f+"]").forEach(function(e) { e.remove(); });
 
-    for(v of variables[k.v]) {
+    for(const currentEachValue of variables[k.v]) {
         let newDiff = document.createElement("div");
-        let currentEachValue = variables[k.v][index];
         newDiff.setAttribute("index", index++);
         newDiff.setAttribute("template-id", k.f);
 
@@ -177,11 +180,11 @@ function handleVisibilityConditionals(elems, isVisible) {
     if(null !== elems && elems.length !== 0) {
         if(isVisible) {
             for(let elem of elems) {
-                elem.style.display = null;
+                if(elem != null) elem.style.display = null;
             }
         } else {
             for(let elem of elems) {
-                elem.style.display = "none";
+                if(elem != null) elem.style.display = "none";
             }
         }
     }
@@ -214,11 +217,19 @@ function debug(textToLog, fullObject) {
         console.log(textToLog, fullObject);
     }
 }
+let waitingForEnable = [];
+function sendEvent(origin, e) {
+    const disableOnClick = origin.attributes["m-disable-on-click-until"];
+    if(disableOnClick !== undefined) {
+        const loadingStyle = origin.attributes["m-loading-style"];
 
-function sendEvent(e) {
+        waitingForEnable.push({"elem": origin, "expression": disableOnClick.value});
+        origin.disabled = true;
+        if(loadingStyle === undefined || loadingStyle.value === "top") {
+            handleVisibilityConditionals([document.getElementById("m-top-load-bar")], true);
+        } else if (loadingStyle.value === "full") {
+            handleVisibilityConditionals([document.getElementById("m-full-loader")], true);
+        }
+    }
     ws.send(e);
-}
-
-function changePage(e) {
-    ws.send("changePage(\""+e+"\")");
 }
