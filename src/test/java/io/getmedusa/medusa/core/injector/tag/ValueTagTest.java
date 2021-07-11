@@ -69,4 +69,32 @@ class ValueTagTest {
         Assertions.assertTrue(html.contains("from-value=\"counter-value\""));
         Assertions.assertTrue(html.contains("<span"));
     }
+
+    @Test
+    void testObjectRenderingCausesError() {
+        Map<String, Object> variables = new HashMap<>();
+        variables.put("counter-value", new ComplexObject("xyz"));
+
+        try {
+            String html = TAG.injectWithVariables(new InjectionResult(HTML_WRAPPED_IN_TAG), variables).getHtml();
+            System.out.println(html);
+            Assertions.fail();
+        } catch (IllegalArgumentException e) {
+            Assertions.assertTrue(e.getMessage().contains("counter-value"));
+        }
+    }
+
+    class ComplexObject {
+
+        private final String exampleValue;
+
+        public ComplexObject(String exampleValue) {
+            this.exampleValue = exampleValue;
+        }
+
+        public String getExampleValue() {
+            return exampleValue;
+        }
+    }
+
 }

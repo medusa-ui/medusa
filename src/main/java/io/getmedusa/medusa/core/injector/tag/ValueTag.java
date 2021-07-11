@@ -65,12 +65,12 @@ public class ValueTag {
             final String title = titleMatcher.group(0);
             String titleCopy = title;
 
-            Matcher matcher = pattern.matcher(html);
+            Matcher matcher = pattern.matcher(title);
 
             while (matcher.find()) {
                 final String match = matcher.group(0);
-                final String variableKey = match.substring(2, match.length() - 1).trim();
-                final Object value = variables.get(variableKey);
+                final String variableKey = match.substring(1, match.length() - 1).trim();
+                final Object value = ExpressionEval.eval(variableKey, variables);
                 if(value == null) throw new IllegalStateException("Variable key '" + variableKey + "' should either exist or shows an error in internal parsing logic.");
                 final String valueAsString = value.toString();
                 titleCopy = titleCopy.replace(match, valueAsString);

@@ -34,12 +34,27 @@ public abstract class ExpressionEval {
         if(!variables.containsKey(value)) {
             if(value.contains(".")) {
                 String[] variableKeySplit = value.split("\\.", 2);
-                return SpelExpressionParserHelper.getStringValue(variableKeySplit[1], variables.get(variableKeySplit[0]));
+                Object objValue = variables.get(variableKeySplit[0]);
+                Object subValue = SpelExpressionParserHelper.getValue(variableKeySplit[1], objValue);
+                if(subValue.getClass().getPackage().getName().startsWith("java.")) {
+                   return subValue.toString();
+                } else {
+                    throw unableToRenderFullObjectException(value, subValue.getClass());
+                }
             }
         } else {
-            return variables.get(value).toString();
+            Object objValue = variables.get(value);
+            if(objValue.getClass().getPackage().getName().startsWith("java.")) {
+                return objValue.toString();
+            } else {
+                throw unableToRenderFullObjectException(value, objValue.getClass());
+            }
         }
         return value;
+    }
+
+    private static IllegalArgumentException unableToRenderFullObjectException(String value, Class<? extends Object> objValueClass) {
+        return new IllegalArgumentException("HTML was asked to visualize an entire object [$" + value + ", " + objValueClass.getSimpleName() + "] instead of an object's property. An object is only known on the serverside, and cannot be rendered directly in the HTML. Try rendering a property of this object instead. For example: If you are trying to render a Person object with [$person], instead render the person's name using [$person.name]");
     }
 
     public static String evalObject(String property, Object value) {
