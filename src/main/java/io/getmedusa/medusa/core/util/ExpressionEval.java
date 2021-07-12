@@ -6,13 +6,14 @@ import io.getmedusa.medusa.core.injector.DOMChange;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public abstract class ExpressionEval {
+
+    private ExpressionEval() {}
 
     protected static final Pattern pattern = Pattern.compile("\\$\\s?\\w+((-|\\.)\\w+)*", Pattern.CASE_INSENSITIVE);
 
@@ -25,7 +26,7 @@ public abstract class ExpressionEval {
         while (matcher.find()) {
             expressionToInterpret = expressionToInterpret.replace(matcher.group(), interpretValue(matcher.group(), variables));
         }
-        if(SpelExpressionParserHelper.isExpression(expressionToInterpret)) {
+        if (SpelExpressionParserHelper.isExpression(expressionToInterpret)) {
             return SpelExpressionParserHelper.getStringValue(expressionToInterpret);
         } else {
             return expressionToInterpret;
@@ -33,13 +34,13 @@ public abstract class ExpressionEval {
     }
 
     private static String interpretValue(String value, Map<String, Object> variables) {
-        if(value.startsWith("$")) value = value.substring(1);
-        if(!variables.containsKey(value)) {
-            if(value.contains(".")) {
+        if (value.startsWith("$")) value = value.substring(1);
+        if (!variables.containsKey(value)) {
+            if (value.contains(".")) {
                 String[] variableKeySplit = value.split("\\.", 2);
                 Object objValue = variables.get(variableKeySplit[0]);
                 Object subValue = SpelExpressionParserHelper.getValue(variableKeySplit[1], objValue);
-                if(subValue.getClass().getPackage().getName().startsWith("java.")) {
+                if (subValue.getClass().getPackage().getName().startsWith("java.")) {
                     return subValue.toString();
                 } else {
                     throw unableToRenderFullObjectException(value, subValue.getClass());
@@ -47,7 +48,7 @@ public abstract class ExpressionEval {
             }
         } else {
             Object objValue = variables.get(value);
-            if(objValue.getClass().getPackage().getName().startsWith("java.")) {
+            if (objValue.getClass().getPackage().getName().startsWith("java.")) {
                 return objValue.toString();
             } else {
                 throw unableToRenderFullObjectException(value, objValue.getClass());
@@ -68,7 +69,7 @@ public abstract class ExpressionEval {
         return SpelExpressionParserHelper.getValue(escape(event), eventController);
     }
 
-    public static String escape(String raw){
+    public static String escape(String raw) {
         try {
             return URLDecoder.decode(raw.replace("%27", "''"), Charset.defaultCharset().displayName());
         } catch (UnsupportedEncodingException e) {
