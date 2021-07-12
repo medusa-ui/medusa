@@ -27,7 +27,7 @@
 <p>Last bought : [$last_bought]</p>
 <button m-click="buy('coffee')">Buy some coffee</button>
 <button m-click="buy('tea', 'sugar', 3,'cookie')">Buy some tea and sugar</button>
-<button m-click="buy('coffee, sugar but no cream','cookies (1 piece)')" type="button">Breaking stuff 1</button>
+<button m-click="buy('coffee, sugar but no cream','cookies (1 piece)', this.type)" type="button">Breaking stuff 1</button>
 <button m-click='buy("coffee, sugar but no cream","cookies (2 pieces)")' type='button'>Breaking stuff 2</button>
 <button m-click='buy("coffee, sugar but no cream","cookies (3 pieces)")' type="button">Breaking stuff 3</button>
 <button m-click="clear()" m-disabled="$items-bought-size == 0">Clear</button>
@@ -45,8 +45,8 @@
 [$end for]
 
 <p>Searched for: [$ search ]</p>
-<p>[$search]</p>
-<form><input m-change="search()" type="text" name="term" autocomplete="off" value="[$counter-value]" /></form>
+<p>[$search-result]</p>
+<form><input m-change="search(this.value, 3,this.type,this.name)" type="text" name="term" autocomplete="off" /></form>
 
 <h5>Orders</h5>
 <button m-click='order()' type="button" m-hide="$three-items">Order [$blue-sky]</button>

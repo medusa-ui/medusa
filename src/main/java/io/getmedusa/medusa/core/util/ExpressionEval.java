@@ -3,6 +3,9 @@ package io.getmedusa.medusa.core.util;
 import io.getmedusa.medusa.core.annotation.UIEventController;
 import io.getmedusa.medusa.core.injector.DOMChange;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -37,7 +40,7 @@ public abstract class ExpressionEval {
                 Object objValue = variables.get(variableKeySplit[0]);
                 Object subValue = SpelExpressionParserHelper.getValue(variableKeySplit[1], objValue);
                 if(subValue.getClass().getPackage().getName().startsWith("java.")) {
-                   return subValue.toString();
+                    return subValue.toString();
                 } else {
                     throw unableToRenderFullObjectException(value, subValue.getClass());
                 }
@@ -62,13 +65,15 @@ public abstract class ExpressionEval {
     }
 
     public static List<DOMChange> evalEventController(String event, UIEventController eventController) {
-        return SpelExpressionParserHelper.getValue(event, eventController);
+        return SpelExpressionParserHelper.getValue(escape(event), eventController);
     }
 
-    public static List<String> findVariablesPresent(String toCheck) {
-        List<String> variables = new ArrayList<>();
-        Matcher matcher = pattern.matcher(toCheck);
-        while (matcher.find()) variables.add(matcher.group().substring(1));
-        return variables;
+    public static String escape(String raw){
+        try {
+            return URLDecoder.decode(raw.replace("%27", "''"), Charset.defaultCharset().displayName());
+        } catch (UnsupportedEncodingException e) {
+            throw new IllegalStateException(e);
+        }
     }
+
 }

@@ -218,20 +218,55 @@ _M.debug = function(textToLog, fullObject) {
     }
 };
 
-_M.waitingForEnable = [];
-_M.sendEvent = function(origin, e) {
-    const disableOnClick = origin.attributes["m-disable-on-click-until"];
-    if(disableOnClick !== undefined) {
-        const loadingStyle = origin.attributes["m-loading-style"];
+_M.elementEscape = function(valueToEscape) {
+    return encodeURIComponent(valueToEscape).replace(/[!'()*]/g, function(c) {
+        return '%' + c.charCodeAt(0).toString(16);
+    });
+};
 
-        _M.waitingForEnable.push({"elem": origin, "expression": disableOnClick.value});
-        origin.disabled = true;
+_M.parseSelfReference = function(e, originElem) {
+    const parametersUnparsed = e.match(/\(.*\)/)[0];
+    if(null !== parametersUnparsed && parametersUnparsed.indexOf("this.") !== -1) {
+        const partToEval = parametersUnparsed.substring(1, parametersUnparsed.length-1);
+        const parametersToEval = partToEval.split(",");
+        let parameters = "(";
+        let appender = "";
+        for(const paramToEval of parametersToEval) {
+            parameters += appender;
+            let param = paramToEval.trim();
+            if(param.indexOf("this.") === 0) {
+                const resolvedParam = originElem[param.replace("this.", "")];
+                if(resolvedParam === undefined) {
+                    param = null;
+                } else {
+                    param = "'" + _M.elementEscape(resolvedParam) + "'";
+                }
+            }
+            parameters += param;
+            appender = ", ";
+        }
+        parameters += ")";
+        return e.replace(parametersUnparsed, parameters);
+    }
+    return e;
+};
+
+_M.waitingForEnable = [];
+_M.sendEvent = function(originElem, e) {
+    const disableOnClick = originElem.attributes["m-disable-on-click-until"];
+    if(disableOnClick !== undefined) {
+        const loadingStyle = originElem.attributes["m-loading-style"];
+
+        _M.waitingForEnable.push({"elem": originElem, "expression": disableOnClick.value});
+        originElem.disabled = true;
         if(loadingStyle === undefined || loadingStyle.value === "top") {
             _M.handleVisibilityConditionals([document.getElementById("m-top-load-bar")], true);
         } else if (loadingStyle.value === "full") {
             _M.handleVisibilityConditionals([document.getElementById("m-full-loader")], true);
         }
     }
+
+    e = _M.parseSelfReference(e, originElem);
     _M.ws.send(e);
 };
 

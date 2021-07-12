@@ -3,12 +3,21 @@ package io.getmedusa.medusa.core.util;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.net.URLDecoder;
 import java.time.Year;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 class SpelExpressionParserHelperTest {
+
+    @Test
+    void escaping() {
+        String raw = "search('안녕하세요세계hello%20world%27tasdasdsasdx', 3, 'text', 'term')";
+        String escaped = ExpressionEval.escape(raw);
+        String result = SpelExpressionParserHelper.getValue(escaped, new Person("John", 3, new Country("Belgium")));
+        Assertions.assertEquals("hello medusa 123 :: 안녕하세요세계hello world'tasdasdsasdx", result);
+    }
 
     @Test
     void basics() {
@@ -89,6 +98,10 @@ class Person {
 
     public int getAge() {
         return age;
+    }
+
+    public String search(String parameter, int number, String type, String name) {
+        return "hello medusa 123 :: " + parameter;
     }
 
     @Override

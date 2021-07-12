@@ -27,6 +27,7 @@ public class ExampleEventHandler implements UIEventController {
         modelMap.put("three-items", orders.size() == 3 );
         modelMap.put("search", "initial value!");
         modelMap.put("done-waiting", false);
+        modelMap.put("search-result", "");
         return new PageSetup(
                 "/",
                 "hello-world",
@@ -76,8 +77,8 @@ public class ExampleEventHandler implements UIEventController {
                 new DOMChange("items-bought-size", listOfItemsBought.size()));
     }
 
-    public List<DOMChange> search() {
-        return Collections.singletonList(new DOMChange("search", UUID.randomUUID().toString()));
+    public List<DOMChange> search(String valueToSearch, int someValue, String type, String name) {
+        return Collections.singletonList(new DOMChange("search-result", UUID.randomUUID().toString() + ":" + valueToSearch));
     }
 
     public List<DOMChange> clear() {

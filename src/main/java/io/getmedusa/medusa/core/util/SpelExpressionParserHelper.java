@@ -56,6 +56,7 @@ abstract class SpelExpressionParserHelper {
     }
 
     public static boolean isExpression(String expression) {
+        if(null == expression || "".equals(expression.trim())) return false;
         try {
             SPEL_EXPRESSION_PARSER.parseExpression(expression).getValue();
             return true;
