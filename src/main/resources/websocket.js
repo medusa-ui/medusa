@@ -15,7 +15,7 @@ _M.retryConnection = function () {
         try{
             _M.ws = new WebSocket("ws://" + window.location.host + "%WEBSOCKET_URL%");
             if(_M.ws.readyState === _M.ws.CLOSED || _M.ws.readyState === _M.ws.CLOSING) {
-                retryConnection();
+                _M.retryConnection();
             }
             _M.ws.onopen = function() {
                 _M.debug("ws.onopen", _M.ws);
@@ -23,11 +23,11 @@ _M.retryConnection = function () {
             }
             _M.ws.onclose = function(error) {
                 _M.debug("ws.onclose", _M.ws, error);
-                retryConnection();
+                _M.retryConnection();
             }
             _M.ws.onerror = function(error) {
                 _M.debug("ws.onerror", _M.ws, error);
-                _M.log("An error occured");
+                _M.log("An error occurred");
             }
             _M.ws.onmessage = function(message) {
                 _M.debug("ws.onmessage", _M.ws, message);
@@ -35,7 +35,7 @@ _M.retryConnection = function () {
             }
         } catch (e) {
             _M.debug(e);
-            retryConnection();
+            _M.retryConnection();
         }
     }, _M.timeoutTimer);
 };
