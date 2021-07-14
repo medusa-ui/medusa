@@ -2,7 +2,7 @@ package io.getmedusa.medusa.core.websocket;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.getmedusa.medusa.core.annotation.UIEventController;
+import io.getmedusa.medusa.core.annotation.UIEventComponent;
 import io.getmedusa.medusa.core.injector.DOMChange;
 import io.getmedusa.medusa.core.registry.*;
 import io.getmedusa.medusa.core.util.ExpressionEval;
@@ -81,7 +81,7 @@ public class ReactiveWebSocketHandler implements WebSocketHandler {
     private List<DOMChange> executeEvent(WebSocketSession session, String event) {
         try {
             List<DOMChange> domChanges = new ArrayList<>();
-            final UIEventController eventController = EventHandlerRegistry.getInstance().get(session);
+            final UIEventComponent eventController = EventHandlerRegistry.getInstance().get(session);
             final List<DOMChange> parsedExpressionValues = ExpressionEval.evalEventController(event, eventController);
             if (parsedExpressionValues != null) domChanges = new ArrayList<>(parsedExpressionValues);
             return domChanges;

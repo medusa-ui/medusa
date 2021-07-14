@@ -1,11 +1,17 @@
 package io.getmedusa.medusa.core.util;
 
-import io.getmedusa.medusa.core.annotation.UIEventController;
+import io.getmedusa.medusa.core.annotation.DOMChanges;
+import io.getmedusa.medusa.core.annotation.UIEventComponent;
+import io.getmedusa.medusa.core.annotation.UIEventPage;
 import io.getmedusa.medusa.core.injector.DOMChange;
 
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.net.URLDecoder;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -65,8 +71,33 @@ public abstract class ExpressionEval {
         return SpelExpressionParserHelper.getStringValue(property, value);
     }
 
-    public static List<DOMChange> evalEventController(String event, UIEventController eventController) {
-        return SpelExpressionParserHelper.getValue(escape(event), eventController);
+    public static List<DOMChange> evalEventController(String event, UIEventComponent eventController) {
+        List<DOMChange> changes = new ArrayList<>();
+        if(eventController instanceof UIEventPage) {
+            SpelExpressionParserHelper.getValue(event,eventController);
+            /* TODO clean + check args */
+            for (Method method : eventController.getClass().getDeclaredMethods()){
+                if (event.startsWith(method.getName()) && method.isAnnotationPresent(DOMChanges.class)) {
+                    String[] props = method.getAnnotation(DOMChanges.class).value();
+                    for (String prop : props) {
+                        try{
+                            Method getter = eventController.getClass().getMethod("get" + prop.substring(0, 1).toUpperCase() + prop.substring(1));
+                            changes.add(new DOMChange(prop, getter.invoke(eventController)));
+                        } catch (NoSuchMethodException e) {
+                            e.printStackTrace();
+                        } catch (InvocationTargetException e) {
+                            e.printStackTrace();
+                        } catch (IllegalAccessException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            }
+        } else {
+            changes.addAll(SpelExpressionParserHelper.getValue(escape(event), eventController));
+        }
+        // System.out.println(changes);
+        return changes;
     }
 
     public static String escape(String raw) {
@@ -76,5 +107,4 @@ public abstract class ExpressionEval {
             throw new IllegalStateException(e);
         }
     }
-
 }

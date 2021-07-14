@@ -53,4 +53,12 @@ public class DOMChange {
         CONDITIONAL_CLASS,
         M_ATTR;
     }
+
+    @Override
+    public String toString() {
+        return "DOMChange{" +
+                "f='" + f + '\'' +
+                ", v=" + v +
+                '}';
+    }
 }

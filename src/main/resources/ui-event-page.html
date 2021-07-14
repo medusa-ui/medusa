@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Medusa demo :: [$counter-value]</title>
+    <link href="static/stylesheet.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter&family=Merriweather&display=swap" rel="stylesheet">
+</head>
+<body>
+<h1>🦑 Hello Medusa</h1>
+
+<p>Counter: [$counter]</p>
+<p>Counter: [$calculated]</p>
+<button m-click="increase(1)">Increase counter</button>
+[$if($counter > 5)]
+<p>Counter is above 5</p>
+[$else if($counter > 2)]
+<p>Counter is above 2</p>
+[$else]
+<p>Counter is below 2 and 5</p>
+[$end if]
+</body>
+</html>

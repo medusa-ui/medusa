@@ -1,16 +1,20 @@
 package io.getmedusa.medusa.core.injector;
 
+import io.getmedusa.medusa.core.annotation.UIEventComponent;
 import io.getmedusa.medusa.core.annotation.UIEventController;
+import io.getmedusa.medusa.core.annotation.UIEventPage;
 import io.getmedusa.medusa.core.cache.HTMLCache;
 import io.getmedusa.medusa.core.injector.tag.*;
 import io.getmedusa.medusa.core.injector.tag.meta.InjectionResult;
 import io.getmedusa.medusa.core.registry.EventHandlerRegistry;
 import io.getmedusa.medusa.core.util.FilenameHandler;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 import static io.getmedusa.medusa.core.websocket.ReactiveWebSocketHandler.MAPPER;
 
@@ -65,9 +69,9 @@ public enum HTMLInjector {
 
     protected String htmlStringInject(String filename, String htmlString) {
         final Map<String, Object> variables = newLargestFirstMap();
-        final UIEventController uiEventController = EventHandlerRegistry.getInstance().get(filename);
-        if(null != uiEventController) variables.putAll(uiEventController.setupPage().getPageVariables());
-
+        final UIEventComponent uiEventController = EventHandlerRegistry.getInstance().get(filename);
+        if(null != uiEventController && uiEventController instanceof UIEventController) variables.putAll(((UIEventController)uiEventController).setupPage().getPageVariables());
+        if(null != uiEventController && uiEventController instanceof UIEventPage) variables.putAll(getVariables((UIEventPage) uiEventController));
         InjectionResult result = iterationTag.injectWithVariables(new InjectionResult(htmlString), variables);
         result = conditionalTag.injectWithVariables(result, variables);
         result = clickTag.inject(result.getHtml());
@@ -78,6 +82,27 @@ public enum HTMLInjector {
         injectVariablesInScript(result, variables);
 
         return injectScript(filename, result);
+    }
+
+    /* TODO OK for POC, but code needs to be improved */
+    private Map<String, Object> getVariables(UIEventPage uiEventController) {
+        Map<String,Object> map= new HashMap<>();
+        Class<? extends UIEventPage> controllerClass = uiEventController.getClass();
+        for (Field field : controllerClass.getDeclaredFields()){
+            String name= field.getName();
+            try {
+                Method method = controllerClass.getMethod("get" + name.substring(0, 1).toUpperCase() + name.substring(1));
+                map.put(name, method.invoke(uiEventController));
+            } catch (NoSuchMethodException e) {
+                e.printStackTrace();
+            } catch (InvocationTargetException e) {
+                e.printStackTrace();
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        }
+        System.out.println(map);
+        return map;
     }
 
     private void injectVariablesInScript(InjectionResult result, Map<String, Object> variables) {

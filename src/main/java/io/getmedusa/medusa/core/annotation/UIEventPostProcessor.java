@@ -1,15 +1,10 @@
 package io.getmedusa.medusa.core.annotation;
 
-import io.getmedusa.medusa.core.injector.HTMLInjector;
 import io.getmedusa.medusa.core.registry.EventHandlerRegistry;
 import io.getmedusa.medusa.core.registry.RouteRegistry;
-import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
-import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.stereotype.Component;
-
-import java.lang.reflect.Method;
 
 @Component
 public class UIEventPostProcessor implements BeanPostProcessor {
@@ -21,6 +16,10 @@ public class UIEventPostProcessor implements BeanPostProcessor {
             final PageSetup pageSetup = eventController.setupPage();
             RouteRegistry.getInstance().add(pageSetup.getGetPath(), pageSetup.getHtmlFile());
             EventHandlerRegistry.getInstance().add(pageSetup.getHtmlFile(), eventController);
+        } else if(bean instanceof UIEventPage) {
+            final UIEventPage controller = (UIEventPage) bean;
+            RouteRegistry.getInstance().add(controller.getPath(), controller.getHtmlFile());
+            EventHandlerRegistry.getInstance().add(controller.getHtmlFile(), controller);
         }
         return BeanPostProcessor.super.postProcessBeforeInitialization(bean, beanName);
     }
