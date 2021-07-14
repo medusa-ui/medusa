@@ -1,8 +1,12 @@
 package io.getmedusa.medusa.core.websocket;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.getmedusa.medusa.core.registry.RouteRegistry;
 import io.netty.channel.ChannelOption;
 import io.netty.handler.timeout.ReadTimeoutHandler;
 import io.netty.handler.timeout.WriteTimeoutHandler;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.http.MediaType;
@@ -22,6 +26,8 @@ import java.util.concurrent.TimeUnit;
 @ConditionalOnProperty(value="hydra.enabled", havingValue = "true")
 public class HydraConnection {
 
+    private ObjectMapper objectMapper = new ObjectMapper();
+
     HttpClient httpClient = HttpClient.create()
             .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 5000)
             .responseTimeout(Duration.ofMillis(5000))
@@ -33,18 +39,30 @@ public class HydraConnection {
             .clientConnector(new ReactorClientHttpConnector(httpClient))
             .build();
 
+    private HydraHealthRegistration hydraHealthRegistration;
+    public HydraConnection(@Value("${server.port:8080}") int port, @Value("${hydra.name}") String name) {
+        this.hydraHealthRegistration = new HydraHealthRegistration(port, name);
+    }
+
     @PostConstruct
     public void init() {
+        hydraHealthRegistration.setEndpoints(RouteRegistry.getInstance().getRoutes());
         Flux
-                .interval(Duration.ofMillis(30000))
-                .subscribe(x -> client
-                        .post()
-                        .uri("http://localhost:8761/services/register")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .bodyValue("{\"serviceName\": \"" + UUID.randomUUID() + "\"}")
-                        .accept(MediaType.APPLICATION_JSON)
-                        .retrieve()
-                        .bodyToMono(String.class).onErrorResume(y -> Mono.empty()).subscribe(System.out::println));
+                .interval(Duration.ofSeconds(3))
+                .subscribe(x -> {
+                    try {
+                        client
+                                .post()
+                                .uri("http://localhost:8761/services/register")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .bodyValue(objectMapper.writeValueAsString(hydraHealthRegistration))
+                                .accept(MediaType.APPLICATION_JSON)
+                                .retrieve()
+                                .bodyToMono(String.class).onErrorResume(y -> Mono.empty()).subscribe(System.out::println);
+                    } catch (JsonProcessingException e) {
+                        e.printStackTrace();
+                    }
+                });
     }
 
 }

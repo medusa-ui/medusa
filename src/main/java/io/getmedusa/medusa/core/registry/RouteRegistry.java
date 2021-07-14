@@ -19,4 +19,8 @@ public class RouteRegistry {
     public Set<Map.Entry<String, String>> getRoutesWithHTMLFile() {
         return routesWithHTMLFile.entrySet();
     }
+
+    public Set<String> getRoutes() {
+        return routesWithHTMLFile.keySet();
+    }
 }
