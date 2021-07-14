@@ -48,7 +48,7 @@ public class HydraConnection {
     public void init() {
         hydraHealthRegistration.setEndpoints(RouteRegistry.getInstance().getRoutes());
         Flux
-                .interval(Duration.ofSeconds(3))
+                .interval(Duration.ofSeconds(30))
                 .subscribe(x -> {
                     try {
                         client
