@@ -83,7 +83,9 @@ _M.handleMAttributeChange = function (k) {
 _M.injectVariablesIntoExpression = function(expression) {
     const found = expression.match(new RegExp("\\$\\w+(-?\\w*)*"));
     for(const toReplace of found) {
-        expression = expression.replaceAll(toReplace, _M.variables[toReplace.substring(1)]);
+        if (toReplace !== undefined) {
+            expression = expression.replaceAll(toReplace, _M.variables[toReplace.substring(1)]);
+        }
     }
     return expression;
 };

@@ -2,17 +2,19 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Medusa demo :: [$counter-value]</title>
+    <title>Medusa demo :: [$counter]</title>
     <link href="static/stylesheet.css" rel="stylesheet">
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter&family=Merriweather&display=swap" rel="stylesheet">
 </head>
 <body>
-<h1>🦑 Hello Medusa</h1>
+<h1>🦑 Medusa alternative</h1>
 
-<p>Counter: [$counter]</p>
-<p>Counter: [$calculated]</p>
-<button m-click="increase(1)">Increase counter</button>
+<p>Counter: [$counter] </p>
+<p>Calculated: [$calculated]</p>
+<button m-click="increase(1)" m-disabled="$counter == 10" >Increase counter</button>
+<button m-click="decrease(1)" m-disabled="$counter == 0">Decrease counter</button>
+<p m-hide="!$aboveEight">I Think you should start thinking of decrementing!</p>
 [$if($counter > 5)]
 <p>Counter is above 5</p>
 [$else if($counter > 2)]
@@ -20,5 +22,10 @@
 [$else]
 <p>Counter is below 2 and 5</p>
 [$end if]
+<h5>People with a average age of <b>[$averageAge]</b></h5>
+[$foreach $people]
+    <p>[$each.name]</p>
+[$end for]
+<button m-click="refreshPeople()">Refresh people</button>
 </body>
 </html>

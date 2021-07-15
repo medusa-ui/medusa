@@ -11,7 +11,6 @@ import java.lang.reflect.Method;
 import java.net.URLDecoder;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -76,16 +75,15 @@ public abstract class ExpressionEval {
         if(eventController instanceof UIEventPage) {
             SpelExpressionParserHelper.getValue(event,eventController);
             /* TODO clean + check args */
-            for (Method method : eventController.getClass().getDeclaredMethods()){
+            Class<? extends UIEventComponent> clazz = eventController.getClass();
+            for (Method method : clazz.getDeclaredMethods()){
                 if (event.startsWith(method.getName()) && method.isAnnotationPresent(DOMChanges.class)) {
                     String[] props = method.getAnnotation(DOMChanges.class).value();
                     for (String prop : props) {
-                        try{
-                            Method getter = eventController.getClass().getMethod("get" + prop.substring(0, 1).toUpperCase() + prop.substring(1));
-                            changes.add(new DOMChange(prop, getter.invoke(eventController)));
-                        } catch (NoSuchMethodException e) {
-                            e.printStackTrace();
-                        } catch (InvocationTargetException e) {
+                        try {
+                            Method getter = ReflectionUtil.getter(prop, clazz);
+                            if(null != getter) changes.add(new DOMChange(prop, getter.invoke(eventController)));
+                        }  catch (InvocationTargetException e) {
                             e.printStackTrace();
                         } catch (IllegalAccessException e) {
                             e.printStackTrace();
@@ -96,7 +94,7 @@ public abstract class ExpressionEval {
         } else {
             changes.addAll(SpelExpressionParserHelper.getValue(escape(event), eventController));
         }
-        // System.out.println(changes);
+        System.out.println(changes);
         return changes;
     }
 

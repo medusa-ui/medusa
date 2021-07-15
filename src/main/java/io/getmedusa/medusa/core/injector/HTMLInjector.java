@@ -1,5 +1,6 @@
 package io.getmedusa.medusa.core.injector;
 
+import io.getmedusa.medusa.core.annotation.IgnoreDOMChanges;
 import io.getmedusa.medusa.core.annotation.UIEventComponent;
 import io.getmedusa.medusa.core.annotation.UIEventController;
 import io.getmedusa.medusa.core.annotation.UIEventPage;
@@ -8,6 +9,7 @@ import io.getmedusa.medusa.core.injector.tag.*;
 import io.getmedusa.medusa.core.injector.tag.meta.InjectionResult;
 import io.getmedusa.medusa.core.registry.EventHandlerRegistry;
 import io.getmedusa.medusa.core.util.FilenameHandler;
+import io.getmedusa.medusa.core.util.ReflectionUtil;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -80,28 +82,23 @@ public enum HTMLInjector {
         result = classAppendTag.injectWithVariables(result, variables);
         result = genericMTag.injectWithVariables(result, variables);
         injectVariablesInScript(result, variables);
-
         return injectScript(filename, result);
     }
 
-    /* TODO OK for POC, but code needs to be improved */
+    /* TODO look for a better approach, for now we take all getters that are not annotated with @DOMIgnore */
     private Map<String, Object> getVariables(UIEventPage uiEventController) {
         Map<String,Object> map= new HashMap<>();
         Class<? extends UIEventPage> controllerClass = uiEventController.getClass();
-        for (Field field : controllerClass.getDeclaredFields()){
-            String name= field.getName();
+        for (Method method : controllerClass.getDeclaredMethods()){
             try {
-                Method method = controllerClass.getMethod("get" + name.substring(0, 1).toUpperCase() + name.substring(1));
-                map.put(name, method.invoke(uiEventController));
-            } catch (NoSuchMethodException e) {
-                e.printStackTrace();
-            } catch (InvocationTargetException e) {
-                e.printStackTrace();
-            } catch (IllegalAccessException e) {
+                if(ReflectionUtil.isGetterMethod(method) && !method.isAnnotationPresent(IgnoreDOMChanges.class)) {
+                    map.put(ReflectionUtil.property(method), method.invoke(uiEventController));
+                }
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
-        System.out.println(map);
+        System.out.println("variables: " + map);
         return map;
     }
 

@@ -18,8 +18,8 @@ public class UIEventPostProcessor implements BeanPostProcessor {
             EventHandlerRegistry.getInstance().add(pageSetup.getHtmlFile(), eventController);
         } else if(bean instanceof UIEventPage) {
             final UIEventPage controller = (UIEventPage) bean;
-            RouteRegistry.getInstance().add(controller.getPath(), controller.getHtmlFile());
-            EventHandlerRegistry.getInstance().add(controller.getHtmlFile(), controller);
+            RouteRegistry.getInstance().add(controller.path(), controller.htmlFile());
+            EventHandlerRegistry.getInstance().add(controller.htmlFile(), controller);
         }
         return BeanPostProcessor.super.postProcessBeforeInitialization(bean, beanName);
     }

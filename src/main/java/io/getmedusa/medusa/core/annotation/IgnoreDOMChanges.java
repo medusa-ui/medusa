@@ -6,12 +6,10 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Mark a method that one or more DOMChange events need to be emitted.
+ * Mark a method that the property won't be used in the page.
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
-public @interface DOMChanges {
-
-    String[] value() default "*";
+public @interface IgnoreDOMChanges {
 
 }
