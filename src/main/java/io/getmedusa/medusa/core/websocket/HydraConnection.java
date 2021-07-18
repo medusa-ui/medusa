@@ -13,12 +13,20 @@ import org.springframework.http.MediaType;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.socket.WebSocketMessage;
+import org.springframework.web.reactive.socket.client.ReactorNettyWebSocketClient;
+import org.springframework.web.reactive.socket.client.WebSocketClient;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.FluxSink;
+import reactor.core.publisher.Mono;
 import reactor.netty.http.client.HttpClient;
 import reactor.util.retry.Retry;
 
 import javax.annotation.PostConstruct;
+import java.net.URI;
 import java.time.Duration;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Predicate;
 
 @Service
 @ConditionalOnProperty(value="hydra.enabled", havingValue = "true")
@@ -26,6 +34,8 @@ public class HydraConnection implements DisposableBean {
 
     private static final String HYDRA_HEALTH_URI = "http://localhost:8761/services/register";
     private static final String HYDRA_KILL_URI = "http://localhost:8761/services/kill";
+
+    private static final String HYDRA_HEALTH_WS_URI = "ws://localhost:8761/services/health";
 
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final WebClient client = setupWebClient();
@@ -41,7 +51,14 @@ public class HydraConnection implements DisposableBean {
         hydraHealthRegistration.setEndpoints(RouteRegistry.getInstance().getRoutes());
         hydraHealthRegistration.setWebsockets(RouteRegistry.getInstance().getWebSockets());
         healthRegistrationJSON = objectMapper.writeValueAsString(hydraHealthRegistration);
-        healthPing();
+
+        new ReactorNettyWebSocketClient()
+                .execute(URI.create(HYDRA_HEALTH_WS_URI), session -> session
+                        .send(Flux.just(session.textMessage(healthRegistrationJSON))).and(session.receive()))
+                .retryWhen(Retry.indefinitely())
+                .subscribe();
+
+        //healthPing();
     }
 
     private void healthPing() {
