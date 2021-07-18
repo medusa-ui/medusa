@@ -1,12 +1,15 @@
 package io.getmedusa.medusa.core.registry;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class RouteRegistry {
 
     private static final RouteRegistry INSTANCE = new RouteRegistry();
+
     public static RouteRegistry getInstance() {
         return INSTANCE;
     }
@@ -22,5 +25,9 @@ public class RouteRegistry {
 
     public Set<String> getRoutes() {
         return routesWithHTMLFile.keySet();
+    }
+
+    public Set<String> getWebSockets() {
+        return new HashSet<>(routesWithHTMLFile.values());
     }
 }

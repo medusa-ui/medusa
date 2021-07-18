@@ -1,8 +1,5 @@
 package io.getmedusa.medusa.core.websocket;
 
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.stereotype.Component;
-
 import java.util.HashSet;
 import java.util.Set;
 
@@ -11,6 +8,7 @@ public class HydraHealthRegistration {
     private final int port;
     private final String name;
     private Set<String> endpoints = new HashSet<>();
+    private Set<String> websockets = new HashSet<>();
 
     public HydraHealthRegistration(int port, String name) {
         this.port = port;
@@ -31,5 +29,13 @@ public class HydraHealthRegistration {
 
     public void setEndpoints(Set<String> endpoints) {
         this.endpoints = endpoints;
+    }
+
+    public Set<String> getWebsockets() {
+        return websockets;
+    }
+
+    public void setWebsockets(Set<String> websockets) {
+        this.websockets = websockets;
     }
 }
