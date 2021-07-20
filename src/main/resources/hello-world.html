@@ -9,8 +9,9 @@
 </head>
 <body>
 <h1>🦑 Hello Medusa</h1>
-
-<p>Counter: [$counter-value]</p>
+<p>My Counter: [$my-counter]</p>
+<button m-click="increaseMyCounter('$uuid',$increase)">Increase my counter by [$increase]</button>
+<p>Global Counter: [$counter-value]</p>
 
 <button m-click="increaseCounter(1)">Increase counter</button>
 [$if($counter-value > 0)]

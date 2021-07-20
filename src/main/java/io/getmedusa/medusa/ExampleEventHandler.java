@@ -9,16 +9,22 @@ import java.util.*;
 
 @Component
 public class ExampleEventHandler implements UIEventController {
-
+    private int increase = 0;
     private int counter = 0;
     private final List<String> listOfItemsBought = new ArrayList<>();
     private final List<Order> orders = new ArrayList<>(Arrays.asList(new Order(new Product("Whitewood"),5),new Order(new Product("Darkwoods"),3)));
     private Product blueSky =  new Product("Blue Sky");
+    private Map<String, Integer> counters = new HashMap<>();
 
     @Override
     public PageSetup setupPage() {
+        String uuid= UUID.randomUUID().toString();
+        counters.put(uuid, 0);
         Map<String, Object> modelMap = new HashMap<>();
+        modelMap.put("uuid", uuid );
+        modelMap.put("increase", ++increase );
         modelMap.put("counter-value", counter);
+        modelMap.put("my-counter", counters.get(uuid));
         modelMap.put("last_bought", "Nothing yet!");
         modelMap.put("items-bought", listOfItemsBought);
         modelMap.put("items-bought-size", listOfItemsBought.size());
@@ -32,6 +38,12 @@ public class ExampleEventHandler implements UIEventController {
                 "/",
                 "hello-world",
                 modelMap);
+    }
+
+    // bugfix: m-click-handling
+    public List<DOMChange> increaseMyCounter(String uuid, int increase) {
+        counters.put(uuid, counters.get(uuid) + increase);
+        return Collections.singletonList(new DOMChange("my-counter", counters.get(uuid)));
     }
 
     public List<DOMChange> increaseCounter(Integer parameter) {

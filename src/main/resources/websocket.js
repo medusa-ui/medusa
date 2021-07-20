@@ -81,9 +81,11 @@ _M.handleMAttributeChange = function (k) {
 };
 
 _M.injectVariablesIntoExpression = function(expression) {
-    const found = expression.match(new RegExp("\\$\\w+(-?\\w*)*"));
-    for(const toReplace of found) {
-        expression = expression.replaceAll(toReplace, _M.variables[toReplace.substring(1)]);
+    const found = expression.match(new RegExp("\\$[\\w-]+","g"));
+    if(found) {
+        for(const toReplace of found) {
+            expression = expression.replaceAll(toReplace, _M.variables[toReplace.substring(1)]);
+        }
     }
     return expression;
 };
@@ -267,7 +269,7 @@ _M.sendEvent = function(originElem, e) {
     }
 
     e = _M.parseSelfReference(e, originElem);
-    _M.ws.send(e);
+    _M.ws.send(_M.injectVariablesIntoExpression(e));
 };
 
 _M.retryConnection();
