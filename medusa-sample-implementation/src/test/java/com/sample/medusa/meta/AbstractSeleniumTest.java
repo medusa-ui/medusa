@@ -50,6 +50,7 @@ public class AbstractSeleniumTest {
     }
 
     protected String getFromValue(String fromValue) {
+        sleep(50);
         return driver.findElement(By.cssSelector("[from-value='"+fromValue+"']")).getText();
     }
 
