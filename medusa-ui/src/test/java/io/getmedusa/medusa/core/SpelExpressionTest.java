@@ -14,7 +14,7 @@ import java.util.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
-public class SpelExpressionTest {
+class SpelExpressionTest {
 
     @Autowired SpelController myController;
 

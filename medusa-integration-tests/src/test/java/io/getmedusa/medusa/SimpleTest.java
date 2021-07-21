@@ -7,7 +7,7 @@ class SimpleTest {
 
     @Test
     void test() {
-        System.out.println(new ExampleEventHandler() instanceof UIEventController);
+        System.out.println("Hello world");
     }
 
 }

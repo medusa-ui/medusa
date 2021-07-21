@@ -1,4 +1,4 @@
-package io.getmedusa.medusa;
+package com.sample.medusa.eventhandler;
 
 import io.getmedusa.medusa.core.annotation.PageSetup;
 import io.getmedusa.medusa.core.annotation.UIEventController;

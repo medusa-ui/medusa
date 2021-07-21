@@ -1,4 +1,4 @@
-package io.getmedusa.medusa;
+package io.getmedusa.medusa.core;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -9,11 +9,11 @@ import java.util.ServiceLoader;
 import java.util.stream.StreamSupport;
 
 @SpringBootApplication
-public class MedusaApplication {
+public class TestApplication {
 
 	public static void main(String[] args) {
 		errorOnAnyBlockingCalls();
-		SpringApplication.run(MedusaApplication.class, args);
+		SpringApplication.run(TestApplication.class, args);
 	}
 
 	private static void errorOnAnyBlockingCalls() {
