@@ -1,5 +1,8 @@
 package io.getmedusa.medusa.core.injector;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class DOMChange {
 
     private String f; //field
@@ -52,5 +55,39 @@ public class DOMChange {
         ITERATION,
         CONDITIONAL_CLASS,
         M_ATTR;
+    }
+
+    public static DOMChanges of(String field, Object value) {
+        return new DOMChanges(field, value);
+    }
+
+    public static DOMChanges of(String field, Object value, DOMChangeType type) {
+        return new DOMChanges(field, value, type);
+    }
+
+    public static class DOMChanges {
+        private List<DOMChange> domChanges = new ArrayList<>();
+
+        public DOMChanges(String field, Object value) {
+            domChanges.add(new DOMChange(field, value));
+        }
+
+        public DOMChanges(String field, Object value, DOMChangeType type) {
+            domChanges.add(new DOMChange(field, value, type));
+        }
+        
+        public DOMChanges and(String field, Object value) {
+            domChanges.add(new DOMChange(field, value));
+            return this;
+        }
+
+        public DOMChanges and(String field, Object value, DOMChangeType type) {
+            domChanges.add(new DOMChange(field, value, type));
+            return this;
+        }
+
+        public List<DOMChange> build() {
+            return domChanges;
+        }
     }
 }

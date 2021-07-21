@@ -65,7 +65,7 @@ public abstract class ExpressionEval {
         return SpelExpressionParserHelper.getStringValue(property, value);
     }
 
-    public static List<DOMChange> evalEventController(String event, UIEventController eventController) {
+    public static DOMChange.DOMChanges evalEventController(String event, UIEventController eventController) {
         return SpelExpressionParserHelper.getValue(escape(event), eventController);
     }
 

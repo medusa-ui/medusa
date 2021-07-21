@@ -21,8 +21,8 @@ public class Page2EventHandler implements UIEventController {
     }
 
     //second method with same signature to check if page switching works correctly
-    public List<DOMChange> buy(Object... parameters) {
-        return Collections.singletonList(new DOMChange("example-value", "this store is closed!"));
+    public DOMChange.DOMChanges buy(Object... parameters) {
+        return DOMChange.of("example-value", "this store is closed!");
     }
 
 }
