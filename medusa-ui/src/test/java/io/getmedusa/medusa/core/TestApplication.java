@@ -23,7 +23,6 @@ public class TestApplication {
 				.sorted()
 				.forEach(builder::with);
 		builder.allowBlockingCallsInside("org.springframework.http.MediaTypeFactory", "parseMimeTypes"); //https://github.com/spring-projects/spring-framework/issues/26631#issuecomment-791504853
-		builder.allowBlockingCallsInside("io.getmedusa.medusa.ExampleEventHandler", "waitSeconds"); //explicitly calling a thread.sleep here
 		builder.install();
 	}
 

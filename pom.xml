@@ -19,7 +19,6 @@
 	<modules>
 		<module>medusa-ui</module>
 		<module>medusa-sample-implementation</module>
-		<module>medusa-integration-tests</module>
 	</modules>
 
 	<properties>
