@@ -40,42 +40,17 @@ public class AbstractSeleniumTest {
             chromeOptions.addArguments("window-size=1400,2100");
         }
         driver = new ChromeDriver(chromeOptions);
-        logout();
     }
 
     @AfterEach
     public void teardown() {
-        logout();
         if (driver != null) {
             driver.quit();
         }
     }
 
-    protected void logout() {
-        if (existsById("logout")) {
-            clickById("logout");
-        }
-    }
-
-    protected void login() {
-        goTo("/login");
-        if (!existsByCss("a[href='/map']")) {
-            //fillFieldById("username", EMAIL_VALID);
-            //fillFieldById("password", PASSW_VALID);
-            clickById("login-button");
-        }
-        goTo("/debug-setup");
-        goTo("/map");
-    }
-
-    protected void clickMenu(String menuItem) {
-        clickById("menu-" + menuItem.toLowerCase());
-        Assertions.assertTrue(getTextById("header").toLowerCase().contains(menuItem.toLowerCase()));
-    }
-
-    protected void goToLocation(String location) {
-        goTo("/map");
-        clickByCss("input[value='x']".replace("x", location));
+    protected String getFromValue(String fromValue) {
+        return driver.findElement(By.cssSelector("[from-value='"+fromValue+"']")).getText();
     }
 
     protected void sleep(int time) {
