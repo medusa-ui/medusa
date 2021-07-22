@@ -43,7 +43,7 @@ public class HTMLRouter {
         final String script = loadScript(scripts);
         final String styling = "<style>" + loadScript(style) + "</style>";
         return RouteRegistry.getInstance().getRoutesWithHTMLFile().stream().map(route -> {
-            String fileName = FilenameHandler.removeExtension(loadHTMLIntoCache(route.getValue()).getFilename());
+            String fileName = getPath(loadHTMLIntoCache(route.getValue()));
             return route(
                     GET(route.getKey()),
                     request -> ok().contentType(MediaType.TEXT_HTML).bodyValue(INSTANCE.inject(fileName, script, styling)));
@@ -62,17 +62,20 @@ public class HTMLRouter {
     }
 
     private Resource loadHTMLIntoCache(String htmlFile) {
-        String resourcePath = htmlFile;
-        if(!resourcePath.endsWith(".html")) resourcePath = resourcePath + ".html";
+        String resourcePath = FilenameHandler.normalize(htmlFile);
         Resource html = resourceLoader.getResource("classpath:/" + resourcePath);
         try {
-            String fileName = FilenameHandler.removeExtension(html.getFilename());
+            final String fileName = getPath(html);
             String htmlContent = HTMLCache.getInstance().getHTMLOrAdd(fileName, StreamUtils.copyToString(html.getInputStream(), CHARSET));
             PageTitleRegistry.getInstance().addTitle(fileName, htmlContent);
         } catch (IOException e) {
             e.printStackTrace();
         }
         return html;
+    }
+
+    private String getPath(Resource html) {
+        return FilenameHandler.removeExtension(((ClassPathResource) html).getPath());
     }
 
     @Bean

@@ -12,4 +12,11 @@ public class FilenameHandler {
         return fullString;
     }
 
+    public static String normalize(String htmlFile) {
+        String resourcePath = htmlFile;
+        if(!resourcePath.endsWith(".html")) resourcePath = resourcePath + ".html";
+        if(resourcePath.startsWith("/")) resourcePath = resourcePath.substring(1);
+        return resourcePath;
+    }
+
 }

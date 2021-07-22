@@ -1,5 +1,7 @@
 package io.getmedusa.medusa.core.annotation;
 
+import io.getmedusa.medusa.core.util.FilenameHandler;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -20,7 +22,7 @@ public class PageSetup {
     }
 
     public String getHtmlFile() {
-        return htmlFile;
+        return FilenameHandler.removeExtension(FilenameHandler.normalize(htmlFile));
     }
 
     public Map<String, Object> getPageVariables() {

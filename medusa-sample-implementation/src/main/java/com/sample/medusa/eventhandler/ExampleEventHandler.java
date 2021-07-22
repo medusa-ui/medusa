@@ -38,7 +38,7 @@ public class ExampleEventHandler implements UIEventController {
         modelMap.put("search-result", "");
         return new PageSetup(
                 "/",
-                "hello-world",
+                "/pages/hello-world",
                 modelMap);
     }
 

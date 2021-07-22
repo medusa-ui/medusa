@@ -16,7 +16,7 @@ public class Page2EventHandler implements UIEventController {
         modelMap.put("example-value", UUID.randomUUID().toString());
         return new PageSetup(
                 "/page2",
-                "page2",
+                "pages/page2.html",
                 modelMap);
     }
 
