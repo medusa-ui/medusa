@@ -12,6 +12,9 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.springframework.boot.web.server.LocalServerPort;
 
+import java.util.List;
+import java.util.Optional;
+
 public class AbstractSeleniumTest {
 
     @LocalServerPort
@@ -81,6 +84,12 @@ public class AbstractSeleniumTest {
         return driver.findElement(By.id(id)).getText();
     }
 
+    protected String getTextByClass(String clazz) {
+        final List<WebElement> elements = driver.findElements(By.className(clazz));
+        final Optional<WebElement> optionalMatch = elements.stream().filter(e -> !e.getText().isEmpty()).findFirst();
+        return optionalMatch.map(WebElement::getText).orElse(null);
+    }
+
     protected void fillFieldById(String id, String keys) {
         final WebElement element = driver.findElement(By.id(id));
         element.clear();
@@ -89,5 +98,9 @@ public class AbstractSeleniumTest {
 
     protected void clickById(String id) {
         driver.findElement(By.id(id)).click();
+    }
+
+    protected void refreshPage() {
+        driver.navigate().refresh();
     }
 }
