@@ -22,24 +22,22 @@ public class ExampleEventHandler implements UIEventController {
     public PageSetup setupPage() {
         String uuid= UUID.randomUUID().toString();
         counters.put(uuid, 0);
-        Map<String, Object> modelMap = new HashMap<>();
-        modelMap.put("uuid", uuid );
-        modelMap.put("increase", ++increase );
-        modelMap.put("counter-value", counter);
-        modelMap.put("my-counter", counters.get(uuid));
-        modelMap.put("last_bought", "Nothing yet!");
-        modelMap.put("items-bought", listOfItemsBought);
-        modelMap.put("items-bought-size", listOfItemsBought.size());
-        modelMap.put("orders", orders);
-        modelMap.put("blue-sky", blueSky.name);
-        modelMap.put("three-items", orders.size() == 3 );
-        modelMap.put("search", "initial value!");
-        modelMap.put("done-waiting", false);
-        modelMap.put("search-result", "");
         return new PageSetup(
                 "/",
-                "/pages/hello-world",
-                modelMap);
+                "/pages/hello-world")
+            .with("uuid", uuid )
+            .with("increase", ++increase )
+            .with("counter-value", counter)
+            .with("my-counter", counters.get(uuid))
+            .with("last_bought", "Nothing yet!")
+            .with("items-bought", listOfItemsBought)
+            .with("items-bought-size", listOfItemsBought.size())
+            .with("orders", orders)
+            .with("blue-sky", blueSky.name)
+            .with("three-items", orders.size() == 3 )
+            .with("search", "initial value!")
+            .with("done-waiting", false)
+            .with("search-result", "");
     }
 
     public DOMChanges increaseMyCounter(String uuid, int increase) {
