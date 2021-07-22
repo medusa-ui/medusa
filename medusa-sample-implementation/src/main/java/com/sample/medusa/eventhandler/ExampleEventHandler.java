@@ -2,10 +2,12 @@ package com.sample.medusa.eventhandler;
 
 import io.getmedusa.medusa.core.annotation.PageSetup;
 import io.getmedusa.medusa.core.annotation.UIEventController;
-import io.getmedusa.medusa.core.injector.DOMChange;
+import io.getmedusa.medusa.core.injector.DOMChanges;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
+
+import static io.getmedusa.medusa.core.injector.DOMChanges.of;
 
 @Component
 public class ExampleEventHandler implements UIEventController {
@@ -40,41 +42,40 @@ public class ExampleEventHandler implements UIEventController {
                 modelMap);
     }
 
-    // bugfix: m-click-handling
-    public List<DOMChange> increaseMyCounter(String uuid, int increase) {
+    public DOMChanges increaseMyCounter(String uuid, int increase) {
         counters.put(uuid, counters.get(uuid) + increase);
-        return Collections.singletonList(new DOMChange("my-counter", counters.get(uuid)));
+        return of("my-counter", counters.get(uuid));
     }
 
-    public List<DOMChange> increaseCounter(Integer parameter) {
+    public DOMChanges increaseCounter(Integer parameter) {
         counter += parameter;
         if(counter > 10) {
             counter = 0;
         }
 
-        return Collections.singletonList(new DOMChange("counter-value", counter));
+        return of("counter-value", counter);
     }
 
-    public List<DOMChange> waitSeconds(int secondsToWait) {
+    public DOMChanges waitSeconds(int secondsToWait) {
         try { Thread.sleep(secondsToWait * 1000L); } catch (Exception e) {}
-        return Collections.singletonList(new DOMChange("done-waiting", true));
+        return of("done-waiting", true);
     }
 
-    public List<DOMChange> order() {
+    public DOMChanges order() {
         orders.add(new Order(blueSky, 1));
-        return Arrays.asList(new DOMChange("orders", orders), new DOMChange("three-items", orders.size() == 3 ));
+        return of("orders", orders).and("three-items", orders.size() == 3 );
     }
 
-    public List<DOMChange> cancelOrder(String orderId) {
+    public DOMChanges cancelOrder(String orderId) {
         Iterator<Order> iterator = orders.iterator();
         while (iterator.hasNext()) {
             Order order = iterator.next();
             if (order.id.equals(orderId)) iterator.remove();
         }
-        return Arrays.asList(new DOMChange("orders", orders), new DOMChange("three-items", orders.size() == 3 ));
+        return of("orders", orders).and("three-items", orders.size() == 3 );
     }
 
-    public List<DOMChange> buy(Object... parameters) {
+    public DOMChanges buy(Object... parameters) {
         StringBuilder itemsBought = new StringBuilder();
         String appender = "";
         for(Object param : parameters) {
@@ -83,21 +84,19 @@ public class ExampleEventHandler implements UIEventController {
             appender = ", ";
         }
         listOfItemsBought.add(itemsBought.toString());
-        return Arrays.asList(
-                new DOMChange("items-bought", listOfItemsBought),
-                new DOMChange("last_bought", itemsBought.toString()),
-                new DOMChange("items-bought-size", listOfItemsBought.size()));
+        return of("items-bought", listOfItemsBought)
+                .and("last_bought", itemsBought.toString())
+                .and("items-bought-size", listOfItemsBought.size());
     }
 
-    public List<DOMChange> search(String valueToSearch, int someValue, String type, String name) {
-        return Collections.singletonList(new DOMChange("search-result", UUID.randomUUID().toString() + ":" + valueToSearch));
+    public DOMChanges search(String valueToSearch, int someValue, String type, String name) {
+        return of("search-result", UUID.randomUUID() + ":" + valueToSearch);
     }
 
-    public List<DOMChange> clear() {
+    public DOMChanges clear() {
         listOfItemsBought.clear();
-        return Arrays.asList(
-                new DOMChange("items-bought", listOfItemsBought),
-                new DOMChange("items-bought-size", 0));
+        return of("items-bought", listOfItemsBought)
+                .and("items-bought-size", 0);
     }
 }
 

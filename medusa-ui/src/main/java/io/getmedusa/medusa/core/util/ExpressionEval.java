@@ -1,12 +1,11 @@
 package io.getmedusa.medusa.core.util;
 
 import io.getmedusa.medusa.core.annotation.UIEventController;
-import io.getmedusa.medusa.core.injector.DOMChange;
+import io.getmedusa.medusa.core.injector.DOMChanges;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.nio.charset.Charset;
-import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -65,7 +64,7 @@ public abstract class ExpressionEval {
         return SpelExpressionParserHelper.getStringValue(property, value);
     }
 
-    public static List<DOMChange> evalEventController(String event, UIEventController eventController) {
+    public static DOMChanges evalEventController(String event, UIEventController eventController) {
         return SpelExpressionParserHelper.getValue(escape(event), eventController);
     }
 

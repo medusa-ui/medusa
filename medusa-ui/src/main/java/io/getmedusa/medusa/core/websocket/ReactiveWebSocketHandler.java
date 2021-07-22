@@ -3,7 +3,7 @@ package io.getmedusa.medusa.core.websocket;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.getmedusa.medusa.core.annotation.UIEventController;
-import io.getmedusa.medusa.core.injector.DOMChange;
+import io.getmedusa.medusa.core.injector.DOMChanges.DOMChange;
 import io.getmedusa.medusa.core.registry.*;
 import io.getmedusa.medusa.core.util.ExpressionEval;
 import org.springframework.expression.spel.SpelEvaluationException;
@@ -82,7 +82,7 @@ public class ReactiveWebSocketHandler implements WebSocketHandler {
         try {
             List<DOMChange> domChanges = new ArrayList<>();
             final UIEventController eventController = EventHandlerRegistry.getInstance().get(session);
-            final List<DOMChange> parsedExpressionValues = ExpressionEval.evalEventController(event, eventController);
+            final List<DOMChange> parsedExpressionValues = ExpressionEval.evalEventController(event, eventController).build();
             if (parsedExpressionValues != null) domChanges = new ArrayList<>(parsedExpressionValues);
             return domChanges;
         } catch (SpelEvaluationException e) {
