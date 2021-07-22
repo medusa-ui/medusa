@@ -2,11 +2,12 @@ package com.sample.medusa.eventhandler;
 
 import io.getmedusa.medusa.core.annotation.PageSetup;
 import io.getmedusa.medusa.core.annotation.UIEventController;
-import io.getmedusa.medusa.core.injector.DOMChange;
+import io.getmedusa.medusa.core.injector.DOMChanges;
 import org.springframework.stereotype.Component;
-import static io.getmedusa.medusa.core.injector.DOMChange.*;
 
 import java.util.*;
+
+import static io.getmedusa.medusa.core.injector.DOMChanges.of;
 
 @Component
 public class ExampleEventHandler implements UIEventController {
@@ -88,8 +89,8 @@ public class ExampleEventHandler implements UIEventController {
                 .and("items-bought-size", listOfItemsBought.size());
     }
 
-    public List<DOMChange> search(String valueToSearch, int someValue, String type, String name) {
-        return Collections.singletonList(new DOMChange("search-result", UUID.randomUUID().toString() + ":" + valueToSearch));
+    public DOMChanges search(String valueToSearch, int someValue, String type, String name) {
+        return of("search-result", UUID.randomUUID() + ":" + valueToSearch);
     }
 
     public DOMChanges clear() {

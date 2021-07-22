@@ -1,6 +1,6 @@
 package io.getmedusa.medusa.core;
 
-import io.getmedusa.medusa.core.injector.DOMChange;
+import io.getmedusa.medusa.core.injector.DOMChanges.DOMChange;
 import io.getmedusa.medusa.core.util.ExpressionEval;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

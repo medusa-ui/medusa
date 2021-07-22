@@ -3,7 +3,7 @@ package io.getmedusa.medusa.core.websocket;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.getmedusa.medusa.core.annotation.UIEventController;
-import io.getmedusa.medusa.core.injector.DOMChange;
+import io.getmedusa.medusa.core.injector.DOMChanges.DOMChange;
 import io.getmedusa.medusa.core.registry.*;
 import io.getmedusa.medusa.core.util.ExpressionEval;
 import org.springframework.expression.spel.SpelEvaluationException;
