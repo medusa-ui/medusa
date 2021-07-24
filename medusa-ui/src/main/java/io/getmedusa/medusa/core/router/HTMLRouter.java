@@ -1,7 +1,10 @@
 package io.getmedusa.medusa.core.router;
 
+import io.getmedusa.medusa.core.annotation.PageSetup;
+import io.getmedusa.medusa.core.annotation.UIEventController;
 import io.getmedusa.medusa.core.cache.HTMLCache;
 import io.getmedusa.medusa.core.injector.HTMLInjector;
+import io.getmedusa.medusa.core.registry.EventHandlerRegistry;
 import io.getmedusa.medusa.core.registry.PageTitleRegistry;
 import io.getmedusa.medusa.core.registry.RouteRegistry;
 import io.getmedusa.medusa.core.util.FilenameHandler;
@@ -46,10 +49,17 @@ public class HTMLRouter {
             String fileName = getPath(loadHTMLIntoCache(route.getValue()));
             return route(
                     GET(route.getKey()),
-                    request -> ok().contentType(MediaType.TEXT_HTML).bodyValue(INSTANCE.inject(fileName, script, styling)));
-        })
-        .reduce(RouterFunction::and)
-        .orElse(null);
+                    request -> {
+                        UIEventController uiEventController = EventHandlerRegistry.getInstance().get(route.getValue());
+                        PageSetup pageSetup = uiEventController.setupPage();
+                        pageSetup.resolveMap(request.pathVariables());
+                        System.out.println("HTMLRouter.pageSetup: " + pageSetup.getPageVariables());
+
+                        //uiEventController.resolved(pageSetup); // try with a hack
+                        System.out.println("HTMLRouter.uiEventController.setupPage(): " + uiEventController.setupPage().getPageVariables());
+                        return ok().contentType(MediaType.TEXT_HTML).bodyValue(INSTANCE.inject(fileName, script, styling)); });
+            }).reduce(RouterFunction::and)
+             .orElse(null);
     }
 
     private String loadScript(Resource scripts) {

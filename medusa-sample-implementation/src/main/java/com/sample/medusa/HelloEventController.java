@@ -11,7 +11,7 @@ public class HelloEventController implements UIEventController {
     public PageSetup setupPage() {
         return new PageSetup("/hello/{who}","pages/hello")
                 .with("base", "Welcome")
-                .withPathVariable("who","who") // <-- get actual value from the path-variable {who} and store it
+                .withPathVariable("who", (pathVar) -> pathVar.toUpperCase() + "!" )
                 ;
     }
 }
