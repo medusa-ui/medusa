@@ -1,23 +1,22 @@
 package com.sample.medusa.eventhandler;
 
-import io.getmedusa.medusa.core.annotation.PageSetup;
+import io.getmedusa.medusa.core.annotation.PageAttributes;
+import io.getmedusa.medusa.core.annotation.UIEventPage;
 import io.getmedusa.medusa.core.annotation.UIEventController;
 import io.getmedusa.medusa.core.injector.DOMChanges;
-import org.springframework.stereotype.Component;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.web.reactive.function.server.ServerRequest;
 
 import java.util.*;
 
-@Component
+@UIEventPage(path = "/page2", file = "pages/page2.html")
 public class Page2EventHandler implements UIEventController {
 
     @Override
-    public PageSetup setupPage() {
+    public PageAttributes setupAttributes(ServerRequest request, SecurityContext securityContext) {
         Map<String, Object> modelMap = new HashMap<>();
         modelMap.put("example-value", UUID.randomUUID().toString());
-        return new PageSetup(
-                "/page2",
-                "pages/page2.html",
-                modelMap);
+        return new PageAttributes(modelMap);
     }
 
     //second method with same signature to check if page switching works correctly

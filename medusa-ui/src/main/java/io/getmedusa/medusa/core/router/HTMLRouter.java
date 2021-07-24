@@ -14,6 +14,7 @@ import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.context.ReactiveSecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StreamUtils;
 import org.springframework.web.reactive.HandlerMapping;
@@ -46,7 +47,9 @@ public class HTMLRouter {
             String fileName = getPath(loadHTMLIntoCache(route.getValue()));
             return route(
                     GET(route.getKey()),
-                    request -> ok().contentType(MediaType.TEXT_HTML).bodyValue(INSTANCE.inject(fileName, script, styling)));
+                    request -> ReactiveSecurityContextHolder.getContext()
+                            .flatMap(securityContext ->
+                                    ok().contentType(MediaType.TEXT_HTML).bodyValue(INSTANCE.inject(request, securityContext, fileName, script, styling))));
         })
         .reduce(RouterFunction::and)
         .orElse(null);

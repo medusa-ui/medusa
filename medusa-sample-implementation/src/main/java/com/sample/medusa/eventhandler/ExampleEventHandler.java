@@ -1,15 +1,18 @@
 package com.sample.medusa.eventhandler;
 
-import io.getmedusa.medusa.core.annotation.PageSetup;
+import io.getmedusa.medusa.core.annotation.PageAttributes;
+import io.getmedusa.medusa.core.annotation.UIEventPage;
 import io.getmedusa.medusa.core.annotation.UIEventController;
 import io.getmedusa.medusa.core.injector.DOMChanges;
-import org.springframework.stereotype.Component;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.reactive.function.server.ServerRequest;
 
 import java.util.*;
 
 import static io.getmedusa.medusa.core.injector.DOMChanges.of;
 
-@Component
+@UIEventPage(path = "/", file = "/pages/hello-world")
 public class ExampleEventHandler implements UIEventController {
     private int increase = 0;
     private int counter = 0;
@@ -19,7 +22,7 @@ public class ExampleEventHandler implements UIEventController {
     private Map<String, Integer> counters = new HashMap<>();
 
     @Override
-    public PageSetup setupPage() {
+    public PageAttributes setupAttributes(ServerRequest request, SecurityContext securityContext){
         String uuid= UUID.randomUUID().toString();
         counters.put(uuid, 0);
         Map<String, Object> modelMap = new HashMap<>();
@@ -36,10 +39,9 @@ public class ExampleEventHandler implements UIEventController {
         modelMap.put("search", "initial value!");
         modelMap.put("done-waiting", false);
         modelMap.put("search-result", "");
-        return new PageSetup(
-                "/",
-                "/pages/hello-world",
-                modelMap);
+
+        modelMap.put("principal", ((UserDetails) securityContext.getAuthentication().getPrincipal()).getUsername());
+        return new PageAttributes(modelMap);
     }
 
     public DOMChanges increaseMyCounter(String uuid, int increase) {

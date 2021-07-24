@@ -1,14 +1,9 @@
 package io.getmedusa.medusa.core.injector;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import io.getmedusa.medusa.core.annotation.PageSetup;
-import io.getmedusa.medusa.core.annotation.UIEventController;
-import io.getmedusa.medusa.core.injector.tag.meta.InjectionResult;
-import io.getmedusa.medusa.core.registry.EventHandlerRegistry;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 

@@ -1,10 +1,13 @@
 package io.getmedusa.medusa.core.injector;
 
-import io.getmedusa.medusa.core.annotation.PageSetup;
+import io.getmedusa.medusa.core.annotation.PageAttributes;
+import io.getmedusa.medusa.core.annotation.UIEventPage;
 import io.getmedusa.medusa.core.annotation.UIEventController;
 import io.getmedusa.medusa.core.registry.EventHandlerRegistry;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.web.reactive.function.server.ServerRequest;
 
 import java.util.*;
 
@@ -273,18 +276,17 @@ class RenderUsecasesTest {
         }
     }
 
+    @UIEventPage(path = "/test", file = "xyz")
     static class HandlerImpl implements UIEventController {
 
-        private final String fileName;
         private final Map<String, Object> variables;
-        HandlerImpl(String fileName, Map<String, Object> variables) {
-            this.fileName = fileName;
+        HandlerImpl(String file, Map<String, Object> variables) {
             this.variables = variables;
         }
 
         @Override
-        public PageSetup setupPage() {
-            return new PageSetup("/test", fileName, variables);
+        public PageAttributes setupAttributes(ServerRequest request, SecurityContext securityContext) {
+            return new PageAttributes(variables);
         }
     }
 
