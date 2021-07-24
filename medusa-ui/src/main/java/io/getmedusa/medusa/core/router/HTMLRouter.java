@@ -54,9 +54,6 @@ public class HTMLRouter {
                         PageSetup pageSetup = uiEventController.setupPage();
                         pageSetup.resolveMap(request.pathVariables());
                         System.out.println("HTMLRouter.pageSetup: " + pageSetup.getPageVariables());
-
-                        //uiEventController.resolved(pageSetup); // try with a hack
-                        System.out.println("HTMLRouter.uiEventController.setupPage(): " + uiEventController.setupPage().getPageVariables());
                         return ok().contentType(MediaType.TEXT_HTML).bodyValue(INSTANCE.inject(fileName, script, styling)); });
             }).reduce(RouterFunction::and)
              .orElse(null);
