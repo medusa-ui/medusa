@@ -7,12 +7,13 @@ import io.getmedusa.medusa.core.injector.DOMChanges;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.reactive.function.server.ServerRequest;
+import reactor.core.Disposable;
 
 import java.util.*;
 
 import static io.getmedusa.medusa.core.injector.DOMChanges.of;
 
-@UIEventPage(path = "/", file = "/pages/hello-world")
+@UIEventPage(path = "/{who}", file = "/pages/hello-world")
 public class ExampleEventHandler implements UIEventController {
     private int increase = 0;
     private int counter = 0;
@@ -25,23 +26,28 @@ public class ExampleEventHandler implements UIEventController {
     public PageAttributes setupAttributes(ServerRequest request, SecurityContext securityContext){
         String uuid= UUID.randomUUID().toString();
         counters.put(uuid, 0);
-        Map<String, Object> modelMap = new HashMap<>();
-        modelMap.put("uuid", uuid );
-        modelMap.put("increase", ++increase );
-        modelMap.put("counter-value", counter);
-        modelMap.put("my-counter", counters.get(uuid));
-        modelMap.put("last_bought", "Nothing yet!");
-        modelMap.put("items-bought", listOfItemsBought);
-        modelMap.put("items-bought-size", listOfItemsBought.size());
-        modelMap.put("orders", orders);
-        modelMap.put("blue-sky", blueSky.name);
-        modelMap.put("three-items", orders.size() == 3 );
-        modelMap.put("search", "initial value!");
-        modelMap.put("done-waiting", false);
-        modelMap.put("search-result", "");
+        return new PageAttributes()
+                .with("uuid", uuid)
+                .with("increase", ++increase)
+                .with("counter-value", counter)
+                .with("my-counter", counters.get(uuid))
+                .with("last_bought", "Nothing yet!")
+                .with("items-bought", listOfItemsBought)
+                .with("items-bought-size", listOfItemsBought.size())
+                .with("orders", orders)
+                .with("blue-sky", blueSky.name)
+                .with("three-items", orders.size() == 3)
+                .with("search", "initial value!")
+                .with("done-waiting", false)
+                .with("search-result", "")
 
-        modelMap.put("principal", ((UserDetails) securityContext.getAuthentication().getPrincipal()).getUsername());
-        return new PageAttributes(modelMap);
+                .with("principal", ((UserDetails) securityContext.getAuthentication().getPrincipal()).getUsername())
+                // path variable + conversion
+                .with("who", request.pathVariable("who"), (in) -> in.toUpperCase() + " !")
+                // query param + conversion
+                .with("query-param-q", request.queryParam("q").orElseGet(() -> "nothing"), (in) -> new StringBuilder("query parameter q: ").append(in).toString())
+                // query param, no conversion
+                .with("query-param-s", request.queryParam("s").orElseGet(() -> ""));
     }
 
     public DOMChanges increaseMyCounter(String uuid, int increase) {
