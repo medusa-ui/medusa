@@ -10,9 +10,12 @@ class SimpleIntegrationTest extends AbstractSeleniumTest {
 
     @Test
     void testSelenium() {
-        driver.get(BASE);
-        System.out.println(driver.getPageSource());
-        Assertions.assertTrue(driver.getPageSource().contains("Hello Medusa"));
+        String hello = BASE + "/selenium";
+        driver.get(hello);
+        String pageSource = driver.getPageSource();
+        System.out.println(pageSource);
+        Assertions.assertTrue(pageSource.contains("Hello Medusa"));
+        Assertions.assertTrue(pageSource.contains("SELENIUM !"));
     }
 
 }
