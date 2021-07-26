@@ -13,8 +13,6 @@ public class PathQueryParamsIntegrationTest extends AbstractSeleniumTest {
         driver.get(BASE + "/test/upper/selenium/normal/test?value=12&person=2");
         String pageSource = driver.getPageSource();
 
-        System.out.println(pageSource);
-
         Assertions.assertTrue(pageSource.contains("SELENIUM"));
         Assertions.assertTrue(pageSource.contains("test"));
         Assertions.assertTrue(pageSource.contains("Dirk"));
@@ -25,8 +23,6 @@ public class PathQueryParamsIntegrationTest extends AbstractSeleniumTest {
     public void testDefaultQueryParam() {
         driver.get(BASE + "/test/upper/test/normal/other?person=1");
         String pageSource = driver.getPageSource();
-
-        System.out.println(pageSource);
 
         Assertions.assertTrue(pageSource.contains("TEST"));
         Assertions.assertTrue(pageSource.contains("other"));
