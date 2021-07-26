@@ -13,7 +13,7 @@ import java.util.*;
 
 import static io.getmedusa.medusa.core.injector.DOMChanges.of;
 
-@UIEventPage(path = "/{who}", file = "/pages/hello-world")
+@UIEventPage(path = "/", file = "/pages/hello-world")
 public class ExampleEventHandler implements UIEventController {
     private int increase = 0;
     private int counter = 0;
@@ -43,7 +43,7 @@ public class ExampleEventHandler implements UIEventController {
 
                 .with("principal", ((UserDetails) securityContext.getAuthentication().getPrincipal()).getUsername())
                 // path variable + conversion
-                .with("who", request.pathVariable("who"), (in) -> in.toUpperCase() + " !")
+                // .with("who", request.pathVariable("who"), (in) -> in.toUpperCase() + " !")
                 // query param + conversion
                 .with("query-param-q", request.queryParam("q").orElseGet(() -> "nothing"), (in) -> new StringBuilder("query parameter q: ").append(in).toString())
                 // query param, no conversion
