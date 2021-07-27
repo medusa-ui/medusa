@@ -15,7 +15,12 @@ public class MedusaApplication {
 
 	public static void main(String[] args) {
 		errorOnAnyBlockingCalls();
-		SpringApplication.run(MedusaApplication.class, args);
+		try {
+			SpringApplication.run(MedusaApplication.class, args);
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		}
 	}
 
 	private static void errorOnAnyBlockingCalls() {

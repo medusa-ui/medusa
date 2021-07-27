@@ -1,13 +1,11 @@
 package com.sample.medusa.eventhandler;
 
 import io.getmedusa.medusa.core.annotation.PageAttributes;
-import io.getmedusa.medusa.core.annotation.UIEventPage;
 import io.getmedusa.medusa.core.annotation.UIEventController;
+import io.getmedusa.medusa.core.annotation.UIEventPage;
 import io.getmedusa.medusa.core.injector.DOMChanges;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.userdetails.UserDetails;
+import io.getmedusa.medusa.core.util.SecurityContext;
 import org.springframework.web.reactive.function.server.ServerRequest;
-import reactor.core.Disposable;
 
 import java.util.*;
 
@@ -19,13 +17,14 @@ public class ExampleEventHandler implements UIEventController {
     private int counter = 0;
     private final List<String> listOfItemsBought = new ArrayList<>();
     private final List<Order> orders = new ArrayList<>(Arrays.asList(new Order(new Product("Whitewood"),5),new Order(new Product("Darkwoods"),3)));
-    private Product blueSky =  new Product("Blue Sky");
-    private Map<String, Integer> counters = new HashMap<>();
+    private final Product blueSky =  new Product("Blue Sky");
+    private final Map<String, Integer> counters = new HashMap<>();
 
     @Override
     public PageAttributes setupAttributes(ServerRequest request, SecurityContext securityContext){
         String uuid= UUID.randomUUID().toString();
         counters.put(uuid, 0);
+
         return new PageAttributes()
                 .with("uuid", uuid)
                 .with("increase", ++increase)
@@ -41,13 +40,12 @@ public class ExampleEventHandler implements UIEventController {
                 .with("done-waiting", false)
                 .with("search-result", "")
 
-                .with("principal", ((UserDetails) securityContext.getAuthentication().getPrincipal()).getUsername())
-                // path variable + conversion
-                // .with("who", request.pathVariable("who"), (in) -> in.toUpperCase() + " !")
+                //.with("principal", securityContext.getUserDetails().getUsername())
+
                 // query param + conversion
-                .with("query-param-q", request.queryParam("q").orElseGet(() -> "nothing"), (in) -> new StringBuilder("query parameter q: ").append(in).toString())
+                .with("query-param-q", request.queryParam("q").orElse("nothing"), parameterValue -> "query parameter q: " + parameterValue)
                 // query param, no conversion
-                .with("query-param-s", request.queryParam("s").orElseGet(() -> ""));
+                .with("query-param-s", request.queryParam("s").orElse(""));
     }
 
     public DOMChanges increaseMyCounter(String uuid, int increase) {
@@ -75,11 +73,7 @@ public class ExampleEventHandler implements UIEventController {
     }
 
     public DOMChanges cancelOrder(String orderId) {
-        Iterator<Order> iterator = orders.iterator();
-        while (iterator.hasNext()) {
-            Order order = iterator.next();
-            if (order.id.equals(orderId)) iterator.remove();
-        }
+        orders.removeIf(order -> order.id.equals(orderId));
         return of("orders", orders).and("three-items", orders.size() == 3 );
     }
 

@@ -4,9 +4,10 @@ import io.getmedusa.medusa.core.annotation.PageAttributes;
 import io.getmedusa.medusa.core.annotation.UIEventPage;
 import io.getmedusa.medusa.core.annotation.UIEventController;
 import io.getmedusa.medusa.core.injector.DOMChanges;
-import org.springframework.security.core.context.SecurityContext;
+import io.getmedusa.medusa.core.util.SecurityContext;
 import org.springframework.web.reactive.function.server.ServerRequest;
 
+import java.security.Principal;
 import java.util.*;
 
 @UIEventPage(path = "/page2", file = "pages/page2.html")
