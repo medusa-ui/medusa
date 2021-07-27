@@ -14,15 +14,18 @@ import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.context.ReactiveSecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StreamUtils;
 import org.springframework.web.reactive.HandlerMapping;
+import org.springframework.web.reactive.function.server.HandlerFunction;
 import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.RouterFunctions;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import org.springframework.web.reactive.handler.SimpleUrlHandlerMapping;
 
 import java.io.IOException;
+import java.security.Principal;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -39,17 +42,23 @@ public class HTMLRouter {
     private final SimpleUrlHandlerMapping mapping = new SimpleUrlHandlerMapping();
 
     @Bean
-    public RouterFunction<ServerResponse> htmlRouter(@Value("classpath:/websocket.js") Resource scripts, @Value("classpath:/medusa-default-styling.css") Resource style) {
+    public RouterFunction<ServerResponse> htmlRouter(@Value("classpath:/websocket.js") Resource scripts,
+                                                     @Value("classpath:/medusa-default-styling.css") Resource style,
+                                                     IRequestStreamHandler requestStreamHandler) {
         final String script = loadScript(scripts);
-        final String styling = "<style>" + loadScript(style) + "</style>";
+        final String styling = loadDefaultStyle(style);
         return RouteRegistry.getInstance().getRoutesWithHTMLFile().stream().map(route -> {
             String fileName = getPath(loadHTMLIntoCache(route.getValue()));
             return route(
                     GET(route.getKey()),
-                    request -> ok().contentType(MediaType.TEXT_HTML).bodyValue(INSTANCE.inject(fileName, script, styling)));
+                    requestStreamHandler.handle(script, styling, fileName));
         })
         .reduce(RouterFunction::and)
         .orElse(null);
+    }
+
+    private String loadDefaultStyle(Resource style) {
+        return "<style>" + loadScript(style) + "</style>";
     }
 
     private String loadScript(Resource scripts) {

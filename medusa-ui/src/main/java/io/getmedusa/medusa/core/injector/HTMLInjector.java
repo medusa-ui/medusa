@@ -6,9 +6,12 @@ import io.getmedusa.medusa.core.injector.tag.*;
 import io.getmedusa.medusa.core.injector.tag.meta.InjectionResult;
 import io.getmedusa.medusa.core.registry.EventHandlerRegistry;
 import io.getmedusa.medusa.core.util.FilenameHandler;
+import io.getmedusa.medusa.core.util.SecurityContext;
+import org.springframework.web.reactive.function.server.ServerRequest;
 
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.security.Principal;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -46,27 +49,34 @@ public enum HTMLInjector {
 
     /**
      * On page load, inject cached unparsed HTML with parsed values
+     *
+     * @param request
+     * @param securityContext
      * @param fileName html filename
      * @param script cached websocket script
      * @return parsed html
      */
-    public String inject(String fileName, String script, String styling) {
+    public String inject(ServerRequest request, SecurityContext securityContext, String fileName, String script, String styling) {
         try {
             if(this.script == null) this.script = script;
             if(this.styling == null) this.styling = styling;
             String htmlString = HTMLCache.getInstance().getHTML(fileName);
-            return htmlStringInject(fileName, htmlString);
+            return htmlStringInject(request, securityContext, fileName, htmlString);
         } catch (Exception e) {
-
             e.printStackTrace();
             throw new RuntimeException(e);
         }
     }
 
+    @Deprecated
     protected String htmlStringInject(String filename, String htmlString) {
+        return htmlStringInject(null, null, filename, htmlString);
+    }
+
+    protected String htmlStringInject(ServerRequest request, SecurityContext securityContext, String filename, String htmlString) {
         final Map<String, Object> variables = newLargestFirstMap();
         final UIEventController uiEventController = EventHandlerRegistry.getInstance().get(filename);
-        if(null != uiEventController) variables.putAll(uiEventController.setupPage().getPageVariables());
+        if(null != uiEventController) variables.putAll(uiEventController.setupAttributes(request, securityContext).getPageVariables());
 
         InjectionResult result = iterationTag.injectWithVariables(new InjectionResult(htmlString), variables);
         result = conditionalTag.injectWithVariables(result, variables);

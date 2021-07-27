@@ -43,6 +43,16 @@ public class AbstractSeleniumTest {
             chromeOptions.addArguments("window-size=1400,2100");
         }
         driver = new ChromeDriver(chromeOptions);
+        login();
+    }
+
+    private void login() {
+        driver.get(BASE);
+        if(existsById("username")) {
+            fillFieldById("username", "user");
+            fillFieldById("password", "password");
+            clickByCss(".btn-block");
+        }
     }
 
     @AfterEach

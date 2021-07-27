@@ -1,29 +1,28 @@
 package com.sample.medusa.eventhandler.integrationtests;
 
-import io.getmedusa.medusa.core.annotation.PageSetup;
+import io.getmedusa.medusa.core.annotation.PageAttributes;
+import io.getmedusa.medusa.core.annotation.UIEventPage;
 import io.getmedusa.medusa.core.annotation.UIEventController;
 import io.getmedusa.medusa.core.injector.DOMChanges;
-import org.springframework.stereotype.Component;
+import io.getmedusa.medusa.core.util.SecurityContext;
+import org.springframework.web.reactive.function.server.ServerRequest;
 
+import java.security.Principal;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 import static io.getmedusa.medusa.core.injector.DOMChanges.of;
 
-@Component
+@UIEventPage(path = "/test/conditionals", file = "pages/integration-tests/conditionals.html")
 public class ConditionalsEventHandler implements UIEventController {
 
     int counter = 0;
 
     @Override
-    public PageSetup setupPage() {
+    public PageAttributes setupAttributes(ServerRequest request, SecurityContext securityContext) {
         Map<String, Object> modelMap = new HashMap<>();
         modelMap.put("counter-value", counter);
-        return new PageSetup(
-                "/test/conditionals",
-                "pages/integration-tests/conditionals.html",
-                modelMap);
+        return new PageAttributes(modelMap);
     }
 
     public DOMChanges increaseCounter(int parameter) {

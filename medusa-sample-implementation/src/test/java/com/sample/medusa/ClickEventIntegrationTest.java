@@ -15,7 +15,8 @@ class ClickEventIntegrationTest extends AbstractSeleniumTest {
 
         Assertions.assertEquals("0", getFromValue("my-counter"));
         clickById("my-counter-btn");
-        Assertions.assertEquals("2", getFromValue("my-counter"));
+        String counter = getTextById("my-counter-btn").replace("Increase my counter by ", "").trim();
+        Assertions.assertEquals(counter, getFromValue("my-counter"));
     }
 
 }

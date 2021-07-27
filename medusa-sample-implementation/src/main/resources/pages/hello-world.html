@@ -3,12 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <title>Medusa demo :: [$counter-value]</title>
-    <link href="../static/stylesheet.css" rel="stylesheet">
+    <link href="/stylesheet.css" rel="stylesheet">
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter&family=Merriweather&display=swap" rel="stylesheet">
 </head>
 <body>
 <h1>🦑 Hello Medusa</h1>
+<p>You are logged in as: [$principal]</p>
+<p>[$query-param-q]</p>
+<p>[$query-param-s]</p>
 <p>My Counter: [$my-counter]</p>
 <button id="my-counter-btn" m-click="increaseMyCounter('$uuid',$increase)">Increase my counter by [$increase]</button>
 <p>Global Counter: [$counter-value]</p>
