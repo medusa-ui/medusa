@@ -2,14 +2,17 @@ package io.getmedusa.medusa.core;
 
 import io.getmedusa.medusa.core.injector.DOMChanges.DOMChange;
 import io.getmedusa.medusa.core.util.ExpressionEval;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.stereotype.Component;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -22,7 +25,7 @@ class SpelExpressionTest {
     void evalCheck() {
         Map<String, Object> modelMap = new HashMap<>();
         modelMap.put("complex-object", new ComplexObject(new SubObject("x"), 5));
-        Assertions.assertEquals("x", ExpressionEval.eval("$complex-object.product.name", modelMap));
+        assertEquals("x", ExpressionEval.eval("$complex-object.product.name", modelMap));
     }
 
     @Test

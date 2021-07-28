@@ -16,7 +16,7 @@ class RenderUsecasesTest {
     @Test
     void testSimpleIf() {
         final String htmlFileName = randomizedFileName();
-        EventHandlerRegistry.getInstance().add(htmlFileName, new HandlerImpl(htmlFileName, Collections.singletonMap("counter-value", 3)));
+        EventHandlerRegistry.getInstance().add(htmlFileName, new HandlerImpl(Collections.singletonMap("counter-value", 3)));
         String nestedIf =
                 "[$if($counter-value > 5)]\n" +
                 "   <p>Counter is above 5</p>\n" +
@@ -32,7 +32,7 @@ class RenderUsecasesTest {
     @Test
     void testNestedIfs() {
         final String htmlFileName = randomizedFileName();
-        EventHandlerRegistry.getInstance().add(htmlFileName, new HandlerImpl(htmlFileName, Collections.singletonMap("counter-value", 3)));
+        EventHandlerRegistry.getInstance().add(htmlFileName, new HandlerImpl(Collections.singletonMap("counter-value", 3)));
         String nestedIf = "[$if($counter-value > 2)]\n" +
                 "    [$if($counter-value > 5)]\n" +
                 "        <p>Counter is above 5</p>\n" +
@@ -49,7 +49,7 @@ class RenderUsecasesTest {
     @Test
     void testSimpleForeach() {
         final String htmlFileName = randomizedFileName();
-        EventHandlerRegistry.getInstance().add(htmlFileName, new HandlerImpl(htmlFileName, Collections.singletonMap("counter-value", 3)));
+        EventHandlerRegistry.getInstance().add(htmlFileName, new HandlerImpl(Collections.singletonMap("counter-value", 3)));
         String nestedIf = "[$foreach $counter-value]\n" +
                 "<p>Hello, Medusa</p>\n" +
                 "[$end for]";
@@ -65,7 +65,7 @@ class RenderUsecasesTest {
     @Test
     void testCombinationOuterIfNestedForEach() {
         final String htmlFileName = randomizedFileName();
-        EventHandlerRegistry.getInstance().add(htmlFileName, new HandlerImpl(htmlFileName, Collections.singletonMap("counter-value", 2)));
+        EventHandlerRegistry.getInstance().add(htmlFileName, new HandlerImpl(Collections.singletonMap("counter-value", 2)));
         String nestedIf = "[$if($counter-value > 2)]\n" +
                           "    [$foreach $counter-value]\n" +
                           "        <p>Hello, Medusa</p>\n" +
@@ -84,7 +84,7 @@ class RenderUsecasesTest {
     @Test
     void testCombinationOuterForeachNestedIf() {
         final String htmlFileName = randomizedFileName();
-        EventHandlerRegistry.getInstance().add(htmlFileName, new HandlerImpl(htmlFileName, Collections.singletonMap("counter-value", 2)));
+        EventHandlerRegistry.getInstance().add(htmlFileName, new HandlerImpl(Collections.singletonMap("counter-value", 2)));
         String nestedIf =
                 "[$foreach $counter-value]\n" +
                 "    [$if($counter-value > 2)]\n" +
@@ -104,7 +104,7 @@ class RenderUsecasesTest {
     @Test
     void testForeachWithObjectAsEach() {
         final String htmlFileName = randomizedFileName();
-        EventHandlerRegistry.getInstance().add(htmlFileName, new HandlerImpl(htmlFileName, Collections.singletonMap("counter-list", Arrays.asList("Zeus", "Poseidon", "Hera"))));
+        EventHandlerRegistry.getInstance().add(htmlFileName, new HandlerImpl(Collections.singletonMap("counter-list", Arrays.asList("Zeus", "Poseidon", "Hera"))));
         String nestedIf = "[$foreach $counter-list]\n" +
                 "<p>Hello, [$each]</p>\n" +
                 "[$end for]";
@@ -123,7 +123,7 @@ class RenderUsecasesTest {
     @Test
     void testForeachWithIndexAsEach() {
         final String htmlFileName = randomizedFileName();
-        EventHandlerRegistry.getInstance().add(htmlFileName, new HandlerImpl(htmlFileName, Collections.singletonMap("counter-value", 3)));
+        EventHandlerRegistry.getInstance().add(htmlFileName, new HandlerImpl(Collections.singletonMap("counter-value", 3)));
         String nestedIf = "[$foreach $counter-value]\n" +
                 "<p>Hello, Medusa [$each]</p>\n" +
                 "[$end for]";
@@ -142,7 +142,7 @@ class RenderUsecasesTest {
     @Test
     void testForeachWithTraversableObjectAsEach() {
         final String htmlFileName = randomizedFileName();
-        EventHandlerRegistry.getInstance().add(htmlFileName, new HandlerImpl(htmlFileName, Collections.singletonMap("object-list", Arrays.asList(new ExampleClass(new ExampleClass(3355)), new ExampleClass(new ExampleClass(4512))))));
+        EventHandlerRegistry.getInstance().add(htmlFileName, new HandlerImpl(Collections.singletonMap("object-list", Arrays.asList(new ExampleClass(new ExampleClass(3355)), new ExampleClass(new ExampleClass(4512))))));
         String nestedIf = "[$foreach $object-list]\n" +
                 "<p>Hello, [$each.innerClass.number]</p>\n" +
                 "[$end for]";
@@ -160,7 +160,7 @@ class RenderUsecasesTest {
     @Test
     void testIfWithObjectTraversal() {
         final String htmlFileName = randomizedFileName();
-        EventHandlerRegistry.getInstance().add(htmlFileName, new HandlerImpl(htmlFileName, Collections.singletonMap("obj-value", new ExampleClass(987))));
+        EventHandlerRegistry.getInstance().add(htmlFileName, new HandlerImpl(Collections.singletonMap("obj-value", new ExampleClass(987))));
         String nestedIf =
                 "[$if($obj-value.number > 5)]\n" +
                 "   <p>Counter is above 5</p>\n" +
@@ -179,7 +179,7 @@ class RenderUsecasesTest {
         Map<String, Object> names = new HashMap<>();
         names.put("name-per", "Perseus");
         names.put("name-med", "Medusa");
-        EventHandlerRegistry.getInstance().add(htmlFileName, new HandlerImpl(htmlFileName, names));
+        EventHandlerRegistry.getInstance().add(htmlFileName, new HandlerImpl(names));
         String divContent = "<div>Above the sea that cries and breaks, Swift [$name-per] with [$name-med]'s snakes, Set free the maiden white like snow</div>";
 
         String result = HTMLInjector.INSTANCE.htmlStringInject(htmlFileName, divContent);
@@ -194,7 +194,7 @@ class RenderUsecasesTest {
         Map<String, Object> names = new HashMap<>();
         names.put("wrapper1", new ExampleClass(14132));
         names.put("wrapper2", new ExampleClass(89452));
-        EventHandlerRegistry.getInstance().add(htmlFileName, new HandlerImpl(htmlFileName, names));
+        EventHandlerRegistry.getInstance().add(htmlFileName, new HandlerImpl(names));
         String divContent = "<div>1264135664 can be achieved by multiplying [$wrapper1.number] with [$wrapper2.number], though you might need a calculator</div>";
 
         String result = HTMLInjector.INSTANCE.htmlStringInject(htmlFileName, divContent);
@@ -206,7 +206,7 @@ class RenderUsecasesTest {
     @Test
     void testConditionalClassAppendClassExists() {
         final String htmlFileName = randomizedFileName();
-        EventHandlerRegistry.getInstance().add(htmlFileName, new HandlerImpl(htmlFileName, Collections.singletonMap("counter-value", 5)));
+        EventHandlerRegistry.getInstance().add(htmlFileName, new HandlerImpl(Collections.singletonMap("counter-value", 5)));
         String nestedIf = "<div id=\"example-color-block\" class=\"color-block\" m-class-append=\"$counter-value > 2 ? 'wide' : 'square'\"></div>";
 
         String result = HTMLInjector.INSTANCE.htmlStringInject(htmlFileName, nestedIf);
@@ -219,7 +219,7 @@ class RenderUsecasesTest {
     @Test
     void testConditionalClassAppendClassDoesNotExist() {
         final String htmlFileName = randomizedFileName();
-        EventHandlerRegistry.getInstance().add(htmlFileName, new HandlerImpl(htmlFileName, Collections.singletonMap("counter-value", 5)));
+        EventHandlerRegistry.getInstance().add(htmlFileName, new HandlerImpl(Collections.singletonMap("counter-value", 5)));
         String nestedIf = "<div id=\"example-color-block\" m-class-append=\"$counter-value > 2 ? 'wide' : 'square'\"></div>";
 
         String result = HTMLInjector.INSTANCE.htmlStringInject(htmlFileName, nestedIf);
@@ -232,7 +232,7 @@ class RenderUsecasesTest {
     @Test
     void testConditionalClassWithObjectTraversal() {
         final String htmlFileName = randomizedFileName();
-        EventHandlerRegistry.getInstance().add(htmlFileName, new HandlerImpl(htmlFileName, Collections.singletonMap("wrapper1", new ExampleClass(14132))));
+        EventHandlerRegistry.getInstance().add(htmlFileName, new HandlerImpl(Collections.singletonMap("wrapper1", new ExampleClass(14132))));
         String nestedIf = "<div id=\"example-color-block\" class=\"color-block\" m-class-append=\"$wrapper1.number > 2 ? 'wide' : 'square'\"></div>";
 
         String result = HTMLInjector.INSTANCE.htmlStringInject(htmlFileName, nestedIf);
@@ -280,7 +280,7 @@ class RenderUsecasesTest {
     static class HandlerImpl implements UIEventController {
 
         private final Map<String, Object> variables;
-        HandlerImpl(String file, Map<String, Object> variables) {
+        HandlerImpl(Map<String, Object> variables) {
             this.variables = variables;
         }
 

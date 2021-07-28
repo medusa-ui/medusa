@@ -15,14 +15,6 @@ class ConditionalTagTest {
             "[$end if]\n" +
             "<p>Hello Medusa 1</p>";
 
-    private final String complexerHTML =
-            "<h1>Hello Medusa 1</h1>\n" +
-            "<p>Hello Mesuda 2</p>\n" +
-            "[$if($counter-value > 5)]\n" +
-            "    <p>Counter is above 5</p>\n" +
-            "[$end if]\n" +
-            "<p>Hello Mesuda 3</p>\n";
-
     private final String conditionalHTMLMulti = "<p>test</p>\n" +
             "[$if($counter-value > 5)]\n" +
             "    <p>Counter is above 5</p>\n" +

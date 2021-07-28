@@ -2,7 +2,13 @@ package io.getmedusa.medusa.core.injector;
 
 import io.getmedusa.medusa.core.annotation.UIEventController;
 import io.getmedusa.medusa.core.cache.HTMLCache;
-import io.getmedusa.medusa.core.injector.tag.*;
+import io.getmedusa.medusa.core.injector.tag.ChangeTag;
+import io.getmedusa.medusa.core.injector.tag.ClassAppendTag;
+import io.getmedusa.medusa.core.injector.tag.ClickTag;
+import io.getmedusa.medusa.core.injector.tag.ConditionalTag;
+import io.getmedusa.medusa.core.injector.tag.GenericMTag;
+import io.getmedusa.medusa.core.injector.tag.IterationTag;
+import io.getmedusa.medusa.core.injector.tag.ValueTag;
 import io.getmedusa.medusa.core.injector.tag.meta.InjectionResult;
 import io.getmedusa.medusa.core.registry.EventHandlerRegistry;
 import io.getmedusa.medusa.core.util.FilenameHandler;
@@ -67,12 +73,18 @@ public enum HTMLInjector {
         }
     }
 
+    /**
+     * Deprecated. Only use for testing purposes.
+     * @param filename
+     * @param htmlString
+     * @return Actual result from htmlStringInject()
+     */
     @Deprecated
-    protected String htmlStringInject(String filename, String htmlString) {
+    String htmlStringInject(String filename, String htmlString) {
         return htmlStringInject(null, null, filename, htmlString);
     }
 
-    protected String htmlStringInject(ServerRequest request, SecurityContext securityContext, String filename, String htmlString) {
+    private String htmlStringInject(ServerRequest request, SecurityContext securityContext, String filename, String htmlString) {
         final Map<String, Object> variables = newLargestFirstMap();
         final UIEventController uiEventController = EventHandlerRegistry.getInstance().get(filename);
         if(null != uiEventController) variables.putAll(uiEventController.setupAttributes(request, securityContext).getPageVariables());
