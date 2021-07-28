@@ -9,7 +9,7 @@ public class PageAttributes {
 
     @FunctionalInterface
     public interface Converter {
-        static Converter stringToString = in -> in;
+        Converter stringToString = in -> in;
         Object convert(String in);
     }
 

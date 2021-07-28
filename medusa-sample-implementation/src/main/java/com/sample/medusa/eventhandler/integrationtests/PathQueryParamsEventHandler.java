@@ -7,7 +7,6 @@ import io.getmedusa.medusa.core.util.SecurityContext;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.server.ServerRequest;
 
-import java.security.Principal;
 import java.util.Arrays;
 import java.util.List;
 //localhost:8080/test/upper/selenium/normal/test?value=12&person=2

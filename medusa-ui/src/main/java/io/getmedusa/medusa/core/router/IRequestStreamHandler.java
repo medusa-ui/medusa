@@ -5,6 +5,6 @@ import org.springframework.web.reactive.function.server.ServerResponse;
 
 public interface IRequestStreamHandler {
 
-    public HandlerFunction<ServerResponse> handle(String script, String styling, String fileName);
+    HandlerFunction<ServerResponse> handle(String script, String styling, String fileName);
 
 }

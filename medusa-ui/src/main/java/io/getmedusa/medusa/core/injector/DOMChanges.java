@@ -92,7 +92,7 @@ public class DOMChanges {
             CONDITION,
             ITERATION,
             CONDITIONAL_CLASS,
-            M_ATTR;
+            M_ATTR
         }
     }
 }

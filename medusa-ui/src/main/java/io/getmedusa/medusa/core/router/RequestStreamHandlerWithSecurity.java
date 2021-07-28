@@ -9,8 +9,6 @@ import org.springframework.web.reactive.function.server.HandlerFunction;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
 
-import java.security.Principal;
-
 import static io.getmedusa.medusa.core.injector.HTMLInjector.INSTANCE;
 import static org.springframework.web.reactive.function.server.ServerResponse.ok;
 

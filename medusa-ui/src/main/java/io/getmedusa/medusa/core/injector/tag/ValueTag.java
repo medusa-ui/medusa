@@ -97,6 +97,6 @@ public class ValueTag {
     private enum Context {
         AS_ATTRIBUTE,
         AS_WRAPPED_IN_TAG,
-        AS_PLAIN_VALUE;
+        AS_PLAIN_VALUE
     }
 }

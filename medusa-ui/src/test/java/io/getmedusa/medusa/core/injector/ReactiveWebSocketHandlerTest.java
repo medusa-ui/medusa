@@ -1,8 +1,6 @@
 package io.getmedusa.medusa.core.injector;
 
 import io.getmedusa.medusa.core.websocket.Event;
-import io.getmedusa.medusa.core.websocket.ReactiveWebSocketHandler;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 public class ReactiveWebSocketHandlerTest {

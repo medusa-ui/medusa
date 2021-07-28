@@ -3,7 +3,6 @@ package io.getmedusa.medusa.core.util;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import java.net.URLDecoder;
 import java.time.Year;
 import java.util.Arrays;
 import java.util.Collections;

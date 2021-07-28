@@ -13,12 +13,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
-import org.springframework.web.reactive.socket.WebSocketMessage;
 import org.springframework.web.reactive.socket.client.ReactorNettyWebSocketClient;
-import org.springframework.web.reactive.socket.client.WebSocketClient;
 import reactor.core.publisher.Flux;
-import reactor.core.publisher.FluxSink;
-import reactor.core.publisher.Mono;
 import reactor.netty.http.client.HttpClient;
 import reactor.util.retry.Retry;
 
@@ -26,7 +22,6 @@ import javax.annotation.PostConstruct;
 import java.net.URI;
 import java.time.Duration;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Predicate;
 
 @Service
 @ConditionalOnProperty(value="hydra.enabled", havingValue = "true")

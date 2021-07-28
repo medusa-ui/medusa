@@ -5,7 +5,10 @@ import io.getmedusa.medusa.core.registry.IterationRegistry;
 import io.getmedusa.medusa.core.util.ExpressionEval;
 import io.getmedusa.medusa.core.util.IdentifierGenerator;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 

@@ -8,14 +8,14 @@ import java.util.Collections;
 
 class ConditionalTagTest {
 
-    private String conditionalHTMLSingle =
+    private final String conditionalHTMLSingle =
             "<h1>Hello Medusa 1</h1>\n" +
             "[$if($counter-value > 5)]\n" +
             "    <p>Visible?</p>\n" +
             "[$end if]\n" +
             "<p>Hello Medusa 1</p>";
 
-    private String complexerHTML =
+    private final String complexerHTML =
             "<h1>Hello Medusa 1</h1>\n" +
             "<p>Hello Mesuda 2</p>\n" +
             "[$if($counter-value > 5)]\n" +
@@ -23,7 +23,7 @@ class ConditionalTagTest {
             "[$end if]\n" +
             "<p>Hello Mesuda 3</p>\n";
 
-    private String conditionalHTMLMulti = "<p>test</p>\n" +
+    private final String conditionalHTMLMulti = "<p>test</p>\n" +
             "[$if($counter-value > 5)]\n" +
             "    <p>Counter is above 5</p>\n" +
             "[$else]\n" + //if($counter-value < 5)

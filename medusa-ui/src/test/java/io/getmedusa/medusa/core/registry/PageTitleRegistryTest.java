@@ -14,7 +14,7 @@ import java.net.URI;
 
 class PageTitleRegistryTest {
 
-    private PageTitleRegistry registry = PageTitleRegistry.getInstance();
+    private final PageTitleRegistry registry = PageTitleRegistry.getInstance();
 
     @BeforeEach
     void setup() {
