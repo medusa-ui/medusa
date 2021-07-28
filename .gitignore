@@ -30,3 +30,4 @@ config - Copy.json
 distribution-model - Copy.json
 config-postgres.json
 config-mariadb.json
+*.versionsBackup
