@@ -16,6 +16,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.socket.WebSocketSession;
 import org.springframework.web.reactive.socket.client.ReactorNettyWebSocketClient;
 import reactor.core.publisher.Flux;
 import reactor.netty.http.client.HttpClient;
@@ -65,13 +66,24 @@ public class HydraConnection implements DisposableBean, ApplicationListener<Cont
         }
     }
 
+    private WebSocketSession activeSession = null;
+
     private void connectToHydra() {
-        System.out.println("Connecting to hydra ...");
-        new ReactorNettyWebSocketClient()
-                .execute(URI.create(HYDRA_HEALTH_WS_URI), session -> session.send(Flux.just(session.textMessage(healthRegistrationJSON))).and(session.receive())
-                        .doFinally(x -> connectToHydra()))
-                .retryWhen(Retry.indefinitely())
-                .subscribe();
+        if(activeSession == null) {
+            System.out.println("Connecting to hydra ...");
+            new ReactorNettyWebSocketClient()
+                    .execute(URI.create(HYDRA_HEALTH_WS_URI), session -> {
+                        activeSession = session;
+                        return session
+                                .send(Flux.just(session.textMessage(healthRegistrationJSON)))
+                                .and(session.receive())
+                                .doFinally(x -> {
+                                    session.close().subscribe();
+                                    connectToHydra();
+                                } ); })
+                    .retryWhen(Retry.indefinitely())
+                    .subscribe();
+        }
     }
 
     private Set<String> determineExtensionsOfStaticResources() throws IOException {
