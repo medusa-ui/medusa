@@ -9,6 +9,7 @@ public class HydraHealthRegistration {
     private final String name;
     private Set<String> endpoints = new HashSet<>();
     private Set<String> websockets = new HashSet<>();
+    private Set<String> staticResources = new HashSet<>();
 
     public HydraHealthRegistration(int port, String name) {
         this.port = port;
@@ -37,5 +38,13 @@ public class HydraHealthRegistration {
 
     public void setWebsockets(Set<String> websockets) {
         this.websockets = websockets;
+    }
+
+    public Set<String> getStaticResources() {
+        return staticResources;
+    }
+
+    public void setStaticResources(Set<String> staticResources) {
+        this.staticResources = staticResources;
     }
 }
