@@ -59,14 +59,19 @@ public class HydraConnection implements DisposableBean, ApplicationListener<Cont
             hydraHealthRegistration.setStaticResources(determineExtensionsOfStaticResources());
             healthRegistrationJSON = objectMapper.writeValueAsString(hydraHealthRegistration);
 
-            new ReactorNettyWebSocketClient()
-                    .execute(URI.create(HYDRA_HEALTH_WS_URI), session -> session
-                            .send(Flux.just(session.textMessage(healthRegistrationJSON))).and(session.receive()))
-                    .retryWhen(Retry.indefinitely())
-                    .subscribe();
+            connectToHydra();
         } catch (Exception e) {
             throw new IllegalStateException(e);
         }
+    }
+
+    private void connectToHydra() {
+        System.out.println("Connecting to hydra ...");
+        new ReactorNettyWebSocketClient()
+                .execute(URI.create(HYDRA_HEALTH_WS_URI), session -> session.send(Flux.just(session.textMessage(healthRegistrationJSON))).and(session.receive())
+                        .doFinally(x -> connectToHydra()))
+                .retryWhen(Retry.indefinitely())
+                .subscribe();
     }
 
     private Set<String> determineExtensionsOfStaticResources() throws IOException {
