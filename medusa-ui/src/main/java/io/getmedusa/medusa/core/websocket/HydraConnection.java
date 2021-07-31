@@ -79,6 +79,7 @@ public class HydraConnection implements DisposableBean, ApplicationListener<Cont
                                 .and(session.receive())
                                 .doFinally(x -> {
                                     session.close().subscribe();
+                                    activeSession = null;
                                     connectToHydra();
                                 } ); })
                     .retryWhen(Retry.indefinitely())
