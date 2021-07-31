@@ -15,17 +15,17 @@ public class EventHandlerRegistry {
         return INSTANCE;
     }
 
-    private final Map<String, UIEventController> registry = new HashMap<>();
+    private final Map<String, Object> registry = new HashMap<>();
 
-    public void add(String htmlFileName, UIEventController controller) {
+    public void add(String htmlFileName, Object controller) {
         registry.put(htmlFileName, controller);
     }
 
-    public UIEventController get(String htmlFileName) {
+    public Object get(String htmlFileName) {
         return registry.get(htmlFileName);
     }
 
-    public UIEventController get(WebSocketSession session) {
+    public Object get(WebSocketSession session) {
         String htmlFileName = SessionToHTMLFileName.parse(session);
         return get(htmlFileName);
     }

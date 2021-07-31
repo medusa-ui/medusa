@@ -86,8 +86,8 @@ public enum HTMLInjector {
 
     private String htmlStringInject(ServerRequest request, SecurityContext securityContext, String filename, String htmlString) {
         final Map<String, Object> variables = newLargestFirstMap();
-        final UIEventController uiEventController = EventHandlerRegistry.getInstance().get(filename);
-        if(null != uiEventController) variables.putAll(uiEventController.setupAttributes(request, securityContext).getPageVariables());
+        final Object uiEventController = EventHandlerRegistry.getInstance().get(filename);
+        if(null != uiEventController && uiEventController instanceof UIEventController) variables.putAll(((UIEventController)uiEventController).setupAttributes(request, securityContext).getPageVariables());
 
         InjectionResult result = iterationTag.injectWithVariables(new InjectionResult(htmlString), variables);
         result = conditionalTag.injectWithVariables(result, variables);

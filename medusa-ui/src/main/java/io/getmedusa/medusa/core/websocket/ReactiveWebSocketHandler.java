@@ -86,7 +86,7 @@ public class ReactiveWebSocketHandler implements WebSocketHandler {
     private List<DOMChange> executeEvent(WebSocketSession session, String event) {
         try {
             List<DOMChange> domChanges = new ArrayList<>();
-            final UIEventController eventController = EventHandlerRegistry.getInstance().get(session);
+            final Object eventController = EventHandlerRegistry.getInstance().get(session);
             final List<DOMChange> parsedExpressionValues = ExpressionEval.evalEventController(event, eventController).build();
             if (parsedExpressionValues != null) domChanges = new ArrayList<>(parsedExpressionValues);
             return domChanges;
