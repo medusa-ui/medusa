@@ -19,6 +19,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.socket.WebSocketSession;
 import org.springframework.web.reactive.socket.client.ReactorNettyWebSocketClient;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 import reactor.netty.http.client.HttpClient;
 import reactor.util.retry.Retry;
 
@@ -76,8 +77,12 @@ public class HydraConnection implements DisposableBean, ApplicationListener<Cont
                         activeSession = session;
                         return session
                                 .send(Flux.just(session.textMessage(healthRegistrationJSON)))
-                                .and(session.receive())
+                                .and(session.receive().map(x -> {
+                                    System.out.println(x.getPayloadAsText());
+                                    return Mono.empty();
+                                }))
                                 .doFinally(x -> {
+                                    System.err.println(x);
                                     session.close().subscribe();
                                     activeSession = null;
                                     connectToHydra();
