@@ -9,21 +9,14 @@
 </head>
 <body>
 <h1>🦑 Hello Medusa</h1>
-
-<p>
-    <button m-click="decrement()" m-disabled="$counter == 0" >decrement</button>
-    [$counter]
-    <button m-click="increment()" m-disabled="$counter == 10">increment</button>
-</p>
-
-<p>current UUID: [$uuid]</p>
-<button m-click="renew()" >renew</button>
-<p>History</p>
-<ul>
-[$foreach $history]
-<li>[$each]</li>
+[$message]
+<br/>
+<div m-hide="$winner">
+[$foreach $numbers]
+   <button m-click="guess([$each])" style="width:65px;">[$each]</button></br>
 [$end for]
-</ul>
+</div>
+
 <script>
     function retryConnection() {
         console.log("I am retrying connection here, no overlaps");

@@ -1,6 +1,6 @@
 package io.getmedusa.medusa.core.injector;
 
-import io.getmedusa.medusa.core.annotation.UIEventController;
+import io.getmedusa.medusa.core.annotation.*;
 import io.getmedusa.medusa.core.cache.HTMLCache;
 import io.getmedusa.medusa.core.injector.tag.ChangeTag;
 import io.getmedusa.medusa.core.injector.tag.ClassAppendTag;
@@ -12,11 +12,16 @@ import io.getmedusa.medusa.core.injector.tag.ValueTag;
 import io.getmedusa.medusa.core.injector.tag.meta.InjectionResult;
 import io.getmedusa.medusa.core.registry.EventHandlerRegistry;
 import io.getmedusa.medusa.core.util.FilenameHandler;
+import io.getmedusa.medusa.core.util.ReflectionUtil;
 import io.getmedusa.medusa.core.util.SecurityContext;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.server.ServerRequest;
 
+import java.lang.reflect.Method;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -88,7 +93,7 @@ public enum HTMLInjector {
         final Map<String, Object> variables = newLargestFirstMap();
         final Object uiEventController = EventHandlerRegistry.getInstance().get(filename);
         if(null != uiEventController && uiEventController instanceof UIEventController) variables.putAll(((UIEventController)uiEventController).setupAttributes(request, securityContext).getPageVariables());
-
+        if(null != uiEventController && uiEventController.getClass().isAnnotationPresent(MEventPage.class)) variables.putAll(getVariables(uiEventController, request));
         InjectionResult result = iterationTag.injectWithVariables(new InjectionResult(htmlString), variables);
         result = conditionalTag.injectWithVariables(result, variables);
         result = clickTag.inject(result.getHtml());
@@ -99,6 +104,65 @@ public enum HTMLInjector {
         injectVariablesInScript(result, variables);
 
         return injectScript(filename, result);
+    }
+
+    // TODO rework!
+    //      This is just a dirty first attempt to automatically insert path variables and insert query variables
+    private Map<String, Object> getVariables(Object uiEventController, ServerRequest request) {
+        Class<?> controllerClass = uiEventController.getClass();
+        // set initial values
+        // path variables
+        Map<String, String> pathVariables = request.pathVariables();
+        for(String path: pathVariables.keySet()){
+            try{
+                String setter = "set" +path.substring(0,1).toUpperCase() + path.substring(1);
+                Method method = controllerClass.getMethod(setter, String.class);
+                String value = pathVariables.get(path);
+
+                // System.out.println("invoke " + method.getName() + " with value for " + path + " = " + value);
+                method.invoke(uiEventController, value);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        MultiValueMap<String, String> queryParameters = request.queryParams();
+        for(String param: queryParameters.keySet()){
+            try{
+                String setter = "set" + param.substring(0,1).toUpperCase() + param.substring(1);
+                Method method = controllerClass.getMethod(setter, String.class);
+                String value = queryParameters.get(param).get(0);
+
+                // System.out.println("invoke " + method.getName() + " with value for " + param + " = " + value);
+                method.invoke(uiEventController, value);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        /* invoke magic init() method */
+        try {
+            if(Arrays.stream(controllerClass.getDeclaredMethods()).filter(method -> method.getName().equals("init")).count() == 1) {
+                Method method = controllerClass.getMethod("init");
+                method.invoke(uiEventController);
+            }
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+
+        // get actual variables
+        Map<String,Object> map= new HashMap<>();
+        for (Method method : controllerClass.getDeclaredMethods()){
+            try {
+                if(ReflectionUtil.isGetterMethod(method) && !method.isAnnotationPresent(IgnoreDOMChanges.class)) {
+                    map.put(ReflectionUtil.property(method), method.invoke(uiEventController));
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        System.out.println("variables: " + map);
+        return map;
     }
 
     private void injectVariablesInScript(InjectionResult result, Map<String, Object> variables) {

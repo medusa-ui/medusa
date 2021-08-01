@@ -28,7 +28,7 @@ public class MEventProcessor {
     private void scanPackagesForMEventPages(List<String> packages) {
         try {
             ClassPathScanningCandidateComponentProvider uiEventPageProvider = new ClassPathScanningCandidateComponentProvider(false);
-            uiEventPageProvider.addIncludeFilter(new AnnotationTypeFilter(UIEventPage.class));
+            uiEventPageProvider.addIncludeFilter(new AnnotationTypeFilter(MEventPage.class));
             for (String pack : packages) {
                 for (BeanDefinition beanDefinition : uiEventPageProvider.findCandidateComponents(pack)) {
                     String name = beanDefinition.getBeanClassName();
@@ -40,7 +40,7 @@ public class MEventProcessor {
                             String page = uiEventPage.file();
 
                             eventHandlerRegistry.add(page, new MEventPageHandler(beanFactory,  beanClass));
-                            routeRegistry.add(path,page);
+                            routeRegistry.add(path, page);
 
                             System.out.println("MEventPage with path: " + path + ", page: " + page + ", class: " + beanClass.getSimpleName());
                         }

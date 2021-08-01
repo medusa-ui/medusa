@@ -1,6 +1,7 @@
 package io.getmedusa.medusa.core.util;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -42,7 +43,8 @@ public abstract class ReflectionUtil {
      */
     public static boolean isGetterMethod(Method method) {
         String name = method.getName();
-        return name.startsWith("get") || name.startsWith("is");
+        boolean isPublic = (method.getModifiers() & Modifier.PUBLIC) != 0;
+        return isPublic && (name.startsWith("get") || name.startsWith("is"));
     }
 
     /**

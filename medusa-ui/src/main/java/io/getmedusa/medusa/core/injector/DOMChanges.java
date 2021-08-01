@@ -1,6 +1,7 @@
 package io.getmedusa.medusa.core.injector;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 public class DOMChanges {
@@ -22,6 +23,11 @@ public class DOMChanges {
 
     public DOMChanges and(String field, Object value, DOMChange.DOMChangeType type) {
         domChanges.add(new DOMChange(field, value, type));
+        return this;
+    }
+
+    public DOMChanges of(Collection<DOMChange> domChanges) {
+        domChanges.addAll(domChanges);
         return this;
     }
 

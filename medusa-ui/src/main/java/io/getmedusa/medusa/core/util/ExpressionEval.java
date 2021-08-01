@@ -1,11 +1,16 @@
 package io.getmedusa.medusa.core.util;
 
-import io.getmedusa.medusa.core.annotation.UIEventController;
+import io.getmedusa.medusa.core.annotation.DomChanges;
+import io.getmedusa.medusa.core.annotation.MEventPage;
 import io.getmedusa.medusa.core.injector.DOMChanges;
 
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.net.URLDecoder;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -65,6 +70,34 @@ public abstract class ExpressionEval {
     }
 
     public static DOMChanges evalEventController(String event, Object eventController) {
+        if(eventController.getClass().isAnnotationPresent(MEventPage.class)){
+            SpelExpressionParserHelper.getValue(event,eventController);
+            Class<?> clazz = eventController.getClass();
+            DOMChanges domChanges = null;
+            for (Method method : clazz.getDeclaredMethods()){
+                if (event.startsWith(method.getName()) && method.isAnnotationPresent(DomChanges.class)) {
+                    String[] props = method.getAnnotation(DomChanges.class).value();
+
+                    for (String prop : props) {
+                        try {
+                            Method getter = ReflectionUtil.getter(prop, clazz);
+                            if(null != getter) {
+                                if(null == domChanges){
+                                    domChanges = DOMChanges.of(prop, getter.invoke(eventController));
+                                } else {
+                                    domChanges.and(prop, getter.invoke(eventController));
+                                }
+                            };
+                        }  catch (InvocationTargetException e) {
+                            e.printStackTrace();
+                        } catch (IllegalAccessException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            }
+            return domChanges;
+        }
         return SpelExpressionParserHelper.getValue(escape(event), eventController);
     }
 

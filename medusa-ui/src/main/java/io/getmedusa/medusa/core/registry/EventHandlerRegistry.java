@@ -1,6 +1,6 @@
 package io.getmedusa.medusa.core.registry;
 
-import io.getmedusa.medusa.core.annotation.UIEventController;
+import io.getmedusa.medusa.core.annotation.MEventPageHandler;
 import io.getmedusa.medusa.core.util.SessionToHTMLFileName;
 import org.springframework.web.reactive.socket.WebSocketSession;
 
@@ -22,11 +22,20 @@ public class EventHandlerRegistry {
     }
 
     public Object get(String htmlFileName) {
-        return registry.get(htmlFileName);
+        Object controller = registry.get(htmlFileName);
+        if(controller instanceof MEventPageHandler) {
+            /* no session yet */
+            controller = ((MEventPageHandler) controller).instance();
+        }
+        return controller;
     }
 
     public Object get(WebSocketSession session) {
         String htmlFileName = SessionToHTMLFileName.parse(session);
-        return get(htmlFileName);
+        Object controller = registry.get(htmlFileName);
+        if(controller instanceof MEventPageHandler) {
+            controller = ((MEventPageHandler) controller).bean(session);
+        }
+        return controller;
     }
 }

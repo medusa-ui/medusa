@@ -2,6 +2,7 @@ package io.getmedusa.medusa.core.websocket;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.getmedusa.medusa.core.annotation.MEventPageHandler;
 import io.getmedusa.medusa.core.annotation.UIEventController;
 import io.getmedusa.medusa.core.injector.DOMChanges.DOMChange;
 import io.getmedusa.medusa.core.registry.ConditionalClassRegistry;
@@ -52,7 +53,10 @@ public class ReactiveWebSocketHandler implements WebSocketHandler {
         System.out.println("START of session : " + session.getId());
         return session.send(session.receive()
                         .map(msg -> interpretEvent(session, msg.getPayloadAsText()))
-                        .map(session::textMessage).doFinally(sig -> System.out.println("END of session : " + session.getId())));
+                        .map(session::textMessage).doFinally(sig ->{
+                            MEventPageHandler.removeSessionController(session);
+                            System.out.println("END of session : " + session.getId());
+                        }));
     }
 
     /**

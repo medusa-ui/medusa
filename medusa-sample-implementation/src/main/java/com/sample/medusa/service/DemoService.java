@@ -10,4 +10,8 @@ public class DemoService {
     public String uuid() {
         return UUID.randomUUID().toString();
     }
+
+    public int getRandomNumber() {
+        return (int) (Math.random() * 10);
+    }
 }
