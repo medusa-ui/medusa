@@ -13,7 +13,7 @@ import java.util.regex.Pattern;
 
 public class GenericMTag {
 
-    public static final Pattern patternTagWithMAttribute = Pattern.compile("<.*? m-\\w+?=\".*?\\$.*?>", Pattern.CASE_INSENSITIVE);
+    public static final Pattern patternTagWithMAttribute = Pattern.compile("<[^/]+ m-\\w+?=[\"'].*?\\$.*?>", Pattern.CASE_INSENSITIVE);
     public static final Pattern patternMAttribute = Pattern.compile("m-\\w+?=\".*?\\$.*?\"", Pattern.CASE_INSENSITIVE);
 
     public InjectionResult injectWithVariables(InjectionResult html, Map<String, Object> variables) {
