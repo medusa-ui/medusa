@@ -1,3 +1,18 @@
+document.querySelectorAll("[m-onenter]")
+    .forEach(
+        function(element) {
+            element.addEventListener(
+                "keyup",
+                function(event) {
+                    if (event.key === "Enter") {
+                        let call = event.target.getAttribute("m-onenter");
+                        _M.sendEvent(event.target, call);
+                    }
+               }
+            );
+        }
+    );
+
 var _M = _M || {};
 
 _M.ws = null;
