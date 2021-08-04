@@ -13,8 +13,8 @@ import java.util.regex.Pattern;
 
 public class GenericMTag {
 
-    public static final Pattern patternTagWithMAttribute = Pattern.compile("<.*? m-\\w+?=\".*?\\$.*?>", Pattern.CASE_INSENSITIVE);
-    public static final Pattern patternMAttribute = Pattern.compile("m-\\w+?=\".*?\\$.*?\"", Pattern.CASE_INSENSITIVE);
+    public static final Pattern patternTagWithMAttribute = Pattern.compile("<[^/]+ m-\\w+?=[\\s\"'].*?\\$.*?>", Pattern.CASE_INSENSITIVE);
+    public static final Pattern patternMAttribute = Pattern.compile("m-\\w+?=[\\s\"'].*?\\$.*?[\"']", Pattern.CASE_INSENSITIVE);
 
     public InjectionResult injectWithVariables(InjectionResult html, Map<String, Object> variables) {
         String htmlString = html.getHtml();
@@ -27,11 +27,11 @@ public class GenericMTag {
             final Set<String> classesToAdd = new HashSet<>();
             Matcher matcherTag = patternMAttribute.matcher(tag);
             while (matcherTag.find()) {
-                String[] split = matcherTag.group().split("=\"");
+                String[] split = matcherTag.group().split("=\\s*[\"']");
                 if(split.length == 2) {
                     String tagName = split[0].trim();
                     String expression = split[1].trim();
-                    if(expression.endsWith("\"")) expression = expression.substring(0, expression.length()-1);
+                    if(expression.endsWith("\"") || expression.endsWith("'")) expression = expression.substring(0, expression.length()-1);
 
                     GenericMAttribute attribute = GenericMAttribute.findValueByTagName(tagName);
                     classesToAdd.add(GenericMRegistry.getInstance().add(expression, attribute));
