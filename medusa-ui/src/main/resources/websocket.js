@@ -1,18 +1,3 @@
-document.querySelectorAll("[m-onenter]")
-    .forEach(
-        function(element) {
-            element.addEventListener(
-                "keyup",
-                function(event) {
-                    if (event.key === "Enter") {
-                        let call = event.target.getAttribute("m-onenter");
-                        _M.sendEvent(event.target, call);
-                    }
-               }
-            );
-        }
-    );
-
 var _M = _M || {};
 
 _M.ws = null;
@@ -287,4 +272,22 @@ _M.sendEvent = function(originElem, e) {
     _M.ws.send(_M.injectVariablesIntoExpression(e));
 };
 
+_M.onEnter = function(element) {
+    element.addEventListener("keyup", function(event) {
+        if (event.key === "Enter") {
+            event.preventDefault();
+            let call = event.target.getAttribute("m-onenter");
+            _M.sendEvent(event.target, call);
+            return false;
+        }
+    });
+    element.addEventListener("keydown", function(event) {
+        if (event.key === "Enter") {
+            event.preventDefault();
+            return false;
+        }
+    });
+};
+
 _M.retryConnection();
+document.querySelectorAll("[m-onenter]").forEach(element => _M.onEnter(element));

@@ -50,7 +50,9 @@
 
 <p>Searched for: [$ search ]</p>
 <p>[$search-result]</p>
-<form><input m-change="search(this.value, 3,this.type,this.name)" type="text" name="term" autocomplete="off" /></form>
+<form>
+    <input m-onenter="search(this.value, 3,this.type,this.name)" type="text" name="term" autocomplete="off" />
+</form>
 
 <h5>Orders</h5>
 <button m-click='order()' type="button" m-hide="$three-items">Order [$blue-sky]</button>
