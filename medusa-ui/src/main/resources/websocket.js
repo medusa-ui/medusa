@@ -135,21 +135,25 @@ _M.handleTitleChangeEvent = function(k) {
 };
 
 _M.handleIterationCheck = function (k) {
-    let template = document.getElementById(k.f);
-    let index = 0;
-
+    // clear old values
     document.querySelectorAll("[template-id="+k.f+"]").forEach(function(e) { e.remove(); });
+    // set new values
+    document.querySelectorAll("[m-id="+k.f+"]").forEach(
+        function(template) {
 
-    for(const currentEachValue of _M.variables[k.v]) {
-        let newDiff = document.createElement("div");
-        newDiff.setAttribute("index", (index++).toString());
-        newDiff.setAttribute("template-id", k.f);
+            let index = 0;
 
-        newDiff.innerHTML = template.innerHTML;
-        _M.recursiveObjectUpdate(newDiff, currentEachValue, "$each");
+            for(const currentEachValue of _M.variables[k.v]) {
+                let newDiff = document.createElement("div");
+                newDiff.setAttribute("index", (index++).toString());
+                newDiff.setAttribute("template-id", k.f);
 
-        template.parentNode.insertBefore(newDiff, template);
-    }
+                newDiff.innerHTML = template.innerHTML;
+                _M.recursiveObjectUpdate(newDiff, currentEachValue, "$each");
+
+                template.parentNode.insertBefore(newDiff, template);
+            }
+        });
 };
 
 _M.recursiveObjectUpdate = function(diff, obj, path) {

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Medusa</title>
+    <link href="/stylesheet.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter&family=Merriweather&display=swap" rel="stylesheet">
+</head>
+<body>
+<h2>History has a tendency ...</h2>
+[$foreach $history]
+<p>[$each]</p>
+[$end for]
+
+<h2>... to repeat itself</h2>
+[$foreach $history]
+<p>[$each]</p>
+[$end for]
+
+<h2>The latest historic event: [$event]</h2>
+<input m-onenter="setData(this.value)" type="text" placeholder="change the history" value="[$data]">
+<script>
+    function retryConnection() {
+        console.log("I am retrying connection here, no overlaps");
+    }
+    retryConnection();
+</script>
+</body>
+</html>
