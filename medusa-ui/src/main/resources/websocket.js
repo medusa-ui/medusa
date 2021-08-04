@@ -290,4 +290,4 @@ _M.onEnter = function(element) {
 };
 
 _M.retryConnection();
-document.querySelectorAll("[m-onenter]").forEach(element => _M.onEnter(element));
+document.querySelectorAll("[m-onenter]").forEach((element) => _M.onEnter(element));
