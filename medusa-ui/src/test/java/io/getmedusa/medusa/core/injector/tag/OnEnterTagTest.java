@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.regex.Matcher;
 
-public class OnEnterTagTest {
+class OnEnterTagTest {
 
     private static final OnEnterTag TAG = new OnEnterTag();
     public static final String HTML =
@@ -30,7 +30,7 @@ public class OnEnterTagTest {
         final String tagContent = "search(this.value, 3,this.type,this.name)";
 
         String replacedHTML = TAG.substitutionLogic(fullMatch, tagContent);
-        Assertions.assertEquals("onkeydown=\"_M.preventDefault(this)\" onkeyup=\"_M.onEnter(this, 'search(this.value, 3,this.type,this.name)')\"", replacedHTML);
+        Assertions.assertEquals("onkeydown=\"_M.preventDefault(event)\" onkeyup=\"_M.onEnter(this, 'search(this.value, 3,this.type,this.name)', event)\"", replacedHTML);
     }
 
     @Test
@@ -39,7 +39,7 @@ public class OnEnterTagTest {
         final String tagContent = "search(this.value, 3, this.type, this.name)";
 
         String replacedHTML = TAG.substitutionLogic(fullMatch, tagContent);
-        Assertions.assertEquals("onkeydown=\"_M.preventDefault(this)\" onkeyup=\"_M.onEnter(this, 'search(this.value, 3, this.type, this.name)')\"", replacedHTML);
+        Assertions.assertEquals("onkeydown=\"_M.preventDefault(event)\" onkeyup=\"_M.onEnter(this, 'search(this.value, 3, this.type, this.name)', event)\"", replacedHTML);
     }
 
     @Test
