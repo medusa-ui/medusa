@@ -12,8 +12,8 @@ public class ClickTag extends AbstractTag {
 
     @Override
     String substitutionLogic(String fullMatch, String tagContent) {
-        tagContent = tagContent.replace("'", "\\'");
-        return "onclick=\"_M.sendEvent(this, '"+tagContent+"')\"";
+        final String replacedTagContent = tagContent.replace("'", "\\'");
+        return "onclick=\"_M.sendEvent(this, '"+replacedTagContent+"')\"";
     }
 
     @Override

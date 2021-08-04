@@ -12,8 +12,8 @@ public class OnEnterTag extends AbstractTag {
 
     @Override
     String substitutionLogic(String fullMatch, String tagContent) {
-        tagContent = tagContent.replace("'", "\\'");
-        return "onkeydown=\"_M.preventDefault(event)\" onkeyup=\"_M.onEnter(this, '"+tagContent+"', event)\"";
+        final String replacedTagContent = tagContent.replace("'", "\\'");
+        return "onkeydown=\"_M.preventDefault(event)\" onkeyup=\"_M.onEnter(this, '"+replacedTagContent+"', event)\"";
     }
 
     @Override

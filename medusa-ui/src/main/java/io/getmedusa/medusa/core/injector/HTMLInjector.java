@@ -2,7 +2,14 @@ package io.getmedusa.medusa.core.injector;
 
 import io.getmedusa.medusa.core.annotation.UIEventController;
 import io.getmedusa.medusa.core.cache.HTMLCache;
-import io.getmedusa.medusa.core.injector.tag.*;
+import io.getmedusa.medusa.core.injector.tag.ChangeTag;
+import io.getmedusa.medusa.core.injector.tag.ClassAppendTag;
+import io.getmedusa.medusa.core.injector.tag.ClickTag;
+import io.getmedusa.medusa.core.injector.tag.ConditionalTag;
+import io.getmedusa.medusa.core.injector.tag.GenericMTag;
+import io.getmedusa.medusa.core.injector.tag.IterationTag;
+import io.getmedusa.medusa.core.injector.tag.OnEnterTag;
+import io.getmedusa.medusa.core.injector.tag.ValueTag;
 import io.getmedusa.medusa.core.injector.tag.meta.InjectionResult;
 import io.getmedusa.medusa.core.registry.EventHandlerRegistry;
 import io.getmedusa.medusa.core.util.FilenameHandler;
