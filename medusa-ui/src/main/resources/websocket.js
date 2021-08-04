@@ -272,22 +272,19 @@ _M.sendEvent = function(originElem, e) {
     _M.ws.send(_M.injectVariablesIntoExpression(e));
 };
 
-_M.onEnter = function(element) {
-    element.addEventListener("keyup", function(event) {
-        if (event.key === "Enter") {
-            event.preventDefault();
-            let call = event.target.getAttribute("m-onenter");
-            _M.sendEvent(event.target, call);
-            return false;
-        }
-    });
-    element.addEventListener("keydown", function(event) {
-        if (event.key === "Enter") {
-            event.preventDefault();
-            return false;
-        }
-    });
+_M.onEnter = function(originElem, action, event) {
+    if (event.key === "Enter") {
+        event.preventDefault();
+        _M.sendEvent(originElem, action);
+        return false;
+    }
+};
+
+_M.preventDefault = function(event) {
+    if (event.key === "Enter") {
+        event.preventDefault();
+        return false;
+    }
 };
 
 _M.retryConnection();
-document.querySelectorAll("[m-onenter]").forEach((element) => _M.onEnter(element));

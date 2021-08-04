@@ -2,13 +2,7 @@ package io.getmedusa.medusa.core.injector;
 
 import io.getmedusa.medusa.core.annotation.UIEventController;
 import io.getmedusa.medusa.core.cache.HTMLCache;
-import io.getmedusa.medusa.core.injector.tag.ChangeTag;
-import io.getmedusa.medusa.core.injector.tag.ClassAppendTag;
-import io.getmedusa.medusa.core.injector.tag.ClickTag;
-import io.getmedusa.medusa.core.injector.tag.ConditionalTag;
-import io.getmedusa.medusa.core.injector.tag.GenericMTag;
-import io.getmedusa.medusa.core.injector.tag.IterationTag;
-import io.getmedusa.medusa.core.injector.tag.ValueTag;
+import io.getmedusa.medusa.core.injector.tag.*;
 import io.getmedusa.medusa.core.injector.tag.meta.InjectionResult;
 import io.getmedusa.medusa.core.registry.EventHandlerRegistry;
 import io.getmedusa.medusa.core.util.FilenameHandler;
@@ -35,6 +29,7 @@ public enum HTMLInjector {
     private String styling = null;
 
     private final ClickTag clickTag;
+    private final OnEnterTag onEnterTag;
     private final ChangeTag changeTag;
     private final ValueTag valueTag;
     private final ConditionalTag conditionalTag;
@@ -44,6 +39,7 @@ public enum HTMLInjector {
 
     HTMLInjector() {
         this.clickTag = new ClickTag();
+        this.onEnterTag = new OnEnterTag();
         this.changeTag = new ChangeTag();
         this.valueTag = new ValueTag();
         this.conditionalTag = new ConditionalTag();
@@ -92,6 +88,7 @@ public enum HTMLInjector {
         InjectionResult result = iterationTag.injectWithVariables(new InjectionResult(htmlString), variables);
         result = conditionalTag.injectWithVariables(result, variables);
         result = clickTag.inject(result.getHtml());
+        result = onEnterTag.inject(result.getHtml());
         result = changeTag.inject(result.getHtml());
         result = valueTag.injectWithVariables(result, variables);
         result = classAppendTag.injectWithVariables(result, variables);

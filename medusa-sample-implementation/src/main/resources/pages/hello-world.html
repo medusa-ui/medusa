@@ -51,7 +51,9 @@
 <p>Searched for: [$ search ]</p>
 <p>[$search-result]</p>
 <form>
+    [$foreach $orders]
     <input m-onenter="search(this.value, 3,this.type,this.name)" type="text" name="term" autocomplete="off" />
+    [$end for]
 </form>
 
 <h5>Orders</h5>
