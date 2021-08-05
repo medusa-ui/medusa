@@ -4,15 +4,17 @@ import io.github.bonigarcia.wdm.WebDriverManager;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.boot.web.server.LocalServerPort;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 public class AbstractSeleniumTest {
 
@@ -21,6 +23,7 @@ public class AbstractSeleniumTest {
 
     protected WebDriver driver;
     protected static String BASE;
+    protected WebDriverWait wait;
 
     protected boolean isHeadless() {
         return true;
@@ -42,6 +45,8 @@ public class AbstractSeleniumTest {
             chromeOptions.addArguments("window-size=1400,2100");
         }
         driver = new ChromeDriver(chromeOptions);
+        driver.manage().timeouts().implicitlyWait(1, TimeUnit.SECONDS);
+        wait = new WebDriverWait(driver,1);
         login();
     }
 
@@ -81,12 +86,31 @@ public class AbstractSeleniumTest {
         return driver.findElements(By.cssSelector(cssSelector)).size() != 0;
     }
 
+    protected List<String> getAttributeByCss(String cssSelector, String attribute) {
+        waitUntilElementsPresent(cssSelector);
+        return driver.findElements(By.cssSelector(cssSelector)).stream().map(w -> w.getAttribute(attribute)).collect(Collectors.toList());
+    }
+
+    protected List<String> getTextByCss(String cssSelector) {
+        waitUntilElementsPresent(cssSelector);
+        return driver.findElements(By.cssSelector(cssSelector)).stream().map(WebElement::getText).collect(Collectors.toList());
+    }
+
+    private void waitUntilElementsPresent(String cssSelector) {
+        wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.cssSelector(cssSelector)));
+    }
+
     protected boolean existsById(String id) {
         return driver.findElements(By.id(id)).size() != 0;
     }
 
     protected void goTo(String url) {
         driver.get(BASE + url);
+        waitUntilPageLoaded();
+    }
+
+    private void waitUntilPageLoaded() {
+        wait.until(webDriver -> ((JavascriptExecutor) webDriver).executeScript("return document.readyState").equals("complete"));
     }
 
     protected String getTextById(String id) {
@@ -103,6 +127,12 @@ public class AbstractSeleniumTest {
         final WebElement element = driver.findElement(By.id(id));
         element.clear();
         element.sendKeys(keys);
+        sleep(50);
+    }
+
+    protected void pressKeyById(String id, Keys key) {
+        driver.findElement(By.id(id)).sendKeys(key);
+        sleep(50);
     }
 
     protected void clickById(String id) {
@@ -111,5 +141,6 @@ public class AbstractSeleniumTest {
 
     protected void refreshPage() {
         driver.navigate().refresh();
+        waitUntilPageLoaded();
     }
 }

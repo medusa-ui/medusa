@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Medusa</title>
+    <link href="/stylesheet.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter&family=Merriweather&display=swap" rel="stylesheet">
+</head>
+<body>
+<header><small><code>Identical foreach-blocks (with the same m-id) should be rendered correctly and updated correctly</code></small></header>
+<h2>History has a tendency ...</h2>
+[$foreach $history]
+<p>[$each]</p>
+[$end for]
+
+<h2>... to repeat itself</h2>
+[$foreach $history]
+<p>[$each]</p>
+[$end for]
+
+<h2>The latest historic event: [$event]</h2>
+<input id="input-event" m-onenter="setData(this.value)" type="text" placeholder="change the history"/>
+</body>
+</html>

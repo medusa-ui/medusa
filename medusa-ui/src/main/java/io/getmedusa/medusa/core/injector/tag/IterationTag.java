@@ -15,7 +15,7 @@ import java.util.regex.Pattern;
 public class IterationTag {
 
     private static final String $_EACH = "[$each]";
-    private final Pattern propertyPattern =  Pattern.compile("\\[\\$each\\.(.*?])", Pattern.DOTALL + Pattern.CASE_INSENSITIVE);
+    private final Pattern propertyPattern =  Pattern.compile("\\[\\$each\\.(.*?])", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
     private final Pattern blockPattern = Pattern.compile("\\[\\$foreach .+?].*?\\[\\$end for]", Pattern.DOTALL);
 
     public InjectionResult injectWithVariables(InjectionResult injectionResult, Map<String, Object> variables) {
@@ -27,7 +27,7 @@ public class IterationTag {
             String blockInner = parseInnerBlock(block);
 
             final String templateID = IdentifierGenerator.generateTemplateID(blockInner);
-            String template = "\n<template id=\"" + templateID + "\">\n" + blockInner + "\n</template>\n";
+            String template = "\n<template m-id=\"" + templateID + "\">\n" + blockInner + "\n</template>\n";
             StringBuilder iterations = new StringBuilder(template);
 
             String condition = parseCondition(block);
