@@ -5,6 +5,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.openqa.selenium.By;
+import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -111,5 +112,14 @@ public class AbstractSeleniumTest {
 
     protected void refreshPage() {
         driver.navigate().refresh();
+    }
+
+    protected void setValue(String id, String value){
+        final WebElement element = driver.findElement(By.id(id));
+        element.sendKeys(value);
+    }
+
+    protected void mOnEnter(String id){
+        driver.findElement(By.id(id)).sendKeys(Keys.ENTER);
     }
 }

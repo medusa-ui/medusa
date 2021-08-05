@@ -1,4 +1,4 @@
-package com.sample.medusa.eventhandler;
+package com.sample.medusa.eventhandler.integrationtests;
 
 import io.getmedusa.medusa.core.annotation.PageAttributes;
 import io.getmedusa.medusa.core.annotation.UIEventController;
@@ -10,19 +10,15 @@ import org.springframework.web.reactive.function.server.ServerRequest;
 import java.util.ArrayList;
 import java.util.List;
 
-@UIEventPage(path = "/history", file = "pages/history")
-public class HistoryEventHandler implements UIEventController {
+@UIEventPage(path = "/test/history", file = "pages/integration-tests/template-m-id")
+public class TemplateMIdEventHandler implements UIEventController {
 
     List<String> history = new ArrayList<>();
 
     @Override
     public PageAttributes setupAttributes(ServerRequest request, SecurityContext securityContext) {
-        String message = "Hello World";
-        history.add(message);
-
         return new PageAttributes()
-                .with("event", message)
-                .with("data", "")
+                .with("event", "")
                 .with("history", history);
     }
 
@@ -30,7 +26,6 @@ public class HistoryEventHandler implements UIEventController {
         history.add(event);
         return DOMChanges
                 .of("event", event)
-                .and("history", history)
-                .and("data","");
+                .and("history", history);
     }
 }

@@ -8,6 +8,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter&family=Merriweather&display=swap" rel="stylesheet">
 </head>
 <body>
+<header><small><code>Identical foreach-blocks (with the same m-id) should be rendered correctly and updated correctly</code></small></header>
 <h2>History has a tendency ...</h2>
 [$foreach $history]
 <p>[$each]</p>
@@ -19,12 +20,13 @@
 [$end for]
 
 <h2>The latest historic event: [$event]</h2>
-<input m-onenter="setData(this.value)" type="text" placeholder="change the history" value="[$data]">
+<input id="input-event" m-onenter="setData(this.value)" type="text" placeholder="change the history"/>
 <script>
     function retryConnection() {
         console.log("I am retrying connection here, no overlaps");
     }
     retryConnection();
 </script>
+
 </body>
 </html>
