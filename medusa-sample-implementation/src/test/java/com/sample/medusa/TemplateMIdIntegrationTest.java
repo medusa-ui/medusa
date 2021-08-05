@@ -1,10 +1,11 @@
 package com.sample.medusa;
 
 import com.sample.medusa.meta.AbstractSeleniumTest;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.openqa.selenium.Keys;
 import org.springframework.boot.test.context.SpringBootTest;
-
-import java.util.Arrays;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class TemplateMIdIntegrationTest extends AbstractSeleniumTest {
@@ -13,7 +14,7 @@ class TemplateMIdIntegrationTest extends AbstractSeleniumTest {
 
     @Test
     @DisplayName("Using template with m-id should allow the usage of identical foreach-blocks")
-    void test() throws Exception {
+    void test() {
         testInitPage();
 
         testAddAnHistoricEvent();
@@ -21,8 +22,7 @@ class TemplateMIdIntegrationTest extends AbstractSeleniumTest {
         testReloadAndAddAnHistoricEvent();
     }
 
-
-    void testInitPage() throws Exception {
+    void testInitPage() {
         driver.get(BASE + page);
 
         String pageSource = driver.getPageSource();
@@ -35,11 +35,11 @@ class TemplateMIdIntegrationTest extends AbstractSeleniumTest {
         );
     }
 
-    void testAddAnHistoricEvent() throws Exception {
+    void testAddAnHistoricEvent() {
         driver.get(BASE + page);
 
-        setValue("input-event","Hello World");
-        mOnEnter("input-event");
+        fillFieldById("input-event","Hello World");
+        pressKeyById("input-event", Keys.ENTER);
 
         String pageSource = driver.getPageSource();
 
@@ -50,7 +50,7 @@ class TemplateMIdIntegrationTest extends AbstractSeleniumTest {
         );
 
         // repeat
-        mOnEnter("input-event");
+        pressKeyById("input-event", Keys.ENTER);
         pageSource = driver.getPageSource();
 
         Assertions.assertEquals(
@@ -60,7 +60,7 @@ class TemplateMIdIntegrationTest extends AbstractSeleniumTest {
         );
     }
 
-    void testReloadAndAddAnHistoricEvent() throws Exception  {
+    void testReloadAndAddAnHistoricEvent() {
         driver.get(BASE + page);
 
         Assertions.assertEquals(
@@ -69,8 +69,8 @@ class TemplateMIdIntegrationTest extends AbstractSeleniumTest {
                 "Repeating the same input, should double the output"
         );
 
-        setValue("input-event","Hello World");
-        mOnEnter("input-event");
+        fillFieldById("input-event","Hello World");
+        pressKeyById("input-event", Keys.ENTER);
 
 
         Assertions.assertEquals(
@@ -78,9 +78,5 @@ class TemplateMIdIntegrationTest extends AbstractSeleniumTest {
                 countOccurrence( driver.getPageSource(), "<p>Hello World</p>" ),
                 "Adding an extra 'Hello World'? That should be six times now!"
         );
-    }
-
-    private int countOccurrence(String source, String search) {
-        return source.split(search).length - 1;
     }
 }

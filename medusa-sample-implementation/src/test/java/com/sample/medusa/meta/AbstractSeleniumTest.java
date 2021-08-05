@@ -106,6 +106,11 @@ public class AbstractSeleniumTest {
         element.sendKeys(keys);
     }
 
+    protected void pressKeyById(String id, Keys key) {
+        driver.findElement(By.id(id)).sendKeys(key);
+        sleep(50);
+    }
+
     protected void clickById(String id) {
         driver.findElement(By.id(id)).click();
     }
@@ -114,12 +119,7 @@ public class AbstractSeleniumTest {
         driver.navigate().refresh();
     }
 
-    protected void setValue(String id, String value) {
-        final WebElement element = driver.findElement(By.id(id));
-        element.sendKeys(value);
-    }
-
-    protected void mOnEnter(String id) {
-        driver.findElement(By.id(id)).sendKeys(Keys.ENTER);
+    protected int countOccurrence(String source, String search) {
+        return source.split(search).length - 1;
     }
 }
