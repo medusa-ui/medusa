@@ -114,12 +114,12 @@ public class AbstractSeleniumTest {
         driver.navigate().refresh();
     }
 
-    protected void setValue(String id, String value){
+    protected void setValue(String id, String value) {
         final WebElement element = driver.findElement(By.id(id));
         element.sendKeys(value);
     }
 
-    protected void mOnEnter(String id){
+    protected void mOnEnter(String id) {
         driver.findElement(By.id(id)).sendKeys(Keys.ENTER);
     }
 }

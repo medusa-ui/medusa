@@ -7,14 +7,22 @@ import org.springframework.boot.test.context.SpringBootTest;
 import java.util.Arrays;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class TemplateMIdIntegrationTest extends AbstractSeleniumTest {
 
     private static final String page = "/test/history";
 
     @Test
-    @Order(1)
-    void testInitPage() {
+    @DisplayName("Using template with m-id should allow the usage of identical foreach-blocks")
+    void test() throws Exception {
+        testInitPage();
+
+        testAddAnHistoricEvent();
+
+        testReloadAndAddAnHistoricEvent();
+    }
+
+
+    void testInitPage() throws Exception {
         driver.get(BASE + page);
 
         String pageSource = driver.getPageSource();
@@ -27,9 +35,7 @@ class TemplateMIdIntegrationTest extends AbstractSeleniumTest {
         );
     }
 
-    @Test
-    @Order(2)
-    void testAddAnHistoricEvent() {
+    void testAddAnHistoricEvent() throws Exception {
         driver.get(BASE + page);
 
         setValue("input-event","Hello World");
@@ -54,19 +60,22 @@ class TemplateMIdIntegrationTest extends AbstractSeleniumTest {
         );
     }
 
-    @Test
-    @Order(3)
-    void testReloadAndAddAnHistoricEvent() {
+    void testReloadAndAddAnHistoricEvent() throws Exception  {
         driver.get(BASE + page);
+
+        Assertions.assertEquals(
+                4,
+                countOccurrence( driver.getPageSource(), "<p>Hello World</p>"),
+                "Repeating the same input, should double the output"
+        );
 
         setValue("input-event","Hello World");
         mOnEnter("input-event");
 
-        String pageSource = driver.getPageSource();
 
         Assertions.assertEquals(
                 6,
-                countOccurrence( pageSource, "<p>Hello World</p>" ),
+                countOccurrence( driver.getPageSource(), "<p>Hello World</p>" ),
                 "Adding an extra 'Hello World'? That should be six times now!"
         );
     }
