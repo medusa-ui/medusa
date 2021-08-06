@@ -1,8 +1,8 @@
 mvn versions:set -DnewVersion="0.1.2"
 git add .
-git commit -m "Release 0.1.1"
+git commit -m "Release 0.1.2"
 git tag 0.1.2
 git push --tags
-mvn versions:set -DnewVersion="0.1.2-SNAPSHOT"
+mvn versions:set -DnewVersion="0.1.3-SNAPSHOT"
 git add .
-git commit -m "Release 0.1.1 - Version update from 0.1.1 to 0.1.2-SNAPSHOT"
+git commit -m "Release 0.1.2 - Version update from 0.1.2 to 0.1.3-SNAPSHOT"
