@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Medusa</title>
+    <link href="/stylesheet.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter&family=Merriweather&display=swap" rel="stylesheet">
+</head>
+<body>
+<header><code>Handling self-reference ( this.attribute ) and element-reference ( #elm_id.attribute )</code></header>
+    <br>
+    <br>
+    <div>
+        <input id="_first" style="width:80px" value="[$first]"/>
+        <input id="_second" style="width:80px" value="[$second]"/>
+        <button m-click="calc(#_first.value, #_second.value, 'add')">SUM</button>
+        <button m-click="calc(#_first.value, #_second.value, this.name)" name='"minus"'>SUBTRACT</button>
+        <button m-click="calc(#_first.value, #_second.value, this.name)" name='"multiply"'>MULTIPLY</button>
+        <br>
+        <button id="_42a" m-click="calc(this.first, this.second, this.operation)" first="40" second="2" operation='"add"'>40 + 2</button>
+        <button id="_42m" m-click="calc(this.value, this.name, 'this.operation')" value="21" name="2" operation="multiply">21 * 2</button>
+    </div>
+    <div>
+        Result: [$result]
+    </div>
+</body>
+</html>

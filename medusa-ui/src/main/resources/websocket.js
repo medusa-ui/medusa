@@ -230,6 +230,35 @@ _M.elementEscape = function(valueToEscape) {
     });
 };
 
+_M.parseReference = function(e, originElem) {
+    e = _M.parseSelfReference(e, originElem);
+    e = _M.parseElementByIdReference(e, originElem);
+    return e;
+};
+
+_M.parseElementByIdReference = function(e, originElem) {
+    const raw = e.match(/\(.*\)/)[0];
+    let resolved = raw;
+    if(null !== raw && raw.indexOf("#") !== -1) {
+        const partToEval = raw.substring(1, raw.length-1);
+        const part = partToEval.split(",");
+        for(const attrToEval of part) {
+            let part = attrToEval.trim();
+            if(part.indexOf("#") === 0) {
+                const exp = part.split(".");
+                const target = document.querySelector(exp[0]);
+                const attrName = exp[1];
+                const value = target[attrName];  // TODO also look at originElem.attributes[attrName].value?
+                resolved = resolved.replace(part, value);
+            }
+        }
+        const result = e.replace(raw, resolved);
+        console.log("result: ", result)
+        return result;
+    }
+    return e;
+};
+
 _M.parseSelfReference = function(e, originElem) {
     const parametersUnparsed = e.match(/\(.*\)/)[0];
     if(null !== parametersUnparsed && parametersUnparsed.indexOf("this.") !== -1) {
@@ -240,12 +269,16 @@ _M.parseSelfReference = function(e, originElem) {
         for(const paramToEval of parametersToEval) {
             parameters += appender;
             let param = paramToEval.trim();
-            if(param.indexOf("this.") === 0) {
-                const resolvedParam = originElem[param.replace("this.", "")];
-                if(resolvedParam === undefined) {
+            let index = param.indexOf("this.");
+            if(index !== -1) {
+                const attrName = param.substring(index, param.length-index).replace("this.", "");
+                //const resolvedParam = originElem[param.replace("this.", "")];
+                const resolvedParam = originElem.attributes[attrName].value; // TODO first look at originElem[attrName]?
+                const result = param.replace("this."+attrName, resolvedParam);
+                if(result === undefined) {
                     param = null;
                 } else {
-                    param = "'" + _M.elementEscape(resolvedParam) + "'";
+                    param = _M.elementEscape(result.replaceAll("'","\""));
                 }
             }
             parameters += param;
@@ -272,7 +305,7 @@ _M.sendEvent = function(originElem, e) {
         }
     }
 
-    e = _M.parseSelfReference(e, originElem);
+    e = _M.parseReference(e, originElem);
     _M.ws.send(_M.injectVariablesIntoExpression(e));
 };
 
