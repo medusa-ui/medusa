@@ -12,12 +12,11 @@ public class UIEventPostProcessor implements BeanPostProcessor {
 
     @Override
     public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
-        if(bean instanceof UIEventController) {
-            final UIEventController eventController = (UIEventController) bean;
-            final UIEventPage UIEventPage = eventController.getClass().getAnnotation(UIEventPage.class);
-            final String htmlFile = FilenameHandler.removeExtension(FilenameHandler.normalize(UIEventPage.file()));
-            RouteRegistry.getInstance().add(UIEventPage.path(), htmlFile);
-            EventHandlerRegistry.getInstance().add(htmlFile, eventController);
+        final UIEventPage uiEventPage = bean.getClass().getAnnotation(UIEventPage.class);
+        if(uiEventPage != null) {
+            final String htmlFile = FilenameHandler.removeExtension(FilenameHandler.normalize(uiEventPage.file()));
+            RouteRegistry.getInstance().add(uiEventPage.path(), htmlFile);
+            EventHandlerRegistry.getInstance().add(htmlFile, bean);
         }
         return BeanPostProcessor.super.postProcessBeforeInitialization(bean, beanName);
     }

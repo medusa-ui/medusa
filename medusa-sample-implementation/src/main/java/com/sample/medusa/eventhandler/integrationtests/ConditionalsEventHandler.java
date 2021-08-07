@@ -1,7 +1,7 @@
 package com.sample.medusa.eventhandler.integrationtests;
 
 import io.getmedusa.medusa.core.annotation.PageAttributes;
-import io.getmedusa.medusa.core.annotation.UIEventController;
+import io.getmedusa.medusa.core.annotation.UIEventWithAttributes;
 import io.getmedusa.medusa.core.annotation.UIEventPage;
 import io.getmedusa.medusa.core.injector.DOMChanges;
 import io.getmedusa.medusa.core.util.SecurityContext;
@@ -13,7 +13,7 @@ import java.util.Map;
 import static io.getmedusa.medusa.core.injector.DOMChanges.of;
 
 @UIEventPage(path = "/test/conditionals", file = "pages/integration-tests/conditionals.html")
-public class ConditionalsEventHandler implements UIEventController {
+public class ConditionalsEventHandler implements UIEventWithAttributes {
 
     int counter = 0;
 
