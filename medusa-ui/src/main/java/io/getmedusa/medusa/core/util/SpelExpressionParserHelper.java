@@ -60,7 +60,7 @@ abstract class SpelExpressionParserHelper {
         try {
             SPEL_EXPRESSION_PARSER.parseExpression(expression).getValue();
             return true;
-        } catch (SpelParseException | SpelEvaluationException e) {
+        } catch (SpelParseException | SpelEvaluationException | IllegalStateException e) {
             return false;
         }
     }
