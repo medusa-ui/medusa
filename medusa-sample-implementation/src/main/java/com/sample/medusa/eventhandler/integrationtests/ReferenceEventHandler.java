@@ -9,7 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.reactive.function.server.ServerRequest;
 
-@UIEventPage(path = "/test/refs", file = "pages/integration-tests/reference")
+@UIEventPage(path = "/test/reference", file = "pages/integration-tests/reference")
 public class ReferenceEventHandler implements UIEventWithAttributes {
     private static final Logger logger = LoggerFactory.getLogger(ReferenceEventHandler.class);
 

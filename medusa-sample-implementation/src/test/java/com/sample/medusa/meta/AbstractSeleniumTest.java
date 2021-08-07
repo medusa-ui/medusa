@@ -131,7 +131,8 @@ public class AbstractSeleniumTest {
     }
 
     protected void pressKeyById(String id, Keys key) {
-        driver.findElement(By.id(id)).sendKeys(key);
+        final WebElement element = driver.findElement(By.id(id));
+        element.sendKeys(key);
         sleep(50);
     }
 

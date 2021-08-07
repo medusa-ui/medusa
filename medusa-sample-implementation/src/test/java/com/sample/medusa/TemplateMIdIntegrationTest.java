@@ -19,7 +19,7 @@ class TemplateMIdIntegrationTest extends AbstractSeleniumTest {
 
     @Override
     protected boolean isHeadless() {
-        return true;
+        return false;
     }
 
     @Test
