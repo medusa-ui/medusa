@@ -248,7 +248,10 @@ _M.parseElementByIdReference = function(e, originElem) {
                 const exp = part.split(".");
                 const target = document.querySelector(exp[0]);
                 const attrName = exp[1];
-                const value = target[attrName];  // TODO also look at originElem.attributes[attrName].value?
+                let value = target[attrName];
+                if(value === undefined) {
+                    value = target.attributes[attrName].value;
+                }
                 resolved = resolved.replace(part, value);
             }
         }
@@ -272,8 +275,10 @@ _M.parseSelfReference = function(e, originElem) {
             let index = param.indexOf("this.");
             if(index !== -1) {
                 const attrName = param.substring(index, param.length-index).replace("this.", "");
-                //const resolvedParam = originElem[param.replace("this.", "")];
-                const resolvedParam = originElem.attributes[attrName].value; // TODO first look at originElem[attrName]?
+                let resolvedParam = originElem[param.replace("this.", "")];
+                if(resolvedParam === undefined){
+                     resolvedParam = originElem.attributes[attrName].value;
+                }
                 const result = param.replace("this."+attrName, resolvedParam);
                 if(result === undefined) {
                     param = null;
