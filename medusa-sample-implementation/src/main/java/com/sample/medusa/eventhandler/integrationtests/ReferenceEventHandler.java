@@ -1,8 +1,8 @@
 package com.sample.medusa.eventhandler.integrationtests;
 
 import io.getmedusa.medusa.core.annotation.PageAttributes;
-import io.getmedusa.medusa.core.annotation.UIEventController;
 import io.getmedusa.medusa.core.annotation.UIEventPage;
+import io.getmedusa.medusa.core.annotation.UIEventWithAttributes;
 import io.getmedusa.medusa.core.injector.DOMChanges;
 import io.getmedusa.medusa.core.util.SecurityContext;
 import org.slf4j.Logger;
@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.web.reactive.function.server.ServerRequest;
 
 @UIEventPage(path = "/test/refs", file = "pages/integration-tests/reference")
-public class ReferenceEventHandler implements UIEventController {
+public class ReferenceEventHandler implements UIEventWithAttributes {
     private static final Logger logger = LoggerFactory.getLogger(ReferenceEventHandler.class);
 
     @Override
