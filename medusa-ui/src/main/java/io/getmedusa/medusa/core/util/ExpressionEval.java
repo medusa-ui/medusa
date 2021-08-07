@@ -1,6 +1,5 @@
 package io.getmedusa.medusa.core.util;
 
-import io.getmedusa.medusa.core.annotation.UIEventController;
 import io.getmedusa.medusa.core.injector.DOMChanges;
 
 import java.io.UnsupportedEncodingException;
@@ -64,8 +63,11 @@ public abstract class ExpressionEval {
         return SpelExpressionParserHelper.getStringValue(property, value);
     }
 
-    public static DOMChanges evalEventController(String event, UIEventController eventController) {
-        return SpelExpressionParserHelper.getValue(escape(event), eventController);
+    public static DOMChanges evalEventController(String event, Object eventController) {
+        final Object value = SpelExpressionParserHelper.getValue(escape(event), eventController);
+        if(value == null) return DOMChanges.empty();
+        if(!(value instanceof DOMChanges)) throw new IllegalArgumentException("The event [" + event + "] was executed but did not complete correctly, because the return value was not [io.getmedusa.medusa.core.injector.DOMChanges], but instead [" + value.getClass().getName() + "]");
+        return (DOMChanges) value;
     }
 
     public static String escape(String raw) {

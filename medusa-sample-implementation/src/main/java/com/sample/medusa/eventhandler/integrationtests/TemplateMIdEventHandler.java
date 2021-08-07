@@ -1,7 +1,7 @@
 package com.sample.medusa.eventhandler.integrationtests;
 
 import io.getmedusa.medusa.core.annotation.PageAttributes;
-import io.getmedusa.medusa.core.annotation.UIEventController;
+import io.getmedusa.medusa.core.annotation.UIEventWithAttributes;
 import io.getmedusa.medusa.core.annotation.UIEventPage;
 import io.getmedusa.medusa.core.injector.DOMChanges;
 import io.getmedusa.medusa.core.util.SecurityContext;
@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @UIEventPage(path = "/test/history", file = "pages/integration-tests/template-m-id")
-public class TemplateMIdEventHandler implements UIEventController {
+public class TemplateMIdEventHandler implements UIEventWithAttributes {
 
     List<String> history = new ArrayList<>();
 

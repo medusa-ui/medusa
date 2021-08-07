@@ -1,7 +1,7 @@
 package com.sample.medusa.eventhandler;
 
 import io.getmedusa.medusa.core.annotation.PageAttributes;
-import io.getmedusa.medusa.core.annotation.UIEventController;
+import io.getmedusa.medusa.core.annotation.UIEventWithAttributes;
 import io.getmedusa.medusa.core.annotation.UIEventPage;
 import io.getmedusa.medusa.core.injector.DOMChanges;
 import io.getmedusa.medusa.core.util.SecurityContext;
@@ -12,7 +12,7 @@ import java.util.*;
 import static io.getmedusa.medusa.core.injector.DOMChanges.of;
 
 @UIEventPage(path = "/", file = "/pages/hello-world")
-public class ExampleEventHandler implements UIEventController {
+public class ExampleEventHandler implements UIEventWithAttributes {
     private int increase = 0;
     private int counter = 0;
     private final List<String> listOfItemsBought = new ArrayList<>();

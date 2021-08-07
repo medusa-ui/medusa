@@ -7,12 +7,18 @@ public class DOMChanges {
 
     private final List<DOMChange> domChanges = new ArrayList<>();
 
+    private DOMChanges() {}
+
     public DOMChanges(String field, Object value) {
         domChanges.add(new DOMChange(field, value));
     }
 
     public DOMChanges(String field, Object value, DOMChange.DOMChangeType type) {
         domChanges.add(new DOMChange(field, value, type));
+    }
+
+    public static DOMChanges empty() {
+        return new DOMChanges();
     }
 
     public DOMChanges and(String field, Object value) {

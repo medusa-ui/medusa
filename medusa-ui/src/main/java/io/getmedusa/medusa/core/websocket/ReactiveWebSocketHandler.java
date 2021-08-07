@@ -2,14 +2,9 @@ package io.getmedusa.medusa.core.websocket;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.getmedusa.medusa.core.annotation.UIEventController;
+import io.getmedusa.medusa.core.injector.DOMChanges;
 import io.getmedusa.medusa.core.injector.DOMChanges.DOMChange;
-import io.getmedusa.medusa.core.registry.ConditionalClassRegistry;
-import io.getmedusa.medusa.core.registry.ConditionalRegistry;
-import io.getmedusa.medusa.core.registry.EventHandlerRegistry;
-import io.getmedusa.medusa.core.registry.GenericMRegistry;
-import io.getmedusa.medusa.core.registry.IterationRegistry;
-import io.getmedusa.medusa.core.registry.PageTitleRegistry;
+import io.getmedusa.medusa.core.registry.*;
 import io.getmedusa.medusa.core.util.ExpressionEval;
 import org.springframework.expression.spel.SpelEvaluationException;
 import org.springframework.stereotype.Component;
@@ -78,7 +73,7 @@ public class ReactiveWebSocketHandler implements WebSocketHandler {
     }
 
     /**
-     * Execute incoming event as a SpelExpression on the current UIEventController the WebSocketSession is attached to
+     * Execute incoming event as a SpelExpression on the current UIEventWithAttributes the WebSocketSession is attached to
      * @param session active websocket session
      * @param event incoming event as an unparsed string()
      * @return list of changes
@@ -86,8 +81,9 @@ public class ReactiveWebSocketHandler implements WebSocketHandler {
     private List<DOMChange> executeEvent(WebSocketSession session, String event) {
         try {
             List<DOMChange> domChanges = new ArrayList<>();
-            final UIEventController eventController = EventHandlerRegistry.getInstance().get(session);
-            final List<DOMChange> parsedExpressionValues = ExpressionEval.evalEventController(event, eventController).build();
+            final Object eventController = EventHandlerRegistry.getInstance().get(session);
+            final DOMChanges domChangesBuilder = ExpressionEval.evalEventController(event, eventController);
+            final List<DOMChange> parsedExpressionValues = (null != domChangesBuilder) ? domChangesBuilder.build() : null;
             if (parsedExpressionValues != null) domChanges = new ArrayList<>(parsedExpressionValues);
             return domChanges;
         } catch (SpelEvaluationException e) {

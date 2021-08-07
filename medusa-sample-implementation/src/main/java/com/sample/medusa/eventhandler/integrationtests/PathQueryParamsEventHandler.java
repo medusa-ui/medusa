@@ -1,7 +1,7 @@
 package com.sample.medusa.eventhandler.integrationtests;
 
 import io.getmedusa.medusa.core.annotation.PageAttributes;
-import io.getmedusa.medusa.core.annotation.UIEventController;
+import io.getmedusa.medusa.core.annotation.UIEventWithAttributes;
 import io.getmedusa.medusa.core.annotation.UIEventPage;
 import io.getmedusa.medusa.core.util.SecurityContext;
 import org.springframework.stereotype.Service;
@@ -11,7 +11,7 @@ import java.util.Arrays;
 import java.util.List;
 //localhost:8080/test/upper/selenium/normal/test?value=12&person=2
 @UIEventPage(path ="/test/upper/{up}/normal/{nrml}", file = "pages/integration-tests/path-query-params")
-public class PathQueryParamsEventHandler implements UIEventController {
+public class PathQueryParamsEventHandler implements UIEventWithAttributes {
 
     final PeopleService service;
 

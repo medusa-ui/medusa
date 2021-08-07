@@ -1,7 +1,7 @@
 package io.getmedusa.medusa.core.injector;
 
 import io.getmedusa.medusa.core.annotation.PageAttributes;
-import io.getmedusa.medusa.core.annotation.UIEventController;
+import io.getmedusa.medusa.core.annotation.UIEventWithAttributes;
 import io.getmedusa.medusa.core.annotation.UIEventPage;
 import io.getmedusa.medusa.core.registry.EventHandlerRegistry;
 import io.getmedusa.medusa.core.util.SecurityContext;
@@ -277,7 +277,7 @@ class RenderUsecasesTest {
     }
 
     @UIEventPage(path = "/test", file = "xyz")
-    static class HandlerImpl implements UIEventController {
+    static class HandlerImpl implements UIEventWithAttributes {
 
         private final Map<String, Object> variables;
         HandlerImpl(Map<String, Object> variables) {
