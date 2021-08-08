@@ -230,96 +230,66 @@ _M.elementEscape = function(valueToEscape) {
     });
 };
 
+_M.attributeValue = function (element, attribute) {
+    if ( element[attribute] !== undefined ) {
+        return element[attribute];
+    }
+    return element.attributes[attribute].value;
+};
+
 _M.parseReference = function(e, originElem) {
-    e = _M.parseSelfReference(e, originElem);
-    e = _M.parseElementByIdReference(e, originElem);
-    return e;
-};
-
-_M.parseElementByIdReference = function(e, originElem) {
-    const raw = e.match(/\(.*\)/)[0];
-    let resolved = raw;
+    var raw = e.match(/\(.*\)/)[0];
+    if (null !== raw && raw.indexOf("this.") !== -1) {
+      e = _M.parseSelfReference(raw, e, originElem);
+    }
+    raw = e.match(/\(.*\)/)[0];
     if(null !== raw && raw.indexOf("#") !== -1) {
-        const partToEval = raw.substring(1, raw.length-1);
-        const part = partToEval.split(",");
-        for(const attrToEval of part) {
-            let part = attrToEval.trim();
-            if(part.indexOf("#") === 0) {
-                const exp = part.split(".");
-                const target = document.querySelector(exp[0]);
-                const attrName = exp[1];
-                const value = target[attrName] ? target[attrName] : target.attributes[attrName].value;
-                resolved = resolved.replace(part, "'" +  value + "'");
-            }
-        }
-        const result = e.replace(raw, resolved);
-        return result;
+      e = _M.parseElementByIdReference(raw, e, originElem);
     }
     return e;
 };
 
-_M.parseSelfReference = function(e, originElem) {
-    const parametersUnparsed = e.match(/\(.*\)/)[0];
-    if(null !== parametersUnparsed && parametersUnparsed.indexOf("this.") !== -1) {
-        const partToEval = parametersUnparsed.substring(1, parametersUnparsed.length-1);
-        const parametersToEval = partToEval.split(",");
-        let parameters = "(";
-        let appender = "";
-        for(const paramToEval of parametersToEval) {
-            parameters += appender;
-            let param = paramToEval.trim();
-            if(param.indexOf("this.") === 0) {
-                const attrName = param.replace("this.", "");
-                const resolvedParam = originElem[attrName] ? originElem[attrName] : originElem.attributes[attrName].value;
-                if(resolvedParam === undefined) {
-                    param = null;
-                } else {
-                    param = "'" + _M.elementEscape(resolvedParam) + "'";
-                }
-            }
-            parameters += param;
-            appender = ", ";
+_M.parseElementByIdReference = function(raw, e, originElem) {
+    let resolved = raw;
+    const partToEval = raw.substring(1, raw.length-1);
+    const part = partToEval.split(",");
+    for(const attrToEval of part) {
+        let part = attrToEval.trim();
+        if(part.indexOf("#") === 0) {
+            const elmAttr = part.split(".");
+            const value = _M.attributeValue(document.querySelector(elmAttr[0]) , elmAttr[1]);
+            resolved = resolved.replace(part, "'" +  value + "'");
         }
-        parameters += ")";
-        return e.replace(parametersUnparsed, parameters);
     }
-    return e;
+    return e.replace(raw, resolved);
 };
 
-_M.parseSelfReference = function(e, originElem) {
-    const parametersUnparsed = e.match(/\(.*\)/)[0];
-    if(null !== parametersUnparsed && parametersUnparsed.indexOf("this.") !== -1) {
-        const partToEval = parametersUnparsed.substring(1, parametersUnparsed.length-1);
-        const parametersToEval = partToEval.split(",");
-        let parameters = "(";
-        let appender = "";
-        for(const paramToEval of parametersToEval) {
-            parameters += appender;
-            let param = paramToEval.trim();
-            let index = param.indexOf("this.");
-            if(index !== -1) {
-                const attrName = param.substring(index, param.length-index).replace("this.", "");
-                let resolvedParam = originElem[param.replace("this.", "")];
-                if(resolvedParam === undefined) {
-                     resolvedParam = originElem.attributes[attrName].value;
-                }
-                const result = param.replace("this."+attrName, resolvedParam);
-                if(result === undefined) {
-                    param = null;
-                } else {
-                    param = "'" + _M.elementEscape(resolvedParam) + "'";
-                }
+_M.parseSelfReference = function(raw, e, originElem) {
+    const partToEval = raw.substring(1, raw.length-1);
+    const parametersToEval = partToEval.split(",");
+    let parameters = "(";
+    let appender = "";
+    for(const paramToEval of parametersToEval) {
+        parameters += appender;
+        let param = paramToEval.trim();
+        if(param.indexOf("this.") === 0) {
+            const attrName = param.replace("this.", "");
+            const resolvedParam = _M.attributeValue(originElem,attrName);
+            if(resolvedParam === undefined) {
+                param = null;
+            } else {
+                param = "'" + _M.elementEscape(resolvedParam) + "'";
             }
-            parameters += param;
-            appender = ", ";
         }
-        parameters += ")";
-        return e.replace(parametersUnparsed, parameters);
+        parameters += param;
+        appender = ", ";
     }
-    return e;
+    parameters += ")";
+    return e.replace(raw, parameters);
 };
 
 _M.waitingForEnable = [];
+
 _M.sendEvent = function(originElem, e) {
     const disableOnClick = originElem.attributes["m-disable-on-click-until"];
     if(disableOnClick !== undefined) {
