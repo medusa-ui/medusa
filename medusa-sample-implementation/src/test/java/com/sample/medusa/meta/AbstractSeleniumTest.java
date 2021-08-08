@@ -131,12 +131,14 @@ public class AbstractSeleniumTest {
     }
 
     protected void pressKeyById(String id, Keys key) {
-        driver.findElement(By.id(id)).sendKeys(key);
+        final WebElement element = driver.findElement(By.id(id));
+        element.sendKeys(key);
         sleep(50);
     }
 
     protected void clickById(String id) {
         driver.findElement(By.id(id)).click();
+        sleep(50);
     }
 
     protected void refreshPage() {
