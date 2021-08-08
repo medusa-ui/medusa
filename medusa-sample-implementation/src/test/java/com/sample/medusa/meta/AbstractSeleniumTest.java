@@ -138,6 +138,7 @@ public class AbstractSeleniumTest {
 
     protected void clickById(String id) {
         driver.findElement(By.id(id)).click();
+        sleep(50);
     }
 
     protected void refreshPage() {

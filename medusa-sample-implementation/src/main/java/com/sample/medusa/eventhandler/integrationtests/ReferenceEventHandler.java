@@ -21,8 +21,12 @@ public class ReferenceEventHandler implements UIEventWithAttributes {
                 .with("result" , "1 + 2 = 3");
     }
 
-    public DOMChanges calc(int first, int second, String operation) {
-        logger.debug("calc(" + first + ", " + second + ", '" + operation + "')");
+    public DOMChanges calc(String firstValue, String secondValue, String operation) {
+        logger.debug("calc(" + firstValue + ", " + secondValue + ", '" + operation + "')");
+        int first = 0;
+        int second = 0;
+        if(firstValue != null) first = Integer.valueOf(firstValue);
+        if(secondValue != null) second = Integer.valueOf(secondValue);
         if(null != operation) {
             if (operation.equals("add")) return sum(first, second);
             if (operation.equals("minus")) return minus(first, second);

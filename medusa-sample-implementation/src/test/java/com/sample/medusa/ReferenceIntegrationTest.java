@@ -11,6 +11,10 @@ public class ReferenceIntegrationTest extends AbstractSeleniumTest {
 
     private static final String page = "/test/reference";
 
+    protected boolean isHeadless() {
+        return true;
+    }
+
     @Test
     @DisplayName("It should be possible to get an attribute value when referring to an element by its id")
     public void testAdd(){
@@ -19,6 +23,7 @@ public class ReferenceIntegrationTest extends AbstractSeleniumTest {
         fillFieldById("_first","13");
         fillFieldById("_second","29");
 
+        clickById("btn_sum");
         clickById("btn_sum");
         String result = getTextById("result");
 
