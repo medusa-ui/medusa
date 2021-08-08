@@ -12,7 +12,7 @@ public class ReferenceIntegrationTest extends AbstractSeleniumTest {
     private static final String page = "/test/reference";
 
     protected boolean isHeadless() {
-        return false;
+        return true;
     }
 
     @Test
