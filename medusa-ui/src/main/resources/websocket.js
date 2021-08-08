@@ -248,15 +248,40 @@ _M.parseElementByIdReference = function(e, originElem) {
                 const exp = part.split(".");
                 const target = document.querySelector(exp[0]);
                 const attrName = exp[1];
-                let value = target[attrName];
-                if(value === undefined) {
-                    value = target.attributes[attrName].value;
-                }
+                const value = target[attrName] ? target[attrName] : target.attributes[attrName].value;
                 resolved = resolved.replace(part, "'" +  value + "'");
             }
         }
         const result = e.replace(raw, resolved);
         return result;
+    }
+    return e;
+};
+
+_M.parseSelfReference = function(e, originElem) {
+    const parametersUnparsed = e.match(/\(.*\)/)[0];
+    if(null !== parametersUnparsed && parametersUnparsed.indexOf("this.") !== -1) {
+        const partToEval = parametersUnparsed.substring(1, parametersUnparsed.length-1);
+        const parametersToEval = partToEval.split(",");
+        let parameters = "(";
+        let appender = "";
+        for(const paramToEval of parametersToEval) {
+            parameters += appender;
+            let param = paramToEval.trim();
+            if(param.indexOf("this.") === 0) {
+                const attrName = param.replace("this.", "");
+                const resolvedParam = originElem[attrName] ? originElem[attrName] : originElem.attributes[attrName].value;
+                if(resolvedParam === undefined) {
+                    param = null;
+                } else {
+                    param = "'" + _M.elementEscape(resolvedParam) + "'";
+                }
+            }
+            parameters += param;
+            appender = ", ";
+        }
+        parameters += ")";
+        return e.replace(parametersUnparsed, parameters);
     }
     return e;
 };
