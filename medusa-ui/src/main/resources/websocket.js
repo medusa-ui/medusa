@@ -231,14 +231,14 @@ _M.elementEscape = function(valueToEscape) {
 };
 
 _M.attributeValue = function (element, attribute) {
-    if ( element[attribute] !== undefined ) {
+    if ( attribute in element ) {
         return element[attribute];
     }
     return element.attributes[attribute].value;
 };
 
 _M.parseReference = function(e, originElem) {
-    var raw = e.match(/\(.*\)/)[0];
+    let raw = e.match(/\(.*\)/)[0];
     if (null !== raw && raw.indexOf("this.") !== -1) {
       e = _M.parseSelfReference(raw, e, originElem);
     }
