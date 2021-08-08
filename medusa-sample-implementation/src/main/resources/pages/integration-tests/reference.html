@@ -14,17 +14,17 @@
     <div>
         <input id="_first" style="width:80px" value="[$first]"/>
         <input id="_second" style="width:80px" value="[$second]"/>
-        <!-- should resolve in a call to calc( 1, 2, "add") -->
+        <!-- should resolve in a call to calc("1", "2", "add") -->
         <button id="btn_sum" m-click="calc(#_first.value, #_second.value, 'add')">SUM</button>
-        <!-- should resolve in a call to calc( 1, 2, "minus") -->
-        <button id="btn_min" m-click="calc(#_first.value, #_second.value, this.name)" name='"minus"'>SUBTRACT</button>
-        <!-- should resolve in a call to calc( 1, 2, "multiply") -->
-        <button id="btn_mul" m-click="calc(#_first.value, #_second.value, this.operation)" operation='"multiply"'>MULTIPLY</button>
+        <!-- should resolve in a call to calc("1", "2", "minus") -->
+        <button id="btn_min" m-click="calc(#_first.value, #_second.value, this.name)" name='minus'>SUBTRACT</button>
+        <!-- should resolve in a call to calc("1", "2", "multiply") -->
+        <button id="btn_mul" m-click="calc(#_first.value, #_second.value, this.operation)" operation="multiply">MULTIPLY</button>
         <br>
-        <!-- should resolve in a call to calc( 40, 2, "add") -->
-        <button id="btn_42a" m-click="calc(this.first, this.second, this.operation)" first="40" second="2" operation='"add"'>40 + 2</button>
-        <!-- should resolve in a call to calc( 21, 2, "multiply") -->
-        <button id="btn_42m" m-click="calc(this.value, this.name, 'this.operation')" value="21" name="2" operation="multiply">21 * 2</button>
+        <!-- should resolve in a call to calc("40", "2", "add") -->
+        <button id="btn_42a" m-click="calc(this.first, this.second, this.operation)" first="40" second="2" operation="add">40 + 2</button>
+        <!-- should resolve in a call to calc("21", "2", "multiply") -->
+        <button id="btn_42m" m-click="calc(this.value, this.name, this.operation)" value="21" name="2" operation="multiply">21 * 2</button>
     </div>
     <div id="result">
         Result: [$result]

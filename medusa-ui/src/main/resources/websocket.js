@@ -252,7 +252,7 @@ _M.parseElementByIdReference = function(e, originElem) {
                 if(value === undefined) {
                     value = target.attributes[attrName].value;
                 }
-                resolved = resolved.replace(part, value);
+                resolved = resolved.replace(part, "'" +  value + "'");
             }
         }
         const result = e.replace(raw, resolved);
@@ -276,14 +276,14 @@ _M.parseSelfReference = function(e, originElem) {
             if(index !== -1) {
                 const attrName = param.substring(index, param.length-index).replace("this.", "");
                 let resolvedParam = originElem[param.replace("this.", "")];
-                if(resolvedParam === undefined){
+                if(resolvedParam === undefined) {
                      resolvedParam = originElem.attributes[attrName].value;
                 }
                 const result = param.replace("this."+attrName, resolvedParam);
                 if(result === undefined) {
                     param = null;
                 } else {
-                    param = _M.elementEscape(result.replaceAll("'","\""));
+                    param = "'" + _M.elementEscape(resolvedParam) + "'";
                 }
             }
             parameters += param;
