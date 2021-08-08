@@ -256,7 +256,6 @@ _M.parseElementByIdReference = function(e, originElem) {
             }
         }
         const result = e.replace(raw, resolved);
-        console.log("result: ", result)
         return result;
     }
     return e;
