@@ -1,6 +1,7 @@
 package com.sample.medusa.eventhandler;
 
 import io.getmedusa.medusa.core.annotation.UIEventPage;
+import io.getmedusa.medusa.core.injector.DOMChanges;
 
 import java.util.UUID;
 
@@ -14,5 +15,10 @@ public class EventHandlerWithoutAttrs {
     public String dance() {
         System.out.println("dancing");
         return UUID.randomUUID().toString();
+    }
+
+    public DOMChanges run() {
+        System.out.println("running");
+        return DOMChanges.of("doing","running");
     }
 }

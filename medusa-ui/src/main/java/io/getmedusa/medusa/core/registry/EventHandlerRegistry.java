@@ -1,5 +1,6 @@
 package io.getmedusa.medusa.core.registry;
 
+import io.getmedusa.medusa.core.annotation.UIEventController;
 import io.getmedusa.medusa.core.util.SessionToHTMLFileName;
 import org.springframework.web.reactive.socket.WebSocketSession;
 
@@ -14,17 +15,17 @@ public class EventHandlerRegistry {
         return INSTANCE;
     }
 
-    private final Map<String, Object> registry = new HashMap<>();
+    private final Map<String, UIEventController> registry = new HashMap<>();
 
     public void add(String htmlFileName, Object controller) {
-        registry.put(htmlFileName, controller);
+        registry.put(htmlFileName, new UIEventController(controller));
     }
 
-    public Object get(String htmlFileName) {
+    public UIEventController get(String htmlFileName) {
         return registry.get(htmlFileName);
     }
 
-    public Object get(WebSocketSession session) {
+    public UIEventController get(WebSocketSession session) {
         String htmlFileName = SessionToHTMLFileName.parse(session);
         return get(htmlFileName);
     }
