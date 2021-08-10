@@ -6,22 +6,21 @@ import io.getmedusa.medusa.core.injector.DOMChanges;
 import io.getmedusa.medusa.core.util.SecurityContext;
 import org.springframework.web.reactive.function.server.ServerRequest;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import static io.getmedusa.medusa.core.injector.DOMChanges.of;
 
-@UIEventPage(path = "/test/setup/default", file = "pages/integration-tests/custom-setup")
+@UIEventPage(path = "/test/setup/default", file = "pages/integration-tests/setup/default")
 public class DefaultSetupEventHandler {
 
-    public PageAttributes setupAttributes(ServerRequest request, SecurityContext securityContext) {
-        Map<String, Object> modelMap = new HashMap<>();
-        modelMap.put("counter", 0);
-        return new PageAttributes(modelMap);
+    public PageAttributes setupAttributes(ServerRequest request, SecurityContext context) {
+        return new PageAttributes()
+                .with("counter" ,0 )
+                .with("setup", "PageAttributes setupAttributes(ServerRequest request, SecurityContext context) {....}")
+                .with("name", request.queryParam("name").orElse("query param 'name' not present"))
+                .with("principal", context == null ? "guest" : context.getPrincipal().getName());
     }
 
     public DOMChanges increaseCounter(String counterValue, int parameter) {
-        Integer counter = (counterValue == null || counterValue.equals("counter")) ? 0 : Integer.valueOf(counterValue);
+        Integer counter = Integer.valueOf(counterValue);
         return of("counter", counter + parameter);
     }
 }

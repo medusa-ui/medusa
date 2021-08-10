@@ -7,12 +7,12 @@ import io.getmedusa.medusa.core.util.SecurityContext;
 
 import static io.getmedusa.medusa.core.injector.DOMChanges.of;
 
-@UIEventPage(path = "/test/setup/secure", file = "pages/integration-tests/custom-setup", setup = "custom")
+@UIEventPage(path = "/test/setup/secure", file = "pages/integration-tests/setup/secure", setup = "custom")
 public class CustomSetupSecureEventHandler {
 
     public PageAttributes custom(SecurityContext context) {
         return new PageAttributes()
-                .with("message","PageAttributes custom(SecurityContext context)")
+                .with("setup","PageAttributes custom(SecurityContext context) {...}")
                 .with("counter" , 0)
                 .with("principal", context == null ? "guest" : context.getPrincipal().getName());
     }

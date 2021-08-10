@@ -23,7 +23,7 @@ public class UIEventController implements UIEventWithAttributes {
         String setupMethodName = uiEventPage.setup();
         for(Method method : uiEventPageObjectClass.getMethods()) {
             if(method.getName().equals(setupMethodName)){
-                if(!(method.getReturnType().getName().equals(PageAttributes.class.getName()))){
+                if(!returningPageAttributes(method)){
                     throw new RuntimeException(uiEventPageObject.getClass().getName() + "." + method.getName() + " should return PageAttributes but was " + method.getReturnType().getClass());
                 }
                 List<Class<?>> parameterTypes = Arrays.asList(method.getParameterTypes());
@@ -31,13 +31,13 @@ public class UIEventController implements UIEventWithAttributes {
 
                 if(parameterTypes.isEmpty()) {
                     type = Type.EMPTY;
-                } else if( parameterTypes.size() == 1  && parameterTypes.get(0).getName().equals(SecurityContext.class.getName())){
+                } else if( parameterTypes.size() == 1  && secureContextClass(parameterTypes.get(0))){
                     type = Type.SECURED;
-                } else if( parameterTypes.size() == 1  && parameterTypes.get(0).getName().equals(ServerRequest.class.getName())){
+                } else if( parameterTypes.size() == 1  && serverRequestClass(parameterTypes.get(0))){
                     type = Type.REQUEST;
-                } else if( parameterTypes.size() == 2  && parameterTypes.get(0).getName().equals(ServerRequest.class.getName()) && parameterTypes.get(1).getName().equals(SecurityContext.class.getName())){
+                } else if( parameterTypes.size() == 2  && serverRequestClass(parameterTypes.get(0)) && secureContextClass(parameterTypes.get(1))){
                     type = Type.REQUEST_SECURED;
-                } else if( parameterTypes.size() == 2  && parameterTypes.get(1).getName().equals(ServerRequest.class.getName()) && parameterTypes.get(0).getName().equals(SecurityContext.class.getName())){
+                } else if( parameterTypes.size() == 2  && serverRequestClass(parameterTypes.get(1)) && secureContextClass(parameterTypes.get(0))){
                     type = Type.SECURED_REQUEST;
                 } else {
                     throw new RuntimeException(uiEventPageObject.getClass().getName() + "." + method.getName() + " only parameters of type ServerRequest and SecurityContext accepted");
@@ -45,6 +45,21 @@ public class UIEventController implements UIEventWithAttributes {
             }
         }
         logger.debug("init {}, with path: '{}', file: '{}' and setup: '{}' is of type '{}'", uiEventPageObject.getClass().getSimpleName(),uiEventPage.path(), uiEventPage.file(), uiEventPage.setup() ,type);
+    }
+
+    private boolean returningPageAttributes(Method method){
+        return method.getReturnType().getName()
+                     .equals(PageAttributes.class.getName());
+    }
+
+    private boolean secureContextClass(Class<?> clazz){
+        return clazz.getName()
+                    .equals(SecurityContext.class.getName());
+    }
+
+    private boolean serverRequestClass(Class<?> clazz){
+        return clazz.getName()
+                    .equals(ServerRequest.class.getName());
     }
 
     @Override

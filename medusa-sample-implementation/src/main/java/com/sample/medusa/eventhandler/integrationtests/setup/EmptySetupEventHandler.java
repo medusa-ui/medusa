@@ -11,7 +11,7 @@ import java.util.Map;
 
 import static io.getmedusa.medusa.core.injector.DOMChanges.of;
 
-@UIEventPage(path = "/test/setup/empty", file = "pages/integration-tests/custom-setup")
+@UIEventPage(path = "/test/setup/empty", file = "pages/integration-tests/setup/empty")
 public class EmptySetupEventHandler {
 
     public DOMChanges increaseCounter(String counterValue, int parameter) {
