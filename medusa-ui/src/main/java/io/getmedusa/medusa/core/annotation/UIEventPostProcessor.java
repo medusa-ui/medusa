@@ -16,7 +16,7 @@ public class UIEventPostProcessor implements BeanPostProcessor {
         if(uiEventPage != null) {
             final String htmlFile = FilenameHandler.removeExtension(FilenameHandler.normalize(uiEventPage.file()));
             RouteRegistry.getInstance().add(uiEventPage.path(), htmlFile);
-            EventHandlerRegistry.getInstance().add(htmlFile, bean);
+            EventHandlerRegistry.getInstance().add(uiEventPage.path(), bean);
         }
         return BeanPostProcessor.super.postProcessBeforeInitialization(bean, beanName);
     }

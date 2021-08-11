@@ -3,9 +3,9 @@ package io.getmedusa.medusa.core.util;
 import io.getmedusa.medusa.core.injector.HTMLInjector;
 import org.springframework.web.reactive.socket.WebSocketSession;
 
-public class SessionToHTMLFileName {
+public class SessionToHash {
 
-    private SessionToHTMLFileName() {}
+    private SessionToHash() {}
 
     public static String parse(WebSocketSession session) {
         String uri = session.getHandshakeInfo().getUri().toString();

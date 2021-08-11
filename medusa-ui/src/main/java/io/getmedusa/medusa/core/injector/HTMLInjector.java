@@ -1,25 +1,18 @@
 package io.getmedusa.medusa.core.injector;
 
 import io.getmedusa.medusa.core.annotation.UIEventController;
-import io.getmedusa.medusa.core.annotation.UIEventWithAttributes;
 import io.getmedusa.medusa.core.cache.HTMLCache;
-import io.getmedusa.medusa.core.injector.tag.ChangeTag;
-import io.getmedusa.medusa.core.injector.tag.ClassAppendTag;
-import io.getmedusa.medusa.core.injector.tag.ClickTag;
-import io.getmedusa.medusa.core.injector.tag.ConditionalTag;
-import io.getmedusa.medusa.core.injector.tag.GenericMTag;
-import io.getmedusa.medusa.core.injector.tag.IterationTag;
-import io.getmedusa.medusa.core.injector.tag.OnEnterTag;
-import io.getmedusa.medusa.core.injector.tag.ValueTag;
+import io.getmedusa.medusa.core.injector.tag.*;
 import io.getmedusa.medusa.core.injector.tag.meta.InjectionResult;
 import io.getmedusa.medusa.core.registry.EventHandlerRegistry;
-import io.getmedusa.medusa.core.util.FilenameHandler;
+import io.getmedusa.medusa.core.registry.RouteRegistry;
 import io.getmedusa.medusa.core.util.SecurityContext;
 import org.springframework.web.reactive.function.server.ServerRequest;
 
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 
 import static io.getmedusa.medusa.core.websocket.ReactiveWebSocketHandler.MAPPER;
@@ -70,28 +63,18 @@ public enum HTMLInjector {
             if(this.script == null) this.script = script;
             if(this.styling == null) this.styling = styling;
             String htmlString = HTMLCache.getInstance().getHTML(fileName);
-            return htmlStringInject(request, securityContext, fileName, htmlString);
+            return htmlStringInject(request, securityContext, htmlString);
         } catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException(e);
         }
     }
 
-    /**
-     * Deprecated. Only use for testing purposes.
-     * @param filename
-     * @param htmlString
-     * @return Actual result from htmlStringInject()
-     */
-    @Deprecated
-    String htmlStringInject(String filename, String htmlString) {
-        return htmlStringInject(null, null, filename, htmlString);
-    }
-
-    private String htmlStringInject(ServerRequest request, SecurityContext securityContext, String filename, String htmlString) {
+    String htmlStringInject(ServerRequest request, SecurityContext securityContext, String htmlString) {
         final Map<String, Object> variables = newLargestFirstMap();
 
-        final UIEventController uiEventController = EventHandlerRegistry.getInstance().get(filename);
+        final String matchedPath = matchRequestPath(request);
+        final UIEventController uiEventController = EventHandlerRegistry.getInstance().get(matchedPath);
         if( null != uiEventController ) variables.putAll(uiEventController.setupAttributes(request, securityContext).getPageVariables());
         InjectionResult result = iterationTag.injectWithVariables(new InjectionResult(htmlString), variables);
         result = conditionalTag.injectWithVariables(result, variables);
@@ -103,7 +86,26 @@ public enum HTMLInjector {
         result = genericMTag.injectWithVariables(result, variables);
         injectVariablesInScript(result, variables);
 
-        return injectScript(filename, result);
+        return injectScript(matchedPath, result);
+    }
+
+    private String matchRequestPath(ServerRequest request) {
+        if(request.pathVariables().isEmpty()) {
+            return request.path();
+        } else {
+            return findPath(request.path(), RouteRegistry.getInstance().getRoutes(), request.pathVariables());
+        }
+    }
+
+    public String findPath(String url, Set<String> possiblePaths, Map<String, String> pathVariables) {
+        for(String possiblePath : possiblePaths) {
+            String path = possiblePath;
+            for(Map.Entry<String, String> entry : pathVariables.entrySet()) {
+                path = path.replace("{" + entry.getKey() + "}", entry.getValue());
+            }
+            if(path.equals(url)) return possiblePath;
+        }
+        return url;
     }
 
     private void injectVariablesInScript(InjectionResult result, Map<String, Object> variables) {
@@ -115,12 +117,12 @@ public enum HTMLInjector {
         }
     }
 
-    private String injectScript(String filename, InjectionResult html) {
+    private String injectScript(String path, InjectionResult html) {
         String injectedHTML = html.getHtml();
         if(script != null) {
             injectedHTML = html.replaceFinal("</body>",
                     "<script id=\"m-websocket-setup\">\n" +
-                    script.replaceFirst("%WEBSOCKET_URL%", EVENT_EMITTER + FilenameHandler.removeExtension(filename)) +
+                    script.replaceFirst("%WEBSOCKET_URL%", EVENT_EMITTER + path.hashCode()) +
                     "</script>\n<script id=\"m-variable-setup\"></script>\n</body>");
         }
         injectedHTML = addStyling(injectedHTML);
