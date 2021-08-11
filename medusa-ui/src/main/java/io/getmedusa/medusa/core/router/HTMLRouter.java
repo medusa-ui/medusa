@@ -42,7 +42,7 @@ public class HTMLRouter {
         final String script = loadScript(scripts);
         final String styling = loadDefaultStyle(style);
         return RouteRegistry.getInstance().getRoutesWithHTMLFile().stream().map(route -> {
-            String fileName = getPath(loadHTMLIntoCache(route.getValue()));
+            String fileName = getPath(loadHTMLIntoCache(route.getValue(), Integer.toString(route.getKey().hashCode())));
             return route(
                     GET(route.getKey()),
                     requestStreamHandler.handle(script, styling, fileName));
@@ -64,13 +64,15 @@ public class HTMLRouter {
         }
     }
 
-    private Resource loadHTMLIntoCache(String htmlFile) {
+    private Resource loadHTMLIntoCache(String htmlFile, String hash) {
         String resourcePath = FilenameHandler.normalize(htmlFile);
         Resource html = resourceLoader.getResource("classpath:/" + resourcePath);
         try {
             final String fileName = getPath(html);
-            String htmlContent = HTMLCache.getInstance().getHTMLOrAdd(fileName, StreamUtils.copyToString(html.getInputStream(), CHARSET));
-            PageTitleRegistry.getInstance().addTitle(fileName, htmlContent);
+            if(!PageTitleRegistry.getInstance().hasTitle(hash)) {
+                String htmlContent = HTMLCache.getInstance().getHTMLOrAdd(fileName, StreamUtils.copyToString(html.getInputStream(), CHARSET));
+                PageTitleRegistry.getInstance().addTitle(hash, htmlContent);
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -90,7 +92,9 @@ public class HTMLRouter {
     @Bean
     public HandlerMapping handlerMapping(ReactiveWebSocketHandler handler) {
         Map<String, ReactiveWebSocketHandler> map = new HashMap<>();
-        RouteRegistry.getInstance().getRoutesWithHTMLFile().forEach(route -> map.put(HTMLInjector.EVENT_EMITTER + route.getValue(), handler));
+        RouteRegistry.getInstance().getRoutesWithHTMLFile().forEach(route -> {
+            map.put(HTMLInjector.EVENT_EMITTER + route.getKey().hashCode(), handler);
+        });
         mapping.setUrlMap(map);
         mapping.setOrder(Ordered.HIGHEST_PRECEDENCE);
         return mapping;

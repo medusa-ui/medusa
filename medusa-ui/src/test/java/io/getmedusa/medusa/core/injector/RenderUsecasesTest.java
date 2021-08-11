@@ -22,7 +22,7 @@ class RenderUsecasesTest {
                 "   <p>Counter is above 5</p>\n" +
                 "[$end if]";
 
-        String result = HTMLInjector.INSTANCE.htmlStringInject(htmlFileName, nestedIf);
+        String result = HTMLInjector.INSTANCE.htmlStringInject(nestedIf);
         System.out.println(result);
 
         Assertions.assertFalse(result.contains("[$if"));
@@ -39,7 +39,7 @@ class RenderUsecasesTest {
                 "    [$end if]\n" +
                 "[$end if]";
 
-        String result = HTMLInjector.INSTANCE.htmlStringInject(htmlFileName, nestedIf);
+        String result = HTMLInjector.INSTANCE.htmlStringInject(nestedIf);
         System.out.println(result);
 
         Assertions.assertFalse(result.contains("[$if"));
@@ -54,7 +54,7 @@ class RenderUsecasesTest {
                 "<p>Hello, Medusa</p>\n" +
                 "[$end for]";
 
-        String result = HTMLInjector.INSTANCE.htmlStringInject(htmlFileName, nestedIf);
+        String result = HTMLInjector.INSTANCE.htmlStringInject(nestedIf);
         System.out.println(result);
 
         Assertions.assertFalse(result.contains("[$foreach"));
@@ -72,7 +72,7 @@ class RenderUsecasesTest {
                           "    [$end for]" +
                           "[$end if]";
 
-        String result = HTMLInjector.INSTANCE.htmlStringInject(htmlFileName, nestedIf);
+        String result = HTMLInjector.INSTANCE.htmlStringInject(nestedIf);
         System.out.println(result);
 
         Assertions.assertFalse(result.contains("[$if"));
@@ -92,7 +92,7 @@ class RenderUsecasesTest {
                 "    [$end if]" +
                 "[$end for]";
 
-        String result = HTMLInjector.INSTANCE.htmlStringInject(htmlFileName, nestedIf);
+        String result = HTMLInjector.INSTANCE.htmlStringInject(nestedIf);
         System.out.println(result);
 
         Assertions.assertFalse(result.contains("[$if"));
@@ -109,7 +109,7 @@ class RenderUsecasesTest {
                 "<p>Hello, [$each]</p>\n" +
                 "[$end for]";
 
-        String result = HTMLInjector.INSTANCE.htmlStringInject(htmlFileName, nestedIf);
+        String result = HTMLInjector.INSTANCE.htmlStringInject(nestedIf);
         System.out.println(result);
 
         Assertions.assertFalse(result.contains("[$foreach"));
@@ -128,7 +128,7 @@ class RenderUsecasesTest {
                 "<p>Hello, Medusa [$each]</p>\n" +
                 "[$end for]";
 
-        String result = HTMLInjector.INSTANCE.htmlStringInject(htmlFileName, nestedIf);
+        String result = HTMLInjector.INSTANCE.htmlStringInject(nestedIf);
         System.out.println(result);
 
         Assertions.assertFalse(result.contains("[$foreach"));
@@ -147,7 +147,7 @@ class RenderUsecasesTest {
                 "<p>Hello, [$each.innerClass.number]</p>\n" +
                 "[$end for]";
 
-        String result = HTMLInjector.INSTANCE.htmlStringInject(htmlFileName, nestedIf);
+        String result = HTMLInjector.INSTANCE.htmlStringInject(nestedIf);
         System.out.println(result);
 
         Assertions.assertFalse(result.contains("[$foreach"));
@@ -166,7 +166,7 @@ class RenderUsecasesTest {
                 "   <p>Counter is above 5</p>\n" +
                 "[$end if]";
 
-        String result = HTMLInjector.INSTANCE.htmlStringInject(htmlFileName, nestedIf);
+        String result = HTMLInjector.INSTANCE.htmlStringInject(nestedIf);
         System.out.println(result);
 
         Assertions.assertFalse(result.contains("[$if"));
@@ -182,7 +182,7 @@ class RenderUsecasesTest {
         EventHandlerRegistry.getInstance().add(htmlFileName, new HandlerImpl(names));
         String divContent = "<div>Above the sea that cries and breaks, Swift [$name-per] with [$name-med]'s snakes, Set free the maiden white like snow</div>";
 
-        String result = HTMLInjector.INSTANCE.htmlStringInject(htmlFileName, divContent);
+        String result = HTMLInjector.INSTANCE.htmlStringInject(divContent);
         System.out.println(result);
 
         Assertions.assertEquals("<div>Above the sea that cries and breaks, Swift <span from-value=\"name-per\">Perseus</span> with <span from-value=\"name-med\">Medusa</span>'s snakes, Set free the maiden white like snow</div>", result);
@@ -197,7 +197,7 @@ class RenderUsecasesTest {
         EventHandlerRegistry.getInstance().add(htmlFileName, new HandlerImpl(names));
         String divContent = "<div>1264135664 can be achieved by multiplying [$wrapper1.number] with [$wrapper2.number], though you might need a calculator</div>";
 
-        String result = HTMLInjector.INSTANCE.htmlStringInject(htmlFileName, divContent);
+        String result = HTMLInjector.INSTANCE.htmlStringInject(divContent);
         System.out.println(result);
 
         Assertions.assertEquals("<div>1264135664 can be achieved by multiplying <span from-value=\"wrapper1.number\">14132</span> with <span from-value=\"wrapper2.number\">89452</span>, though you might need a calculator</div>", result);
@@ -209,7 +209,7 @@ class RenderUsecasesTest {
         EventHandlerRegistry.getInstance().add(htmlFileName, new HandlerImpl(Collections.singletonMap("counter-value", 5)));
         String nestedIf = "<div id=\"example-color-block\" class=\"color-block\" m-class-append=\"$counter-value > 2 ? 'wide' : 'square'\"></div>";
 
-        String result = HTMLInjector.INSTANCE.htmlStringInject(htmlFileName, nestedIf);
+        String result = HTMLInjector.INSTANCE.htmlStringInject(nestedIf);
         System.out.println("result: " + result);
 
         Assertions.assertFalse(result.contains("m-class-append"));
@@ -222,7 +222,7 @@ class RenderUsecasesTest {
         EventHandlerRegistry.getInstance().add(htmlFileName, new HandlerImpl(Collections.singletonMap("counter-value", 5)));
         String nestedIf = "<div id=\"example-color-block\" m-class-append=\"$counter-value > 2 ? 'wide' : 'square'\"></div>";
 
-        String result = HTMLInjector.INSTANCE.htmlStringInject(htmlFileName, nestedIf);
+        String result = HTMLInjector.INSTANCE.htmlStringInject(nestedIf);
         System.out.println("result: " + result);
 
         Assertions.assertFalse(result.contains("m-class-append"));
@@ -235,7 +235,7 @@ class RenderUsecasesTest {
         EventHandlerRegistry.getInstance().add(htmlFileName, new HandlerImpl(Collections.singletonMap("wrapper1", new ExampleClass(14132))));
         String nestedIf = "<div id=\"example-color-block\" class=\"color-block\" m-class-append=\"$wrapper1.number > 2 ? 'wide' : 'square'\"></div>";
 
-        String result = HTMLInjector.INSTANCE.htmlStringInject(htmlFileName, nestedIf);
+        String result = HTMLInjector.INSTANCE.htmlStringInject(nestedIf);
         System.out.println("result: " + result);
 
         Assertions.assertFalse(result.contains("m-class-append"));

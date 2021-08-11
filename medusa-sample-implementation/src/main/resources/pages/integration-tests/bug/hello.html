@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Medusa in trouble</title>
+    <title>Medusa in trouble [$counter-value]</title>
     <link href="/stylesheet.css" rel="stylesheet">
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter&family=Merriweather&display=swap" rel="stylesheet">
@@ -10,5 +10,8 @@
 <body>
 <h1>🦑 Medusa in trouble</h1>
 <p>Controller name: [$controller]</p>
+<p>Number from path: [$numberFromPath]</p>
+<p>Counter value: <span id="counter-value">[$counter-value]</span></p>
+<button id="interact" m-click="increaseCounter()">Increase counter</button>
 </body>
 </html>
