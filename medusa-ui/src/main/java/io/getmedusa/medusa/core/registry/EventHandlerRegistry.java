@@ -1,5 +1,6 @@
 package io.getmedusa.medusa.core.registry;
 
+import io.getmedusa.medusa.core.annotation.UIEventController;
 import io.getmedusa.medusa.core.util.SessionToHash;
 import org.springframework.web.reactive.socket.WebSocketSession;
 
@@ -14,21 +15,21 @@ public class EventHandlerRegistry {
         return INSTANCE;
     }
 
-    private final Map<String, Object> registry = new HashMap<>();
+    private final Map<String, UIEventController> registry = new HashMap<>();
     private final Map<String, String> hashRegistry = new HashMap<>();
 
     public void add(String reqPath, Object controller) {
-        registry.put(reqPath, controller);
+        registry.put(reqPath, new UIEventController(controller));
         hashRegistry.put(Integer.toString(reqPath.hashCode()), reqPath);
     }
 
-    public Object get(String reqPath) {
+    public UIEventController get(String reqPath) {
         return registry.get(reqPath);
     }
 
-    public Object findByHash(String hash) { return get(findKeyByHash(hash)); }
+    public UIEventController findByHash(String hash) { return get(findKeyByHash(hash)); }
 
-    public Object get(WebSocketSession session) {
+    public UIEventController get(WebSocketSession session) {
         String htmlFileName = SessionToHash.parse(session);
         return findByHash(htmlFileName);
     }
