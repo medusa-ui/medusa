@@ -188,6 +188,7 @@ public class ReactiveWebSocketHandler implements WebSocketHandler {
                     unmappedTitle = unmappedTitle.replaceAll("\\[\\$"+domChange.getF()+"\\]", domChange.getV().toString());
                 }
             }
+
             if(hasAChange) {
                 domChanges.add(new DOMChange(null, unmappedTitle, DOMChange.DOMChangeType.TITLE));
             }
