@@ -1,6 +1,6 @@
 package io.getmedusa.medusa.core.injector;
 
-import io.getmedusa.medusa.core.annotation.UIEventController;
+import io.getmedusa.medusa.core.annotation.UIEventWithAttributes;
 import io.getmedusa.medusa.core.cache.HTMLCache;
 import io.getmedusa.medusa.core.injector.tag.*;
 import io.getmedusa.medusa.core.injector.tag.meta.InjectionResult;
@@ -74,8 +74,12 @@ public enum HTMLInjector {
         final Map<String, Object> variables = newLargestFirstMap();
 
         final String matchedPath = matchRequestPath(request);
-        final UIEventController uiEventController = EventHandlerRegistry.getInstance().get(matchedPath);
-        if( null != uiEventController ) variables.putAll(uiEventController.setupAttributes(request, securityContext).getPageVariables());
+        final Object uiEventController = EventHandlerRegistry.getInstance().get(matchedPath);
+        if(uiEventController instanceof UIEventWithAttributes) {
+            final UIEventWithAttributes controller = (UIEventWithAttributes) uiEventController;
+            variables.putAll(controller.setupAttributes(request, securityContext).getPageVariables());
+        }
+
         InjectionResult result = iterationTag.injectWithVariables(new InjectionResult(htmlString), variables);
         result = conditionalTag.injectWithVariables(result, variables);
         result = clickTag.inject(result.getHtml());
