@@ -277,7 +277,7 @@ class RenderUsecasesTest {
     }
 
     @UIEventPage(path = "/test", file = "xyz")
-    static class HandlerImpl implements UIEventWithAttributes {
+    public static class HandlerImpl implements UIEventWithAttributes {
 
         private final Map<String, Object> variables;
         HandlerImpl(Map<String, Object> variables) {

@@ -64,7 +64,7 @@ public class UIEventController implements UIEventWithAttributes {
 
     @Override
     public PageAttributes setupAttributes(ServerRequest request, SecurityContext securityContext){
-        logger.debug("request {} {}",request, type);
+        logger.debug("request {} {}", request, type);
         try {
             switch (type) {
                 case NONE:
@@ -81,7 +81,7 @@ public class UIEventController implements UIEventWithAttributes {
                     return (PageAttributes) setupAttributes.invoke(uiEventPageController, securityContext, request);
             }
         } catch (InvocationTargetException | IllegalAccessException e) {
-            e.printStackTrace();
+            logger.error("setup attributes failed due to: " + e.getMessage(), e );
         }
         return null;
     }
