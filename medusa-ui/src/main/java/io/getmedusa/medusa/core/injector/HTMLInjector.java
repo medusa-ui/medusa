@@ -70,17 +70,7 @@ public enum HTMLInjector {
         }
     }
 
-    /**
-     * Deprecated. Only use for testing purposes.
-     * @param htmlString
-     * @return Actual result from htmlStringInject()
-     */
-    @Deprecated
-    String htmlStringInject(String htmlString) {
-        return htmlStringInject(null, null, htmlString); //TODO cannot pass null as req
-    }
-
-    private String htmlStringInject(ServerRequest request, SecurityContext securityContext, String htmlString) {
+    String htmlStringInject(ServerRequest request, SecurityContext securityContext, String htmlString) {
         final Map<String, Object> variables = newLargestFirstMap();
 
         final String matchedPath = matchRequestPath(request);
