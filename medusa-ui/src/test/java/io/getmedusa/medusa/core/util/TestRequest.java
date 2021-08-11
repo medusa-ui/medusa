@@ -26,8 +26,6 @@ import java.util.Optional;
 
 public class TestRequest implements ServerRequest {
 
-    public TestRequest() {}
-
     @Override
     public String methodName() {
         return null;
