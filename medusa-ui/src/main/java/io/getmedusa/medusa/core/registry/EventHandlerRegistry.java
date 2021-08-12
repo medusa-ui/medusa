@@ -18,8 +18,8 @@ public class EventHandlerRegistry {
     private final Map<String, UIEventController> registry = new HashMap<>();
     private final Map<String, String> hashRegistry = new HashMap<>();
 
-    public void add(String reqPath, Object controller) {
-        registry.put(reqPath, new UIEventController(controller));
+    public void add(String reqPath, Object bean) {
+        registry.put(reqPath, new UIEventController(bean));
         hashRegistry.put(Integer.toString(reqPath.hashCode()), reqPath);
     }
 

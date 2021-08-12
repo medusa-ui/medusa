@@ -1,10 +1,8 @@
 package com.sample.medusa.eventhandler;
 
 import io.getmedusa.medusa.core.annotation.PageAttributes;
-import io.getmedusa.medusa.core.annotation.UIEventWithAttributes;
 import io.getmedusa.medusa.core.annotation.UIEventPage;
 import io.getmedusa.medusa.core.injector.DOMChanges;
-import io.getmedusa.medusa.core.util.SecurityContext;
 import org.springframework.web.reactive.function.server.ServerRequest;
 
 import java.util.*;
@@ -12,7 +10,7 @@ import java.util.*;
 import static io.getmedusa.medusa.core.injector.DOMChanges.of;
 
 @UIEventPage(path = "/", file = "/pages/hello-world")
-public class ExampleEventHandler implements UIEventWithAttributes {
+public class ExampleEventHandler {
     private int increase = 0;
     private int counter = 0;
     private final List<String> listOfItemsBought = new ArrayList<>();
@@ -20,8 +18,7 @@ public class ExampleEventHandler implements UIEventWithAttributes {
     private final Product blueSky =  new Product("Blue Sky");
     private final Map<String, Integer> counters = new HashMap<>();
 
-    @Override
-    public PageAttributes setupAttributes(ServerRequest request, SecurityContext securityContext){
+    public PageAttributes setupAttributes(ServerRequest request){
         String uuid= UUID.randomUUID().toString();
         counters.put(uuid, 0);
 
