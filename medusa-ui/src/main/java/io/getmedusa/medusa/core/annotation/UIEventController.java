@@ -54,8 +54,6 @@ public class UIEventController implements UIEventWithAttributes {
         logger.debug("request {} {}", request, setupAttributesMethodType);
         try {
             switch (setupAttributesMethodType) {
-                case NONE:
-                    return new PageAttributes();
                 case EMPTY:
                     return (PageAttributes) setupAttributesMethod.invoke(eventHandler);
                 case REQUEST:
@@ -66,6 +64,8 @@ public class UIEventController implements UIEventWithAttributes {
                     return (PageAttributes) setupAttributesMethod.invoke(eventHandler, request, securityContext);
                 case SECURED_REQUEST:
                     return (PageAttributes) setupAttributesMethod.invoke(eventHandler, securityContext, request);
+                default:
+                    return new PageAttributes();
             }
         } catch (InvocationTargetException | IllegalAccessException e) {
             logger.error("setup attributes failed due to: " + e.getMessage(), e );
