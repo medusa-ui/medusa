@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Medusa page custom setup</title>
+    <link href="/stylesheet.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter&family=Merriweather&display=swap" rel="stylesheet">
+</head>
+<body>
+<h1>🦑 Custom setup</h1>
+<p>Setup done via <code>empty PageAttributes</code></p>
+<div><a href="/test/setup/default?name=Hello%20World!">Default</a> <a href="/test/setup/empty">Empty</a>  <a href="/test/setup/request?name=Hello%20World!">Request</a> <a href="/test/setup/secure">Secured</a> </div>
+<p>Counter: [$counter]</p>
+<button id="btn_count" m-click="increaseCounter(this.value, 1 )" value="[$counter]">Increase</button>
+</body>
+</html>

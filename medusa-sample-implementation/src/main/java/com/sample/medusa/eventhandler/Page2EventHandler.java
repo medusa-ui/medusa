@@ -1,19 +1,15 @@
 package com.sample.medusa.eventhandler;
 
 import io.getmedusa.medusa.core.annotation.PageAttributes;
-import io.getmedusa.medusa.core.annotation.UIEventWithAttributes;
 import io.getmedusa.medusa.core.annotation.UIEventPage;
 import io.getmedusa.medusa.core.injector.DOMChanges;
-import io.getmedusa.medusa.core.util.SecurityContext;
-import org.springframework.web.reactive.function.server.ServerRequest;
 
 import java.util.UUID;
 
 @UIEventPage(path = "/page2", file = "pages/page2.html")
-public class Page2EventHandler implements UIEventWithAttributes {
+public class Page2EventHandler {
 
-    @Override
-    public PageAttributes setupAttributes(ServerRequest request, SecurityContext securityContext) {
+    public PageAttributes setupAttributes() {
         return new PageAttributes().with("example-value", UUID.randomUUID().toString());
     }
 

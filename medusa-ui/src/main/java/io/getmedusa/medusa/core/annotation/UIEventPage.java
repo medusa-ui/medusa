@@ -14,5 +14,5 @@ public @interface UIEventPage {
 
     String path();
     String file();
-
+    String setup() default "setupAttributes";
 }
