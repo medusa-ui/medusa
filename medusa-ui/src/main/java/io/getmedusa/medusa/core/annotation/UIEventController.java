@@ -12,6 +12,19 @@ import java.util.List;
 
 import static io.getmedusa.medusa.core.annotation.UIEventController.SetupAttributesMethodType.*;
 
+/**
+ * <p>
+ * This class is a wrapper for a UIEventPage bean used in {@link io.getmedusa.medusa.core.registry.EventHandlerRegistry}
+ * as part of {@link UIEventPostProcessor}.
+ * </p><p>
+ * Note: This class is not a bean, it is a POJO wrapper of a bean
+ * </p><p>
+ * This wrapper provides a way to reliably call setupAttributes() in internal code without requiring an {@link UIEventWithAttributes} interface
+ * in the bean. We can determine up front during post-processing what kind of invocation is required.
+ * </p><p>
+ * Instead of storing the bean in the registry, we store this wrapper which contains the bean and the kind of invocation required.
+ * </p>
+ */
 public class UIEventController implements UIEventWithAttributes {
     private static final Logger logger = LoggerFactory.getLogger(UIEventController.class);
 
@@ -21,6 +34,10 @@ public class UIEventController implements UIEventWithAttributes {
     private SetupAttributesMethodType setupAttributesMethodType = NONE;
     private final Object eventHandler;
 
+    /**
+     * Wrap the bean and determine its type of setupAttributes() invocation
+     * @param eventHandler bean to wrap
+     */
     public UIEventController(Object eventHandler) {
         this.eventHandler = eventHandler;
         UIEventPage uiEventPage = eventHandler.getClass().getAnnotation(UIEventPage.class);
@@ -49,6 +66,15 @@ public class UIEventController implements UIEventWithAttributes {
         }
     }
 
+    /**
+     * Standardized way of calling setupAttributes()
+     *
+     * Uses the pre-determined type of invocation to then internally call the right type of setup method
+     *
+     * @param request incoming {@link ServerRequest}, optional in use internally
+     * @param securityContext incoming {@link SecurityContext}, optional in use internally
+     * @return PageAttributes object
+     */
     @Override
     public PageAttributes setupAttributes(ServerRequest request, SecurityContext securityContext){
         logger.debug("request {} {}", request, setupAttributesMethodType);
@@ -98,6 +124,10 @@ public class UIEventController implements UIEventWithAttributes {
         return clazz.isAssignableFrom(ServerRequest.class);
     }
 
+    /**
+     * Retrieve wrapped event handler bean
+     * @return wrapped event handler
+     */
     public Object getEventHandler() {
         return eventHandler;
     }

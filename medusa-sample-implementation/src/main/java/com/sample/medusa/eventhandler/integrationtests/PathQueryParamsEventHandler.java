@@ -21,11 +21,10 @@ public class PathQueryParamsEventHandler {
         System.out.println(request.queryParams());
         System.out.println(service.findById("2").getName());
         return new PageAttributes()
-                .with("path-to-upper",request.pathVariable("up"),(in) -> in.toUpperCase())
-                .with("path-as-is",request.pathVariable("nrml"))
-                .with("query-as-is", request.queryParam("value").orElseGet( () -> "nothing"))
-                .with("query-person", request.queryParam("person").orElseGet( () -> "1") , (id) -> service.findById(id) )
-             ;
+                .with("path-to-upper", request.pathVariable("up"), String::toUpperCase)
+                .with("path-as-is", request.pathVariable("nrml"))
+                .with("query-as-is", request.queryParam("value").orElse("nothing"))
+                .with("query-person", request.queryParam("person").orElse("1"), service::findById);
     }
 }
 

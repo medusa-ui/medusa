@@ -7,6 +7,21 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+/**
+ * <p>
+ * Annotation used to mark a class as an event handler for Medusa.
+ * This annotation will implicitly make this class a Spring @Component.
+ * </p><p>
+ * You <i>must</i> define the following attributes: <br><ul>
+ * <li><strong>path</strong> = The controller path this event handler's page can be called on </li>
+ * <li><strong>file</strong> = The HTML file associated with this event handler </li>
+ * </ul>
+ * </p><p>
+ * You may optionally add the following attribute: <br><ul>
+ * <li><strong>setup</strong> = defines the method used to provide initial {@link PageAttributes} (defaults to setupAttributes)</li>
+ * </ul>
+ * </p>
+ */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 @Component
