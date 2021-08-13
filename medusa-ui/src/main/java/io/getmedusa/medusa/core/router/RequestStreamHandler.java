@@ -9,9 +9,13 @@ import org.springframework.web.reactive.function.server.ServerResponse;
 import static io.getmedusa.medusa.core.injector.HTMLInjector.INSTANCE;
 import static org.springframework.web.reactive.function.server.ServerResponse.ok;
 
+/**
+ * Standard implementation of the {@link IRequestStreamHandler}. This class will be used only when there is no Spring Security present in the client.
+ * As such, the passed along security context is always null.
+ */
 @Component
 @ConditionalOnMissingBean(RequestStreamHandlerWithSecurity.class)
-public class RequestStreamHandler implements IRequestStreamHandler {
+class RequestStreamHandler implements IRequestStreamHandler {
 
     @Override
     public HandlerFunction<ServerResponse> handle(String script, String styling, String fileName) {

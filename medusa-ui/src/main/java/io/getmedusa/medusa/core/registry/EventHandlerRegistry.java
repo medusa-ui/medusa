@@ -7,6 +7,11 @@ import org.springframework.web.reactive.socket.WebSocketSession;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Keeps a singleton instance with all routes and their respective event handler beans - wrapped in a {@link UIEventController}
+ * This allows for a quick lookup when a certain route gets called, which event handler should be executed.
+ * Gets instantiated and filled up with values during beforeInitialization post-processing, like most registries.
+ */
 public class EventHandlerRegistry {
 
     private static final EventHandlerRegistry INSTANCE = new EventHandlerRegistry();

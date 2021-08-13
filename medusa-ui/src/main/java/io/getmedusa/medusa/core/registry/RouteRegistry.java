@@ -5,6 +5,12 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+
+/**
+ * Keeps a singleton instance with all routes and their respective HTML files, as set up by {@link io.getmedusa.medusa.core.annotation.UIEventPage}
+ * This is mostly used for initial route setup and hydra communications
+ * Gets instantiated and filled up with values during beforeInitialization post-processing, like most registries.
+ */
 public class RouteRegistry {
 
     private static final RouteRegistry INSTANCE = new RouteRegistry();

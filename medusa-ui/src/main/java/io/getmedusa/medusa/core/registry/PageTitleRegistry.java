@@ -9,6 +9,11 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * Keeps a singleton instance with all page titles and their page hashes.
+ * As such we can quickly retrieve the unparsed page title and review if they are impacted by variable changes
+ * Gets instantiated and filled up with values during beforeInitialization post-processing, like most registries.
+ */
 public class PageTitleRegistry {
 
     private static final PageTitleRegistry INSTANCE = new PageTitleRegistry();

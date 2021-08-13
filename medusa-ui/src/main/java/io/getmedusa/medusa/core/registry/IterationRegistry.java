@@ -5,6 +5,12 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * Keeps a singleton instance with all iteration conditions and their iteration id
+ * As such we can do a lookup if certain variable change would have impact on a condition,
+ * and by consequence require re-interpretation of the iteration itself.
+ * Gets instantiated and filled up with values during beforeInitialization post-processing, like most registries.
+ */
 public class IterationRegistry {
 
     private static final IterationRegistry INSTANCE = new IterationRegistry();

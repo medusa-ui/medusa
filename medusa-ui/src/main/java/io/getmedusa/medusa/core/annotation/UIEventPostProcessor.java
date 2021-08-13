@@ -8,7 +8,8 @@ import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.stereotype.Component;
 
 /**
- * This class triggers the post-processing. This is extensively relied upon to setup the registry at startup.
+ * This class triggers the post-processing. This is extensively relied upon to setup the registry at startup. <br/>
+ * Note: This is post-processing <i>before</i> initialization of all beans. So it happens before any bean has started up.
  */
 @Component
 class UIEventPostProcessor implements BeanPostProcessor {

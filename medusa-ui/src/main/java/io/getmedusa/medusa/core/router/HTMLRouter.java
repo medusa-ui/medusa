@@ -29,8 +29,12 @@ import static io.getmedusa.medusa.core.injector.HTMLInjector.CHARSET;
 import static org.springframework.web.reactive.function.server.RequestPredicates.GET;
 import static org.springframework.web.reactive.function.server.RouterFunctions.route;
 
+/**
+ * The HTML router is a bean that handles the setup of routes with Spring WebFlux. Before this class is initialized, the beforeInitialization post-processor has ran,
+ * which in turn has filled up all registries. As such, we can use the {@link RouteRegistry} here to setup up all routes.
+ */
 @Component
-public class HTMLRouter {
+class HTMLRouter {
 
     private final ResourceLoader resourceLoader = new DefaultResourceLoader();
     private final SimpleUrlHandlerMapping mapping = new SimpleUrlHandlerMapping();

@@ -7,6 +7,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Keeps a singleton instance with all conditions and their respective ids.
+ * As such we can do a lookup if certain variable change would have impact on an if-condition, and by consequence require re-interpretation of the if statement.
+ * Gets instantiated and filled up with values during beforeInitialization post-processing, like most registries.
+ */
 public class ConditionalRegistry {
     private static final ConditionalRegistry INSTANCE = new ConditionalRegistry();
     private static final String PREFIX = "$";
