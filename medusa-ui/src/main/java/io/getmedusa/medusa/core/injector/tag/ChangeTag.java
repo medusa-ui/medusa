@@ -6,17 +6,17 @@ import org.springframework.stereotype.Component;
 public class ChangeTag extends AbstractTag {
 
     @Override
-    String pattern() {
+    protected String pattern() {
         return standardPattern();
     }
 
     @Override
-    String substitutionLogic(String fullMatch, String tagContent) {
+    protected String substitutionLogic(String fullMatch, String tagContent) {
         return "oninput=\"_M.sendEvent(this, '"+tagContent+"')\"";
     }
 
     @Override
-    String tagValue() {
+    protected String tagValue() {
         return "m-change";
     }
 }

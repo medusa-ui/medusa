@@ -3,6 +3,7 @@ package io.getmedusa.medusa.core.injector;
 import io.getmedusa.medusa.core.annotation.UIEventWithAttributes;
 import io.getmedusa.medusa.core.cache.HTMLCache;
 import io.getmedusa.medusa.core.injector.tag.*;
+import io.getmedusa.medusa.core.injector.tag.hydra.LinkTag;
 import io.getmedusa.medusa.core.injector.tag.meta.InjectionResult;
 import io.getmedusa.medusa.core.registry.EventHandlerRegistry;
 import io.getmedusa.medusa.core.registry.RouteRegistry;
@@ -37,6 +38,7 @@ public enum HTMLInjector {
     private final IterationTag iterationTag;
     private final ClassAppendTag classAppendTag;
     private final GenericMTag genericMTag;
+    private final LinkTag linkTag;
 
     HTMLInjector() {
         this.clickTag = new ClickTag();
@@ -46,6 +48,7 @@ public enum HTMLInjector {
         this.conditionalTag = new ConditionalTag();
         this.iterationTag = new IterationTag();
         this.classAppendTag = new ClassAppendTag();
+        this.linkTag = new LinkTag();
         this.genericMTag = new GenericMTag();
     }
 
@@ -85,6 +88,7 @@ public enum HTMLInjector {
         result = valueTag.injectWithVariables(result, variables);
         result = classAppendTag.injectWithVariables(result, variables);
         result = genericMTag.injectWithVariables(result, variables);
+        result = linkTag.inject(result.getHtml());
         injectVariablesInScript(result, variables);
 
         return injectScript(matchedPath, result);

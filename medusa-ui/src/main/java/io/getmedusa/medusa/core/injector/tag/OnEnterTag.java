@@ -6,18 +6,18 @@ import org.springframework.stereotype.Component;
 public class OnEnterTag extends AbstractTag {
 
     @Override
-    String pattern() {
+    protected String pattern() {
         return standardPattern();
     }
 
     @Override
-    String substitutionLogic(String fullMatch, String tagContent) {
+    protected String substitutionLogic(String fullMatch, String tagContent) {
         final String replacedTagContent = tagContent.replace("'", "\\'");
         return "onkeydown=\"_M.preventDefault(event)\" onkeyup=\"_M.onEnter(this, '"+replacedTagContent+"', event)\"";
     }
 
     @Override
-    String tagValue() {
+    protected String tagValue() {
         return "m-onenter";
     }
 }

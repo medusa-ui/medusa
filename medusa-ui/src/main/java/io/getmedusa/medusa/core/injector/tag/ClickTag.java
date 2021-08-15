@@ -6,18 +6,18 @@ import org.springframework.stereotype.Component;
 public class ClickTag extends AbstractTag {
 
     @Override
-    String pattern() {
+    protected String pattern() {
         return standardPattern();
     }
 
     @Override
-    String substitutionLogic(String fullMatch, String tagContent) {
+    protected String substitutionLogic(String fullMatch, String tagContent) {
         final String replacedTagContent = tagContent.replace("'", "\\'");
         return "onclick=\"_M.sendEvent(this, '"+replacedTagContent+"')\"";
     }
 
     @Override
-    String tagValue() {
+    protected String tagValue() {
         return "m-click";
     }
 }

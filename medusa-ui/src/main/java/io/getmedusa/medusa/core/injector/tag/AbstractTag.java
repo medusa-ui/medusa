@@ -9,9 +9,9 @@ import java.util.regex.Pattern;
 
 public abstract class AbstractTag {
 
-    abstract String tagValue();
-    abstract String pattern();
-    abstract String substitutionLogic(String fullMatch, String tagContent);
+    protected abstract String tagValue();
+    protected abstract String pattern();
+    protected abstract String substitutionLogic(String fullMatch, String tagContent);
 
     protected final Pattern pattern = Pattern.compile(pattern(), Pattern.CASE_INSENSITIVE);
 
