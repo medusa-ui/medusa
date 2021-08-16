@@ -9,7 +9,28 @@ public enum HydraRegistry {
 
     private final Map<String, String> otherRoutes = new HashMap<>();
 
-    public String lookupRoute(String tagContent) {
-        return "/xyz";
+    public String lookupRoute(String linkReference) {
+        return otherRoutes.get(linkReference);
+    }
+
+    public void addRoute(String linkReference, String actualRoute) {
+        otherRoutes.put(linkReference, actualRoute);
+    }
+
+    private void addRoute(KnownRoute knownRoute) {
+        System.out.println(knownRoute);
+        for(String route : knownRoute.getAvailableRoutes()) {
+            addRoute(knownRoute.getService(), route);
+        }
+    }
+
+    public void addRoutes(KnownRoutes knownRoutes) {
+        for(KnownRoute knownRoute : knownRoutes.getKnownRoutes()) {
+            addRoute(knownRoute);
+        }
+    }
+
+    public void clear() {
+        otherRoutes.clear();
     }
 }

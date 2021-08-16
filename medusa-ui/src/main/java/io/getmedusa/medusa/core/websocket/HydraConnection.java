@@ -2,6 +2,8 @@ package io.getmedusa.medusa.core.websocket;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.getmedusa.medusa.core.registry.RouteRegistry;
+import io.getmedusa.medusa.core.registry.hydra.HydraRegistry;
+import io.getmedusa.medusa.core.registry.hydra.KnownRoutes;
 import io.netty.channel.ChannelOption;
 import io.netty.handler.timeout.ReadTimeoutHandler;
 import io.netty.handler.timeout.WriteTimeoutHandler;
@@ -31,6 +33,8 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+
+import static reactor.core.publisher.Mono.fromCallable;
 
 @Service
 @ConditionalOnProperty(value="hydra.enabled", havingValue = "true")
@@ -77,17 +81,20 @@ public class HydraConnection implements DisposableBean, ApplicationListener<Cont
                         activeSession = session;
                         return session
                                 .send(Flux.just(session.textMessage(healthRegistrationJSON)))
-                                .and(session.receive().map(x -> {
-                                    System.out.println(x.getPayloadAsText());
-                                    return Mono.empty();
-                                }))
-                                .doFinally(x -> {
+                                .and(session.receive()
+                                        .map(incomingJSON -> fromCallable(() -> objectMapper.readValue(incomingJSON.getPayloadAsText(), KnownRoutes.class))
+                                        .map(knownRoutes -> {
+                                            HydraRegistry.INSTANCE.clear();
+                                            HydraRegistry.INSTANCE.addRoutes(knownRoutes);
+                                            return Mono.empty();
+                                        }).subscribe())
+                                ).doFinally(x -> {
                                     System.err.println(x);
                                     session.close().subscribe();
                                     activeSession = null;
                                     connectToHydra();
-                                } ); })
-                    .retryWhen(Retry.indefinitely())
+                                });
+                    }).retryWhen(Retry.indefinitely())
                     .subscribe();
         }
     }
