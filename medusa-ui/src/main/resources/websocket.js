@@ -90,6 +90,16 @@ _M.injectVariablesIntoExpression = function(expression) {
     return expression;
 };
 
+_M.injectVariablesIntoText = function(text) {
+    const found = text.match(new RegExp("\\[\\$(\\w-?)+?]","g"));
+    if(found) {
+        for(const toReplace of found) {
+            text = text.replaceAll(toReplace, _M.variables[toReplace.substring(2, toReplace.length-1)]);
+        }
+    }
+    return text;
+};
+
 _M.handleMAttribute = function (mId, trueFunc, falseFunc, evalValue) {
     const list = document.getElementsByClassName(mId);
     for (let elem of list) {
@@ -131,7 +141,7 @@ _M.handleWaitingForEnabled = function() {
 };
 
 _M.handleTitleChangeEvent = function(k) {
-    document.title = k.v;
+    document.title = _M.injectVariablesIntoText(k.v);
 };
 
 _M.handleIterationCheck = function (k) {
