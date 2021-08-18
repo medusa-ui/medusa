@@ -26,7 +26,7 @@ public class IterationTag {
             String block = matcher.group(0);
             String blockInner = parseInnerBlock(block);
 
-            final String templateID = IdentifierGenerator.generateTemplateID(blockInner);
+            final String templateID = IdentifierGenerator.generateTemplateID(block);
             String template = "\n<template m-id=\"" + templateID + "\">\n" + blockInner + "\n</template>\n";
             StringBuilder iterations = new StringBuilder(template);
 
