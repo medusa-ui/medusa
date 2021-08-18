@@ -104,6 +104,10 @@ public class AbstractSeleniumTest {
         return driver.findElements(By.id(id)).size() != 0;
     }
 
+    protected String title() {
+        return driver.getTitle();
+    }
+
     protected void goTo(String url) {
         driver.get(BASE + url);
         waitUntilPageLoaded();

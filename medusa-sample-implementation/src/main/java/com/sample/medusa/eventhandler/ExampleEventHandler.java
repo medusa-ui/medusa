@@ -27,7 +27,7 @@ public class ExampleEventHandler {
                 .with("increase", ++increase)
                 .with("counter-value", counter)
                 .with("my-counter", counters.get(uuid))
-                .with("last_bought", "Nothing yet!")
+                .with("last_bought", "메두사")
                 .with("items-bought", listOfItemsBought)
                 .with("items-bought-size", listOfItemsBought.size())
                 .with("orders", orders)

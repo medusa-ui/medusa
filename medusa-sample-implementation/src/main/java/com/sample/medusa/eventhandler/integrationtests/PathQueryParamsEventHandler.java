@@ -30,7 +30,7 @@ public class PathQueryParamsEventHandler {
 
 @Service
 class PeopleService {
-    List<Person> people = Arrays.asList(new Person("1","Kevin"), new Person("2","Dirk"));
+    List<Person> people = Arrays.asList(new Person("1","메두사"), new Person("2","美杜莎"));
 
     Person findById(String id) {
         return people.stream().filter( person -> person.id.equals(id)).findFirst().get();

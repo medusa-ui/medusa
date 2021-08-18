@@ -15,7 +15,7 @@ public class PathQueryParamsIntegrationTest extends AbstractSeleniumTest {
 
         Assertions.assertTrue(pageSource.contains("SELENIUM"));
         Assertions.assertTrue(pageSource.contains("test"));
-        Assertions.assertTrue(pageSource.contains("Dirk"));
+        Assertions.assertTrue(pageSource.contains("美杜莎"));
         Assertions.assertTrue(pageSource.contains("12"));
     }
 
@@ -26,7 +26,7 @@ public class PathQueryParamsIntegrationTest extends AbstractSeleniumTest {
 
         Assertions.assertTrue(pageSource.contains("TEST"));
         Assertions.assertTrue(pageSource.contains("other"));
-        Assertions.assertTrue(pageSource.contains("Kevin"));
+        Assertions.assertTrue(pageSource.contains("메두사"));
         Assertions.assertTrue(pageSource.contains("nothing"));
     }
 }
