@@ -91,7 +91,7 @@ _M.injectVariablesIntoExpression = function(expression) {
 };
 
 _M.injectVariablesIntoText = function(text) {
-    const found = text.match(new RegExp("\\[\\$(\\w+-?)+]","g"));
+    const found = text.match(new RegExp("\\[\\$(\\w-?)+?]","g"));
     if(found) {
         for(const toReplace of found) {
             text = text.replaceAll(toReplace, _M.variables[toReplace.substring(2, toReplace.length-1)]);
