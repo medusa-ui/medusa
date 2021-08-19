@@ -35,7 +35,7 @@ class NestedIterationTagTest {
         System.out.println(result.getHtml());
         Assertions.assertFalse(result.getHtml().contains("$foreach"));
         Assertions.assertTrue(result.getHtml().contains("<template") && result.getHtml().contains("</template>"));
-        Assertions.assertEquals(3, countOccurrences(result.getHtml()));
+        Assertions.assertEquals(2, countOccurrences(result.getHtml()));
     }
 
     @Test
@@ -46,7 +46,7 @@ class NestedIterationTagTest {
         System.out.println(result.getHtml());
         Assertions.assertFalse(result.getHtml().contains("$foreach"));
         Assertions.assertTrue(result.getHtml().contains("<template") && result.getHtml().contains("</template>"));
-        Assertions.assertEquals(7, countOccurrences(result.getHtml()));
+        Assertions.assertEquals(6, countOccurrences(result.getHtml()));
     }
 
     long countOccurrences(String block) {

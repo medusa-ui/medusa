@@ -14,12 +14,14 @@ public class IterationTag {
     private static final String TAG_EACH = "[$each]";
     private static final String TAG_THIS_EACH = "[$this.each]";
 
+    //FYI - DOTALL means 'multiline', ie across newline/line breaks
     private final Pattern propertyPattern =  Pattern.compile("\\[\\$each\\.(.{0,999}])", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
     private final Pattern blockPattern = Pattern.compile("\\[\\$foreach .{1,999}].*?\\[\\$end for]", Pattern.DOTALL);
 
     public InjectionResult injectWithVariables(InjectionResult injectionResult, Map<String, Object> variables) {
         String html = injectionResult.getHtml();
 
+        //find all the foreaches, split them up and order them as deepest-first
         final Set<ForEachElement> depthElements = buildDepthElements(html);
 
         for(ForEachElement depthElement : depthElements) {
@@ -39,6 +41,7 @@ public class IterationTag {
         return injectionResult;
     }
 
+    //code for replacing a foreach block
     private String buildBlockReplacement(ForEachElement element, Map<String, Object> variables, boolean onlyTemplate) {
         final String block = element.blockHTML;
         final String blockInner = element.innerHTML;
@@ -47,24 +50,33 @@ public class IterationTag {
         String template = "\n<template m-id=\"" + templateID + "\">\n" + blockInner + "\n</template>\n";
         StringBuilder iterations = new StringBuilder(template);
 
-        String condition = parseCondition(block);
+        final String condition = parseCondition(block);
         IterationRegistry.getInstance().add(templateID, condition);
         if(!onlyTemplate) {
-            Object conditionParsed = parseCondition(condition, variables);
-            if (conditionParsed instanceof Collection) {
-                @SuppressWarnings("unchecked") Object[] iterationCondition = ((Collection<Object>)conditionParsed).toArray();
-                for (int i = 0; i < iterationCondition.length; i++) {
-                    Object eachValue = iterationCondition[i];
-                    addIteration(blockInner, templateID, iterations, i, eachValue);
-                }
-            } else {
-                for (int i = 0; i < (int) conditionParsed; i++) {
-                    Object eachValue = i;
-                    addIteration(blockInner, templateID, iterations, i, eachValue);
-                }
-            }
+            List<String> divs = turnTemplateIntoDiv(variables, blockInner, templateID, condition);
+            for (String div : divs) iterations.append(div);
         }
         return iterations.toString();
+    }
+
+    //specifically for turning templates with conditions into concrete divs
+    private List<String> turnTemplateIntoDiv(Map<String, Object> variables, String blockInner, String templateID, String condition) {
+        List<String> divs = new ArrayList<>();
+        Object conditionParsed = parseCondition(condition, variables);
+        if (conditionParsed instanceof Collection) {
+            //a true 'foreach', the 'each' becomes each element of the collection
+            @SuppressWarnings("unchecked") Object[] iterationCondition = ((Collection<Object>)conditionParsed).toArray();
+            for (int i = 0; i < iterationCondition.length; i++) {
+                divs.add(buildDivElem(blockInner, templateID, i, iterationCondition[i]));
+            }
+        } else {
+            //if only a single value, we don't need real 'foreach' but rather a regular loop
+            //the 'each' then becomes an index
+            for (int i = 0; i < (int) conditionParsed; i++) {
+                divs.add(buildDivElem(blockInner, templateID, i, i));
+            }
+        }
+        return divs;
     }
 
     private Set<ForEachElement> buildDepthElements(String html) {
@@ -98,9 +110,9 @@ public class IterationTag {
         }
     }
 
-    private void addIteration(String blockInner, String templateID, StringBuilder iterations, int i, Object eachValue) {
-        String iteration = "\n<div index=\"" + i + "\" template-id=\"" + templateID + "\">\n" + parseLine(blockInner, eachValue) + "\n</div>\n";
-        iterations.append(iteration);
+    private String buildDivElem(String blockInner, String templateID, int index, Object eachValue) {
+        final String innerBlock = parseLine(blockInner, eachValue);
+        return "\n<div index=\"" + index + "\" template-id=\"" + templateID + "\">\n" + innerBlock + "\n</div>\n";
     }
 
     private String parseLine(final String line, Object value) {
