@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Medusa nested each</title>
+    <link href="/stylesheet.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter&family=Merriweather&display=swap" rel="stylesheet">
+</head>
+<body>
+<h1>🦑 Foreach within foreach</h1>
+
+[$foreach $outer]
+    <div class="outer-1">[$each]</div>
+    <div class="outer-2">[$this.each]</div>
+[$end for]
+<!--[$foreach $outer]
+   <li>[$this.each]</li>
+  [$foreach $mid]
+      <li>[$this.each]</li>
+      <li>[$parent.each]</li>
+      [$foreach $inner]
+          <li>[$this.each]</li>
+          <li>[$parent.each]</li>
+          <li>[$parent.parent.each]</li>
+      [$end for]
+  [$end for]
+[$end for]-->
+
+<button m-click="first()">first add</button>
+
+</body>
+</html>

@@ -15,8 +15,9 @@ import java.util.regex.Pattern;
 public class IterationTag {
 
     private static final String $_EACH = "[$each]";
-    private final Pattern propertyPattern =  Pattern.compile("\\[\\$each\\.(.*?])", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
-    private final Pattern blockPattern = Pattern.compile("\\[\\$foreach .+?].*?\\[\\$end for]", Pattern.DOTALL);
+    private static final String $_THIS_EACH = "[$this.each]";
+    private final Pattern propertyPattern =  Pattern.compile("\\[\\$each\\.(.{0,999}])", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
+    private final Pattern blockPattern = Pattern.compile("\\[\\$foreach .{1,999}].*?\\[\\$end for]", Pattern.DOTALL);
 
     public InjectionResult injectWithVariables(InjectionResult injectionResult, Map<String, Object> variables) {
         String html = injectionResult.getHtml();
@@ -59,8 +60,9 @@ public class IterationTag {
         iterations.append(iteration);
     }
 
-    private String parseLine(String line, Object value) {
-        String result = line.replace($_EACH, value.toString());
+    private String parseLine(final String line, Object value) {
+        String result = line.replace($_EACH, $_THIS_EACH);
+        result = result.replace($_THIS_EACH, value.toString());
 
         Matcher matcher = propertyPattern.matcher(result);
         while (matcher.find()) {
