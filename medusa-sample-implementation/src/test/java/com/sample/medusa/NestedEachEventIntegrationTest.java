@@ -20,10 +20,17 @@ class NestedEachEventIntegrationTest extends AbstractSeleniumTest {
         goTo("/nested-each");
 
         Assertions.assertEquals("Medusa nested each", driver.getTitle());
-        Assertions.assertEquals(Arrays.asList(1, 2, 3).toString(), getTextByCss(".outer-1").toString());
-        Assertions.assertEquals(Arrays.asList(1, 2, 3).toString(), getTextByCss(".outer-2").toString());
+        Assertions.assertEquals(toList(1, 2, 3), getTextByCss(".outer-1").toString());
+        Assertions.assertEquals(toList(1, 2, 3), getTextByCss(".outer-2").toString());
+
+        Assertions.assertEquals(toList(10, 20, 30), getTextByCss(".mid-1").toString());
+
 
         System.out.println(driver.getPageSource());
+    }
+
+    private String toList(Integer ... i) {
+        return Arrays.asList(i).toString();
     }
 
 }

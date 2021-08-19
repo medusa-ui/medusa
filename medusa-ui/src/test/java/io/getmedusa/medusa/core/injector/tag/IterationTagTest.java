@@ -41,7 +41,7 @@ class IterationTagTest {
         Assertions.assertEquals("list-of-values", condition);
 
         String blockInner = TAG.parseInnerBlock(block);
-        Assertions.assertEquals("<p>Medusa</p>", blockInner);
+        Assertions.assertEquals("<p>Medusa</p>[$end for]<p>Medusa</p>", blockInner);
     }
 
     @Test

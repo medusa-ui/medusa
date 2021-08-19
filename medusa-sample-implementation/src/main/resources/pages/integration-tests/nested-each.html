@@ -13,6 +13,11 @@
 [$foreach $outer]
     <div class="outer-1">[$each]</div>
     <div class="outer-2">[$this.each]</div>
+
+    [$foreach $mid]
+        <div class="mid-1">[$this.each]</div>
+    [$end for]
+
 [$end for]
 <!--[$foreach $outer]
    <li>[$this.each]</li>
