@@ -1,15 +1,18 @@
 package io.getmedusa.medusa.core.injector.tag;
 
+import io.getmedusa.medusa.core.injector.tag.meta.ForEachElement;
 import io.getmedusa.medusa.core.injector.tag.meta.InjectionResult;
+import io.getmedusa.medusa.core.util.NestedForEachParser;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.*;
-import java.util.regex.Matcher;
 
 class IterationTagTest {
 
     private static final IterationTag TAG = new IterationTag();
+    private static final NestedForEachParser PARSER = new NestedForEachParser();
+
     public static final String HTML =
             "<!DOCTYPE html>\n" +
             "<html lang=\"en\">\n" +
@@ -26,22 +29,17 @@ class IterationTagTest {
             "</body>\n" +
             "</html>";
 
-    @Test
-    void testMatcher() {
-        Matcher matcher = TAG.buildBlockMatcher(HTML);
-        Assertions.assertTrue(matcher.find());
-        Assertions.assertEquals("[$foreach $list-of-values]<p>Medusa</p>[$end for]", matcher.group(0));
-        Assertions.assertFalse(matcher.find());
-    }
+    //TODO: properties for each
 
     @Test
-    void testParse() {
-        String block = "[$foreach $list-of-values]<p>Medusa</p>[$end for]<p>Medusa</p>[$end for]";
-        String condition = TAG.parseCondition(block);
-        Assertions.assertEquals("list-of-values", condition);
+    void testDepthParser() {
+        Set<ForEachElement> elements = PARSER.buildDepthElements(HTML);
+        Assertions.assertEquals(1, elements.size());
 
-        String blockInner = TAG.parseInnerBlock(block);
-        Assertions.assertEquals("<p>Medusa</p>[$end for]<p>Medusa</p>", blockInner);
+        ForEachElement element = elements.iterator().next();
+        Assertions.assertNull(element.parent);
+        Assertions.assertEquals(0, element.depth);
+        Assertions.assertEquals("list-of-values", element.condition);
     }
 
     @Test
@@ -57,6 +55,7 @@ class IterationTagTest {
 
     @Test
     void testSingleElementList() {
+        System.out.println(HTML);
         Map<String, Object> variables = new HashMap<>();
         variables.put("list-of-values", Collections.singletonList(1));
         InjectionResult result = TAG.injectWithVariables(new InjectionResult(HTML), variables);
