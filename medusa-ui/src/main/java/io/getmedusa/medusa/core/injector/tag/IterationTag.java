@@ -4,6 +4,7 @@ import io.getmedusa.medusa.core.injector.tag.meta.ForEachDiv;
 import io.getmedusa.medusa.core.injector.tag.meta.ForEachElement;
 import io.getmedusa.medusa.core.injector.tag.meta.ForEachElement.RenderInfo;
 import io.getmedusa.medusa.core.injector.tag.meta.InjectionResult;
+import io.getmedusa.medusa.core.registry.IterationRegistry;
 import io.getmedusa.medusa.core.util.EachParser;
 import io.getmedusa.medusa.core.util.ExpressionEval;
 import io.getmedusa.medusa.core.util.IdentifierGenerator;
@@ -44,6 +45,7 @@ public class IterationTag {
     //code for replacing a foreach block
     private RenderInfo buildBlockReplacement(ForEachElement element, Map<String, Object> variables) {
         final String templateID = IdentifierGenerator.generateTemplateID(element.blockHTML);
+        IterationRegistry.getInstance().add(templateID, element.condition);
         final RenderInfo renderInfo = new RenderInfo(element.blockHTML, templateID);
         renderInfo.template = "<template m-id=\"" + templateID + "\">" + element.innerHTML.replace(TAG_EACH, TAG_THIS_EACH) + "</template>\n";
 

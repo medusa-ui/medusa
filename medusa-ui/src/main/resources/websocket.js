@@ -140,7 +140,6 @@ _M.handleIterationCheck = function (k) {
     // set new values
     document.querySelectorAll("[m-id="+k.f+"]").forEach(
         function(template) {
-
             let index = 0;
 
             for(const currentEachValue of _M.variables[k.v]) {
@@ -149,7 +148,7 @@ _M.handleIterationCheck = function (k) {
                 newDiff.setAttribute("template-id", k.f);
 
                 newDiff.innerHTML = template.innerHTML;
-                _M.recursiveObjectUpdate(newDiff, currentEachValue, "$each");
+                _M.recursiveObjectUpdate(newDiff, currentEachValue, "$this.each");
 
                 template.parentNode.insertBefore(newDiff, template);
             }
