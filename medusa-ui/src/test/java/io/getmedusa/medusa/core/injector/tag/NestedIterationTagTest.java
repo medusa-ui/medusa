@@ -2,7 +2,7 @@ package io.getmedusa.medusa.core.injector.tag;
 
 import io.getmedusa.medusa.core.injector.tag.meta.ForEachElement;
 import io.getmedusa.medusa.core.injector.tag.meta.InjectionResult;
-import io.getmedusa.medusa.core.util.NestedForEachParser;
+import io.getmedusa.medusa.core.util.EachParser;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -11,7 +11,7 @@ import java.util.*;
 class NestedIterationTagTest {
 
     private static final IterationTag TAG = new IterationTag();
-    private static final NestedForEachParser PARSER = new NestedForEachParser();
+    private static final EachParser PARSER = new EachParser();
     public static final String HTML =
             "<!DOCTYPE html>\n" +
             "<html lang=\"en\">\n" +
@@ -42,15 +42,24 @@ class NestedIterationTagTest {
             "</body>\n" +
             "</html>";
 
+    public static final String HTML_MULTIPLE_FORS =
+            "<!DOCTYPE html>\n" +
+                    "<html lang=\"en\">\n" +
+                    "<body>\n" +
+                    "[$foreach $list-of-values][$foreach $list-of-values]<p>Medusa 1</p>[$end for][$end for] x " +
+                    "[$foreach $list-of-values]<p>Medusa 2</p>[$end for]" +
+                    "</body>\n" +
+                    "</html>";
+
     @Test
     void testDepthParser() {
-        Set<ForEachElement> elements = PARSER.buildDepthElements(HTML);
+        List<ForEachElement> elements = PARSER.buildDepthElements(HTML);
         Assertions.assertEquals(2, elements.size());
 
         int countWithParent = 0;
 
         for (ForEachElement element : elements) {
-            if(element.parent != null) countWithParent++;
+            if(element.getParent() != null) countWithParent++;
             Assertions.assertEquals("list-of-values", element.condition);
         }
 
@@ -59,18 +68,35 @@ class NestedIterationTagTest {
 
     @Test
     void testDepthParserDeeper() {
-        Set<ForEachElement> elements = PARSER.buildDepthElements(HTML_DEEPER);
+        List<ForEachElement> elements = PARSER.buildDepthElements(HTML_DEEPER);
         Assertions.assertEquals(3, elements.size());
 
         int countWithParent = 0;
 
         for (ForEachElement element : elements) {
-            if(element.parent != null) countWithParent++;
+            if(element.getParent() != null) countWithParent++;
             Assertions.assertEquals("list-of-values", element.condition);
         }
 
         Assertions.assertEquals(2, countWithParent);
     }
+
+    @Test
+    void testDepthParserDeeperMultipleFors() {
+        System.out.println(HTML_MULTIPLE_FORS.replace('\n', ' '));
+        List<ForEachElement> elements = PARSER.buildDepthElements(HTML_MULTIPLE_FORS);
+        Assertions.assertEquals(3, elements.size());
+
+        int countWithParent = 0;
+
+        for (ForEachElement element : elements) {
+            if(element.getParent() != null) countWithParent++;
+            Assertions.assertEquals("list-of-values", element.condition);
+        }
+
+        Assertions.assertEquals(1, countWithParent);
+    }
+
 
     @Test
     void testSingleElementList() {

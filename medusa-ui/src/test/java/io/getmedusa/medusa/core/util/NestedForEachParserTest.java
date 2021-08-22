@@ -61,7 +61,7 @@ class NestedForEachParserTest {
     @Test
     void findSmallestMatchFirst() {
         String TEST = "[$foreach $condition-3][$foreach $condition-3a][$foreach $condition-3aa]3aa[$end for][$end for][$end for]";
-        List<ForEachElement> smallestMatchFirst = PARSER.findSmallestMatch(TEST);
+        List<ForEachElement> smallestMatchFirst = PARSER.buildDepthElements(TEST);
         Assertions.assertEquals("[$foreach $condition-3aa]3aa[$end for]", smallestMatchFirst.get(0).blockHTML);
         Assertions.assertEquals("[$foreach $condition-3a][$foreach $condition-3aa]3aa[$end for][$end for]", smallestMatchFirst.get(1).blockHTML);
         Assertions.assertEquals("[$foreach $condition-3][$foreach $condition-3a][$foreach $condition-3aa]3aa[$end for][$end for][$end for]", smallestMatchFirst.get(2).blockHTML);
@@ -69,7 +69,7 @@ class NestedForEachParserTest {
 
     @Test
     void findSmallestMatchFirstOnComplexHTML() {
-        List<ForEachElement> smallestMatchFirst = PARSER.findSmallestMatch(HTML);
+        List<ForEachElement> smallestMatchFirst = PARSER.buildDepthElements(HTML);
 
         boolean hasCompleted1aa = false;
         boolean hasCompleted2a = false;
@@ -105,7 +105,7 @@ class NestedForEachParserTest {
     @Test
     void findParents() {
         String TEST = "[$foreach $condition-3][$foreach $condition-3a][$foreach $condition-3aa]3aa[$end for][$end for][$end for][$foreach $condition-4]4[$end for]";
-        List<ForEachElement> smallestMatchFirst = PARSER.findSmallestMatch(TEST);
+        List<ForEachElement> smallestMatchFirst = PARSER.buildDepthElements(TEST);
 
         Assertions.assertEquals(4, smallestMatchFirst.size());
         boolean hasExpectedElement3a = false;
@@ -113,12 +113,12 @@ class NestedForEachParserTest {
         for(ForEachElement element : smallestMatchFirst) {
             if(element.blockHTML.startsWith("[$foreach $condition-3a]")) {
                 hasExpectedElement3a = true;
-                Assertions.assertNotNull(element.parent, "Expected condition 3a to have a parent (condition-3)");
+                Assertions.assertNotNull(element.getParent(), "Expected condition 3a to have a parent (condition-3)");
             }
 
             if(element.blockHTML.startsWith("[$foreach $condition-4]")) {
                 hasExpectedElement4 = true;
-                Assertions.assertNull(element.parent);
+                Assertions.assertNull(element.getParent());
             }
         }
         Assertions.assertTrue(hasExpectedElement3a);

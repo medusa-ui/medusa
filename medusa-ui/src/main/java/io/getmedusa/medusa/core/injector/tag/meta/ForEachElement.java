@@ -4,13 +4,15 @@ import java.util.Objects;
 
 public class ForEachElement implements Comparable<ForEachElement>  {
 
+    private static final String TAG_EACH = "[$each]";
+    private static final String TAG_THIS_EACH = "[$this.each]";
+
     public final String blockHTML; //block including the foreach block and condition
     public final String innerHTML; //block within the foreach
     public final String condition; //the relevant foreach condition
 
-
-    public ForEachElement parent = null;
-    public final int depth = 0;
+    private ForEachElement parent;
+    private int depth = 0;
 
     private RenderInfo childRenderInfo;
 
@@ -18,13 +20,23 @@ public class ForEachElement implements Comparable<ForEachElement>  {
         this.blockHTML = block;
         this.innerHTML = innerBlock;
         this.condition = parseCondition(block);
+    }
 
-        /*this.parent = parent;
+    public void setParent(ForEachElement parent) {
+        this.parent = parent;
         if(parent == null) {
             this.depth = 0;
         } else {
             this.depth = parent.depth+1;
-        }*/
+        }
+    }
+
+    public ForEachElement getParent() {
+        return parent;
+    }
+
+    public int getDepth() {
+        return depth;
     }
 
     public RenderInfo getChildRenderInfo() {
@@ -52,10 +64,6 @@ public class ForEachElement implements Comparable<ForEachElement>  {
         return block.substring("[$foreach".length(), block.indexOf("]")).trim().substring(1); //TODO error if condition does not start with $
     }
 
-    protected String parseInnerBlock(String block) {
-        return block.substring(block.indexOf("]") + 1, block.length() - "[$end for]".length());
-    }
-
     public String renderWithChildRenders(RenderInfo renderInfo) {
         return renderInfo.merge(childRenderInfo).combine();
     }
@@ -80,7 +88,7 @@ public class ForEachElement implements Comparable<ForEachElement>  {
 
         public RenderInfo merge(RenderInfo childRenderInfo) {
             if(childRenderInfo != null) {
-                template = template.replace(childRenderInfo.blockToReplace, childRenderInfo.template);
+                template = template.replace(childRenderInfo.blockToReplace, childRenderInfo.template).replace(TAG_EACH, TAG_THIS_EACH);
                 divs = divs.replace(childRenderInfo.blockToReplace, childRenderInfo.divs);
             }
             return this;

@@ -4,26 +4,30 @@ import io.getmedusa.medusa.core.injector.tag.meta.ForEachDiv;
 import io.getmedusa.medusa.core.injector.tag.meta.ForEachElement;
 import io.getmedusa.medusa.core.injector.tag.meta.ForEachElement.RenderInfo;
 import io.getmedusa.medusa.core.injector.tag.meta.InjectionResult;
+import io.getmedusa.medusa.core.util.EachParser;
+import io.getmedusa.medusa.core.util.ExpressionEval;
 import io.getmedusa.medusa.core.util.IdentifierGenerator;
-import io.getmedusa.medusa.core.util.NestedForEachParser;
 
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class IterationTag {
 
     private static final String TAG_EACH = "[$each]";
     private static final String TAG_THIS_EACH = "[$this.each]";
 
-    private NestedForEachParser parser = new NestedForEachParser();
+    private static final EachParser PARSER = new EachParser();
+    private static final Pattern PROPERTY_PATTERN =  Pattern.compile("\\[\\$each\\.(.*?])", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
 
     public InjectionResult injectWithVariables(InjectionResult injectionResult, Map<String, Object> variables) {
         String html = injectionResult.getHtml();
 
         //find all the foreaches, split them up and order them as deepest-first
-        final Set<ForEachElement> depthElements = parser.buildDepthElements(html);
-
+        final List<ForEachElement> depthElements = PARSER.buildDepthElements(html);
+        Collections.sort(depthElements);
         for(ForEachElement depthElement : depthElements) {
-            ForEachElement parent = depthElement.parent;
+            ForEachElement parent = depthElement.getParent();
             RenderInfo renderInfo = buildBlockReplacement(depthElement, variables);
 
             if(parent != null) {
@@ -67,7 +71,7 @@ public class IterationTag {
             //if only a single value, we don't need real 'foreach' but rather a regular loop
             //the 'each' then becomes an index
             for (int index = 0; index < (int) conditionParsed; index++) {
-                final String divInnerBlock = parseEach(element, variables, element.innerHTML);
+                final String divInnerBlock = parseEach(element, variables, index);
                 divs.add(new ForEachDiv(index, templateID, divInnerBlock).toString());
             }
         }
@@ -87,19 +91,17 @@ public class IterationTag {
         divContent = divContent.replace(TAG_EACH, TAG_THIS_EACH); //the use of [$each] is optional and is equal to using [$this.each]
 
         divContent = divContent.replace(TAG_THIS_EACH, eachObject.toString());
-        //TODO:: properties of each objects
 
-        return divContent;
-    }
-
-    /*
-        Matcher matcher = propertyPattern.matcher(result);
+        Matcher matcher = PROPERTY_PATTERN.matcher(divContent);
         while (matcher.find()) {
             final String replace = matcher.group(); // $[each.property]
             final String group = matcher.group(1);  // property]
-            final String property = group.substring(0, group.length()-1);  // property
-            result = result.replace(replace, ExpressionEval.evalObject(property, value));
-    */
+            final String property = group.substring(0, group.length() - 1);  // property
+            divContent = divContent.replace(replace, ExpressionEval.evalObject(property, eachObject));
+        }
+
+        return divContent;
+    }
 
     private Object parseConditionWithVariables(String condition, Map<String, Object> variables) {
         final Object variable = variables.getOrDefault(condition, new ArrayList<>());

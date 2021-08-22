@@ -10,13 +10,12 @@ class ClickEventIntegrationTest extends AbstractSeleniumTest {
 
     @Test
     void testClickEventWorks() {
-        driver.get(BASE);
-        Assertions.assertTrue(driver.getPageSource().contains("Hello Medusa"));
+        goTo("/test/click-event");
+        Assertions.assertTrue(driver.getPageSource().contains("Hello click event"));
 
         Assertions.assertEquals("0", getFromValue("my-counter"));
         clickById("my-counter-btn");
-        String counter = getTextById("my-counter-btn").replace("Increase my counter by ", "").trim();
-        Assertions.assertEquals(counter, getFromValue("my-counter"));
+        Assertions.assertEquals("1", getFromValue("my-counter"));
     }
 
 }

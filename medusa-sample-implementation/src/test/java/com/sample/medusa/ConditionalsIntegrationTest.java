@@ -10,7 +10,7 @@ class ConditionalsIntegrationTest extends AbstractSeleniumTest {
 
     @Test
     void testConditionals() {
-        driver.get(BASE + "/test/conditionals");
+        goTo("/test/conditionals");
         Assertions.assertTrue(driver.getPageSource().contains("Hello conditionals"));
 
         Assertions.assertEquals("0", getFromValue("counter-value"));

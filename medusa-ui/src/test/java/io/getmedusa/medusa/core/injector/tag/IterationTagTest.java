@@ -2,7 +2,7 @@ package io.getmedusa.medusa.core.injector.tag;
 
 import io.getmedusa.medusa.core.injector.tag.meta.ForEachElement;
 import io.getmedusa.medusa.core.injector.tag.meta.InjectionResult;
-import io.getmedusa.medusa.core.util.NestedForEachParser;
+import io.getmedusa.medusa.core.util.EachParser;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -11,7 +11,7 @@ import java.util.*;
 class IterationTagTest {
 
     private static final IterationTag TAG = new IterationTag();
-    private static final NestedForEachParser PARSER = new NestedForEachParser();
+    private static final EachParser PARSER = new EachParser();
 
     public static final String HTML =
             "<!DOCTYPE html>\n" +
@@ -29,16 +29,41 @@ class IterationTagTest {
             "</body>\n" +
             "</html>";
 
+    public static final String HTML_MULTIPLE_FORS =
+            "<!DOCTYPE html>\n" +
+            "<html lang=\"en\">\n" +
+            "<body>\n" +
+            "[$foreach $list-of-values]<p>Medusa 1</p>[$end for] x " +
+            "[$foreach $list-of-values]<p>Medusa 2</p>[$end for]" +
+            "</body>\n" +
+            "</html>";
+
     //TODO: properties for each
 
     @Test
     void testDepthParser() {
-        Set<ForEachElement> elements = PARSER.buildDepthElements(HTML);
+        List<ForEachElement> elements = PARSER.buildDepthElements(HTML);
         Assertions.assertEquals(1, elements.size());
 
         ForEachElement element = elements.iterator().next();
-        Assertions.assertNull(element.parent);
-        Assertions.assertEquals(0, element.depth);
+        Assertions.assertNull(element.getParent());
+        Assertions.assertEquals(0, element.getDepth());
+        Assertions.assertEquals("list-of-values", element.condition);
+    }
+
+    @Test
+    void testDepthParserMultiple() {
+        List<ForEachElement> elements = PARSER.buildDepthElements(HTML_MULTIPLE_FORS);
+        Assertions.assertEquals(2, elements.size());
+
+        ForEachElement element = elements.iterator().next();
+        Assertions.assertNull(element.getParent());
+        Assertions.assertEquals(0, element.getDepth());
+        Assertions.assertEquals("list-of-values", element.condition);
+
+        element = elements.iterator().next();
+        Assertions.assertNull(element.getParent());
+        Assertions.assertEquals(0, element.getDepth());
         Assertions.assertEquals("list-of-values", element.condition);
     }
 

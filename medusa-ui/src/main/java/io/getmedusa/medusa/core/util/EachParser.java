@@ -11,7 +11,7 @@ public class EachParser {
     private final Pattern forEachPattern = Pattern.compile("\\[\\$foreach .+?]", Pattern.CASE_INSENSITIVE);
     private final Pattern endForPattern = Pattern.compile("\\[\\$end for]", Pattern.CASE_INSENSITIVE);
 
-    List<ForEachElement> findSmallestMatch(String text) {
+    public List<ForEachElement> buildDepthElements(String text) {
         List<Pair> starters = findAllStarters(text);
         List<Pair> stoppers = findAllStoppers(text);
 
@@ -40,7 +40,7 @@ public class EachParser {
         //find parents by going over all pairs and finding the closest wrapping pair
         for(Map.Entry<Pair, ForEachElement> element : elements.entrySet()) {
             Pair parentPair = findClosestPair(element.getKey(), elements.keySet());
-            if(parentPair != null) element.getValue().parent = elements.get(parentPair);
+            if(parentPair != null) element.getValue().setParent(elements.get(parentPair));
         }
 
         return new ArrayList<>(elements.values());
