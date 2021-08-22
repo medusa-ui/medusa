@@ -2,28 +2,29 @@ package io.getmedusa.medusa.core.injector.tag.meta;
 
 import java.util.Objects;
 
-public class ForEachElement implements Comparable<ForEachElement> {
+public class ForEachElement implements Comparable<ForEachElement>  {
 
-    private static final String END_FOR = "[$end for]";
-
-    public final ForEachElement parent;
     public final String blockHTML; //block including the foreach block and condition
     public final String innerHTML; //block within the foreach
     public final String condition; //the relevant foreach condition
-    public final int depth;
+
+
+    public ForEachElement parent = null;
+    public final int depth = 0;
+
     private RenderInfo childRenderInfo;
 
-    public ForEachElement(String block, ForEachElement parent) {
-        String innerBlock = block.substring(block.indexOf(']') + 1, block.length() - END_FOR.length());
+    public ForEachElement(String block, String innerBlock) {
         this.blockHTML = block;
         this.innerHTML = innerBlock;
         this.condition = parseCondition(block);
-        this.parent = parent;
+
+        /*this.parent = parent;
         if(parent == null) {
             this.depth = 0;
         } else {
             this.depth = parent.depth+1;
-        }
+        }*/
     }
 
     public RenderInfo getChildRenderInfo() {
@@ -47,17 +48,21 @@ public class ForEachElement implements Comparable<ForEachElement> {
         return Objects.hash(blockHTML, depth);
     }
 
-    @Override
-    public int compareTo(ForEachElement elem) {
-        return Integer.compare(elem.depth, depth);
-    }
-
     private String parseCondition(String block) {
         return block.substring("[$foreach".length(), block.indexOf("]")).trim().substring(1); //TODO error if condition does not start with $
     }
 
+    protected String parseInnerBlock(String block) {
+        return block.substring(block.indexOf("]") + 1, block.length() - "[$end for]".length());
+    }
+
     public String renderWithChildRenders(RenderInfo renderInfo) {
         return renderInfo.merge(childRenderInfo).combine();
+    }
+
+    @Override
+    public int compareTo(ForEachElement elem) {
+        return Integer.compare(elem.depth, depth);
     }
 
     public static class RenderInfo {

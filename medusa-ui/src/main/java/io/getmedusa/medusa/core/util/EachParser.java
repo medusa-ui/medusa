@@ -1,9 +1,8 @@
 package io.getmedusa.medusa.core.util;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import io.getmedusa.medusa.core.injector.tag.meta.ForEachElement;
+
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -11,6 +10,63 @@ public class EachParser {
 
     private final Pattern forEachPattern = Pattern.compile("\\[\\$foreach .+?]", Pattern.CASE_INSENSITIVE);
     private final Pattern endForPattern = Pattern.compile("\\[\\$end for]", Pattern.CASE_INSENSITIVE);
+
+    List<ForEachElement> findSmallestMatch(String text) {
+        List<Pair> starters = findAllStarters(text);
+        List<Pair> stoppers = findAllStoppers(text);
+
+        Collections.reverse(starters);
+
+        List<Pair> alreadyUsedStarters = new ArrayList<>();
+        List<Pair> alreadyUsedStoppers = new ArrayList<>();
+
+        Map<Pair, ForEachElement> elements = new HashMap<>();
+
+        //builds up a list of foreach blocks
+        for(Pair stopper : stoppers) {
+            for(Pair starter : starters) {
+                if(hasNotBeenUsedBefore(starter, stopper, alreadyUsedStarters, alreadyUsedStoppers) && stopperMustAppearAfterStarter(starter, stopper)) {
+                    alreadyUsedStarters.add(starter);
+                    alreadyUsedStoppers.add(stopper);
+
+                    String block = text.substring(starter.a, stopper.b);
+                    String innerBlock = text.substring(starter.b, stopper.a);
+
+                    elements.put(new Pair(starter.b, stopper.a), new ForEachElement(block, innerBlock));
+                }
+            }
+        }
+
+        //find parents by going over all pairs and finding the closest wrapping pair
+        for(Map.Entry<Pair, ForEachElement> element : elements.entrySet()) {
+            Pair parentPair = findClosestPair(element.getKey(), elements.keySet());
+            if(parentPair != null) element.getValue().parent = elements.get(parentPair);
+        }
+
+        return new ArrayList<>(elements.values());
+    }
+
+    Pair findClosestPair(Pair key, Set<Pair> allOptionsIncludingKey) {
+        int smallestDistance = Integer.MAX_VALUE;
+        Pair closest = null;
+
+        for(Pair potentialWrapper : allOptionsIncludingKey) {
+            if(!potentialWrapper.equals(key) && pairAWrapsPairB(potentialWrapper, key)) {
+                int distance = (key.a - potentialWrapper.a) + (potentialWrapper.b - key.b);
+                if(distance < smallestDistance) {
+                    smallestDistance = distance;
+                    closest = potentialWrapper;
+                }
+            }
+        }
+
+        return closest;
+    }
+
+    private boolean pairAWrapsPairB(Pair potentialWrapper, Pair potentialWrapped) {
+        return potentialWrapper.a < potentialWrapped.a && potentialWrapper.b > potentialWrapped.b;
+    }
+
 
     List<Pair> findAllStarters(String text) {
         return match(text, forEachPattern);
@@ -29,30 +85,6 @@ public class EachParser {
         return list;
     }
 
-    List<String> findSmallestMatch(String text) {
-        List<String> result = new ArrayList<>();
-        List<Pair> starters = findAllStarters(text);
-        List<Pair> stoppers = findAllStoppers(text);
-
-        Collections.reverse(starters);
-
-        List<Pair> alreadyUsedStarters = new ArrayList<>();
-        List<Pair> alreadyUsedStoppers = new ArrayList<>();
-
-        for(Pair stopper : stoppers) {
-            for(Pair starter : starters) {
-                if(hasNotBeenUsedBefore(starter, stopper, alreadyUsedStarters, alreadyUsedStoppers) && stopperMustAppearAfterStarter(starter, stopper)) {
-                    result.add(text.substring(starter.a, stopper.b));
-                    alreadyUsedStarters.add(starter);
-                    alreadyUsedStoppers.add(stopper);
-
-                    
-                }
-            }
-        }
-
-        return result;
-    }
 
     private boolean hasNotBeenUsedBefore(Pair starter, Pair stopper, List<Pair> alreadyUsedStarters, List<Pair> alreadyUsedStoppers) {
         return !(alreadyUsedStarters.contains(starter) || alreadyUsedStoppers.contains(stopper));
@@ -60,33 +92,5 @@ public class EachParser {
 
     private boolean stopperMustAppearAfterStarter(Pair starter, Pair stopper) {
         return stopper.a > starter.b;
-    }
-
-    static class Pair {
-        final int a;
-        final int b;
-
-        Pair(int a, int b) {
-            this.a = a;
-            this.b = b;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (!(o instanceof NestedForEachParser.Pair)) return false;
-            NestedForEachParser.Pair pair = (NestedForEachParser.Pair) o;
-            return a == pair.a && b == pair.b;
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(a, b);
-        }
-
-        @Override
-        public String toString() {
-            return "{" + a + ", " + b + '}';
-        }
     }
 }
