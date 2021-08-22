@@ -38,8 +38,6 @@ class IterationTagTest {
             "</body>\n" +
             "</html>";
 
-    //TODO: properties for each
-
     @Test
     void testDepthParser() {
         List<ForEachElement> elements = PARSER.buildDepthElements(HTML);

@@ -8,7 +8,7 @@ public class ForEachElement implements Comparable<ForEachElement>  {
     private static final String TAG_THIS_EACH = "[$this.each]";
 
     public final String blockHTML; //block including the foreach block and condition
-    public final String innerHTML; //block within the foreach
+    public String innerHTML; //block within the foreach
     public final String condition; //the relevant foreach condition
 
     private ForEachElement parent;
@@ -44,6 +44,9 @@ public class ForEachElement implements Comparable<ForEachElement>  {
     }
 
     public void setChildRenderInfo(RenderInfo childRenderInfo) {
+        final String replacementTag = "[$$replace-" + childRenderInfo.templateID + ']';
+        this.innerHTML = this.innerHTML.replace(childRenderInfo.blockToReplace, replacementTag);
+        childRenderInfo.blockToReplace = replacementTag;
         this.childRenderInfo = childRenderInfo;
     }
 
@@ -74,12 +77,14 @@ public class ForEachElement implements Comparable<ForEachElement>  {
     }
 
     public static class RenderInfo {
-        final String blockToReplace;
+        final String templateID;
+        String blockToReplace;
         public String template;
         public String divs;
 
-        public RenderInfo(final String blockToReplace) {
+        public RenderInfo(final String blockToReplace, final String templateID) {
             this.blockToReplace = blockToReplace;
+            this.templateID = templateID;
         }
 
         public String combine() {

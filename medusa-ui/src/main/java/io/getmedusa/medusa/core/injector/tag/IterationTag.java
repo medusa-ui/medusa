@@ -14,11 +14,11 @@ import java.util.regex.Pattern;
 
 public class IterationTag {
 
-    private static final String TAG_EACH = "[$each]";
-    private static final String TAG_THIS_EACH = "[$this.each]";
+    private static final String TAG_EACH = "[$each";
+    private static final String TAG_THIS_EACH = "[$this.each";
 
     private static final EachParser PARSER = new EachParser();
-    private static final Pattern PROPERTY_PATTERN =  Pattern.compile("\\[\\$each\\.(.*?])", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
+    private static final Pattern PROPERTY_PATTERN =  Pattern.compile("\\[\\$(this\\.|(parent\\.){1,99})each\\.?.*?]", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
 
     public InjectionResult injectWithVariables(InjectionResult injectionResult, Map<String, Object> variables) {
         String html = injectionResult.getHtml();
@@ -43,9 +43,9 @@ public class IterationTag {
 
     //code for replacing a foreach block
     private RenderInfo buildBlockReplacement(ForEachElement element, Map<String, Object> variables) {
-        final RenderInfo renderInfo = new RenderInfo(element.blockHTML);
         final String templateID = IdentifierGenerator.generateTemplateID(element.blockHTML);
-        renderInfo.template = "<template m-id=\"" + templateID + "\">" + element.innerHTML + "</template>\n";
+        final RenderInfo renderInfo = new RenderInfo(element.blockHTML, templateID);
+        renderInfo.template = "<template m-id=\"" + templateID + "\">" + element.innerHTML.replace(TAG_EACH, TAG_THIS_EACH) + "</template>\n";
 
         final StringBuilder divsToRender = new StringBuilder();
         List<String> divs = turnTemplateIntoDiv(element, variables, templateID);
@@ -64,14 +64,14 @@ public class IterationTag {
             @SuppressWarnings("unchecked") Object[] iterationCondition = ((Collection<Object>)conditionParsed).toArray();
             for (int index = 0; index < iterationCondition.length; index++) {
                 Object eachObject = iterationCondition[index];
-                final String divInnerBlock = parseEach(element, variables, eachObject);
+                final String divInnerBlock = parseEach(element, variables, eachObject, index);
                 divs.add(new ForEachDiv(index, templateID, divInnerBlock).toString());
             }
         } else {
             //if only a single value, we don't need real 'foreach' but rather a regular loop
             //the 'each' then becomes an index
             for (int index = 0; index < (int) conditionParsed; index++) {
-                final String divInnerBlock = parseEach(element, variables, index);
+                final String divInnerBlock = parseEach(element, variables, index, index);
                 divs.add(new ForEachDiv(index, templateID, divInnerBlock).toString());
             }
         }
@@ -86,18 +86,37 @@ public class IterationTag {
      * @param eachObject
      * @return String of the HTML to put into this individual div element
      */
-    private String parseEach(ForEachElement element, Map<String, Object> variables, Object eachObject) {
+    private String parseEach(ForEachElement element, Map<String, Object> variables, Object eachObject, int index) {
         String divContent = element.innerHTML;
         divContent = divContent.replace(TAG_EACH, TAG_THIS_EACH); //the use of [$each] is optional and is equal to using [$this.each]
 
-        divContent = divContent.replace(TAG_THIS_EACH, eachObject.toString());
+        divContent = divContent.replace(TAG_THIS_EACH + ']', eachObject.toString());
 
         Matcher matcher = PROPERTY_PATTERN.matcher(divContent);
         while (matcher.find()) {
-            final String replace = matcher.group(); // $[each.property]
-            final String group = matcher.group(1);  // property]
-            final String property = group.substring(0, group.length() - 1);  // property
-            divContent = divContent.replace(replace, ExpressionEval.evalObject(property, eachObject));
+            final String replace = matcher.group(); // $[this.each.property] or $[parent.parent.each.property]
+            //so everything up to the .each. determines what the eachObject is going to be used in this expression
+
+            final String eachPropertyDeterminator = replace.substring(2, replace.indexOf(".each"));
+            Object transitiveEachObject = eachObject;
+            if(!"this".equals(eachPropertyDeterminator)) {
+                ForEachElement parentElem = ExpressionEval.evalForEachElement(eachPropertyDeterminator, element);
+                if(null != parentElem) {
+                    Object conditionParsed = parseConditionWithVariables(parentElem.condition, variables);
+                    @SuppressWarnings("unchecked") Object[] iterationCondition = ((Collection<Object>)conditionParsed).toArray();
+                    try {
+                        transitiveEachObject = iterationCondition[index];
+                    } catch (ArrayIndexOutOfBoundsException e) {
+                        throw new IndexOutOfBoundsException("Calling a nested loop each via ["+eachPropertyDeterminator+"], but index ["+index+"] does not reach that far."); //TODO clearer error
+                    }
+                }
+            }
+            String evalObject = transitiveEachObject.toString();
+            if(replace.contains(".each.")) {
+                final String property = replace.substring(replace.indexOf(".each.") + 6, replace.length() - 1).trim();
+                evalObject = ExpressionEval.evalObject(property, transitiveEachObject);
+            }
+            divContent = divContent.replace(replace, evalObject);
         }
 
         return divContent;

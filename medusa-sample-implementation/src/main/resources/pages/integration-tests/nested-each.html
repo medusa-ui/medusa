@@ -13,24 +13,16 @@
 [$foreach $outer]
     <div class="outer-1">[$each]</div>
     <div class="outer-2">[$this.each]</div>
-
     [$foreach $mid]
         <div class="mid-1">[$this.each]</div>
+        <div class="mid-2">[$parent.each]</div>
+        [$foreach $inner]
+            <div class="inner-1">[$this.each]</div>
+            <div class="inner-2">[$parent.each]</div>
+            <div class="inner-3">[$parent.parent.each]</div>
+        [$end for]
     [$end for]
-
 [$end for]
-<!--[$foreach $outer]
-   <li>[$this.each]</li>
-  [$foreach $mid]
-      <li>[$this.each]</li>
-      <li>[$parent.each]</li>
-      [$foreach $inner]
-          <li>[$this.each]</li>
-          <li>[$parent.each]</li>
-          <li>[$parent.parent.each]</li>
-      [$end for]
-  [$end for]
-[$end for]-->
 
 <button m-click="first()">first add</button>
 

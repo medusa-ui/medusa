@@ -51,6 +51,9 @@ class NestedIterationTagTest {
                     "</body>\n" +
                     "</html>";
 
+    public static final String HTML_WITH_EACH = "[$foreach $persons] [$foreach $fruits][$this.each][$end for] [$end for]";
+    public static final String HTML_WITH_EACH_PARENT = "[$foreach $persons] [$foreach $fruits][$foreach $fruits][$parent.parent.each][$end for][$end for] [$end for]";
+
     @Test
     void testDepthParser() {
         List<ForEachElement> elements = PARSER.buildDepthElements(HTML);
@@ -132,6 +135,30 @@ class NestedIterationTagTest {
         Assertions.assertFalse(result.getHtml().contains("$foreach"));
         Assertions.assertTrue(result.getHtml().contains("<template") && result.getHtml().contains("</template>"));
         Assertions.assertEquals(3, countOccurrences(result.getHtml()));
+    }
+
+    @Test
+    void testNestedThisEachValueReplacement() {
+        Map<String, Object> variables = new HashMap<>();
+        variables.put("fruits", Collections.singletonList("Orange"));
+        variables.put("persons", Collections.singletonList("John"));
+        InjectionResult result = TAG.injectWithVariables(new InjectionResult(HTML_WITH_EACH), variables);
+        System.out.println(result.getHtml());
+
+        Assertions.assertFalse(result.getHtml().contains("John"));
+        Assertions.assertTrue(result.getHtml().contains("Orange"));
+    }
+
+    @Test
+    void testNestedParentParentEachValueReplacement() {
+        Map<String, Object> variables = new HashMap<>();
+        variables.put("fruits", Collections.singletonList("Orange"));
+        variables.put("persons", Collections.singletonList("John"));
+        InjectionResult result = TAG.injectWithVariables(new InjectionResult(HTML_WITH_EACH_PARENT), variables);
+        System.out.println(result.getHtml());
+
+        Assertions.assertTrue(result.getHtml().contains("John"));
+        Assertions.assertFalse(result.getHtml().contains("Orange"));
     }
 
     long countOccurrences(String block) {
