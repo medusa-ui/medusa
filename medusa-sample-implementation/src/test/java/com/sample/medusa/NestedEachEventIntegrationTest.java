@@ -26,6 +26,19 @@ class NestedEachEventIntegrationTest extends AbstractSeleniumTest {
         Assertions.assertEquals(toList(1, 1, 1, 1, 1, 1), getTextByCss(".inner-3").toString());
     }
 
+    @Test
+    void testThisEach() {}
+
+    @Test
+    void testParentEach() {
+        goTo("/nested-each");
+
+        Assertions.assertEquals("Medusa nested each", driver.getTitle());
+        clickById("change-mid");
+
+
+    }
+
     private String toList(Integer ... i) {
         return Arrays.asList(i).toString();
     }

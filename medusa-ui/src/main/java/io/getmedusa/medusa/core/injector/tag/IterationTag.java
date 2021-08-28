@@ -44,10 +44,10 @@ public class IterationTag {
 
     //code for replacing a foreach block
     private RenderInfo buildBlockReplacement(ForEachElement element, Map<String, Object> variables) {
-        final String templateID = IdentifierGenerator.generateTemplateID(element.blockHTML);
+        final String templateID = IdentifierGenerator.generateTemplateID(element);
         IterationRegistry.getInstance().add(templateID, element.condition);
         final RenderInfo renderInfo = new RenderInfo(element.blockHTML, templateID);
-        renderInfo.template = "<template m-id=\"" + templateID + "\">" + element.innerHTML.replace(TAG_EACH, TAG_THIS_EACH) + "</template>\n";
+        renderInfo.template = "<template m-id=\"" + templateID + "\">" + element.innerHTML.replace(TAG_EACH, TAG_THIS_EACH) + "</template>";
 
         final StringBuilder divsToRender = new StringBuilder();
         List<String> divs = turnTemplateIntoDiv(element, variables, templateID);

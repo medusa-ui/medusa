@@ -26,7 +26,11 @@ public class IterationRegistry {
     }
 
     public Set<String> findRelatedToValue(String condition) {
-        return registry.get(condition);
+        Set<String> result = new HashSet<>();
+        for(String templateId : registry.get(condition)) {
+            result.add(templateId.split("#")[0]);
+        }
+        return result;
     }
 
 }

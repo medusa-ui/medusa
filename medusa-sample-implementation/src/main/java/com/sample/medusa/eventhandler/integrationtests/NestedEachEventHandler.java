@@ -20,11 +20,11 @@ public class NestedEachEventHandler {
         return new PageAttributes()
                 .with("outer", outer)
                 .with("mid", mid)
-                .with("inner",inner);
+                .with("inner", inner);
     }
 
-    public DOMChanges first(){
-        return DOMChanges.of("first", 1);
+    public DOMChanges change(){
+        return DOMChanges.of("mid", new ArrayList<>(Arrays.asList(11, 21)));
     }
 
 }
