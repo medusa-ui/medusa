@@ -189,6 +189,12 @@ _M.resolveInnerTemplate = function (innerContent, parents) {
                  replacementInner = _M.recursiveObjectUpdate(replacementInner, currentEachValue, "$this.each");
                  replacementInner = _M.recursiveObjectUpdate(replacementInner, currentEachValue, "$each");
 
+                 let parentPath = "$parent";
+                 for (let i = 1; i < localParent.length; i++) {
+                     if(i > 1) { parentPath += ".parent"; }
+                     replacementInner = _M.recursiveObjectUpdate(replacementInner, localParent[i], parentPath + ".each");
+                 }
+
                  replacement += replacementInner;
              }
 
