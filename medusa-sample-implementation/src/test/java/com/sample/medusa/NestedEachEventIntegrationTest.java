@@ -18,7 +18,7 @@ class NestedEachEventIntegrationTest extends AbstractSeleniumTest {
         Assertions.assertEquals(toList(1, 2, 3), getTextByCss(".outer-1").toString());
         Assertions.assertEquals(toList(1, 2, 3), getTextByCss(".outer-2").toString());
 
-        Assertions.assertEquals(toList(10, 20, 10, 20, 10, 20), getTextByCss(".mid-1").toString());
+        Assertions.assertEquals(toList(10, 10, 20, 20, 10, 10, 20, 20, 10, 10, 20, 20), getTextByCss(".mid-1").toString());
         Assertions.assertEquals(toList(1, 2, 1, 2, 1, 2), getTextByCss(".mid-2").toString());
 
         Assertions.assertEquals(toList(100, 100, 100, 100, 100, 100), getTextByCss(".inner-1").toString());
@@ -27,16 +27,21 @@ class NestedEachEventIntegrationTest extends AbstractSeleniumTest {
     }
 
     @Test
-    void testThisEach() {}
-
-    @Test
     void testParentEach() {
         goTo("/nested-each");
 
         Assertions.assertEquals("Medusa nested each", driver.getTitle());
         clickById("change-mid");
 
+        Assertions.assertEquals(toList(4, 5, 6), getTextByCss(".outer-1").toString());
+        Assertions.assertEquals(toList(4, 5, 6), getTextByCss(".outer-2").toString());
 
+        Assertions.assertEquals(toList(11, 11, 21, 21, 11, 11, 21, 21, 11, 11, 21, 21), getTextByCss(".mid-1").toString());
+        Assertions.assertEquals(toList(4, 4, 5, 5, 6, 6), getTextByCss(".mid-2").toString());
+
+        Assertions.assertEquals(toList(100, 100, 100, 100, 100, 100), getTextByCss(".inner-1").toString());
+        Assertions.assertEquals(toList(11, 21, 11, 21, 11, 21), getTextByCss(".inner-2").toString());
+        Assertions.assertEquals(toList(4, 4, 5, 5, 6, 6), getTextByCss(".inner-3").toString());
     }
 
     private String toList(Integer ... i) {
