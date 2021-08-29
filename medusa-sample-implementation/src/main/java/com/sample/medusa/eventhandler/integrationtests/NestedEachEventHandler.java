@@ -24,7 +24,8 @@ public class NestedEachEventHandler {
     }
 
     public DOMChanges change(){
-        return DOMChanges.of("mid", new ArrayList<>(Arrays.asList(11, 21)));
+        return DOMChanges.of("mid", new ArrayList<>(Arrays.asList(11, 21)))
+                .and("outer", new ArrayList<>(Arrays.asList(4,5,6)));
     }
 
 }

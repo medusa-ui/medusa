@@ -41,12 +41,13 @@
 <h1>🦑 Foreach within foreach</h1>
 
 [$foreach $outer]
-    <!--<div class="outer-1">[$each]</div>
-    <div class="outer-2">[$this.each]</div>-->
+    <!--<div class="outer-1">[$each]</div>-->
+    <div class="outer-2">[$this.each]</div>
     [$foreach $mid]
         <div class="mid-1">[$this.each]</div>
-        <!--<div class="mid-2">[$parent.each]</div>
-        [$foreach $inner]
+        <!--<div class="mid-1">[$each]</div>
+        <div class="mid-2">[$parent.each]</div>-->
+        <!--[$foreach $inner]
             <div class="inner-1">[$this.each]</div>
             <div class="inner-2">[$parent.each]</div>
             <div class="inner-3">[$parent.parent.each]</div>

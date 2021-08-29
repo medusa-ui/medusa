@@ -142,7 +142,6 @@ _M.handleIterationCheck = function (k) {
     // set new values
     document.querySelectorAll("[m-id="+k.f+"]").forEach(
         function(template) {
-
             const templateId = _M.resolveTemplateId(template);
             const currentEachValues = _M.resolveTemplateCondition(templateId);
             let index = 0;
@@ -150,8 +149,9 @@ _M.handleIterationCheck = function (k) {
                 let newDiff = document.createElement("div");
                 newDiff.setAttribute("index", (index++).toString());
                 newDiff.setAttribute("template-id", templateId);
-                newDiff.innerHTML = _M.resolveInnerTemplate(template.innerHTML, currentEachValue, index++);
+                newDiff.innerHTML = _M.resolveInnerTemplate(template.innerHTML, [currentEachValue]);
                 newDiff.innerHTML = _M.recursiveObjectUpdate(newDiff.innerHTML, currentEachValue, "$this.each");
+                newDiff.innerHTML = _M.recursiveObjectUpdate(newDiff.innerHTML, currentEachValue, "$each");
                 template.parentNode.insertBefore(newDiff, template);
             }
         });
@@ -170,29 +170,38 @@ _M.resolveTemplateCondition = function (templateId) {
     return _M.variables[condition];
 }
 
-_M.resolveInnerTemplate = function (innerContent, parentEach, parentIndex) {
+_M.resolveInnerTemplate = function (innerContent, parents) {
     innerContent = innerContent.toString();
 
     //if this contains template, then run the resolver one layer deeper;
-   if(innerContent.includes("<template m-id=")) {
-        let doc = _M.parser.parseFromString(innerContent, "text/html");
-        doc.querySelectorAll("template").forEach(function (template) {
-            const templateId = _M.resolveTemplateId(template);
-            const eachValues = _M.resolveTemplateCondition(templateId);
-            let index = 0;
-            let replacement = "";
-            for(const currentEachValue of eachValues) {
-                index = index++;
-                const replacementInner = "<div index='"+ index++ +"' template-id='"+ templateId +"'>" + _M.resolveInnerTemplate(template.innerHTML, currentEachValue, index) + "</div>";
-                replacement += _M.recursiveObjectUpdate(replacementInner, currentEachValue, "$this.each");
-            }
+    if(innerContent.includes("<template m-id=")) {
+         let doc = _M.parser.parseFromString(innerContent, "text/html");
+         doc.querySelectorAll("template").forEach(function (template) {
+             const templateId = _M.resolveTemplateId(template);
+             const eachValues = _M.resolveTemplateCondition(templateId);
+             let index = 0;
+             let replacement = "";
+             for(const currentEachValue of eachValues) {
+                 index = index++;
+                 let localParent =  [...parents]; //clone
+                 localParent.unshift(currentEachValue);
+                 let replacementInner = "<div index='"+ index++ +"' template-id='"+ templateId +"'>" + _M.resolveInnerTemplate(template.innerHTML, localParent) + "</div>";
+                 replacementInner = _M.recursiveObjectUpdate(replacementInner, currentEachValue, "$this.each");
+                 replacementInner = _M.recursiveObjectUpdate(replacementInner, currentEachValue, "$each");
 
-            innerContent = innerContent.replaceAll(template.parentElement.innerHTML, replacement);
-        });
-   }
+                 replacement += replacementInner;
+             }
+
+             innerContent = innerContent.replaceAll("<template m-id=\""+ templateId +"\">" + template.innerHTML + "</template>", replacement);
+         });
+    }
 
     return innerContent;
 };
+
+_M.unwrap = function (node){
+    return node.replaceWith(...node.childNodes);
+}
 
 _M.recursiveObjectUpdate = function(html, obj, path) {
     if(typeof obj === 'object' && obj !== null) {
