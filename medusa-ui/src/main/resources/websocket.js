@@ -3,6 +3,7 @@ var _M = _M || {};
 _M.ws = null;
 _M.timeoutTimer = 0;
 _M.debugMode = true;
+_M.parser = new DOMParser();
 
 _M.retryConnection = function () {
     setTimeout(function() {
@@ -137,33 +138,72 @@ _M.handleTitleChangeEvent = function(k) {
 _M.handleIterationCheck = function (k) {
     // clear old values
     document.querySelectorAll("[template-id="+k.f+"]").forEach(function(e) { e.remove(); });
+
     // set new values
     document.querySelectorAll("[m-id="+k.f+"]").forEach(
         function(template) {
-            let index = 0;
 
-            for(const currentEachValue of _M.variables[k.v]) {
+            const templateId = _M.resolveTemplateId(template);
+            const currentEachValues = _M.resolveTemplateCondition(templateId);
+            let index = 0;
+            for(const currentEachValue of currentEachValues) {
                 let newDiff = document.createElement("div");
                 newDiff.setAttribute("index", (index++).toString());
-                newDiff.setAttribute("template-id", k.f);
-
-                newDiff.innerHTML = template.innerHTML;
-                _M.recursiveObjectUpdate(newDiff, currentEachValue, "$this.each");
-
+                newDiff.setAttribute("template-id", templateId);
+                newDiff.innerHTML = _M.resolveInnerTemplate(template.innerHTML, currentEachValue, index++);
+                newDiff.innerHTML = _M.recursiveObjectUpdate(newDiff.innerHTML, currentEachValue, "$this.each");
                 template.parentNode.insertBefore(newDiff, template);
             }
         });
 };
 
-_M.recursiveObjectUpdate = function(diff, obj, path) {
+_M.resolveTemplateId = function (template) {
+    return template.attributes['m-id'].nodeValue;
+}
+
+_M.resolveTemplateCondition = function (templateId) {
+    const condition = _M.conditionals[templateId];
+
+    console.log(condition);
+    console.log(_M.variables[condition]);
+
+    return _M.variables[condition];
+}
+
+_M.resolveInnerTemplate = function (innerContent, parentEach, parentIndex) {
+    innerContent = innerContent.toString();
+
+    //if this contains template, then run the resolver one layer deeper;
+   if(innerContent.includes("<template m-id=")) {
+        let doc = _M.parser.parseFromString(innerContent, "text/html");
+        doc.querySelectorAll("template").forEach(function (template) {
+            const templateId = _M.resolveTemplateId(template);
+            const eachValues = _M.resolveTemplateCondition(templateId);
+            let index = 0;
+            let replacement = "";
+            for(const currentEachValue of eachValues) {
+                index = index++;
+                const replacementInner = "<div index='"+ index++ +"' template-id='"+ templateId +"'>" + _M.resolveInnerTemplate(template.innerHTML, currentEachValue, index) + "</div>";
+                replacement += _M.recursiveObjectUpdate(replacementInner, currentEachValue, "$this.each");
+            }
+
+            innerContent = innerContent.replaceAll(template.parentElement.innerHTML, replacement);
+        });
+   }
+
+    return innerContent;
+};
+
+_M.recursiveObjectUpdate = function(html, obj, path) {
     if(typeof obj === 'object' && obj !== null) {
-        diff.innerHTML = diff.innerHTML.replaceAll("["+path+"]", JSON.stringify(obj));
+        html = html.replaceAll("["+path+"]", JSON.stringify(obj));
         for(const objKey of Object.keys(obj)) {
-            _M.recursiveObjectUpdate(diff, obj[objKey], path + "." + objKey);
+            _M.recursiveObjectUpdate(html, obj[objKey], path + "." + objKey);
         }
     } else {
-        diff.innerHTML = diff.innerHTML.replaceAll("["+path+"]", obj);
+        html = html.replaceAll("["+path+"]", obj);
     }
+    return html;
 };
 
 _M.handleConditionCheckEvent = function(k) {
