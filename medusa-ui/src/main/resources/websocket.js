@@ -158,15 +158,11 @@ _M.handleIterationCheck = function (k) {
 };
 
 _M.resolveTemplateId = function (template) {
-    return template.attributes['m-id'].nodeValue;
+    return template.attributes["m-id"].nodeValue;
 }
 
 _M.resolveTemplateCondition = function (templateId) {
     const condition = _M.conditionals[templateId];
-
-    console.log(condition);
-    console.log(_M.variables[condition]);
-
     return _M.variables[condition];
 }
 
