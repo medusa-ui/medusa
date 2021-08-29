@@ -213,7 +213,7 @@ _M.recursiveObjectUpdate = function(html, obj, path) {
     if(typeof obj === 'object' && obj !== null) {
         html = html.replaceAll("["+path+"]", JSON.stringify(obj));
         for(const objKey of Object.keys(obj)) {
-            _M.recursiveObjectUpdate(html, obj[objKey], path + "." + objKey);
+            html = _M.recursiveObjectUpdate(html, obj[objKey], path + "." + objKey);
         }
     } else {
         html = html.replaceAll("["+path+"]", obj);
