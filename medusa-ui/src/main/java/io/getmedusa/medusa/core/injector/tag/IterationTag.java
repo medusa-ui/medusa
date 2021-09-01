@@ -27,8 +27,9 @@ public class IterationTag {
         //find all the foreaches, split them up and order them as deepest-first
         final List<ForEachElement> depthElements = PARSER.buildDepthElements(html);
         Collections.sort(depthElements);
+
         for(ForEachElement depthElement : depthElements) {
-            ForEachElement parent = depthElement.getParent();
+            ForEachElement parent = (ForEachElement) depthElement.getParent();
             RenderInfo renderInfo = buildBlockReplacement(depthElement, variables);
 
             if(parent != null) {
@@ -48,11 +49,7 @@ public class IterationTag {
         IterationRegistry.getInstance().add(templateID, element.condition);
         final RenderInfo renderInfo = new RenderInfo(element.blockHTML, templateID);
         renderInfo.template = "<template m-id=\"" + templateID + "\">" + element.innerHTML.replace(TAG_EACH, TAG_THIS_EACH) + "</template>";
-
-        final StringBuilder divsToRender = new StringBuilder();
-        List<String> divs = turnTemplateIntoDiv(element, variables, templateID);
-        for (String div : divs) divsToRender.append(div);
-        renderInfo.divs = divsToRender.toString();
+        renderInfo.divs = turnTemplateIntoDiv(element, variables, templateID); //TODO here they are added only once per loop instance
 
         return renderInfo;
     }
@@ -66,14 +63,24 @@ public class IterationTag {
             @SuppressWarnings("unchecked") Object[] iterationCondition = ((Collection<Object>)conditionParsed).toArray();
             for (int index = 0; index < iterationCondition.length; index++) {
                 Object eachObject = iterationCondition[index];
-                final String divInnerBlock = parseEach(element, variables, eachObject, index);
+                final String divInnerBlock = parseEach(element, eachObject);
+
+                //TODO::
+                /*if(element.getChildRenderInfo() != null) {
+                    final List<String> childDivs = element.getChildRenderInfo().divs;
+                    for (int i = 0; i < childDivs.size(); i++) {
+                        String div = childDivs.get(i);
+                        childDivs.set(i, parseEachContent(eachObject, div));
+                    }
+                }*/
+
                 divs.add(new ForEachDiv(index, templateID, divInnerBlock).toString());
             }
         } else {
             //if only a single value, we don't need real 'foreach' but rather a regular loop
             //the 'each' then becomes an index
             for (int index = 0; index < (int) conditionParsed; index++) {
-                final String divInnerBlock = parseEach(element, variables, index, index);
+                final String divInnerBlock = parseEach(element, index);
                 divs.add(new ForEachDiv(index, templateID, divInnerBlock).toString());
             }
         }
@@ -84,12 +91,14 @@ public class IterationTag {
      * Handles the inner block of an iteration div
      * Specifically includes logic for the 'each' tags
      * @param element
-     * @param variables
      * @param eachObject
      * @return String of the HTML to put into this individual div element
      */
-    private String parseEach(ForEachElement element, Map<String, Object> variables, Object eachObject, int index) {
-        String divContent = element.innerHTML;
+    private String parseEach(ForEachElement element, Object eachObject) {
+        return parseEachContent(eachObject, element.innerHTML);
+    }
+
+    private String parseEachContent(Object eachObject, String divContent) {
         divContent = divContent.replace(TAG_EACH, TAG_THIS_EACH); //the use of [$each] is optional and is equal to using [$this.each]
 
         divContent = divContent.replace(TAG_THIS_EACH + ']', eachObject.toString());
@@ -100,23 +109,12 @@ public class IterationTag {
             //so everything up to the .each. determines what the eachObject is going to be used in this expression
 
             final String eachPropertyDeterminator = replace.substring(2, replace.indexOf(".each"));
-            Object transitiveEachObject = eachObject;
-            if(!"this".equals(eachPropertyDeterminator)) {
-                ForEachElement parentElem = ExpressionEval.evalForEachElement(eachPropertyDeterminator, element);
-                if(null != parentElem) {
-                    Object conditionParsed = parseConditionWithVariables(parentElem.condition, variables);
-                    @SuppressWarnings("unchecked") Object[] iterationCondition = ((Collection<Object>)conditionParsed).toArray();
-                    try {
-                        transitiveEachObject = iterationCondition[index];
-                    } catch (ArrayIndexOutOfBoundsException e) {
-                        throw new IndexOutOfBoundsException("Calling a nested loop each via ["+eachPropertyDeterminator+"], but index ["+index+"] does not reach that far."); //TODO clearer error
-                    }
+            String evalObject = eachObject.toString();
+            if("this".equals(eachPropertyDeterminator)) {
+                if(replace.contains(".each.")) {
+                    final String property = replace.substring(replace.indexOf(".each.") + 6, replace.length() - 1).trim();
+                    evalObject = ExpressionEval.evalObject(property, eachObject);
                 }
-            }
-            String evalObject = transitiveEachObject.toString();
-            if(replace.contains(".each.")) {
-                final String property = replace.substring(replace.indexOf(".each.") + 6, replace.length() - 1).trim();
-                evalObject = ExpressionEval.evalObject(property, transitiveEachObject);
             }
             divContent = divContent.replace(replace, evalObject);
         }

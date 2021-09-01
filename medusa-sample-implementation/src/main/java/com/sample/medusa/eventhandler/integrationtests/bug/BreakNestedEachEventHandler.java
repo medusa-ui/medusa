@@ -11,8 +11,8 @@ import java.util.List;
 @UIEventPage(file = "pages/integration-tests/bug/nested-each.html", path = "/bug/nested-each")
 public class BreakNestedEachEventHandler {
 
-    List<Integer> outer = new ArrayList<>(Arrays.asList(1));
-    List<Integer> inner = new ArrayList<>(Arrays.asList(2,3)); // bug is more obvious when the size of the inner loop is greater than the outer loop.(index out of bound exception)
+    List<Integer> outer = new ArrayList<>(Arrays.asList(1, 2, 3, 4));
+    List<String> inner = new ArrayList<>(Arrays.asList("A","B")); // bug is more obvious when the size of the inner loop is greater than the outer loop.(index out of bound exception)
 
     public PageAttributes setupAttributes() {
         return new PageAttributes()
@@ -25,7 +25,7 @@ public class BreakNestedEachEventHandler {
     }
 
     public DOMChanges add() {
-        inner.add(inner.size() + 1);
+        //inner.add(inner.size() + 1);
         outer.add(outer.size() + 1);
         return DOMChanges.of("inner", inner).and("outer", outer);
     }

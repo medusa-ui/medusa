@@ -1,7 +1,6 @@
 package io.getmedusa.medusa.core.injector.tag;
 
-import io.getmedusa.medusa.core.injector.tag.meta.ForEachElement;
-import io.getmedusa.medusa.core.injector.tag.meta.InjectionResult;
+import io.getmedusa.medusa.core.injector.tag.meta.*;
 import io.getmedusa.medusa.core.util.EachParser;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -51,8 +50,21 @@ class NestedIterationTagTest {
                     "</body>\n" +
                     "</html>";
 
+    public static final String HTML_BUG =
+            "<!DOCTYPE html>\n" +
+                    "<html lang=\"en\">\n" +
+                    "<body>[$foreach $parent]" +
+                        "[$foreach $child]" +
+                            "[$parent.each] - [$each]" +
+                        "[$end for]" +
+                    "[$end for]" +
+                    "</body>" +
+                    "</html>";
+
     public static final String HTML_WITH_EACH = "[$foreach $persons] [$foreach $fruits][$this.each][$end for] [$end for]";
     public static final String HTML_WITH_EACH_PARENT = "[$foreach $persons] [$foreach $fruits][$foreach $fruits][$parent.parent.each][$end for][$end for] [$end for]";
+    protected static final String DUMMY_BLOCK = HTML_WITH_EACH;
+    protected static final ForEachElement DUMMY_ELEM = new ForEachElement(DUMMY_BLOCK, DUMMY_BLOCK);
 
     @Test
     void testDepthParser() {
@@ -159,6 +171,48 @@ class NestedIterationTagTest {
 
         Assertions.assertTrue(result.getHtml().contains("John"));
         Assertions.assertFalse(result.getHtml().contains("Orange"));
+    }
+
+    @Test
+    void testBug() {
+        Map<String, Object> variables = new HashMap<>();
+        variables.put("parent", new ArrayList<>(Arrays.asList(1, 2, 3, 4)));
+        variables.put("child", new ArrayList<>(Arrays.asList("A","B")));
+
+        InjectionResult result = new Iteration2Tag().injectWithVariables(new InjectionResult(HTML_BUG), variables);
+        System.out.println(result.getHtml());
+
+        Assertions.assertTrue(result.getHtml().contains("1 - A"));
+        Assertions.assertTrue(result.getHtml().contains("1 - B"));
+        Assertions.assertTrue(result.getHtml().contains("2 - A"));
+        Assertions.assertTrue(result.getHtml().contains("2 - B"));
+
+        Assertions.assertTrue(result.getHtml().contains("3 - A"));
+        Assertions.assertTrue(result.getHtml().contains("3 - B"));
+        Assertions.assertTrue(result.getHtml().contains("4 - A"));
+        Assertions.assertTrue(result.getHtml().contains("4 - B"));
+    }
+
+    @Test
+    void testResolver() {
+        Person person = new Person();
+        person.name = "du";
+
+        Div superParent = new Div(DUMMY_ELEM, "Me");
+        Div parent = new Div(DUMMY_ELEM, person, superParent);
+        Div child = new Div(new ForEachElement(DUMMY_BLOCK, "<p>[$parent.parent.each] - [$parent.each.name] - [$this.each]</p>"), "sa", parent);
+
+        String resolved = DivResolver.resolve(child);
+        System.out.println(resolved);
+        Assertions.assertEquals("<p>Me - du - sa</p>", resolved);
+    }
+
+    static class Person {
+        String name;
+
+        public String getName() {
+            return name;
+        }
     }
 
     long countOccurrences(String block) {
