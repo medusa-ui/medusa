@@ -3,24 +3,23 @@ package io.getmedusa.medusa.core.injector.tag.meta;
 public class Div implements Comparable<Div> {
 
     private ParentChain chainOnThisLevel;
-    private final String htmlToReplace;
+    //private String htmlToReplace;
     private String resolvedHTML;
     private Div parent;
     private final int depth;
     private final ForEachElement originalElement;
 
-    public Div(ForEachElement originalElement, Object eachObject) {
+    //parent
+    public Div(ForEachElement originalElement) {
         this.originalElement = originalElement;
-        this.htmlToReplace = originalElement.innerHTML;
-        this.resolvedHTML = "";
-        this.chainOnThisLevel = new ParentChain(eachObject);
+        //this.htmlToReplace = originalElement.blockHTML;
         this.depth = 0;
     }
 
     //child
     public Div(ForEachElement originalElement, Object eachObject, Div parent) {
         this.originalElement = originalElement;
-        this.htmlToReplace = originalElement.innerHTML;
+        //this.htmlToReplace = originalElement.innerHTML;
         this.resolvedHTML = "";
         this.chainOnThisLevel = new ParentChain(eachObject, parent.getChainOnThisLevel());
         this.parent = parent;
@@ -48,9 +47,9 @@ public class Div implements Comparable<Div> {
         this.chainOnThisLevel = chainOnThisLevel;
     }
 
-    public String getHtmlToReplace() {
+    /*public String getHtmlToReplace() {
         return htmlToReplace;
-    }
+    }*/
 
     public void setResolvedHTML(String resolvedHTML) {
         this.resolvedHTML = resolvedHTML;
@@ -64,8 +63,8 @@ public class Div implements Comparable<Div> {
         this.parent = parent;
     }
 
-    public boolean hasParent() {
-        return this.parent != null;
+    public boolean isRoot() {
+        return this.depth == 0;
     }
 
     public void appendToResolvedHTML(String toAppend) {

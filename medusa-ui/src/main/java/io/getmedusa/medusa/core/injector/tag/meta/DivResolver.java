@@ -16,10 +16,19 @@ public class DivResolver {
 
 
     public static String resolve(Div div) {
-        return parseEachContent(div.getChainOnThisLevel(), div.getHtmlToReplace());
+        return parseEachContent(div.getChainOnThisLevel(), getHtmlToReplace(div));
+    }
+
+    private static String getHtmlToReplace(Div div) {
+        if(div.getResolvedHTML().equals("")) {
+            return div.getElement().innerHTML;
+        } else {
+            return div.getResolvedHTML();
+        }
     }
 
     public static String parseEachContent(ParentChain parentChain, String divContent) {
+        System.out.println(divContent);
         divContent = divContent.replace(TAG_EACH, TAG_THIS_EACH); //the use of [$each] is optional and is equal to using [$this.each]
 
         final Object eachObject = parentChain.getEachObject();
@@ -35,7 +44,7 @@ public class DivResolver {
             Object transitiveEachObject = eachObject;
             if(!"this".equals(eachPropertyDeterminator)) {
                //resolve parents
-                int steps = eachPropertyDeterminator.split("parent").length - 1;
+                int steps = eachPropertyDeterminator.split("parent").length;
                 ParentChain relevantChain = parentChain.getParent();
                 for (int i = 0; i < steps; i++) {
                     relevantChain = relevantChain.getParent();
@@ -66,7 +75,7 @@ public class DivResolver {
         ForEachElement element = div.getElement();
         final String templateID = IdentifierGenerator.generateTemplateID(element);
         IterationRegistry.getInstance().add(templateID, element.condition);
-        return "<template m-id=\"" + templateID + "\">" + div.getHtmlToReplace().replace(TAG_EACH, TAG_THIS_EACH) + "</template>";
+        return "<template m-id=\"" + templateID + "\">" + div.getElement().innerHTML.replace(TAG_EACH, TAG_THIS_EACH) + "</template>";
     }
 
 }

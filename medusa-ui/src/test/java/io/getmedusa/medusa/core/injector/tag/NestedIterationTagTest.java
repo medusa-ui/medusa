@@ -198,7 +198,7 @@ class NestedIterationTagTest {
         Person person = new Person();
         person.name = "du";
 
-        Div superParent = new Div(DUMMY_ELEM, "Me");
+        Div superParent = new Div(DUMMY_ELEM, "Me", null);
         Div parent = new Div(DUMMY_ELEM, person, superParent);
         Div child = new Div(new ForEachElement(DUMMY_BLOCK, "<p>[$parent.parent.each] - [$parent.each.name] - [$this.each]</p>"), "sa", parent);
 

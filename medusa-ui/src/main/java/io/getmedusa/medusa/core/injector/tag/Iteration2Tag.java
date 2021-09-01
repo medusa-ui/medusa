@@ -30,7 +30,7 @@ public class Iteration2Tag {
         addChildren(depthElements);
         sort(depthElements);
 
-        //interpret the conditions and make div per iteration, so 2 foreach with each 3 elements = 8 divs (3*2 child divs + 2 parent divs)
+        //interpret the conditions and make div per iteration, so 2 foreach with each 3 elements = 9 divs (3*2 child divs + 2 parent divs + 1 overall div)
         //this also allows us to walk through a parent chain on each level
         List<Div> complexStructure = buildDivs(variables, depthElements);
         sort(complexStructure);
@@ -60,8 +60,11 @@ public class Iteration2Tag {
                 if (conditionParsed instanceof Collection) {
                     //a true 'foreach', the 'each' becomes each element of the collection
                     Object[] iterationCondition = conditionAsArray(conditionParsed);
+                    Div overallParent = new Div(element);
+                    complexDivStructure.add(overallParent);
+
                     for (Object eachObject : iterationCondition) {
-                        complexDivStructure.addAll(createDivForChildren(variables, element, new Div(element, eachObject)));
+                        complexDivStructure.addAll(createDivForChildren(variables, element, new Div(element, eachObject, overallParent) ));
                     }
                 } else {
                     throw new RuntimeException("Not yet implemented");
@@ -95,7 +98,7 @@ public class Iteration2Tag {
 
     private String renderHTML(String html, List<Div> complexStructure) {
         for(Div div : complexStructure) {
-            if(div.hasParent()) {
+            if(!div.isRoot()) {
                 div.setResolvedHTML(DivResolver.resolve(div));
 
                 final String parentInnerHTML = div.getParent().getElement().innerHTML;
@@ -103,8 +106,8 @@ public class Iteration2Tag {
 
                 div.getParent().appendToResolvedHTML(DivResolver.wrapInDiv(div, divContent)); //merge
             } else {
-                System.out.println("Final: " + div.getResolvedHTML());
-                //html = html.replace(div.getHtml(), div.render());
+                System.out.println("Final: " + DivResolver.wrapInDiv(div, div.getResolvedHTML()));
+                html = html.replace(div.getElement().blockHTML, DivResolver.wrapInDiv(div, div.getResolvedHTML()));
             }
         }
         return html;
