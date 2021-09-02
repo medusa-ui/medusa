@@ -106,8 +106,9 @@ public class Iteration2Tag {
 
                 div.getParent().appendToResolvedHTML(DivResolver.wrapInDiv(div, divContent)); //merge
             } else {
-                System.out.println("Final: " + DivResolver.wrapInDiv(div, div.getResolvedHTML()));
-                html = html.replace(div.getElement().blockHTML, DivResolver.wrapInDiv(div, div.getResolvedHTML()));
+                String template = DivResolver.buildTemplate(div);
+                String wrappedDiv = DivResolver.wrapInDiv(div, div.getResolvedHTML());
+                html = html.replace(div.getElement().blockHTML, template + wrappedDiv);
             }
         }
         return html;

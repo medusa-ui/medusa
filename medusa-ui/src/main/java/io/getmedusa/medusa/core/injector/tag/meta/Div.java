@@ -68,6 +68,6 @@ public class Div implements Comparable<Div> {
     }
 
     public void appendToResolvedHTML(String toAppend) {
-        this.resolvedHTML = this.resolvedHTML + toAppend;
+        this.resolvedHTML = (this.resolvedHTML != null) ? this.resolvedHTML + toAppend : toAppend;
     }
 }

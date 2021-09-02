@@ -71,7 +71,7 @@ public class DivResolver {
         return "<div index=\"" + index + "\" template-id=\"" + templateID + "\">\n" + divContent + "\n</div>\n";
     }
 
-    public String buildTemplate(Div div) {
+    public static String buildTemplate(Div div) {
         ForEachElement element = div.getElement();
         final String templateID = IdentifierGenerator.generateTemplateID(element);
         IterationRegistry.getInstance().add(templateID, element.condition);
