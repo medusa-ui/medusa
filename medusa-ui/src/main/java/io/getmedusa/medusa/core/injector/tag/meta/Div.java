@@ -1,9 +1,7 @@
 package io.getmedusa.medusa.core.injector.tag.meta;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class Div implements Comparable<Div> {
 
@@ -11,8 +9,6 @@ public class Div implements Comparable<Div> {
     private String resolvedHTML = "";
     private Div parent;
     private List<Div> children = new ArrayList<>();
-
-    private Map<String, List<String>> blocksAndChildrenToReplaceBlockWith = new HashMap<>();
 
     private final int depth;
     private final ForEachElement originalElement;
@@ -72,13 +68,4 @@ public class Div implements Comparable<Div> {
         return this.depth == 0;
     }
 
-    public Map<String, List<String>> getBlocksAndChildrenToReplaceBlockWith() {
-        return blocksAndChildrenToReplaceBlockWith;
-    }
-
-    public void addResolvedChild(String block, String resolvedHTML) {
-        List<String> blockPresent = blocksAndChildrenToReplaceBlockWith.getOrDefault(block, new ArrayList<>());
-        blockPresent.add(resolvedHTML);
-        blocksAndChildrenToReplaceBlockWith.put(block, blockPresent);
-    }
 }
