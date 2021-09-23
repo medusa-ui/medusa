@@ -10,7 +10,7 @@ import java.util.*;
 
 class IterationTagTest {
 
-    private static final IterationTag TAG = new IterationTag();
+    private static final Iteration2Tag TAG = new Iteration2Tag();
     private static final EachParser PARSER = new EachParser();
 
     public static final String HTML =

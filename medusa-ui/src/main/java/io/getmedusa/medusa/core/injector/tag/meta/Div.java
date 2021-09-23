@@ -1,29 +1,38 @@
 package io.getmedusa.medusa.core.injector.tag.meta;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 public class Div implements Comparable<Div> {
 
     private ParentChain chainOnThisLevel;
-    //private String htmlToReplace;
-    private String resolvedHTML;
+    private String resolvedHTML = "";
     private Div parent;
+    private List<Div> children = new ArrayList<>();
+
+    private Map<String, List<String>> blocksAndChildrenToReplaceBlockWith = new HashMap<>();
+
     private final int depth;
     private final ForEachElement originalElement;
 
     //parent
     public Div(ForEachElement originalElement) {
         this.originalElement = originalElement;
-        //this.htmlToReplace = originalElement.blockHTML;
         this.depth = 0;
     }
 
     //child
     public Div(ForEachElement originalElement, Object eachObject, Div parent) {
         this.originalElement = originalElement;
-        //this.htmlToReplace = originalElement.innerHTML;
-        this.resolvedHTML = "";
-        this.chainOnThisLevel = new ParentChain(eachObject, parent.getChainOnThisLevel());
+        this.chainOnThisLevel = new ParentChain(eachObject, (parent == null) ? null : parent.getChainOnThisLevel());
         this.parent = parent;
-        this.depth = parent.depth + 1;
+        this.depth = (parent == null) ? 0 : parent.depth + 1;
+    }
+
+    public List<Div> getChildren() {
+        return children;
     }
 
     public ForEachElement getElement() {
@@ -47,10 +56,6 @@ public class Div implements Comparable<Div> {
         this.chainOnThisLevel = chainOnThisLevel;
     }
 
-    /*public String getHtmlToReplace() {
-        return htmlToReplace;
-    }*/
-
     public void setResolvedHTML(String resolvedHTML) {
         this.resolvedHTML = resolvedHTML;
     }
@@ -67,7 +72,13 @@ public class Div implements Comparable<Div> {
         return this.depth == 0;
     }
 
-    public void appendToResolvedHTML(String toAppend) {
-        this.resolvedHTML = (this.resolvedHTML != null) ? this.resolvedHTML + toAppend : toAppend;
+    public Map<String, List<String>> getBlocksAndChildrenToReplaceBlockWith() {
+        return blocksAndChildrenToReplaceBlockWith;
+    }
+
+    public void addResolvedChild(String block, String resolvedHTML) {
+        List<String> blockPresent = blocksAndChildrenToReplaceBlockWith.getOrDefault(block, new ArrayList<>());
+        blockPresent.add(resolvedHTML);
+        blocksAndChildrenToReplaceBlockWith.put(block, blockPresent);
     }
 }

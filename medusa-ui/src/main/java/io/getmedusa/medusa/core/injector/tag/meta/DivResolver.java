@@ -14,12 +14,11 @@ public class DivResolver {
 
     private static final Pattern PROPERTY_PATTERN =  Pattern.compile("\\[\\$(this\\.|(parent\\.){1,99})each\\.?.*?]", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
 
-
     public static String resolve(Div div) {
         return parseEachContent(div.getChainOnThisLevel(), getHtmlToReplace(div));
     }
 
-    private static String getHtmlToReplace(Div div) {
+    public static String getHtmlToReplace(Div div) {
         if(div.getResolvedHTML().equals("")) {
             return div.getElement().innerHTML;
         } else {
@@ -28,8 +27,9 @@ public class DivResolver {
     }
 
     public static String parseEachContent(ParentChain parentChain, String divContent) {
-        System.out.println(divContent);
-        divContent = divContent.replace(TAG_EACH, TAG_THIS_EACH); //the use of [$each] is optional and is equal to using [$this.each]
+        if(parentChain == null) return divContent;
+
+        divContent = divContent.replace(TAG_EACH, TAG_THIS_EACH).trim(); //the use of [$each] is optional and is equal to using [$this.each]
 
         final Object eachObject = parentChain.getEachObject();
 
@@ -43,18 +43,24 @@ public class DivResolver {
             final String eachPropertyDeterminator = replace.substring(2, replace.indexOf(".each"));
             Object transitiveEachObject = eachObject;
             if(!"this".equals(eachPropertyDeterminator)) {
-               //resolve parents
-                int steps = eachPropertyDeterminator.split("parent").length;
+                //resolve parents
+                int steps = eachPropertyDeterminator.split("parent").length - 1;
+                if(steps < 0) steps = 0;
                 ParentChain relevantChain = parentChain.getParent();
-                for (int i = 0; i < steps; i++) {
-                    relevantChain = relevantChain.getParent();
+                if(null != relevantChain) {
+                    for (int i = 0; i < steps; i++) {
+                        if(relevantChain.getParent() != null) relevantChain = relevantChain.getParent();
+                    }
+                    transitiveEachObject = relevantChain.getEachObject();
                 }
-                transitiveEachObject = relevantChain.getEachObject();
             }
-            String evalObject = transitiveEachObject.toString();
-            if(replace.contains(".each.")) {
-                final String property = replace.substring(replace.indexOf(".each.") + 6, replace.length() - 1).trim();
-                evalObject = ExpressionEval.evalObject(property, transitiveEachObject);
+            String evalObject = "";
+            if(transitiveEachObject != null) {
+                evalObject = transitiveEachObject.toString();
+                if(replace.contains(".each.")) {
+                    final String property = replace.substring(replace.indexOf(".each.") + 6, replace.length() - 1).trim();
+                    evalObject = ExpressionEval.evalObject(property, transitiveEachObject);
+                }
             }
             divContent = divContent.replace(replace, evalObject);
         }
@@ -63,15 +69,14 @@ public class DivResolver {
     }
 
     public static String wrapInDiv(Div div, String divContent) {
-        //TODO do better
         ForEachElement element = div.getElement();
         final String templateID = IdentifierGenerator.generateTemplateID(element);
         int index = 0;
-        //
-        return "<div index=\"" + index + "\" template-id=\"" + templateID + "\">\n" + divContent + "\n</div>\n";
+        return "<div index=\"" + index + "\" template-id=\"" + templateID + "\">" + divContent + "</div>";
     }
 
     public static String buildTemplate(Div div) {
+        //TODO this cannot contain tags, it needs to be parsed
         ForEachElement element = div.getElement();
         final String templateID = IdentifierGenerator.generateTemplateID(element);
         IterationRegistry.getInstance().add(templateID, element.condition);

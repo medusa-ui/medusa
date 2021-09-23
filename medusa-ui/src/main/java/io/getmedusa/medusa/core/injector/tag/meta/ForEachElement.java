@@ -74,6 +74,7 @@ public class ForEachElement implements Comparable<ForEachElement>  {
     }
 
     private String parseCondition(String block) {
+        if(!block.contains("[$foreach")) return null;
         return block.substring("[$foreach".length(), block.indexOf("]")).trim().substring(1); //TODO error if condition does not start with $
     }
 

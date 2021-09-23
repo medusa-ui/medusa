@@ -9,7 +9,7 @@ import java.util.*;
 
 class NestedIterationTagTest {
 
-    private static final IterationTag TAG = new IterationTag();
+    private static final Iteration2Tag TAG = new Iteration2Tag();
     private static final EachParser PARSER = new EachParser();
     public static final String HTML =
             "<!DOCTYPE html>\n" +
@@ -61,7 +61,7 @@ class NestedIterationTagTest {
                     "</body>" +
                     "</html>";
 
-    public static final String HTML_WITH_EACH = "[$foreach $persons] [$foreach $fruits][$this.each][$end for] [$end for]";
+    public static final String HTML_WITH_EACH = "[$foreach $persons] [$foreach $fruits] [$this.each] [$end for] [$end for]";
     public static final String HTML_WITH_EACH_PARENT = "[$foreach $persons] [$foreach $fruits][$foreach $fruits][$parent.parent.each][$end for][$end for] [$end for]";
     protected static final String DUMMY_BLOCK = HTML_WITH_EACH;
     protected static final ForEachElement DUMMY_ELEM = new ForEachElement(DUMMY_BLOCK, DUMMY_BLOCK);
@@ -149,6 +149,7 @@ class NestedIterationTagTest {
         Assertions.assertEquals(3, countOccurrences(result.getHtml()));
     }
 
+    //[$foreach $persons] [$foreach $fruits][$this.each][$end for] [$end for]
     @Test
     void testNestedThisEachValueReplacement() {
         Map<String, Object> variables = new HashMap<>();
@@ -201,6 +202,17 @@ class NestedIterationTagTest {
         Div superParent = new Div(DUMMY_ELEM, "Me", null);
         Div parent = new Div(DUMMY_ELEM, person, superParent);
         Div child = new Div(new ForEachElement(DUMMY_BLOCK, "<p>[$parent.parent.each] - [$parent.each.name] - [$this.each]</p>"), "sa", parent);
+
+        String resolved = DivResolver.resolve(child);
+        System.out.println(resolved);
+        Assertions.assertEquals("<p>Me - du - sa</p>", resolved);
+    }
+
+    @Test
+    void testResolver2() {
+        Div superParent = new Div(DUMMY_ELEM, "Me", null);
+        Div parent = new Div(DUMMY_ELEM, "du", superParent);
+        Div child = new Div(new ForEachElement(DUMMY_BLOCK, "<p>[$parent.parent.each] - [$parent.each] - [$this.each]</p>"), "sa", parent);
 
         String resolved = DivResolver.resolve(child);
         System.out.println(resolved);

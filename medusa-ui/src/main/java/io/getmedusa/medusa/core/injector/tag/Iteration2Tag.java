@@ -66,8 +66,16 @@ public class Iteration2Tag {
                     for (Object eachObject : iterationCondition) {
                         complexDivStructure.addAll(createDivForChildren(variables, element, new Div(element, eachObject, overallParent) ));
                     }
+
                 } else {
-                    throw new RuntimeException("Not yet implemented");
+                    //condition parsed is a single value, to which we count up
+                    Long iterationCondition = Long.parseLong(conditionParsed.toString());
+                    Div overallParent = new Div(element);
+                    complexDivStructure.add(overallParent);
+
+                    for (int i = 0; i < iterationCondition; i++) {
+                        complexDivStructure.addAll(createDivForChildren(variables, element, new Div(element, i, overallParent) ));
+                    }
                 }
             }
         }
@@ -97,20 +105,89 @@ public class Iteration2Tag {
     }
 
     private String renderHTML(String html, List<Div> complexStructure) {
+        Div root = null;
+        for(Div div : complexStructure) {
+            Div parentDiv = div.getParent();
+            if(parentDiv != null) parentDiv.getChildren().add(div);
+            if(div.isRoot()) root = div;
+        }
+
+        if(root == null) return html;
+
+        String template = DivResolver.buildTemplate(root);
+        deepResolve(root);
+        String wrappedDiv = DivResolver.wrapInDiv(root, buildFinalHTML(root));
+        html = html.replace(root.getElement().blockHTML, template + wrappedDiv);
+        return html;
+    }
+
+    private String buildFinalHTML(Div root) {
+        StringBuilder builder = new StringBuilder();
+        for(Div child : root.getChildren()) {
+            builder.append(child.getResolvedHTML());
+        }
+        return builder.toString();
+    }
+
+    private String deepResolve(Div div) {
+        Map<String, StringBuilder> childMap = new HashMap<>();
+        for(Div child : div.getChildren()) {
+            StringBuilder builder = childMap.getOrDefault(child.getElement().blockHTML, new StringBuilder());
+            builder.append(deepResolve(child));
+            childMap.put(child.getElement().blockHTML, builder);
+        }
+
+        for(Map.Entry<String, StringBuilder> entry : childMap.entrySet()) {
+            div.getElement().innerHTML = div.getElement().innerHTML.replace(entry.getKey(), entry.getValue().toString());
+        }
+
+        div.setResolvedHTML(DivResolver.resolve(div));
+
+        return div.getResolvedHTML();
+    }
+
+    private String renderHTML2(String html, List<Div> complexStructure) {
+        Div root = null;
         for(Div div : complexStructure) {
             if(!div.isRoot()) {
-                div.setResolvedHTML(DivResolver.resolve(div));
-
-                final String parentInnerHTML = div.getParent().getElement().innerHTML;
-                final String divContent = parentInnerHTML.replace(parentInnerHTML, div.getResolvedHTML());
-
-                div.getParent().appendToResolvedHTML(DivResolver.wrapInDiv(div, divContent)); //merge
+                Div parentDiv = div.getParent();
+                parentDiv.addResolvedChild(div.getElement().blockHTML, DivResolver.resolve(div));
             } else {
-                String template = DivResolver.buildTemplate(div);
-                String wrappedDiv = DivResolver.wrapInDiv(div, div.getResolvedHTML());
-                html = html.replace(div.getElement().blockHTML, template + wrappedDiv);
+                root = div;
             }
         }
+
+        StringBuilder parentDivHTML = new StringBuilder();
+        for(Div div : complexStructure) {
+            if(!div.isRoot()) {
+                if (!div.getBlocksAndChildrenToReplaceBlockWith().isEmpty()) {
+                    String parentInnerHTML = DivResolver.getHtmlToReplace(div);
+
+                    for (Map.Entry<String, List<String>> entry : div.getBlocksAndChildrenToReplaceBlockWith().entrySet()) {
+                        StringBuilder finalHTML = new StringBuilder();
+                        for (String resolvedHTML : entry.getValue()) {
+                            finalHTML.append(resolvedHTML);
+                        }
+                        parentInnerHTML = parentInnerHTML.replace(entry.getKey(), finalHTML.toString());
+                    }
+
+                    div.getElement().innerHTML = parentInnerHTML;
+                    div.setResolvedHTML(DivResolver.resolve(div));
+                } else {
+                    div.setResolvedHTML(DivResolver.resolve(div));
+                }
+
+                if(div.getParent() != null && div.getParent().isRoot()) {
+                    parentDivHTML.append(div.getResolvedHTML());
+                }
+            }
+        }
+
+        if(root == null) return html;
+
+        String template = DivResolver.buildTemplate(root);
+        String wrappedDiv = DivResolver.wrapInDiv(root, parentDivHTML.toString());
+        html = html.replace(root.getElement().blockHTML, template + wrappedDiv);
         return html;
     }
 
