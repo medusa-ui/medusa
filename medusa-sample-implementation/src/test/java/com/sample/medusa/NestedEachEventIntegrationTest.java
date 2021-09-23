@@ -14,16 +14,33 @@ class NestedEachEventIntegrationTest extends AbstractSeleniumTest {
     void testRendering() {
         goTo("/nested-each");
 
+        /*
+         * [$foreach $outer (1,2,3)]
+            <div class="outer-1">[$each]</div> = 1, 2, 3
+            <div class="outer-2">[$this.each]</div> = 1, 2, 3
+            [$foreach $mid (10,20)]
+                <div class="mid-1">[$this.each]</div> = 10, 20, 10, 20, 10, 20
+                <div class="mid-1">[$each]</div> = 10, 20, 10, 20, 10, 20
+                <div class="mid-2">[$parent.each]</div> = 1, 1, 2, 2, 3, 3
+                [$foreach $inner (100)]
+                    <div class="inner-1">[$this.each]</div> 100, 100, 100, 100, 100, 100
+                    <div class="inner-2">[$parent.each]</div> 10, 20, 10, 20, 10, 20
+                    <div class="inner-3">[$parent.parent.each]</div> 1, 1, 2, 2, 3, 3
+                [$end for]
+            [$end for]
+        [$end for]
+         */
+
         Assertions.assertEquals("Medusa nested each", driver.getTitle());
         Assertions.assertEquals(toList(1, 2, 3), getTextByCss(".outer-1").toString());
         Assertions.assertEquals(toList(1, 2, 3), getTextByCss(".outer-2").toString());
 
         Assertions.assertEquals(toList(10, 10, 20, 20, 10, 10, 20, 20, 10, 10, 20, 20), getTextByCss(".mid-1").toString());
-        Assertions.assertEquals(toList(1, 2, 1, 2, 1, 2), getTextByCss(".mid-2").toString());
+        Assertions.assertEquals(toList(1, 1, 2, 2, 3, 3), getTextByCss(".mid-2").toString());
 
         Assertions.assertEquals(toList(100, 100, 100, 100, 100, 100), getTextByCss(".inner-1").toString());
-        Assertions.assertEquals(toList(10, 10, 10, 10, 10, 10), getTextByCss(".inner-2").toString());
-        Assertions.assertEquals(toList(1, 1, 1, 1, 1, 1), getTextByCss(".inner-3").toString());
+        Assertions.assertEquals(toList(10, 20, 10, 20, 10, 20), getTextByCss(".inner-2").toString());
+        Assertions.assertEquals(toList(1, 1, 2, 2, 3, 3), getTextByCss(".inner-3").toString());
     }
 
     @Test
