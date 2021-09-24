@@ -81,12 +81,8 @@ public class DivResolver {
 
         for(ForEachElement child : element.getChildren()) {
             String childTemplate = buildTemplate(child);
-
-            /*String relevantBlock = innerHTML;
-            if(innerHTML.contains("[$foreach"))
-                relevantBlock = innerHTML.substring(innerHTML.indexOf("[$foreach"), innerHTML.indexOf("[$end for]") + ENDFOR_LENGTH);*/
-
-            innerHTML = innerHTML.replace(child.blockHTML, childTemplate);
+            String elemToReplace = "[$foreach $" + child.condition + "]" + child.innerHTML + "[$end for]";
+            innerHTML = innerHTML.replace(elemToReplace, childTemplate);
         }
 
         final String templateID = IdentifierGenerator.generateTemplateID(element);

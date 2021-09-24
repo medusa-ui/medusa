@@ -67,29 +67,12 @@ class DivResolverTest {
     }
 
     @Test
-    void testNestedLoopWithOtherData() {
-        Div divParent = new Div(NESTED_OTHR_ELEM_PARENT, "Parent", null);
-        Div div = new Div(NESTED_OTHR_ELEM_CHILD, "Child", divParent);
-        div.setResolvedHTML(DivResolver.resolve(div));
-        String resolvedDiv = DivResolver.resolve(divParent);
-        Assertions.assertEquals("Person Parent, with apples: <div class='apple'>Child</div>", resolvedDiv);
-    }
-
-    @Test
-    void testTemplateSimple() {
-
-    }
-
-    @Test
     void testTemplateNested() {
-        Div divParent = new Div(NESTED_OTHR_ELEM_PARENT, "Parent", null);
-        Div div = new Div(NESTED_OTHR_ELEM_CHILD, "Child", divParent);
+        NESTED_OTHR_ELEM_PARENT.addChild(NESTED_OTHR_ELEM_CHILD);
+        String template = DivResolver.buildTemplate(NESTED_OTHR_ELEM_PARENT);
 
-        divParent.getChildren().add(div);
-
-        String template = DivResolver.buildTemplate(divParent.getElement());
-
-        System.out.println(template);
+        Assertions.assertFalse(template.contains("[$foreach"));
+        Assertions.assertTrue(template.contains("Person [$this.each]"));
     }
 
 }
