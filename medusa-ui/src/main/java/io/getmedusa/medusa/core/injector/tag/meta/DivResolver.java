@@ -13,6 +13,7 @@ public class DivResolver {
     private static final String TAG_THIS_EACH = "[$this.each";
 
     private static final Pattern PROPERTY_PATTERN =  Pattern.compile("\\[\\$(this\\.|(parent\\.){1,99})each\\.?.*?]", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
+    protected static final int ENDFOR_LENGTH = "[$end for]".length();
 
     public static String resolve(Div div) {
         return parseEachContent(div.getChainOnThisLevel(), getHtmlToReplace(div));
@@ -75,12 +76,23 @@ public class DivResolver {
         return "<div index=\"" + index + "\" template-id=\"" + templateID + "\">" + divContent + "</div>";
     }
 
-    public static String buildTemplate(Div div) {
-        //TODO this cannot contain tags, it needs to be parsed
-        ForEachElement element = div.getElement();
+    public static String buildTemplate(ForEachElement element) {
+        String innerHTML = element.innerHTML;
+
+        for(ForEachElement child : element.getChildren()) {
+            String childTemplate = buildTemplate(child);
+
+            /*String relevantBlock = innerHTML;
+            if(innerHTML.contains("[$foreach"))
+                relevantBlock = innerHTML.substring(innerHTML.indexOf("[$foreach"), innerHTML.indexOf("[$end for]") + ENDFOR_LENGTH);*/
+
+            innerHTML = innerHTML.replace(child.blockHTML, childTemplate);
+        }
+
         final String templateID = IdentifierGenerator.generateTemplateID(element);
         IterationRegistry.getInstance().add(templateID, element.condition);
-        return "<template m-id=\"" + templateID + "\">" + div.getElement().innerHTML.replace(TAG_EACH, TAG_THIS_EACH) + "</template>";
+
+        return "<template m-id=\"" + templateID + "\">" + innerHTML.replace(TAG_EACH, TAG_THIS_EACH) + "</template>";
     }
 
 }

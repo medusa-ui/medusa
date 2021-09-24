@@ -75,4 +75,21 @@ class DivResolverTest {
         Assertions.assertEquals("Person Parent, with apples: <div class='apple'>Child</div>", resolvedDiv);
     }
 
+    @Test
+    void testTemplateSimple() {
+
+    }
+
+    @Test
+    void testTemplateNested() {
+        Div divParent = new Div(NESTED_OTHR_ELEM_PARENT, "Parent", null);
+        Div div = new Div(NESTED_OTHR_ELEM_CHILD, "Child", divParent);
+
+        divParent.getChildren().add(div);
+
+        String template = DivResolver.buildTemplate(divParent.getElement());
+
+        System.out.println(template);
+    }
+
 }

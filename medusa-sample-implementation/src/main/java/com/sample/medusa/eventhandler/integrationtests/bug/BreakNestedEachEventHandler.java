@@ -31,7 +31,7 @@ public class BreakNestedEachEventHandler {
     }
 
     public DOMChanges remove() {
-        inner.remove(0);
+        //inner.remove(0);
         outer.remove(0);
         return DOMChanges.of("inner", inner).and("outer", outer);
     }

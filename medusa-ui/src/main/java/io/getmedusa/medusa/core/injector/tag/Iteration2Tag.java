@@ -115,7 +115,7 @@ public class Iteration2Tag {
 
         if(root == null) return html;
 
-        String template = DivResolver.buildTemplate(root);
+        String template = DivResolver.buildTemplate(root.getElement());
         deepResolve(root);
         String wrappedDiv = DivResolver.wrapInDiv(root, buildFinalHTML(root));
         html = html.replace(root.getElement().blockHTML, template + wrappedDiv);

@@ -11,16 +11,15 @@ public class ForEachElement implements Comparable<ForEachElement>  {
 
     private static final String TAG_EACH = "[$each]";
     private static final String TAG_THIS_EACH = "[$this.each]";
+    protected static final int FOREACH_LENGTH = "[$foreach".length();
 
     public final String blockHTML; //block including the foreach block and condition
     public String innerHTML; //block within the foreach
     public final String condition; //the relevant foreach condition
     public ForEachElement parent;
 
-    private List<ForEachElement> children;
+    private List<ForEachElement> children = new ArrayList<>();
     private int depth = 0;
-
-    //private RenderInfo childRenderInfo;
 
     public ForEachElement(String block, String innerBlock) {
         this.blockHTML = block;
@@ -49,17 +48,6 @@ public class ForEachElement implements Comparable<ForEachElement>  {
         return depth;
     }
 
-    public RenderInfo getChildRenderInfo() {
-        return null;
-    }
-
-    public void setChildRenderInfo(RenderInfo childRenderInfo) {
-        /*final String replacementTag = "[$$replace-" + childRenderInfo.templateID + ']';
-        this.innerHTML = this.innerHTML.replace(childRenderInfo.blockToReplace, replacementTag);
-        childRenderInfo.blockToReplace = replacementTag;
-        this.childRenderInfo = childRenderInfo;*/
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -75,12 +63,7 @@ public class ForEachElement implements Comparable<ForEachElement>  {
 
     private String parseCondition(String block) {
         if(!block.contains("[$foreach")) return null;
-        return block.substring("[$foreach".length(), block.indexOf("]")).trim().substring(1); //TODO error if condition does not start with $
-    }
-
-    public String renderWithChildRenders(RenderInfo renderInfo) {
-        //return renderInfo.merge(childRenderInfo).combine();
-        return null;
+        return block.substring(block.indexOf("[$foreach") + FOREACH_LENGTH, block.indexOf("]", block.indexOf("[$foreach"))).trim().substring(1);
     }
 
     @Override
@@ -93,12 +76,11 @@ public class ForEachElement implements Comparable<ForEachElement>  {
     }
 
     public void addChild(ForEachElement child) {
-        if(this.children == null) this.children = new ArrayList<>();
         this.children.add(child);
     }
 
     public boolean hasChildren() {
-        return this.children != null && !this.children.isEmpty();
+        return !this.children.isEmpty();
     }
 
     public ForEachElement getParent() {
