@@ -35,7 +35,7 @@ public enum HTMLInjector {
     private final ChangeTag changeTag;
     private final ValueTag valueTag;
     private final ConditionalTag conditionalTag;
-    private final Iteration2Tag iterationTag;
+    private final IterationTag iterationTag;
     private final ClassAppendTag classAppendTag;
     private final GenericMTag genericMTag;
 
@@ -45,7 +45,7 @@ public enum HTMLInjector {
         this.changeTag = new ChangeTag();
         this.valueTag = new ValueTag();
         this.conditionalTag = new ConditionalTag();
-        this.iterationTag = new Iteration2Tag();
+        this.iterationTag = new IterationTag();
         this.classAppendTag = new ClassAppendTag();
         this.genericMTag = new GenericMTag();
     }

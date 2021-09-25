@@ -9,7 +9,7 @@ import java.util.*;
 
 class NestedIterationTagTest {
 
-    private static final Iteration2Tag TAG = new Iteration2Tag();
+    private static final IterationTag TAG = new IterationTag();
     private static final EachParser PARSER = new EachParser();
     public static final String HTML =
             "<!DOCTYPE html>\n" +
@@ -180,7 +180,7 @@ class NestedIterationTagTest {
         variables.put("parent", new ArrayList<>(Arrays.asList(1, 2, 3, 4)));
         variables.put("child", new ArrayList<>(Arrays.asList("A","B")));
 
-        InjectionResult result = new Iteration2Tag().injectWithVariables(new InjectionResult(HTML_BUG), variables);
+        InjectionResult result = new IterationTag().injectWithVariables(new InjectionResult(HTML_BUG), variables);
         System.out.println(result.getHtml());
 
         Assertions.assertTrue(result.getHtml().contains("1 - A"));

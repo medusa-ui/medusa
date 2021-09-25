@@ -7,17 +7,12 @@ import io.getmedusa.medusa.core.injector.tag.meta.InjectionResult;
 import io.getmedusa.medusa.core.util.EachParser;
 
 import java.util.*;
-import java.util.regex.Pattern;
 
 import static java.util.Collections.sort;
 
-public class Iteration2Tag {
-
-    private static final String TAG_EACH = "[$each";
-    private static final String TAG_THIS_EACH = "[$this.each";
+public class IterationTag {
 
     private static final EachParser PARSER = new EachParser();
-    private static final Pattern PROPERTY_PATTERN =  Pattern.compile("\\[\\$(this\\.|(parent\\.){1,99})each\\.?.*?]", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
 
     public InjectionResult injectWithVariables(InjectionResult injectionResult, Map<String, Object> variables) {
         String html = injectionResult.getHtml();
@@ -105,20 +100,21 @@ public class Iteration2Tag {
     }
 
     private String renderHTML(String html, List<Div> complexStructure) {
-        Div root = null;
+        List<Div> rootElements = new ArrayList<>();
         for(Div div : complexStructure) {
             div.setResolvedHTML(div.getElement().innerHTML);
             Div parentDiv = div.getParent();
             if(parentDiv != null) parentDiv.getChildren().add(div);
-            if(div.isRoot()) root = div;
+            if(div.isRoot()) rootElements.add(div);
         }
 
-        if(root == null) return html;
+        for(Div root : rootElements) {
+            String template = DivResolver.buildTemplate(root.getElement());
+            deepResolve(root);
+            String wrappedDiv = DivResolver.wrapInDiv(root, buildFinalHTML(root));
+            html = html.replace(root.getElement().blockHTML, template + wrappedDiv);
+        }
 
-        String template = DivResolver.buildTemplate(root.getElement());
-        deepResolve(root);
-        String wrappedDiv = DivResolver.wrapInDiv(root, buildFinalHTML(root));
-        html = html.replace(root.getElement().blockHTML, template + wrappedDiv);
         return html;
     }
 
