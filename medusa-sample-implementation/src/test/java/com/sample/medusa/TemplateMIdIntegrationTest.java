@@ -17,11 +17,6 @@ class TemplateMIdIntegrationTest extends AbstractSeleniumTest {
     private static final String page = "/test/history";
     protected static final String TEST_TEXT = "Hello World";
 
-    @Override
-    protected boolean isHeadless() {
-        return true;
-    }
-
     @Test
     @DisplayName("Using template with m-id should allow the usage of identical foreach-blocks")
     void test() {

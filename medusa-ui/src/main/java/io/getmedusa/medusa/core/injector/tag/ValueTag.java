@@ -11,7 +11,7 @@ import java.util.regex.Pattern;
 public class ValueTag {
 
     private static final char DOUBLE_QUOTE = '\"';
-    protected final Pattern pattern = Pattern.compile("\\[\\$(?!each|if|else|end).*?\\]", Pattern.CASE_INSENSITIVE);
+    protected final Pattern pattern = Pattern.compile("\\[\\$(?!(parent\\.){1,99}each|this\\.each|if|else|end).*?\\]", Pattern.CASE_INSENSITIVE);
 
     public InjectionResult injectWithVariables(InjectionResult result, Map<String, Object> variables) {
         String html = result.getHtml();

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Medusa conditionals demo</title>
+    <link href="/stylesheet.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter&family=Merriweather&display=swap" rel="stylesheet">
+</head>
+<body>
+<h1>🦑 Foreach trouble</h1>
+<h2>First</h2>
+<ol>
+  [$foreach $first]
+     <li>[$each]</li>
+  [$end for]
+</ol>
+<button m-click="first()">first add</button>
+
+<h2>Second</h2>
+<ol>
+    [$foreach $second]
+    <li>[$each]</li>
+    [$end for]
+</ol>
+<button m-click="second()">second add</button>
+
+<h2>Third</h2>
+<ol>
+    [$foreach $third]
+    <li>[$each]</li>
+    [$end for]
+</ol>
+<button m-click="third()">third add</button>
+
+<h2>Repeat</h2>
+<h2>First</h2>
+<ol>
+    [$foreach $first]
+    <li>[$each]</li>
+    [$end for]
+</ol>
+
+<h2>Second</h2>
+<ol>
+    [$foreach $second]
+    <li>[$each]</li>
+    [$end for]
+</ol>
+
+<h2>Third</h2>
+<ol>
+    [$foreach $third]
+    <li>[$each]</li>
+    [$end for]
+</ol>
+
+</body>
+</html>

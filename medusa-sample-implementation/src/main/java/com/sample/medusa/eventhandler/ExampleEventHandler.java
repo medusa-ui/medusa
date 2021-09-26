@@ -19,7 +19,7 @@ public class ExampleEventHandler {
     private final Map<String, Integer> counters = new HashMap<>();
 
     public PageAttributes setupAttributes(ServerRequest request){
-        String uuid= UUID.randomUUID().toString();
+        String uuid=Integer.toString(new Random().nextInt());
         counters.put(uuid, 0);
 
         return new PageAttributes()

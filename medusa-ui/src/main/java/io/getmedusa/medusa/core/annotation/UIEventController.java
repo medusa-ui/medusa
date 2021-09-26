@@ -95,8 +95,8 @@ public class UIEventController implements UIEventWithAttributes {
             }
         } catch (InvocationTargetException | IllegalAccessException e) {
             logger.error("setup attributes failed due to: " + e.getMessage(), e );
+            throw new IllegalStateException(e);
         }
-        return null;
     }
 
     private Method determineSetupMethod(Object uiEventPageObject, UIEventPage uiEventPage) {

@@ -26,7 +26,24 @@ public class IterationRegistry {
     }
 
     public Set<String> findRelatedToValue(String condition) {
-        return registry.get(condition);
+        Set<String> result = new HashSet<>();
+        Set<String> templateIds = registry.get(condition);
+        if(null != templateIds) {
+            for (String templateId : templateIds) {
+                result.add(templateId.split("#")[0]);
+            }
+        }
+        return result;
+    }
+
+    public Map<String, String> listConditions() {
+        Map<String, String> map = new HashMap<>();
+        for(Map.Entry<String, Set<String>> entry : registry.entrySet()) {
+            for(String entrySubset : entry.getValue()) {
+                map.put(entrySubset, entry.getKey());
+            }
+        }
+        return map;
     }
 
 }

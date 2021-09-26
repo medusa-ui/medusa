@@ -5,6 +5,7 @@ import io.getmedusa.medusa.core.cache.HTMLCache;
 import io.getmedusa.medusa.core.injector.tag.*;
 import io.getmedusa.medusa.core.injector.tag.meta.InjectionResult;
 import io.getmedusa.medusa.core.registry.EventHandlerRegistry;
+import io.getmedusa.medusa.core.registry.IterationRegistry;
 import io.getmedusa.medusa.core.registry.RouteRegistry;
 import io.getmedusa.medusa.core.util.SecurityContext;
 import org.springframework.web.reactive.function.server.ServerRequest;
@@ -111,7 +112,9 @@ public enum HTMLInjector {
 
     private void injectVariablesInScript(InjectionResult result, Map<String, Object> variables) {
         try {
-            String variablesAsScript = "_M.variables = " + MAPPER.writeValueAsString(variables) + ";";
+            String variablesAsScript =
+                    "_M.variables = " + MAPPER.writeValueAsString(variables) + ";" +
+                    "_M.conditionals = " + MAPPER.writeValueAsString(IterationRegistry.getInstance().listConditions()) + ";";
             result.addScript(variablesAsScript);
         } catch (Exception e) {
             throw new RuntimeException(e);

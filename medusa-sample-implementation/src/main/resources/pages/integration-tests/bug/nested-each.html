@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Medusa nested each</title>
+    <link href="/stylesheet.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter&family=Merriweather&display=swap" rel="stylesheet">
+</head>
+<body>
+<div>
+    <button m-click="refresh()">Refresh</button>
+</div>
+<div>
+    <button m-click="add()">Add</button>  <button m-click="remove()">Remove</button>
+</div>
+<!--<p>Outer - Outer</p>-->
+<!--<div>-->
+<!--    [$foreach $outer]-->
+<!--        [$foreach $outer]-->
+<!--            [$parent.each] - [$this.each]-->
+<!--        [$end for]-->
+<!--    [$end for]-->
+<!--</div>-->
+
+<p>Outer - Inner</p>
+<div>
+    [$foreach $outer]
+        [$foreach $inner]
+             [$parent.each] - [$each]<br>
+        [$end for]
+    [$end for]
+</div>
+
+<!--<p>Inner - Inner</p>-->
+<!--<div>-->
+<!--    [$foreach $inner]-->
+<!--        [$foreach $inner]-->
+<!--            [$parent.each] - [$this.each]-->
+<!--        [$end for]-->
+<!--    [$end for]-->
+<!--</div>-->
+
+</body>
+</html>

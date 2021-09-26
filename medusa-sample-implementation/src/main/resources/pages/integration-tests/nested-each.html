@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Medusa nested each</title>
+    <link href="/stylesheet.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter&family=Merriweather&display=swap" rel="stylesheet">
+    <style>
+        .outer-1 {
+            padding-left:10px;
+            color: #ff0000;
+        }
+        .outer-1:before {
+            content: "this (1,2,3 -> 4,5,6): ";
+        }
+        .outer-2 {
+            padding-left:10px;
+            color: #ff9f9f;
+        }
+        .outer-2:before {
+            content: "this (1,2,3 -> 4,5,6): ";
+        }
+        .mid-1 {
+            padding-left:20px;
+            color: #82ff82;
+        }
+        .mid-1:before {
+            content: "this (10, 20 -> 11, 21): ";
+        }
+        .mid-2 {
+            padding-left:20px;
+            color: #00922d;
+        }
+        .mid-2:before {
+            content: "parent (1,2,3 -> 4,5,6): ";
+        }
+        .inner-1 {
+            padding-left:30px;
+            color: #4eb5ff;
+        }
+        .inner-1:before {
+            content: "this (100): ";
+        }
+        .inner-2 {
+            padding-left:30px;
+            color: #7978ff;
+        }
+        .inner-2:before {
+            content: "parent (10, 20 -> 11, 21): ";
+        }
+        .inner-3 {
+            padding-left:30px;
+            color: lightblue;
+        }
+        .inner-3:before {
+            content: "parent.parent (1,2,3 -> 4,5,6): ";
+        }
+    </style>
+</head>
+<body>
+<h1>🦑 Foreach within foreach</h1>
+
+[$foreach $outer]
+    <div class="outer-1">[$each]</div>
+    <div class="outer-2">[$this.each]</div>
+    [$foreach $mid]
+        <div class="mid-1">[$this.each]</div>
+        <div class="mid-1">[$each]</div>
+        <div class="mid-2">[$parent.each]</div>
+        [$foreach $inner]
+            <div class="inner-1">[$this.each]</div>
+            <div class="inner-2">[$parent.each]</div>
+            <div class="inner-3">[$parent.parent.each]</div>
+        [$end for]
+    [$end for]
+[$end for]
+
+<button id="change-mid" m-click="change()">change mid</button>
+
+</body>
+</html>

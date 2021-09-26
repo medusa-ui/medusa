@@ -1,8 +1,8 @@
 package io.getmedusa.medusa.core.injector;
 
 import io.getmedusa.medusa.core.annotation.PageAttributes;
-import io.getmedusa.medusa.core.annotation.UIEventWithAttributes;
 import io.getmedusa.medusa.core.annotation.UIEventPage;
+import io.getmedusa.medusa.core.annotation.UIEventWithAttributes;
 import io.getmedusa.medusa.core.registry.EventHandlerRegistry;
 import io.getmedusa.medusa.core.util.SecurityContext;
 import io.getmedusa.medusa.core.util.TestRequest;
@@ -10,7 +10,10 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.web.reactive.function.server.ServerRequest;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 class RenderUsecasesTest {
 
@@ -20,8 +23,8 @@ class RenderUsecasesTest {
         EventHandlerRegistry.getInstance().add(htmlFileName, new HandlerImpl(Collections.singletonMap("counter-value", 3)));
         String nestedIf =
                 "[$if($counter-value > 5)]\n" +
-                "   <p>Counter is above 5</p>\n" +
-                "[$end if]";
+                        "   <p>Counter is above 5</p>\n" +
+                        "[$end if]";
 
         String result = HTMLInjector.INSTANCE.htmlStringInject(new TestRequest(), null, nestedIf);
         System.out.println(result);
@@ -51,16 +54,14 @@ class RenderUsecasesTest {
     void testSimpleForeach() {
         final String htmlFileName = path();
         EventHandlerRegistry.getInstance().add(htmlFileName, new HandlerImpl(Collections.singletonMap("counter-value", 3)));
-        String nestedIf = "[$foreach $counter-value]\n" +
-                "<p>Hello, Medusa</p>\n" +
-                "[$end for]";
+        String nestedIf = "[$foreach $counter-value]<p>Hello, Medusa</p>[$end for]";
 
         String result = HTMLInjector.INSTANCE.htmlStringInject(new TestRequest(), null, nestedIf);
         System.out.println(result);
 
         Assertions.assertFalse(result.contains("[$foreach"));
         Assertions.assertFalse(result.contains("[$end"));
-        Assertions.assertEquals(3+1, countOccurrences(result, "Hello, Medusa")); //1 template + counter-value
+        Assertions.assertEquals(3 + 1, countOccurrences(result, "Hello, Medusa")); //1 template + counter-value
     }
 
     @Test
@@ -68,10 +69,10 @@ class RenderUsecasesTest {
         final String htmlFileName = path();
         EventHandlerRegistry.getInstance().add(htmlFileName, new HandlerImpl(Collections.singletonMap("counter-value", 2)));
         String nestedIf = "[$if($counter-value > 2)]\n" +
-                          "    [$foreach $counter-value]\n" +
-                          "        <p>Hello, Medusa</p>\n" +
-                          "    [$end for]" +
-                          "[$end if]";
+                "    [$foreach $counter-value]\n" +
+                "        <p>Hello, Medusa</p>\n" +
+                "    [$end for]" +
+                "[$end if]";
 
         String result = HTMLInjector.INSTANCE.htmlStringInject(new TestRequest(), null, nestedIf);
         System.out.println(result);
@@ -79,7 +80,7 @@ class RenderUsecasesTest {
         Assertions.assertFalse(result.contains("[$if"));
         Assertions.assertFalse(result.contains("[$foreach"));
         Assertions.assertFalse(result.contains("[$end"));
-        Assertions.assertEquals(2+1, countOccurrences(result, "Hello, Medusa")); //1 template + counter-value
+        Assertions.assertEquals(2 + 1, countOccurrences(result, "Hello, Medusa")); //1 template + counter-value
     }
 
     @Test
@@ -88,10 +89,10 @@ class RenderUsecasesTest {
         EventHandlerRegistry.getInstance().add(htmlFileName, new HandlerImpl(Collections.singletonMap("counter-value", 2)));
         String nestedIf =
                 "[$foreach $counter-value]\n" +
-                "    [$if($counter-value > 2)]\n" +
-                "        <p>Hello, Medusa</p>\n" +
-                "    [$end if]" +
-                "[$end for]";
+                        "    [$if($counter-value > 2)]\n" +
+                        "        <p>Hello, Medusa</p>\n" +
+                        "    [$end if]" +
+                        "[$end for]";
 
         String result = HTMLInjector.INSTANCE.htmlStringInject(new TestRequest(), null, nestedIf);
         System.out.println(result);
@@ -99,7 +100,7 @@ class RenderUsecasesTest {
         Assertions.assertFalse(result.contains("[$if"));
         Assertions.assertFalse(result.contains("[$foreach"));
         Assertions.assertFalse(result.contains("[$end"));
-        Assertions.assertEquals(2+1, countOccurrences(result, "Hello, Medusa")); //1 template + counter-value
+        Assertions.assertEquals(2 + 1, countOccurrences(result, "Hello, Medusa")); //1 template + counter-value
     }
 
     @Test
@@ -134,7 +135,7 @@ class RenderUsecasesTest {
 
         Assertions.assertFalse(result.contains("[$foreach"));
         Assertions.assertFalse(result.contains("[$end"));
-        Assertions.assertEquals(3+1, countOccurrences(result, "Hello, Medusa")); //1 template + counter-value
+        Assertions.assertEquals(3 + 1, countOccurrences(result, "Hello, Medusa")); //1 template + counter-value
         Assertions.assertTrue(result.contains("Medusa 0</p>"));
         Assertions.assertTrue(result.contains("Medusa 1</p>"));
         Assertions.assertTrue(result.contains("Medusa 2</p>"));
@@ -164,8 +165,8 @@ class RenderUsecasesTest {
         EventHandlerRegistry.getInstance().add(htmlFileName, new HandlerImpl(Collections.singletonMap("obj-value", new ExampleClass(987))));
         String nestedIf =
                 "[$if($obj-value.number > 5)]\n" +
-                "   <p>Counter is above 5</p>\n" +
-                "[$end if]";
+                        "   <p>Counter is above 5</p>\n" +
+                        "[$end if]";
 
         String result = HTMLInjector.INSTANCE.htmlStringInject(new TestRequest(), null, nestedIf);
         System.out.println(result);
@@ -246,7 +247,7 @@ class RenderUsecasesTest {
     // utility
 
     private int countOccurrences(String result, String pattern) {
-        return result.split(pattern).length -1;
+        return result.split(pattern).length - 1;
     }
 
     private String path() {
@@ -281,6 +282,7 @@ class RenderUsecasesTest {
     public static class HandlerImpl implements UIEventWithAttributes {
 
         private final Map<String, Object> variables;
+
         HandlerImpl(Map<String, Object> variables) {
             this.variables = variables;
         }
