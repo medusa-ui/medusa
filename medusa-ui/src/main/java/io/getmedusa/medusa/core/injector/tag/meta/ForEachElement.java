@@ -10,16 +10,16 @@ public class ForEachElement implements Comparable<ForEachElement>  {
     protected static final int FOREACH_LENGTH = FOREACH.length();
 
     public final String blockHTML; //block including the foreach block and condition
-    public String innerHTML; //block within the foreach
+    private String innerHTML; //block within the foreach
     public final String condition; //the relevant foreach condition
-    public ForEachElement parent;
+    private ForEachElement parent;
 
-    private List<ForEachElement> children = new ArrayList<>();
+    private final List<ForEachElement> children = new ArrayList<>();
     private int depth = 0;
 
     public ForEachElement(String block, String innerBlock) {
         this.blockHTML = block;
-        this.innerHTML = innerBlock;
+        this.setInnerHTML(innerBlock);
         this.condition = parseCondition(block);
     }
 
@@ -64,7 +64,7 @@ public class ForEachElement implements Comparable<ForEachElement>  {
     }
 
     public boolean hasParent() {
-        return this.parent != null;
+        return this.getParent() != null;
     }
 
     public void addChild(ForEachElement child) {
@@ -79,4 +79,11 @@ public class ForEachElement implements Comparable<ForEachElement>  {
         return parent;
     }
 
+    public String getInnerHTML() {
+        return innerHTML;
+    }
+
+    public void setInnerHTML(String innerHTML) {
+        this.innerHTML = innerHTML;
+    }
 }

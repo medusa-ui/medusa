@@ -22,7 +22,7 @@ public class DivResolver {
 
     public static String getHtmlToReplace(Div div) {
         if(div.getResolvedHTML().equals("")) {
-            return div.getElement().innerHTML;
+            return div.getElement().getInnerHTML();
         } else {
             return div.getResolvedHTML();
         }
@@ -42,31 +42,41 @@ public class DivResolver {
             //so everything up to the .each. determines what the eachObject is going to be used in this expression
 
             final String eachPropertyDeterminator = replace.substring(2, replace.indexOf(".each"));
-            Object transitiveEachObject = eachObject;
-            if(!"this".equals(eachPropertyDeterminator)) {
-                //resolve parents
-                int steps = eachPropertyDeterminator.split("parent").length - 1;
-                if(steps < 0) steps = 0;
-                ParentChain relevantChain = parentChain.getParent();
-                if(null != relevantChain) {
-                    for (int i = 0; i < steps; i++) {
-                        if(relevantChain.getParent() != null) relevantChain = relevantChain.getParent();
-                    }
-                    transitiveEachObject = relevantChain.getEachObject();
-                }
-            }
-            String evalObject = "";
-            if(transitiveEachObject != null) {
-                evalObject = transitiveEachObject.toString();
-                if(replace.contains(".each.")) {
-                    final String property = replace.substring(replace.indexOf(".each.") + 6, replace.length() - 1).trim();
-                    evalObject = ExpressionEval.evalObject(property, transitiveEachObject);
-                }
-            }
+            Object transitiveEachObject = determineTransitiveEachObject(parentChain, eachObject, eachPropertyDeterminator);
+            String evalObject = determineEvalObject(replace, transitiveEachObject);
             divContent = divContent.replace(replace, evalObject);
         }
 
         return divContent;
+    }
+
+    private static Object determineTransitiveEachObject(ParentChain parentChain, Object eachObject, String eachPropertyDeterminator) {
+        Object transitiveEachObject = eachObject;
+        if(!"this".equals(eachPropertyDeterminator)) {
+            //resolve parents
+            int steps = eachPropertyDeterminator.split("parent").length - 1;
+            if(steps < 0) steps = 0;
+            ParentChain relevantChain = parentChain.getParent();
+            if(null != relevantChain) {
+                for (int i = 0; i < steps; i++) {
+                    if(relevantChain.getParent() != null) relevantChain = relevantChain.getParent();
+                }
+                transitiveEachObject = relevantChain.getEachObject();
+            }
+        }
+        return transitiveEachObject;
+    }
+
+    private static String determineEvalObject(String replace, Object transitiveEachObject) {
+        String evalObject = "";
+        if(transitiveEachObject != null) {
+            evalObject = transitiveEachObject.toString();
+            if(replace.contains(".each.")) {
+                final String property = replace.substring(replace.indexOf(".each.") + 6, replace.length() - 1).trim();
+                evalObject = ExpressionEval.evalObject(property, transitiveEachObject);
+            }
+        }
+        return evalObject;
     }
 
     public static String wrapInDiv(Div div, String divContent) {
@@ -77,11 +87,11 @@ public class DivResolver {
     }
 
     public static String buildTemplate(ForEachElement element) {
-        String innerHTML = element.innerHTML;
+        String innerHTML = element.getInnerHTML();
 
         for(ForEachElement child : element.getChildren()) {
             String childTemplate = buildTemplate(child);
-            String elemToReplace = "[$foreach $" + child.condition + "]" + child.innerHTML + "[$end for]";
+            String elemToReplace = "[$foreach $" + child.condition + "]" + child.getInnerHTML() + "[$end for]";
             innerHTML = innerHTML.replace(elemToReplace, childTemplate);
         }
 

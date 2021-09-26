@@ -121,7 +121,7 @@ public class IterationTag {
         //b. add parent/child references
         //c. take note of which divs are root divs
         for(Div div : complexStructure) {
-            div.setResolvedHTML(div.getElement().innerHTML);
+            div.setResolvedHTML(div.getElement().getInnerHTML());
             Div parentDiv = div.getParent();
             if(parentDiv != null) parentDiv.getChildren().add(div);
             if(div.isRoot()) rootElements.add(div);

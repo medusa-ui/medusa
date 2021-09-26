@@ -2,13 +2,14 @@ package io.getmedusa.medusa.core.injector.tag.meta;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class Div implements Comparable<Div> {
 
     private ParentChain chainOnThisLevel;
     private String resolvedHTML = "";
     private Div parent;
-    private List<Div> children = new ArrayList<>();
+    private final List<Div> children = new ArrayList<>();
 
     private final int depth;
     private final ForEachElement originalElement;
@@ -44,12 +45,21 @@ public class Div implements Comparable<Div> {
         return Integer.compare(elem.depth, depth);
     }
 
-    public ParentChain getChainOnThisLevel() {
-        return chainOnThisLevel;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Div)) return false;
+        Div div = (Div) o;
+        return depth == div.depth && Objects.equals(getParent(), div.getParent()) && originalElement.equals(div.originalElement);
     }
 
-    public void setChainOnThisLevel(ParentChain chainOnThisLevel) {
-        this.chainOnThisLevel = chainOnThisLevel;
+    @Override
+    public int hashCode() {
+        return Objects.hash(getParent(), depth, originalElement);
+    }
+
+    public ParentChain getChainOnThisLevel() {
+        return chainOnThisLevel;
     }
 
     public void setResolvedHTML(String resolvedHTML) {
