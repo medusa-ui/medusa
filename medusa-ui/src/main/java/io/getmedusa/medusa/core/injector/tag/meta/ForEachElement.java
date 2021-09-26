@@ -1,17 +1,13 @@
 package io.getmedusa.medusa.core.injector.tag.meta;
 
-import io.getmedusa.medusa.core.registry.IterationRegistry;
-import io.getmedusa.medusa.core.util.IdentifierGenerator;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 public class ForEachElement implements Comparable<ForEachElement>  {
 
-    private static final String TAG_EACH = "[$each]";
-    private static final String TAG_THIS_EACH = "[$this.each]";
-    protected static final int FOREACH_LENGTH = "[$foreach".length();
+    protected static final String FOREACH = "[$foreach";
+    protected static final int FOREACH_LENGTH = FOREACH.length();
 
     public final String blockHTML; //block including the foreach block and condition
     public String innerHTML; //block within the foreach
@@ -40,10 +36,6 @@ public class ForEachElement implements Comparable<ForEachElement>  {
         return children;
     }
 
-    public void setChildren(List<ForEachElement> children) {
-        this.children = children;
-    }
-
     public int getDepth() {
         return depth;
     }
@@ -62,8 +54,8 @@ public class ForEachElement implements Comparable<ForEachElement>  {
     }
 
     private String parseCondition(String block) {
-        if(!block.contains("[$foreach")) return null;
-        return block.substring(block.indexOf("[$foreach") + FOREACH_LENGTH, block.indexOf("]", block.indexOf("[$foreach"))).trim().substring(1);
+        if(!block.contains(FOREACH)) return null;
+        return block.substring(block.indexOf(FOREACH) + FOREACH_LENGTH, block.indexOf("]", block.indexOf(FOREACH))).trim().substring(1);
     }
 
     @Override
@@ -87,58 +79,4 @@ public class ForEachElement implements Comparable<ForEachElement>  {
         return parent;
     }
 
-    /*
-    Final method call, renders template + child divs
-     */
-    public String render() {
-        final String templateID = IdentifierGenerator.generateTemplateID(this);
-        IterationRegistry.getInstance().add(templateID, condition);
-        String template = "<template m-id=\"" + templateID + "\">" + innerHTML.replace(TAG_EACH, TAG_THIS_EACH) + "</template>";
-        return template + renderChildDivs();
-    }
-
-    private String renderChildDivs() {
-        return "";
-    }
-
-    public void merge(ForEachElement childElementToMergeWith) {
-        //TODO merge child divs
-        //TODO you need to know which one belongs to which each instance ...
-        System.out.println();
-        //String resolvedInnerHTML = resolveInnerHTML(childElementToMergeWith.innerHTML);
-    }
-
-    public static class RenderInfo {
-        final String templateID;
-        String blockToReplace;
-        public String template;
-        public List<String> divs;
-
-        public RenderInfo(final String blockToReplace, final String templateID) {
-            this.blockToReplace = blockToReplace;
-            this.templateID = templateID;
-        }
-
-        public String combine() {
-            return template + renderDivs();
-        }
-
-        public RenderInfo merge(RenderInfo childRenderInfo) {
-            if(childRenderInfo != null) {
-                template = template.replace(childRenderInfo.blockToReplace, childRenderInfo.template).replace(TAG_EACH, TAG_THIS_EACH);
-                for (int i = 0; i < divs.size(); i++) {
-                    divs.set(i, divs.get(i).replace(childRenderInfo.blockToReplace, childRenderInfo.renderDivs()));
-                }
-            }
-            return this;
-        }
-
-        public String renderDivs() {
-            StringBuilder builder = new StringBuilder();
-            for(String div : divs) {
-                builder.append(div);
-            }
-            return builder.toString();
-        }
-    }
 }
