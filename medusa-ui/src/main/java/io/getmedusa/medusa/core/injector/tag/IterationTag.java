@@ -84,15 +84,30 @@ public class IterationTag {
         if(element.hasChildren()) {
             for(ForEachElement child : element.getChildren()) {
                 Object childConditionParsed = parseConditionWithVariables(child.condition, variables);
+                final boolean hasChildElement;
                 if (childConditionParsed instanceof Collection) {
                     //a true 'foreach', the 'each' becomes each element of the collection
                     Object[] childIterationCondition = conditionAsArray(childConditionParsed);
+                    hasChildElement = childIterationCondition.length > 0;
                     for (Object childEachObject : childIterationCondition) {
                         Div div = new Div(child, childEachObject, parentDiv);
                         complexDivStructure.addAll(createDivForChildren(variables, child, div));
                     }
                 } else {
-                    throw new RuntimeException("Not yet implemented");
+                    //condition parsed is a single value, to which we count up
+                    long iterationCondition = Long.parseLong(childConditionParsed.toString());
+                    hasChildElement = iterationCondition > 0;
+                    for (int i = 0; i < iterationCondition; i++) {
+                        Div div = new Div(child, i, parentDiv);
+                        complexDivStructure.addAll(createDivForChildren(variables, child, div));
+                    }
+                }
+
+                if(!hasChildElement) {
+                    ForEachElement empty = new ForEachElement(child.blockHTML, "");
+                    empty.setParent(child.getParent());
+                    Div div = new Div(empty, null, parentDiv);
+                    complexDivStructure.add(div);
                 }
             }
         }

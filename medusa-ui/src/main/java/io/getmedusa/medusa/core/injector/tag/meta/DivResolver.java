@@ -13,7 +13,8 @@ public class DivResolver {
     private static final String TAG_THIS_EACH = "[$this.each";
 
     private static final Pattern PROPERTY_PATTERN =  Pattern.compile("\\[\\$(this\\.|(parent\\.){1,99})each\\.?.*?]", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
-    protected static final int ENDFOR_LENGTH = "[$end for]".length();
+
+    private DivResolver() {}
 
     public static String resolve(Div div) {
         return parseEachContent(div.getChainOnThisLevel(), getHtmlToReplace(div));
@@ -32,8 +33,7 @@ public class DivResolver {
 
         divContent = divContent.replace(TAG_EACH, TAG_THIS_EACH).trim(); //the use of [$each] is optional and is equal to using [$this.each]
 
-        final Object eachObject = parentChain.getEachObject();
-
+        final Object eachObject = (parentChain.getEachObject() == null) ? "" : parentChain.getEachObject();
         divContent = divContent.replace(TAG_THIS_EACH + ']', eachObject.toString());
 
         Matcher matcher = PROPERTY_PATTERN.matcher(divContent);
