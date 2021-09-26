@@ -101,6 +101,10 @@ public class IterationTag {
 
     private String renderHTML(String html, List<Div> complexStructure) {
         List<Div> rootElements = new ArrayList<>();
+        //go over all elements of the structure to
+        //a. resolve depth-first
+        //b. add parent/child references
+        //c. take note of which divs are root divs
         for(Div div : complexStructure) {
             div.setResolvedHTML(div.getElement().innerHTML);
             Div parentDiv = div.getParent();
@@ -108,9 +112,16 @@ public class IterationTag {
             if(div.isRoot()) rootElements.add(div);
         }
 
+        //then go over all root divs
+        //and build up the HTML parent -> child
         for(Div root : rootElements) {
+            //build template based on the element (parent -> child)
             String template = DivResolver.buildTemplate(root.getElement());
+
+            //resolve child elements via recursion
             deepResolve(root);
+
+            //all elements should now be resolved, so they just need to be pasted together
             String wrappedDiv = DivResolver.wrapInDiv(root, buildFinalHTML(root));
             html = html.replace(root.getElement().blockHTML, template + wrappedDiv);
         }
