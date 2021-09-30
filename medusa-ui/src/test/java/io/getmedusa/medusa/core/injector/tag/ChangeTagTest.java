@@ -5,16 +5,17 @@ import org.junit.jupiter.api.Test;
 
 import java.util.regex.Matcher;
 
-public class ChangeTagTest {
+class ChangeTagTest {
 
     private static final ChangeTag TAG = new ChangeTag();
     public static final String HTML =
-            "<!DOCTYPE html>\n" +
-            "<html lang=\"en\">\n" +
-            "<body>\n" +
-            "<form><input m-change=\"search()\" name=\"term\" /></form>\n" +
-            "</body>\n" +
-            "</html>";
+            """
+                    <!DOCTYPE html>
+                    <html lang="en">
+                    <body>
+                    <form><input m-change="search()" name="term" /></form>
+                    </body>
+                    </html>""";
 
     @Test
     void testMatcher() {

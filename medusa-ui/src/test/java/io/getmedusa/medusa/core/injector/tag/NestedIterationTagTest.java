@@ -12,54 +12,50 @@ class NestedIterationTagTest {
     private static final IterationTag TAG = new IterationTag();
     private static final EachParser PARSER = new EachParser();
     public static final String HTML =
-            "<!DOCTYPE html>\n" +
-            "<html lang=\"en\">\n" +
-            "<body>\n" +
-                "[$foreach $list-of-values]\n" +
-                    "0\n" +
-                    "[$foreach $list-of-values]1[$end for]\n" +
-                    "2\n" +
-                "[$end for]\n" +
-            "</body>\n" +
-            "</html>";
+            """
+                    <!DOCTYPE html>
+                    <html lang="en">
+                    <body>
+                    [$foreach $list-of-values]
+                    0
+                    [$foreach $list-of-values]1[$end for]
+                    2
+                    [$end for]
+                    </body>
+                    </html>""";
 
     public static final String HTML_DEEPER =
-            "<!DOCTYPE html>\n" +
-            "<html lang=\"en\">\n" +
-            "<body>\n" +
-            "[$foreach $list-of-values]\n" +
-                "0\n" +
-                "[$foreach $list-of-values]\n" +
-                    "1\n" +
-                    "[$foreach $list-of-values]\n" +
-                        "2\n" +
-                    "[$end for]\n" +
-                    "3\n" +
-                "[$end for]\n" +
-                "4\n" +
-            "[$end for]\n" +
-            "</body>\n" +
-            "</html>";
+            """
+                    <!DOCTYPE html>
+                    <html lang="en">
+                    <body>
+                    [$foreach $list-of-values]
+                    0
+                    [$foreach $list-of-values]
+                    1
+                    [$foreach $list-of-values]
+                    2
+                    [$end for]
+                    3
+                    [$end for]
+                    4
+                    [$end for]
+                    </body>
+                    </html>""";
 
     public static final String HTML_MULTIPLE_FORS =
-            "<!DOCTYPE html>\n" +
-                    "<html lang=\"en\">\n" +
-                    "<body>\n" +
-                    "[$foreach $list-of-values][$foreach $list-of-values]<p>Medusa 1</p>[$end for][$end for] x " +
-                    "[$foreach $list-of-values]<p>Medusa 2</p>[$end for]" +
-                    "</body>\n" +
-                    "</html>";
+            """
+                    <!DOCTYPE html>
+                    <html lang="en">
+                    <body>
+                    [$foreach $list-of-values][$foreach $list-of-values]<p>Medusa 1</p>[$end for][$end for] x [$foreach $list-of-values]<p>Medusa 2</p>[$end for]</body>
+                    </html>""";
 
     public static final String HTML_BUG =
-            "<!DOCTYPE html>\n" +
-                    "<html lang=\"en\">\n" +
-                    "<body>[$foreach $parent]" +
-                        "[$foreach $child]" +
-                            "[$parent.each] - [$each]" +
-                        "[$end for]" +
-                    "[$end for]" +
-                    "</body>" +
-                    "</html>";
+            """
+                    <!DOCTYPE html>
+                    <html lang="en">
+                    <body>[$foreach $parent][$foreach $child][$parent.each] - [$each][$end for][$end for]</body></html>""";
 
     public static final String HTML_WITH_EACH = "[$foreach $persons] [$foreach $fruits] [$this.each] [$end for] [$end for]";
     public static final String HTML_WITH_EACH_PARENT = "[$foreach $persons] [$foreach $fruits][$foreach $fruits][$parent.parent.each][$end for][$end for] [$end for]";

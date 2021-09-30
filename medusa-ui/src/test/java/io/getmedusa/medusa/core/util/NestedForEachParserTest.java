@@ -10,41 +10,42 @@ import java.util.Set;
 
 class NestedForEachParserTest {
 
-    private static final String HTML = "[$foreach $condition-1]\n" +
-            "\t[$foreach $condition-1a]\n" +
-            "\t\t[$foreach $condition-1aa]\n" +
-            "\t\t\t1aa\n" +
-            "\t\t[$end for]\n" +
-            "\t[$end for]\n" +
-            "\t[$foreach $condition-1b]\n" +
-            "\t\t[$foreach $condition-1b1]\n" +
-            "\t\t\t1b1\n" +
-            "\t\t[$end for]\n" +
-            "\t\t[$foreach $condition-1b2]\n" +
-            "\t\t\t1b2\n" +
-            "\t\t[$end for]\n" +
-            "\t[$end for]\n" +
-            "[$end for]\n" +
-            "\n" +
-            "[$foreach $condition-2]\n" +
-            "  [$foreach $condition-2a]\n" +
-            "  \t2a\n" +
-            "  [$end for]\n" +
-            "  [$foreach $condition-2b]\n" +
-            "  \t2b\n" +
-            "  [$end for]\n" +
-            "[$end for]\n" +
-            "\n" +
-            "[$foreach $condition-3]\n" +
-            "  [$foreach $condition-3a]\n" +
-            "\t [$foreach $condition-3aa]\n" +
-            "\t\t3aa\n" +
-            "\t [$end for]\n" +
-            "\t \t [$foreach $condition-3ab]\n" +
-            "\t\t\t3ab\n" +
-            "\t [$end for]\n" +
-            "  [$end for]\n" +
-            "[$end for]";
+    private static final String HTML = """
+            [$foreach $condition-1]
+            \t[$foreach $condition-1a]
+            \t\t[$foreach $condition-1aa]
+            \t\t\t1aa
+            \t\t[$end for]
+            \t[$end for]
+            \t[$foreach $condition-1b]
+            \t\t[$foreach $condition-1b1]
+            \t\t\t1b1
+            \t\t[$end for]
+            \t\t[$foreach $condition-1b2]
+            \t\t\t1b2
+            \t\t[$end for]
+            \t[$end for]
+            [$end for]
+
+            [$foreach $condition-2]
+              [$foreach $condition-2a]
+              \t2a
+              [$end for]
+              [$foreach $condition-2b]
+              \t2b
+              [$end for]
+            [$end for]
+
+            [$foreach $condition-3]
+              [$foreach $condition-3a]
+            \t [$foreach $condition-3aa]
+            \t\t3aa
+            \t [$end for]
+            \t \t [$foreach $condition-3ab]
+            \t\t\t3ab
+            \t [$end for]
+              [$end for]
+            [$end for]""";
 
     private static final EachParser PARSER = new EachParser();
 

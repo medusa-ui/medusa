@@ -5,16 +5,17 @@ import org.junit.jupiter.api.Test;
 
 import java.util.regex.Matcher;
 
-public class ClickTagTest {
+class ClickTagTest {
 
     private static final ClickTag TAG = new ClickTag();
     public static final String HTML =
-            "<!DOCTYPE html>\n" +
-            "<html lang=\"en\">\n" +
-            "<body>\n" +
-            "<button m-click=\"increaseCounter('2')\">Increase counter</button>\n" +
-            "</body>\n" +
-            "</html>";
+            """
+                    <!DOCTYPE html>
+                    <html lang="en">
+                    <body>
+                    <button m-click="increaseCounter('2')">Increase counter</button>
+                    </body>
+                    </html>""";
 
     @Test
     void testMatcher() {
