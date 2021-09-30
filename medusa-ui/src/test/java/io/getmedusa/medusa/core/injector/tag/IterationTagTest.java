@@ -14,29 +14,28 @@ class IterationTagTest {
     private static final EachParser PARSER = new EachParser();
 
     public static final String HTML =
-            "<!DOCTYPE html>\n" +
-            "<html lang=\"en\">\n" +
-            "<body>\n" +
-            "[$foreach $list-of-values]<p>Medusa</p>[$end for]" +
-            "</body>\n" +
-            "</html>";
+            """
+                    <!DOCTYPE html>
+                    <html lang="en">
+                    <body>
+                    [$foreach $list-of-values]<p>Medusa</p>[$end for]</body>
+                    </html>""";
 
     public static final String HTML_W_ELEMENT =
-            "<!DOCTYPE html>\n" +
-            "<html lang=\"en\">\n" +
-            "<body>\n" +
-            "[$foreach $list-of-values]<p>Bought [$each]</p>[$end for]" +
-            "</body>\n" +
-            "</html>";
+            """
+                    <!DOCTYPE html>
+                    <html lang="en">
+                    <body>
+                    [$foreach $list-of-values]<p>Bought [$each]</p>[$end for]</body>
+                    </html>""";
 
     public static final String HTML_MULTIPLE_FORS =
-            "<!DOCTYPE html>\n" +
-            "<html lang=\"en\">\n" +
-            "<body>\n" +
-            "[$foreach $list-of-values]<p>Medusa 1</p>[$end for] x " +
-            "[$foreach $list-of-values]<p>Medusa 2</p>[$end for]" +
-            "</body>\n" +
-            "</html>";
+            """
+                    <!DOCTYPE html>
+                    <html lang="en">
+                    <body>
+                    [$foreach $list-of-values]<p>Medusa 1</p>[$end for] x [$foreach $list-of-values]<p>Medusa 2</p>[$end for]</body>
+                    </html>""";
 
     @Test
     void testDepthParser() {

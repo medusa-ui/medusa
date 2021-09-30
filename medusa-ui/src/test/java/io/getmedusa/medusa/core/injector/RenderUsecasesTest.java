@@ -22,9 +22,10 @@ class RenderUsecasesTest {
         final String htmlFileName = path();
         EventHandlerRegistry.getInstance().add(htmlFileName, new HandlerImpl(Collections.singletonMap("counter-value", 3)));
         String nestedIf =
-                "[$if($counter-value > 5)]\n" +
-                        "   <p>Counter is above 5</p>\n" +
-                        "[$end if]";
+                """
+                        [$if($counter-value > 5)]
+                           <p>Counter is above 5</p>
+                        [$end if]""";
 
         String result = HTMLInjector.INSTANCE.htmlStringInject(new TestRequest(), null, nestedIf);
         System.out.println(result);
@@ -37,11 +38,12 @@ class RenderUsecasesTest {
     void testNestedIfs() {
         final String htmlFileName = path();
         EventHandlerRegistry.getInstance().add(htmlFileName, new HandlerImpl(Collections.singletonMap("counter-value", 3)));
-        String nestedIf = "[$if($counter-value > 2)]\n" +
-                "    [$if($counter-value > 5)]\n" +
-                "        <p>Counter is above 5</p>\n" +
-                "    [$end if]\n" +
-                "[$end if]";
+        String nestedIf = """
+                [$if($counter-value > 2)]
+                    [$if($counter-value > 5)]
+                        <p>Counter is above 5</p>
+                    [$end if]
+                [$end if]""";
 
         String result = HTMLInjector.INSTANCE.htmlStringInject(new TestRequest(), null, nestedIf);
         System.out.println(result);
@@ -68,11 +70,11 @@ class RenderUsecasesTest {
     void testCombinationOuterIfNestedForEach() {
         final String htmlFileName = path();
         EventHandlerRegistry.getInstance().add(htmlFileName, new HandlerImpl(Collections.singletonMap("counter-value", 2)));
-        String nestedIf = "[$if($counter-value > 2)]\n" +
-                "    [$foreach $counter-value]\n" +
-                "        <p>Hello, Medusa</p>\n" +
-                "    [$end for]" +
-                "[$end if]";
+        String nestedIf = """
+                [$if($counter-value > 2)]
+                    [$foreach $counter-value]
+                        <p>Hello, Medusa</p>
+                    [$end for][$end if]""";
 
         String result = HTMLInjector.INSTANCE.htmlStringInject(new TestRequest(), null, nestedIf);
         System.out.println(result);
@@ -88,11 +90,11 @@ class RenderUsecasesTest {
         final String htmlFileName = path();
         EventHandlerRegistry.getInstance().add(htmlFileName, new HandlerImpl(Collections.singletonMap("counter-value", 2)));
         String nestedIf =
-                "[$foreach $counter-value]\n" +
-                        "    [$if($counter-value > 2)]\n" +
-                        "        <p>Hello, Medusa</p>\n" +
-                        "    [$end if]" +
-                        "[$end for]";
+                """
+                        [$foreach $counter-value]
+                            [$if($counter-value > 2)]
+                                <p>Hello, Medusa</p>
+                            [$end if][$end for]""";
 
         String result = HTMLInjector.INSTANCE.htmlStringInject(new TestRequest(), null, nestedIf);
         System.out.println(result);
@@ -107,9 +109,10 @@ class RenderUsecasesTest {
     void testForeachWithObjectAsEach() {
         final String htmlFileName = path();
         EventHandlerRegistry.getInstance().add(htmlFileName, new HandlerImpl(Collections.singletonMap("counter-list", Arrays.asList("Zeus", "Poseidon", "Hera"))));
-        String nestedIf = "[$foreach $counter-list]\n" +
-                "<p>Hello, [$each]</p>\n" +
-                "[$end for]";
+        String nestedIf = """
+                [$foreach $counter-list]
+                <p>Hello, [$each]</p>
+                [$end for]""";
 
         String result = HTMLInjector.INSTANCE.htmlStringInject(new TestRequest(), null, nestedIf);
         System.out.println(result);
@@ -126,9 +129,10 @@ class RenderUsecasesTest {
     void testForeachWithIndexAsEach() {
         final String htmlFileName = path();
         EventHandlerRegistry.getInstance().add(htmlFileName, new HandlerImpl(Collections.singletonMap("counter-value", 3)));
-        String nestedIf = "[$foreach $counter-value]\n" +
-                "<p>Hello, Medusa [$each]</p>\n" +
-                "[$end for]";
+        String nestedIf = """
+                [$foreach $counter-value]
+                <p>Hello, Medusa [$each]</p>
+                [$end for]""";
 
         String result = HTMLInjector.INSTANCE.htmlStringInject(new TestRequest(), null, nestedIf);
         System.out.println(result);
@@ -145,9 +149,10 @@ class RenderUsecasesTest {
     void testForeachWithTraversableObjectAsEach() {
         final String htmlFileName = path();
         EventHandlerRegistry.getInstance().add(htmlFileName, new HandlerImpl(Collections.singletonMap("object-list", Arrays.asList(new ExampleClass(new ExampleClass(3355)), new ExampleClass(new ExampleClass(4512))))));
-        String nestedIf = "[$foreach $object-list]\n" +
-                "<p>Hello, [$each.innerClass.number]</p>\n" +
-                "[$end for]";
+        String nestedIf = """
+                [$foreach $object-list]
+                <p>Hello, [$each.innerClass.number]</p>
+                [$end for]""";
 
         String result = HTMLInjector.INSTANCE.htmlStringInject(new TestRequest(), null, nestedIf);
         System.out.println(result);
@@ -164,9 +169,10 @@ class RenderUsecasesTest {
         final String htmlFileName = path();
         EventHandlerRegistry.getInstance().add(htmlFileName, new HandlerImpl(Collections.singletonMap("obj-value", new ExampleClass(987))));
         String nestedIf =
-                "[$if($obj-value.number > 5)]\n" +
-                        "   <p>Counter is above 5</p>\n" +
-                        "[$end if]";
+                """
+                        [$if($obj-value.number > 5)]
+                           <p>Counter is above 5</p>
+                        [$end if]""";
 
         String result = HTMLInjector.INSTANCE.htmlStringInject(new TestRequest(), null, nestedIf);
         System.out.println(result);

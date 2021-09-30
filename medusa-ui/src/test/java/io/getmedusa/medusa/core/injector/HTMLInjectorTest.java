@@ -13,24 +13,25 @@ class HTMLInjectorTest {
 
     @Test
     void test() {
-        String result = HTMLInjector.INSTANCE.htmlStringInject(new TestRequest(), null,"<!DOCTYPE html>\n" +
-                "<html lang=\"en\">\n" +
-                "<head>\n" +
-                "    <meta charset=\"UTF-8\">\n" +
-                "    <title>Hello Medusa</title>\n" +
-                "</head>\n" +
-                "<body>\n" +
-                "\n" +
-                "<h1>Hello Medusa</h1>\n" +
-                "\n" +
-                "[$if(3 > 5)]\n" +
-                "<p>Counter is above 5</p>\n" +
-                "[$end if]\n" +
-                "<p>Counter: <span></span></p>\n" +
-                "<button m-click=\"increaseCounter(2)\">Increase counter</button>\n" +
-                "\n" +
-                "</body>\n" +
-                "</html>");
+        String result = HTMLInjector.INSTANCE.htmlStringInject(new TestRequest(), null, """
+                <!DOCTYPE html>
+                <html lang="en">
+                <head>
+                    <meta charset="UTF-8">
+                    <title>Hello Medusa</title>
+                </head>
+                <body>
+
+                <h1>Hello Medusa</h1>
+
+                [$if(3 > 5)]
+                <p>Counter is above 5</p>
+                [$end if]
+                <p>Counter: <span></span></p>
+                <button m-click="increaseCounter(2)">Increase counter</button>
+
+                </body>
+                </html>""");
 
         System.out.println(result);
 

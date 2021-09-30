@@ -9,12 +9,13 @@ class OnEnterTagTest {
 
     private static final OnEnterTag TAG = new OnEnterTag();
     public static final String HTML =
-            "<!DOCTYPE html>\n" +
-            "<html lang=\"en\">\n" +
-            "<body>\n" +
-            "<input m-onenter=\"search(this.value, 3,this.type,this.name)\" type=\"text\" name=\"term\" autocomplete=\"off\" />\n" +
-            "</body>\n" +
-            "</html>";
+            """
+                    <!DOCTYPE html>
+                    <html lang="en">
+                    <body>
+                    <input m-onenter="search(this.value, 3,this.type,this.name)" type="text" name="term" autocomplete="off" />
+                    </body>
+                    </html>""";
 
     @Test
     void testMatcher() {
