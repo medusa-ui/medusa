@@ -9,6 +9,7 @@ import io.getmedusa.medusa.core.registry.*;
 import io.getmedusa.medusa.core.util.ExpressionEval;
 import org.springframework.expression.spel.SpelEvaluationException;
 import org.springframework.stereotype.Component;
+import org.springframework.web.reactive.socket.HandshakeInfo;
 import org.springframework.web.reactive.socket.WebSocketHandler;
 import org.springframework.web.reactive.socket.WebSocketSession;
 import reactor.core.publisher.Mono;
@@ -46,9 +47,20 @@ public class ReactiveWebSocketHandler implements WebSocketHandler {
     @Override
     public Mono<Void> handle(WebSocketSession session) {
         System.out.println("START of session : " + session.getId());
+
+        securityCheckForOrigin(session);
+
         return session.send(session.receive()
                         .map(msg -> interpretEvent(session, msg.getPayloadAsText()))
                         .map(session::textMessage).doFinally(sig -> System.out.println("END of session : " + session.getId())));
+    }
+
+    private void securityCheckForOrigin(WebSocketSession session) {
+        final HandshakeInfo info = session.getHandshakeInfo();
+        final List<String> origin = info.getHeaders().get("Origin");
+        if(origin == null || origin.isEmpty() || !info.getUri().toString().startsWith(origin.get(0))) {
+            throw new SecurityException("Illegal origin");
+        }
     }
 
     /**

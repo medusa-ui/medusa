@@ -1,9 +1,8 @@
 package io.getmedusa.medusa.core.registry;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import io.getmedusa.medusa.core.websocket.HydraMenuItem;
+
+import java.util.*;
 
 
 /**
@@ -19,9 +18,15 @@ public class RouteRegistry {
         return INSTANCE;
     }
     private final Map<String, String> routesWithHTMLFile = new HashMap<>();
+    private final Map<String, List<HydraMenuItem>> menuItems = new HashMap<>();
 
     public void add(String getPath, String htmlFile) {
         routesWithHTMLFile.put(getPath, htmlFile);
+    }
+
+    public void addMenuItem(String menuName, String label, String getPath) {
+        HydraMenuItem menuItem = new HydraMenuItem(getPath, label);
+        menuItems.computeIfAbsent(menuName, k -> new ArrayList<>()).add(menuItem);
     }
 
     public Set<Map.Entry<String, String>> getRoutesWithHTMLFile() {
@@ -34,5 +39,9 @@ public class RouteRegistry {
 
     public Set<String> getWebSockets() {
         return new HashSet<>(routesWithHTMLFile.values());
+    }
+
+    public Map<String, List<HydraMenuItem>> getMenuItems() {
+        return menuItems;
     }
 }

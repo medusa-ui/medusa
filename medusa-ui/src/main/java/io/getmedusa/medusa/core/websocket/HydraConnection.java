@@ -58,6 +58,7 @@ public class HydraConnection implements DisposableBean, ApplicationListener<Cont
         try {
             hydraHealthRegistration.setEndpoints(RouteRegistry.getInstance().getRoutes());
             hydraHealthRegistration.setWebsockets(RouteRegistry.getInstance().getWebSockets());
+            hydraHealthRegistration.setMenuItems(RouteRegistry.getInstance().getMenuItems());
             hydraHealthRegistration.setStaticResources(determineExtensionsOfStaticResources());
             healthRegistrationJSON = objectMapper.writeValueAsString(hydraHealthRegistration);
 
