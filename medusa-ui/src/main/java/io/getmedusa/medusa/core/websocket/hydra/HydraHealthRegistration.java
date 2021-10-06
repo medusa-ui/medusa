@@ -1,4 +1,4 @@
-package io.getmedusa.medusa.core.websocket;
+package io.getmedusa.medusa.core.websocket.hydra;
 
 import java.util.*;
 
@@ -9,7 +9,7 @@ public class HydraHealthRegistration {
     private Set<String> endpoints = new HashSet<>();
     private Set<String> websockets = new HashSet<>();
     private Set<String> staticResources = new HashSet<>();
-    private Map<String, List<HydraMenuItem>> menuItems = new HashMap<>();
+    private Map<String, Set<HydraMenuItem>> menuItems = new HashMap<>();
 
     public HydraHealthRegistration(int port, String name) {
         this.port = port;
@@ -48,11 +48,11 @@ public class HydraHealthRegistration {
         this.staticResources = staticResources;
     }
 
-    public Map<String, List<HydraMenuItem>> getMenuItems() {
+    public Map<String, Set<HydraMenuItem>> getMenuItems() {
         return menuItems;
     }
 
-    public void setMenuItems(Map<String, List<HydraMenuItem>> menuItems) {
+    public void setMenuItems(Map<String, Set<HydraMenuItem>> menuItems) {
         this.menuItems = menuItems;
     }
 }

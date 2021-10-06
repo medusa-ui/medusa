@@ -39,6 +39,8 @@ public enum HTMLInjector {
     private final ClassAppendTag classAppendTag;
     private final GenericMTag genericMTag;
 
+    private final HydraMenuTag hydraMenuTag;
+
     HTMLInjector() {
         this.clickTag = new ClickTag();
         this.onEnterTag = new OnEnterTag();
@@ -48,6 +50,7 @@ public enum HTMLInjector {
         this.iterationTag = new IterationTag();
         this.classAppendTag = new ClassAppendTag();
         this.genericMTag = new GenericMTag();
+        this.hydraMenuTag = new HydraMenuTag();
     }
 
     /**
@@ -86,6 +89,7 @@ public enum HTMLInjector {
         result = valueTag.injectWithVariables(result, variables);
         result = classAppendTag.injectWithVariables(result, variables);
         result = genericMTag.injectWithVariables(result, variables);
+        result = hydraMenuTag.injectWithVariables(result);
         injectVariablesInScript(result, variables);
 
         return injectScript(matchedPath, result);

@@ -1,6 +1,5 @@
 package io.getmedusa.medusa.core.websocket;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.getmedusa.medusa.core.annotation.UIEventController;
 import io.getmedusa.medusa.core.injector.DOMChanges;
@@ -13,6 +12,7 @@ import org.springframework.web.reactive.socket.HandshakeInfo;
 import org.springframework.web.reactive.socket.WebSocketHandler;
 import org.springframework.web.reactive.socket.WebSocketSession;
 import reactor.core.publisher.Mono;
+import io.getmedusa.medusa.core.util.ObjectMapperBuilder;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -24,19 +24,9 @@ import java.util.stream.Collectors;
 @Component
 public class ReactiveWebSocketHandler implements WebSocketHandler {
 
-    public static final ObjectMapper MAPPER = setupObjectMapper();
+    public static final ObjectMapper MAPPER = ObjectMapperBuilder.setupObjectMapper();
     private static final ConditionalRegistry CONDITIONAL_REGISTRY = ConditionalRegistry.getInstance();
     private static final ConditionalClassRegistry CONDITIONAL_CLASS_REGISTRY = ConditionalClassRegistry.getInstance();
-
-    /**
-     * JSON mapper setup
-     * @return ObjectMapper
-     */
-    private static ObjectMapper setupObjectMapper() {
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-        return objectMapper;
-    }
 
     /**
      * Mono impl of the entire websocket session lifecycle. We send a response event (all changes due to event) to any event we receive.
@@ -46,13 +36,12 @@ public class ReactiveWebSocketHandler implements WebSocketHandler {
      */
     @Override
     public Mono<Void> handle(WebSocketSession session) {
-        System.out.println("START of session : " + session.getId());
-
+        ActiveSessionRegistry.getInstance().add(session);
         securityCheckForOrigin(session);
 
         return session.send(session.receive()
                         .map(msg -> interpretEvent(session, msg.getPayloadAsText()))
-                        .map(session::textMessage).doFinally(sig -> System.out.println("END of session : " + session.getId())));
+                        .map(session::textMessage).doFinally(sig -> ActiveSessionRegistry.getInstance().remove(session)));
     }
 
     private void securityCheckForOrigin(WebSocketSession session) {
