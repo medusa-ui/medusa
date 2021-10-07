@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
 @ConditionalOnProperty(value="hydra.enabled", havingValue = "true")
 public class HydraConnection implements ApplicationListener<ContextRefreshedEvent> {
 
-    private static final String HYDRA_HEALTH_WS_URI = "ws://localhost:8761/services/health";
+    private final String hydraHealthWsUri;
 
     private final ObjectMapper objectMapper = ObjectMapperBuilder.setupObjectMapper();
     private String healthRegistrationJSON = null;
@@ -37,9 +37,13 @@ public class HydraConnection implements ApplicationListener<ContextRefreshedEven
     private final HydraHealthRegistration hydraHealthRegistration;
     final ResourcePatternResolver resourceResolver;
 
-    public HydraConnection(@Value("${server.port:8080}") int port, @Value("${hydra.name}") String name, ResourcePatternResolver resourceResolver) {
+    public HydraConnection(@Value("${server.port:8080}") int port,
+                           @Value("${hydra.name}") String name,
+                           @Value("${hydra.url}") String hydraEndpoint,
+                           ResourcePatternResolver resourceResolver) {
         this.hydraHealthRegistration = new HydraHealthRegistration(port, name);
         this.resourceResolver = resourceResolver;
+        this.hydraHealthWsUri = "ws://URI/services/health".replace("URI", hydraEndpoint);
     }
 
     @Override
@@ -63,7 +67,7 @@ public class HydraConnection implements ApplicationListener<ContextRefreshedEven
         if(activeSession == null) {
             System.out.println("Connecting to hydra ...");
             new ReactorNettyWebSocketClient()
-                    .execute(URI.create(HYDRA_HEALTH_WS_URI), session -> {
+                    .execute(URI.create(hydraHealthWsUri), session -> {
                         activeSession = session;
                         return session
                                 .send(Flux.just(session.textMessage(healthRegistrationJSON)))

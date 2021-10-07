@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Keeps a singleton instance with all routes and their respective HTML files, as set up by {@link io.getmedusa.medusa.core.annotation.UIEventPage}
@@ -35,7 +36,9 @@ public class RouteRegistry {
     }
 
     public Set<String> getWebSockets() {
-        return new HashSet<>(routesWithHTMLFile.values());
+        return routesWithHTMLFile.keySet().stream()
+                .map(route -> Integer.toString(route.hashCode()))
+                .collect(Collectors.toSet());
     }
 
     public void addMenuItem(String menuName, String label, String getPath) {

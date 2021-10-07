@@ -6,6 +6,7 @@ import io.getmedusa.medusa.core.injector.DOMChanges;
 import io.getmedusa.medusa.core.injector.DOMChanges.DOMChange;
 import io.getmedusa.medusa.core.registry.*;
 import io.getmedusa.medusa.core.util.ExpressionEval;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.expression.spel.SpelEvaluationException;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.socket.HandshakeInfo;
@@ -28,6 +29,11 @@ public class ReactiveWebSocketHandler implements WebSocketHandler {
     private static final ConditionalRegistry CONDITIONAL_REGISTRY = ConditionalRegistry.getInstance();
     private static final ConditionalClassRegistry CONDITIONAL_CLASS_REGISTRY = ConditionalClassRegistry.getInstance();
 
+    private final String hydraURL;
+    public ReactiveWebSocketHandler(@Value("${hydra.url:}") String hydraURL) {
+        this.hydraURL = (hydraURL.isBlank()) ? null : hydraURL;
+    }
+
     /**
      * Mono impl of the entire websocket session lifecycle. We send a response event (all changes due to event) to any event we receive.
      * Spring Reactive knows to kill the session as appropriate, which in turn will trigger the doFinally()
@@ -47,7 +53,10 @@ public class ReactiveWebSocketHandler implements WebSocketHandler {
     private void securityCheckForOrigin(WebSocketSession session) {
         final HandshakeInfo info = session.getHandshakeInfo();
         final List<String> origin = info.getHeaders().get("Origin");
-        if(origin == null || origin.isEmpty() || !info.getUri().toString().startsWith(origin.get(0))) {
+        if(origin == null || origin.isEmpty()) throw new SecurityException("Missing origin");
+        final String sessionOrigin = origin.get(0);
+        if(!info.getUri().toString().startsWith(sessionOrigin) &&
+                !sessionOrigin.replace("http://", "").replace("https://", "").equals(this.hydraURL)) {
             throw new SecurityException("Illegal origin");
         }
     }
