@@ -40,6 +40,7 @@ public enum HTMLInjector {
     private final GenericMTag genericMTag;
 
     private final HydraMenuTag hydraMenuTag;
+    private final HydraURLReplacer urlReplacer;
 
     HTMLInjector() {
         this.clickTag = new ClickTag();
@@ -51,6 +52,7 @@ public enum HTMLInjector {
         this.classAppendTag = new ClassAppendTag();
         this.genericMTag = new GenericMTag();
         this.hydraMenuTag = new HydraMenuTag();
+        this.urlReplacer = new HydraURLReplacer();
     }
 
     /**
@@ -92,7 +94,8 @@ public enum HTMLInjector {
         result = hydraMenuTag.injectWithVariables(result);
         injectVariablesInScript(result, variables);
 
-        return injectScript(matchedPath, result);
+        String html = injectScript(matchedPath, result);
+        return urlReplacer.replaceUrls(html, request.headers());
     }
 
     private String matchRequestPath(ServerRequest request) {

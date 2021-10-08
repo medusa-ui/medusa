@@ -96,9 +96,8 @@ class HTMLRouter {
     @Bean
     public HandlerMapping handlerMapping(ReactiveWebSocketHandler handler) {
         Map<String, ReactiveWebSocketHandler> map = new HashMap<>();
-        RouteRegistry.getInstance().getRoutesWithHTMLFile().forEach(route -> {
-            map.put(HTMLInjector.EVENT_EMITTER + route.getKey().hashCode(), handler);
-        });
+        RouteRegistry.getInstance().getRoutesWithHTMLFile().forEach(route ->
+                map.put(HTMLInjector.EVENT_EMITTER + route.getKey().hashCode(), handler));
         mapping.setUrlMap(map);
         mapping.setOrder(Ordered.HIGHEST_PRECEDENCE);
         return mapping;

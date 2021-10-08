@@ -1,6 +1,7 @@
 package io.getmedusa.medusa.core.websocket.hydra;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.getmedusa.medusa.core.injector.HydraURLReplacer;
 import io.getmedusa.medusa.core.registry.HydraRegistry;
 import io.getmedusa.medusa.core.registry.RouteRegistry;
 import io.getmedusa.medusa.core.util.ObjectMapperBuilder;
@@ -55,6 +56,8 @@ public class HydraConnection implements ApplicationListener<ContextRefreshedEven
             hydraHealthRegistration.setStaticResources(determineExtensionsOfStaticResources());
             healthRegistrationJSON = objectMapper.writeValueAsString(hydraHealthRegistration);
 
+            HydraURLReplacer.STATIC_RESOURCES = determineListOfStaticResources();
+
             connectToHydra();
         } catch (Exception e) {
             throw new IllegalStateException(e);
@@ -94,6 +97,14 @@ public class HydraConnection implements ApplicationListener<ContextRefreshedEven
                 throw new IllegalArgumentException(e);
             }
         }).start();
+    }
+
+    private Set<String> determineListOfStaticResources() throws IOException {
+        Resource[] resources = resourceResolver.getResources("classpath:*/**.*");
+        return Arrays.stream(resources)
+                .map(Resource::getFilename)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toSet());
     }
 
     private Set<String> determineExtensionsOfStaticResources() throws IOException {
