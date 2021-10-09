@@ -17,7 +17,7 @@ public class HydraURLReplacer {
         for(String staticResource : STATIC_RESOURCES) {
             html = html.replace("href=\"/"+staticResource+"\"", "href=\"/"+hydraPath+"/"+staticResource+"\"");
         }
-
+        html = html.replace("/event-emitter/", "/" + hydraPath + "/event-emitter/");
         return html;
     }
 

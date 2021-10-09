@@ -21,8 +21,7 @@ import reactor.util.retry.Retry;
 
 import java.io.IOException;
 import java.net.URI;
-import java.util.Arrays;
-import java.util.Objects;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -50,13 +49,13 @@ public class HydraConnection implements ApplicationListener<ContextRefreshedEven
     @Override
     public void onApplicationEvent(ContextRefreshedEvent event) {
         try {
+            HydraURLReplacer.STATIC_RESOURCES = determineListOfStaticResources();
+
             hydraHealthRegistration.setEndpoints(RouteRegistry.getInstance().getRoutes());
             hydraHealthRegistration.setWebsockets(RouteRegistry.getInstance().getWebSockets());
             hydraHealthRegistration.setMenuItems(RouteRegistry.getInstance().getMenuItems());
             hydraHealthRegistration.setStaticResources(determineExtensionsOfStaticResources());
             healthRegistrationJSON = objectMapper.writeValueAsString(hydraHealthRegistration);
-
-            HydraURLReplacer.STATIC_RESOURCES = determineListOfStaticResources();
 
             connectToHydra();
         } catch (Exception e) {
@@ -100,18 +99,19 @@ public class HydraConnection implements ApplicationListener<ContextRefreshedEven
     }
 
     private Set<String> determineListOfStaticResources() throws IOException {
-        Resource[] resources = resourceResolver.getResources("classpath:*/**.*");
-        return Arrays.stream(resources)
-                .map(Resource::getFilename)
-                .filter(Objects::nonNull)
-                .collect(Collectors.toSet());
+        Resource[] resources = resourceResolver.getResources("classpath:**/**.*");
+        Set<String> set = new HashSet<>();
+        for (Resource r : resources) {
+            String path = r.getURI().getPath();
+            if (path != null && path.contains("/static/")) {
+                set.add(path.substring(path.indexOf("/static/") + 8));
+            }
+        }
+        return set;
     }
 
-    private Set<String> determineExtensionsOfStaticResources() throws IOException {
-        Resource[] resources = resourceResolver.getResources("classpath:*/**.*");
-        return Arrays.stream(resources)
-                .map(Resource::getFilename)
-                .filter(Objects::nonNull)
+    private Set<String> determineExtensionsOfStaticResources() {
+        return HydraURLReplacer.STATIC_RESOURCES.stream()
                 .map(filename -> filename.substring(filename.lastIndexOf('.')+1))
                 .collect(Collectors.toSet());
     }
