@@ -1,6 +1,5 @@
 package io.getmedusa.medusa.core.injector;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import io.getmedusa.medusa.core.util.TestRequest;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -39,7 +38,7 @@ class HTMLInjectorTest {
     }
 
     @Test
-    void generateVariableMap() throws JsonProcessingException {
+    void generateVariableMap() throws Exception {
         Map<String, Object> variables = new HashMap<>();
         variables.put("exampleString", "Hello Mesuda");
         variables.put("exampleInteger", 12);
