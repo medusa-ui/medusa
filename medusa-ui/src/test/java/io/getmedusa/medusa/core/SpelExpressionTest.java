@@ -29,7 +29,7 @@ class SpelExpressionTest {
     }
 
     @Test
-    public void ctrlSay() {
+    void ctrlSay() {
         // given
         String tag = "<button m:click='say(\"Hallo World\", 3)' /> ";
         SpelExpressionParser parser = new SpelExpressionParser();

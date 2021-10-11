@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 class UIEventPostProcessor implements BeanPostProcessor {
 
     private final boolean hydraEnabled;
-    public UIEventPostProcessor(@Value("${hydra.enabled}") Boolean hydraEnabled) {
+    public UIEventPostProcessor(@Value("${hydra.enabled:false}") Boolean hydraEnabled) {
         if(hydraEnabled == null) hydraEnabled = false;
         this.hydraEnabled = hydraEnabled;
     }

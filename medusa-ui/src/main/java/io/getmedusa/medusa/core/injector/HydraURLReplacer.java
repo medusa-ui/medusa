@@ -22,6 +22,7 @@ public class HydraURLReplacer {
     }
 
     private Integer findHydraPath(ServerRequest.Headers headers) {
+        if(headers == null) return null;
         List<String> relevantHeaders = headers.header("hydra-path");
         if(relevantHeaders.isEmpty()) return null;
         return Integer.parseInt(relevantHeaders.get(0));

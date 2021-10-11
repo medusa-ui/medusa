@@ -7,9 +7,7 @@ import io.getmedusa.medusa.core.websocket.hydra.meta.HydraStatus;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 class HydraMenuTagTest {
 
@@ -31,9 +29,11 @@ class HydraMenuTagTest {
 
         final String html = TAG.injectWithVariables(INPUT).getHtml();
 
+        System.out.println(html);
+
         Assertions.assertFalse(html.contains("nav h-menu=\"example-menu\""));
 
-        Assertions.assertTrue(html.contains("<ul name=\"example-menu\"><li><a href"));
+        Assertions.assertTrue(html.contains("<ul h-menu=\"example-menu\"><li><a href="));
         Assertions.assertTrue(html.contains("<li><a href=\"https://google.com\">Google.com</a></li>"));
         Assertions.assertTrue(html.contains("<li><a href=\"https://google.be\">https://google.be</a></li>"));
         Assertions.assertTrue(html.contains("</li></ul></nav>"));
@@ -41,7 +41,7 @@ class HydraMenuTagTest {
 
     @Test
     void testNoItems() {
-        HydraRegistry.update(new HydraStatus(Collections.singletonMap("example-menux", new HashSet<>())));
+        HydraRegistry.update(new HydraStatus(new HashMap<>(Map.of("example-menux", new HashSet<>()))));
         final String html = TAG.injectWithVariables(INPUT).getHtml();
 
         Assertions.assertFalse(html.contains("nav h-menu=\"example-menu\""));
