@@ -4,13 +4,11 @@ import io.getmedusa.medusa.core.injector.tag.meta.InjectionResult;
 import io.getmedusa.medusa.core.registry.HydraRegistry;
 import io.getmedusa.medusa.core.websocket.hydra.HydraMenuItem;
 import io.getmedusa.medusa.core.websocket.hydra.meta.HydraStatus;
-import org.springframework.stereotype.Component;
 
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-@Component
 public class HydraMenuTag {
 
     public static final Pattern patternTagWithMenuAttribute = Pattern.compile("<[^<>]+? h-menu=[\"'].*?[\"']*?>", Pattern.CASE_INSENSITIVE);
