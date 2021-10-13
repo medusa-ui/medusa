@@ -18,4 +18,4 @@ jobs:
       with:
         java-version: 17
     - name: Build with Maven
-      run: mvn clean install -Dspring.profiles.active=dev -X
+      run: mvn clean install -Dspring.profiles.active=dev
