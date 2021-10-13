@@ -11,8 +11,8 @@ import static io.getmedusa.medusa.core.websocket.ReactiveWebSocketHandler.MAPPER
 class HTMLInjectorTest {
 
     @Test
-    void test() {
-        String result = HTMLInjector.INSTANCE.htmlStringInject(new TestRequest(), null, """
+    void testStandardHTMLInjection() {
+        /*String result = HTMLInjector.INSTANCE.htmlStringInject(new TestRequest(), null, """
                 <body>
 
                 <h1>Hello Medusa</h1>
@@ -27,6 +27,8 @@ class HTMLInjectorTest {
 
         System.out.println(result);
 
+        */
+        String result = HTMLInjector.INSTANCE.htmlStringInject(new TestRequest(), null, "Hello world");
         Assertions.assertFalse(result.contains("m-click"));
     }
 
