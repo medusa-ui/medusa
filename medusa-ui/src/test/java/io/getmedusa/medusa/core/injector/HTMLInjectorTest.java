@@ -28,6 +28,7 @@ class HTMLInjectorTest {
         System.out.println(result);
 
         */
+        EventHandlerRegistry.getInstance().add("x", new HandlerImpl(Collections.singletonMap("x", 14132)));
         String result = HTMLInjector.INSTANCE.htmlStringInject(new TestRequest(), null, "Hello world");
         Assertions.assertFalse(result.contains("m-click"));
     }
