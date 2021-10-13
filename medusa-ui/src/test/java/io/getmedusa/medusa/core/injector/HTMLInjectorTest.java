@@ -13,12 +13,6 @@ class HTMLInjectorTest {
     @Test
     void test() {
         String result = HTMLInjector.INSTANCE.htmlStringInject(new TestRequest(), null, """
-                <!DOCTYPE html>
-                <html lang="en">
-                <head>
-                    <meta charset="UTF-8">
-                    <title>Hello Medusa</title>
-                </head>
                 <body>
 
                 <h1>Hello Medusa</h1>
@@ -29,8 +23,7 @@ class HTMLInjectorTest {
                 <p>Counter: <span></span></p>
                 <button m-click="increaseCounter(2)">Increase counter</button>
 
-                </body>
-                </html>""");
+                </body>""");
 
         System.out.println(result);
 
