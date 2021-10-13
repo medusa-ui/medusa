@@ -11,29 +11,6 @@ import static io.getmedusa.medusa.core.websocket.ReactiveWebSocketHandler.MAPPER
 class HTMLInjectorTest {
 
     @Test
-    void testStandardHTMLInjection() {
-        /*String result = HTMLInjector.INSTANCE.htmlStringInject(new TestRequest(), null, """
-                <body>
-
-                <h1>Hello Medusa</h1>
-
-                [$if(3 > 5)]
-                <p>Counter is above 5</p>
-                [$end if]
-                <p>Counter: <span></span></p>
-                <button m-click="increaseCounter(2)">Increase counter</button>
-
-                </body>""");
-
-        System.out.println(result);
-
-        */
-        EventHandlerRegistry.getInstance().add("x", new HandlerImpl(Collections.singletonMap("x", 14132)));
-        String result = HTMLInjector.INSTANCE.htmlStringInject(new TestRequest(), null, "Hello world");
-        Assertions.assertFalse(result.contains("m-click"));
-    }
-
-    @Test
     void generateVariableMap() throws Exception {
         Map<String, Object> variables = new HashMap<>();
         variables.put("exampleString", "Hello Mesuda");
