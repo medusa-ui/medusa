@@ -39,8 +39,8 @@ public enum HTMLInjector {
     private final ClassAppendTag classAppendTag;
     private final GenericMTag genericMTag;
 
-    private final HydraMenuTag hydraMenuTag;
-    private final HydraURLReplacer urlReplacer;
+    //private final HydraMenuTag hydraMenuTag;
+    //private final HydraURLReplacer urlReplacer;
 
     HTMLInjector() {
         this.clickTag = new ClickTag();
@@ -51,8 +51,8 @@ public enum HTMLInjector {
         this.iterationTag = new IterationTag();
         this.classAppendTag = new ClassAppendTag();
         this.genericMTag = new GenericMTag();
-        this.hydraMenuTag = new HydraMenuTag();
-        this.urlReplacer = new HydraURLReplacer();
+        //this.hydraMenuTag = new HydraMenuTag();
+        //this.urlReplacer = new HydraURLReplacer();
     }
 
     /**
