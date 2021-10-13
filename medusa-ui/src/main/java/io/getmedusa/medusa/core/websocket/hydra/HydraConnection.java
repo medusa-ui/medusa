@@ -8,6 +8,8 @@ import io.getmedusa.medusa.core.util.ObjectMapperBuilder;
 import io.getmedusa.medusa.core.websocket.hydra.meta.HydraStatus;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.web.context.WebServerInitializedEvent;
+import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.core.io.Resource;
@@ -27,7 +29,7 @@ import java.util.stream.Collectors;
 
 @Service
 @ConditionalOnProperty(value="hydra.enabled", havingValue = "true")
-public class HydraConnection implements ApplicationListener<ContextRefreshedEvent> {
+public class HydraConnection implements ApplicationListener<ApplicationEvent> {
 
     private final String hydraHealthWsUri;
 
@@ -37,27 +39,31 @@ public class HydraConnection implements ApplicationListener<ContextRefreshedEven
     private final HydraHealthRegistration hydraHealthRegistration;
     final ResourcePatternResolver resourceResolver;
 
-    public HydraConnection(@Value("${server.port:8080}") int port,
-                           @Value("${hydra.name}") String name,
+    public HydraConnection(@Value("${hydra.name}") String name,
                            @Value("${hydra.url}") String hydraEndpoint,
                            ResourcePatternResolver resourceResolver) {
-        this.hydraHealthRegistration = new HydraHealthRegistration(port, name);
+        this.hydraHealthRegistration = new HydraHealthRegistration(name);
         this.resourceResolver = resourceResolver;
         this.hydraHealthWsUri = "ws://URI/services/health".replace("URI", hydraEndpoint);
     }
 
     @Override
-    public void onApplicationEvent(ContextRefreshedEvent event) {
+    public void onApplicationEvent(ApplicationEvent event) {
         try {
-            HydraURLReplacer.STATIC_RESOURCES = determineListOfStaticResources();
+            if(event instanceof ContextRefreshedEvent ) {
+                HydraURLReplacer.STATIC_RESOURCES = determineListOfStaticResources();
 
-            hydraHealthRegistration.setEndpoints(RouteRegistry.getInstance().getRoutes());
-            hydraHealthRegistration.setWebsockets(RouteRegistry.getInstance().getWebSockets());
-            hydraHealthRegistration.setMenuItems(RouteRegistry.getInstance().getMenuItems());
-            hydraHealthRegistration.setStaticResources(determineExtensionsOfStaticResources());
-            healthRegistrationJSON = objectMapper.writeValueAsString(hydraHealthRegistration);
+                hydraHealthRegistration.setEndpoints(RouteRegistry.getInstance().getRoutes());
+                hydraHealthRegistration.setWebsockets(RouteRegistry.getInstance().getWebSockets());
+                hydraHealthRegistration.setMenuItems(RouteRegistry.getInstance().getMenuItems());
+                hydraHealthRegistration.setStaticResources(determineExtensionsOfStaticResources());
+                healthRegistrationJSON = objectMapper.writeValueAsString(hydraHealthRegistration);
 
-            connectToHydra();
+                connectToHydra();
+            }
+            if(event instanceof WebServerInitializedEvent ) {
+                hydraHealthRegistration.setPort(((WebServerInitializedEvent) event).getWebServer().getPort());
+            }
         } catch (Exception e) {
             throw new IllegalStateException(e);
         }

@@ -4,16 +4,19 @@ import java.util.*;
 
 public class HydraHealthRegistration {
 
-    private final int port;
+    private int port;
     private final String name;
     private Set<String> endpoints = new HashSet<>();
     private Set<String> websockets = new HashSet<>();
     private Set<String> staticResources = new HashSet<>();
     private Map<String, Set<HydraMenuItem>> menuItems = new HashMap<>();
 
-    public HydraHealthRegistration(int port, String name) {
-        this.port = port;
+    public HydraHealthRegistration(String name) {
         this.name = name;
+    }
+
+    public void setPort(int port) {
+        this.port = port;
     }
 
     public int getPort() {
