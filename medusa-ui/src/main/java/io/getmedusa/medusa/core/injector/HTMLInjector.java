@@ -91,11 +91,12 @@ public enum HTMLInjector {
         result = valueTag.injectWithVariables(result, variables);
         result = classAppendTag.injectWithVariables(result, variables);
         result = genericMTag.injectWithVariables(result, variables);
-        result = hydraMenuTag.injectWithVariables(result);
+        //TODO: result = hydraMenuTag.injectWithVariables(result);
         injectVariablesInScript(result, variables);
 
         String html = injectScript(matchedPath, result);
-        return urlReplacer.replaceUrls(html, request.headers());
+        //TODO: return urlReplacer.replaceUrls(html, request.headers());
+        return html;
     }
 
     private String matchRequestPath(ServerRequest request) {
