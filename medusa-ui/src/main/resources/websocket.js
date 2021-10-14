@@ -62,6 +62,8 @@ _M.eventHandler = function(e) {
             _M.handleConditionalClass(k);
         } else if (k.t === 4) { //M ATTR CHECK
             _M.handleMAttributeChange(k);
+        } else if (k.t === 5) { //HYDRA MENU
+            _M.handleHydraMenuItemChange(k);
         }
     });
 }
@@ -79,6 +81,31 @@ _M.handleMAttributeChange = function (k) {
         default:
         // code block
     }
+};
+_M.handleHydraMenuItemChange = function (k) {
+    const menuName = k.f;
+    const items = k.v;
+
+    document.querySelectorAll("ul[h-menu="+menuName+"]").forEach(function(e) {
+        e.innerHTML = "";
+        for(const item of items) {
+            let newMenuItem = document.createElement("li");
+
+            let newMenuItemLink = document.createElement("a");
+            newMenuItemLink.setAttribute("href", item.endpoint);
+
+            let label = item.label;
+            if(label.length === 0) {
+                label = item.endpoint;
+            }
+
+            const newMenuItemContent = document.createTextNode(label);
+
+            newMenuItemLink.appendChild(newMenuItemContent);
+            newMenuItem.appendChild(newMenuItemLink);
+            e.appendChild(newMenuItem);
+        }
+    });
 };
 
 _M.injectVariablesIntoExpression = function(expression) {

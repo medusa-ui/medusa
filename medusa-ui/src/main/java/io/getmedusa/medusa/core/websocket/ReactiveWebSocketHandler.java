@@ -1,17 +1,19 @@
 package io.getmedusa.medusa.core.websocket;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.getmedusa.medusa.core.annotation.UIEventController;
 import io.getmedusa.medusa.core.injector.DOMChanges;
 import io.getmedusa.medusa.core.injector.DOMChanges.DOMChange;
 import io.getmedusa.medusa.core.registry.*;
 import io.getmedusa.medusa.core.util.ExpressionEval;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.expression.spel.SpelEvaluationException;
 import org.springframework.stereotype.Component;
+import org.springframework.web.reactive.socket.HandshakeInfo;
 import org.springframework.web.reactive.socket.WebSocketHandler;
 import org.springframework.web.reactive.socket.WebSocketSession;
 import reactor.core.publisher.Mono;
+import io.getmedusa.medusa.core.util.ObjectMapperBuilder;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -23,18 +25,13 @@ import java.util.stream.Collectors;
 @Component
 public class ReactiveWebSocketHandler implements WebSocketHandler {
 
-    public static final ObjectMapper MAPPER = setupObjectMapper();
+    public static final ObjectMapper MAPPER = ObjectMapperBuilder.setupObjectMapper();
     private static final ConditionalRegistry CONDITIONAL_REGISTRY = ConditionalRegistry.getInstance();
     private static final ConditionalClassRegistry CONDITIONAL_CLASS_REGISTRY = ConditionalClassRegistry.getInstance();
 
-    /**
-     * JSON mapper setup
-     * @return ObjectMapper
-     */
-    private static ObjectMapper setupObjectMapper() {
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-        return objectMapper;
+    private final String hydraURL;
+    public ReactiveWebSocketHandler(@Value("${hydra.url:}") String hydraURL) {
+        this.hydraURL = (hydraURL.isBlank()) ? null : hydraURL;
     }
 
     /**
@@ -45,10 +42,23 @@ public class ReactiveWebSocketHandler implements WebSocketHandler {
      */
     @Override
     public Mono<Void> handle(WebSocketSession session) {
-        System.out.println("START of session : " + session.getId());
+        ActiveSessionRegistry.getInstance().add(session);
+        securityCheckForOrigin(session);
+
         return session.send(session.receive()
                         .map(msg -> interpretEvent(session, msg.getPayloadAsText()))
-                        .map(session::textMessage).doFinally(sig -> System.out.println("END of session : " + session.getId())));
+                        .map(session::textMessage).doFinally(sig -> ActiveSessionRegistry.getInstance().remove(session)));
+    }
+
+    private void securityCheckForOrigin(WebSocketSession session) {
+        final HandshakeInfo info = session.getHandshakeInfo();
+        final List<String> origin = info.getHeaders().get("Origin");
+        if(origin == null || origin.isEmpty()) throw new SecurityException("Missing origin");
+        final String sessionOrigin = origin.get(0);
+        if(!info.getUri().toString().startsWith(sessionOrigin) &&
+                !sessionOrigin.replace("http://", "").replace("https://", "").equals(this.hydraURL)) {
+            throw new SecurityException("Illegal origin");
+        }
     }
 
     /**

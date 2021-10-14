@@ -33,6 +33,23 @@ class RenderUsecasesTest {
         Assertions.assertFalse(result.contains("[$if"));
         Assertions.assertFalse(result.contains("[$end"));
     }
+    
+    @Test
+    void testStandardHTMLInjection() {
+        final String result = HTMLInjector.INSTANCE.htmlStringInject(new TestRequest(), null, """
+                <body>
+                <h1>Hello Medusa</h1>
+                [$if(3 > 5)]
+                <p>Counter is above 5</p>
+                [$end if]
+                <p>Counter: <span></span></p>
+                <button m-click="increaseCounter(2)">Increase counter</button>
+                </body>
+        """);
+
+        System.out.println(result);
+        Assertions.assertFalse(result.contains("m-click"));
+    }
 
     @Test
     void testNestedIfs() {
