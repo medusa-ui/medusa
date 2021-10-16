@@ -27,7 +27,9 @@ public class SecurityConfig {
 
     @Bean
     public UserDetailsRepositoryReactiveAuthenticationManager authenticationManager() {
-        return new UserDetailsRepositoryReactiveAuthenticationManager(userDetailsService());
+        final UserDetailsRepositoryReactiveAuthenticationManager manager = new UserDetailsRepositoryReactiveAuthenticationManager(userDetailsService());
+        manager.setPasswordEncoder(passwordEncoder());
+        return manager;
     }
 
     @Bean

@@ -3,6 +3,7 @@ package com.sample.medusa.eventhandler;
 import io.getmedusa.medusa.core.annotation.PageAttributes;
 import io.getmedusa.medusa.core.annotation.UIEventPage;
 import io.getmedusa.medusa.core.injector.DOMChanges;
+import io.getmedusa.medusa.core.util.SecurityContext;
 import org.springframework.web.reactive.function.server.ServerRequest;
 
 import java.util.*;
@@ -18,7 +19,7 @@ public class ExampleEventHandler {
     private final Product blueSky =  new Product("Blue Sky");
     private final Map<String, Integer> counters = new HashMap<>();
 
-    public PageAttributes setupAttributes(ServerRequest request){
+    public PageAttributes setupAttributes(ServerRequest request, SecurityContext securityContext){
         String uuid=Integer.toString(new Random().nextInt());
         counters.put(uuid, 0);
 
@@ -37,7 +38,7 @@ public class ExampleEventHandler {
                 .with("done-waiting", false)
                 .with("search-result", "")
 
-                //.with("principal", securityContext.getUserDetails().getUsername())
+                .with("principal", securityContext.getUserDetails().getUsername())
 
                 // query param + conversion
                 .with("query-param-q", request.queryParam("q").orElse("nothing"), parameterValue -> "query parameter q: " + parameterValue)
