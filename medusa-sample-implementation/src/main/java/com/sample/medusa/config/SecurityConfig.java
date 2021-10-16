@@ -20,7 +20,8 @@ public class SecurityConfig {
     @Bean
     public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http, ServerCodecConfigurer serverCodecConfigurer) {
         return http.authorizeExchange()
-                .anyExchange().permitAll()
+                .anyExchange().authenticated()
+                .and().formLogin()
                 .and().addFilterBefore(new JWTTokenInterpreter(authenticationManager()), SecurityWebFiltersOrder.AUTHENTICATION)
                 .build();
     }
