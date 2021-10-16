@@ -60,9 +60,8 @@ public class HydraConnection implements ApplicationListener<ApplicationEvent> {
                 healthRegistrationJSON = objectMapper.writeValueAsString(hydraHealthRegistration);
 
                 connectToHydra();
-            }
-            if(event instanceof WebServerInitializedEvent ) {
-                hydraHealthRegistration.setPort(((WebServerInitializedEvent) event).getWebServer().getPort());
+            } else if(event instanceof WebServerInitializedEvent e) {
+                hydraHealthRegistration.setPort(e.getWebServer().getPort());
             }
         } catch (Exception e) {
             throw new IllegalStateException(e);

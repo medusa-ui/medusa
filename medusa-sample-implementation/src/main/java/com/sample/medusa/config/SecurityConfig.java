@@ -1,13 +1,33 @@
 package com.sample.medusa.config;
 
-//@EnableWebFluxSecurity
+import io.getmedusa.medusa.core.filters.JWTTokenInterpreter;
+import org.springframework.context.annotation.Bean;
+import org.springframework.http.codec.ServerCodecConfigurer;
+import org.springframework.security.authentication.UserDetailsRepositoryReactiveAuthenticationManager;
+import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
+import org.springframework.security.config.web.server.SecurityWebFiltersOrder;
+import org.springframework.security.config.web.server.ServerHttpSecurity;
+import org.springframework.security.core.userdetails.MapReactiveUserDetailsService;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.server.SecurityWebFilterChain;
+
+@EnableWebFluxSecurity
 public class SecurityConfig {
-/*
-    public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
+
+    @Bean
+    public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http, ServerCodecConfigurer serverCodecConfigurer) {
         return http.authorizeExchange()
-                .anyExchange().authenticated()
-                .and().formLogin()
-                .and().build();
+                .anyExchange().permitAll()
+                .and().addFilterBefore(new JWTTokenInterpreter(authenticationManager()), SecurityWebFiltersOrder.AUTHENTICATION)
+                .build();
+    }
+
+    @Bean
+    public UserDetailsRepositoryReactiveAuthenticationManager authenticationManager() {
+        return new UserDetailsRepositoryReactiveAuthenticationManager(userDetailsService());
     }
 
     @Bean
@@ -23,5 +43,5 @@ public class SecurityConfig {
                 .roles("USER")
                 .build();
         return new MapReactiveUserDetailsService(user);
-    }*/
+    }
 }
