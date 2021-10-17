@@ -6,6 +6,7 @@ import io.getmedusa.medusa.core.injector.DOMChanges;
 import io.getmedusa.medusa.core.injector.DOMChanges.DOMChange;
 import io.getmedusa.medusa.core.registry.*;
 import io.getmedusa.medusa.core.util.ExpressionEval;
+import io.getmedusa.medusa.core.util.ObjectMapperBuilder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.expression.spel.SpelEvaluationException;
 import org.springframework.stereotype.Component;
@@ -13,7 +14,6 @@ import org.springframework.web.reactive.socket.HandshakeInfo;
 import org.springframework.web.reactive.socket.WebSocketHandler;
 import org.springframework.web.reactive.socket.WebSocketSession;
 import reactor.core.publisher.Mono;
-import io.getmedusa.medusa.core.util.ObjectMapperBuilder;
 
 import java.util.*;
 import java.util.stream.Collectors;
