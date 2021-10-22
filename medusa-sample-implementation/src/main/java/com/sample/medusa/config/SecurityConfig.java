@@ -10,7 +10,6 @@ import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.core.userdetails.MapReactiveUserDetailsService;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 
@@ -22,20 +21,21 @@ public class SecurityConfig {
         return http.authorizeExchange()
                 .anyExchange().authenticated()
                 .and().formLogin()
-                .and().addFilterBefore(new JWTTokenInterpreter(authenticationManager()), SecurityWebFiltersOrder.AUTHENTICATION)
+                .and().addFilterAfter(new JWTTokenInterpreter(authenticationManager()), SecurityWebFiltersOrder.AUTHENTICATION)
                 .build();
     }
 
     @Bean
     public UserDetailsRepositoryReactiveAuthenticationManager authenticationManager() {
-        final UserDetailsRepositoryReactiveAuthenticationManager manager = new UserDetailsRepositoryReactiveAuthenticationManager(userDetailsService());
-        manager.setPasswordEncoder(passwordEncoder());
-        return manager;
+        UserDetailsRepositoryReactiveAuthenticationManager authenticationManager = new UserDetailsRepositoryReactiveAuthenticationManager(userDetailsService());
+        authenticationManager.setPasswordEncoder(passwordEncoder());
+
+        return authenticationManager;
     }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
+        return new CachedBCryptEncoder();
     }
 
     @Bean

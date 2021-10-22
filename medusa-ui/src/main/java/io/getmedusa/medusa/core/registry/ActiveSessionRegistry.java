@@ -21,13 +21,11 @@ public class ActiveSessionRegistry {
 
     public void add(WebSocketSession session) {
         if(null == session) return;
-        System.out.println("Start session: " + session.getId());
         registry.add(session);
     }
 
     public void remove(WebSocketSession session) {
         if(null == session) return;
-        System.out.println("END of session : " + session.getId());
         registry.remove(session);
     }
 
