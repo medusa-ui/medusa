@@ -94,7 +94,7 @@ public enum HTMLInjector {
         result = hydraMenuTag.injectWithVariables(result);
         injectVariablesInScript(result, variables);
 
-        String html = injectScript(matchedPath, result);
+        String html = injectScript(matchedPath, result, securityContext.getUniqueId());
         return urlReplacer.replaceUrls(html, request.headers());
     }
 
@@ -128,12 +128,12 @@ public enum HTMLInjector {
         }
     }
 
-    private String injectScript(String path, InjectionResult html) {
+    private String injectScript(String path, InjectionResult html, String uniqueId) {
         String injectedHTML = html.getHtml();
         if(script != null) {
             injectedHTML = html.replaceFinal("</body>",
                     "<script id=\"m-websocket-setup\">\n" +
-                    script.replaceFirst("%WEBSOCKET_URL%", EVENT_EMITTER + path.hashCode()) +
+                    script.replaceFirst("%WEBSOCKET_URL%", EVENT_EMITTER + path.hashCode()).replaceFirst("%SECURITY_CONTEXT_ID%", uniqueId) +
                     "</script>\n<script id=\"m-variable-setup\"></script>\n</body>");
         }
         injectedHTML = addStyling(injectedHTML);

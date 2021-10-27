@@ -69,14 +69,20 @@ public class ReactiveWebSocketHandler implements WebSocketHandler {
      */
     private String interpretEvent(final WebSocketSession session, final String event) {
         try {
-            List<DOMChange> domChanges = executeEvent(session, event);
-            evaluateTitleChange(session, domChanges);
-            evaluateConditionalChange(domChanges);
-            evaluateConditionalClassChange(domChanges);
-            evaluateIterationChange(domChanges);
-            evaluateGenericMAttributesChanged(domChanges);
+            if(event.startsWith("unq//")) {
+                String uniqueSecurityId = event.replace("unq//", "");
+                ActiveSessionRegistry.getInstance().associateSecurityContext(uniqueSecurityId, session);
+                return "unq//ok";
+            } else {
+                List<DOMChange> domChanges = executeEvent(session, event);
+                evaluateTitleChange(session, domChanges);
+                evaluateConditionalChange(domChanges);
+                evaluateConditionalClassChange(domChanges);
+                evaluateIterationChange(domChanges);
+                evaluateGenericMAttributesChanged(domChanges);
 
-            return MAPPER.writeValueAsString(domChanges);
+                return MAPPER.writeValueAsString(domChanges);
+            }
         } catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException(e);
@@ -93,6 +99,7 @@ public class ReactiveWebSocketHandler implements WebSocketHandler {
         try {
             List<DOMChange> domChanges = new ArrayList<>();
             final UIEventController eventController = EventHandlerRegistry.getInstance().get(session);
+            event = EventOptionalParams.rebuildEventWithOptionalParams(eventController.getEventHandler().getClass(), session, event);
             final DOMChanges domChangesBuilder = ExpressionEval.evalEventController(event, eventController.getEventHandler());
             final List<DOMChange> parsedExpressionValues = domChangesBuilder.build();
             if (parsedExpressionValues != null) domChanges = new ArrayList<>(parsedExpressionValues);

@@ -3,7 +3,9 @@ package com.sample.medusa.eventhandler;
 import io.getmedusa.medusa.core.annotation.PageAttributes;
 import io.getmedusa.medusa.core.annotation.UIEventPage;
 import io.getmedusa.medusa.core.injector.DOMChanges;
+import io.getmedusa.medusa.core.util.SecurityContext;
 import org.springframework.web.reactive.function.server.ServerRequest;
+import org.springframework.web.reactive.socket.WebSocketSession;
 
 import java.util.*;
 
@@ -72,6 +74,11 @@ public class ExampleEventHandler {
     public DOMChanges cancelOrder(String orderId) {
         orders.removeIf(order -> order.id.equals(orderId));
         return of("orders", orders).and("three-items", orders.size() == 3 );
+    }
+
+    public DOMChanges sampleWithSecurity(SecurityContext securityContext, WebSocketSession session) {
+        System.out.println("test in session " + session.getId());
+        return DOMChanges.empty();
     }
 
     public DOMChanges buy(Object... parameters) {

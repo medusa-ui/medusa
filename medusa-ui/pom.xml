@@ -30,6 +30,12 @@
 			<scope>provided</scope>
 		</dependency>
 
+		<dependency>
+			<groupId>com.github.ben-manes.caffeine</groupId>
+			<artifactId>caffeine</artifactId>
+			<version>3.0.4</version>
+		</dependency>
+
 		<!-- BLOCKHOUND - Testing to see if any blocking elements are in the code -->
 		<dependency>
 			<groupId>io.projectreactor</groupId>
