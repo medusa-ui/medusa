@@ -16,7 +16,7 @@ public class DefaultSetupEventHandler {
                 .with("counter" ,0 )
                 .with("setup", "PageAttributes setupAttributes(ServerRequest request, SecurityContext context) {....}")
                 .with("name", request.queryParam("name").orElse("query param 'name' not present"))
-                .with("principal", context == null ? "guest" : context.getPrincipal().getName());
+                .with("principal", (context == null || context.getPrincipal() == null) ? "guest" : context.getPrincipal().getName());
     }
 
     public DOMChanges increaseCounter(String counterValue, int parameter) {

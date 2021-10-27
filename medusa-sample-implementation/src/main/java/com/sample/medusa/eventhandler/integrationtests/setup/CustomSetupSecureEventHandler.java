@@ -14,7 +14,7 @@ public class CustomSetupSecureEventHandler {
         return new PageAttributes()
                 .with("setup","PageAttributes custom(SecurityContext context) {...}")
                 .with("counter" , 0)
-                .with("principal", context == null ? "guest" : context.getPrincipal().getName());
+                .with("principal", (context == null || context.getPrincipal() == null) ? "guest" : context.getPrincipal().getName());
     }
 
     public DOMChanges increaseCounter(String counterValue, int parameter) {

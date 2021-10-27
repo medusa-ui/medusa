@@ -80,4 +80,10 @@ public class ActiveSessionRegistry {
     public void registerSecurityContext(SecurityContext securityContext) {
         securityContextCache.put(securityContext.getUniqueId(), securityContext);
     }
+
+    public void clear() {
+        registry.clear();
+        registrySecurityContext.clear();
+        securityContextCache.cleanUp();
+    }
 }
