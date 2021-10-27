@@ -2,8 +2,10 @@ package io.getmedusa.medusa.core.registry;
 
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
+import io.getmedusa.medusa.core.injector.DOMChanges;
 import io.getmedusa.medusa.core.util.SecurityContext;
 import io.getmedusa.medusa.core.util.WebsocketMessageUtils;
+import io.getmedusa.medusa.core.websocket.DomChangesExecution;
 import org.springframework.web.reactive.socket.WebSocketMessage;
 import org.springframework.web.reactive.socket.WebSocketSession;
 import reactor.core.publisher.Flux;
@@ -16,6 +18,7 @@ import java.util.concurrent.TimeUnit;
 public class ActiveSessionRegistry {
 
     private static final ActiveSessionRegistry INSTANCE = new ActiveSessionRegistry();
+    private static final DomChangesExecution DOM_CHANGES_EXECUTION = new DomChangesExecution();
 
     private ActiveSessionRegistry() {
     }
@@ -60,8 +63,12 @@ public class ActiveSessionRegistry {
     }
 
     public void sendToSession(Object objToSend, String sessionId) {
-        Flux<WebSocketMessage> data = objToFlux(objToSend);
         final WebSocketSession webSocketSession = registry.get(sessionId);
+        if(objToSend instanceof DOMChanges) {
+            DOMChanges domChanges = (DOMChanges) objToSend;
+            objToSend = DOM_CHANGES_EXECUTION.process(webSocketSession, domChanges.build());
+        }
+        Flux<WebSocketMessage> data = objToFlux(objToSend);
         if (null != webSocketSession) webSocketSession.send(data).subscribe();
     }
 
