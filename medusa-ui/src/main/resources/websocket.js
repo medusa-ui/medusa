@@ -21,6 +21,7 @@ _M.retryConnection = function () {
             _M.ws.onopen = function() {
                 _M.debug("ws.onopen", _M.ws);
                 _M.debug("ws.readyState", "wsstatus");
+                _M.ws.send("unq//%SECURITY_CONTEXT_ID%");
             }
             _M.ws.onclose = function(error) {
                 _M.debug("ws.onclose", _M.ws, error);
@@ -31,8 +32,12 @@ _M.retryConnection = function () {
                 _M.log("An error occurred");
             }
             _M.ws.onmessage = function(message) {
-                _M.debug("ws.onmessage", _M.ws, message);
-                _M.eventHandler(JSON.parse(message.data));
+                if(message.data.indexOf("unq//") === -1) {
+                    _M.debug("ws.onmessage", _M.ws, message);
+                    _M.eventHandler(JSON.parse(message.data));
+                } else {
+                    _M.debug("ws.onmessage - unq confirm", _M.ws, message);
+                }
             }
         } catch (e) {
             _M.debug(e);

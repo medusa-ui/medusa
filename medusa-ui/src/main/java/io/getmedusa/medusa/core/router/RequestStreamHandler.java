@@ -1,5 +1,7 @@
 package io.getmedusa.medusa.core.router;
 
+import io.getmedusa.medusa.core.registry.ActiveSessionRegistry;
+import io.getmedusa.medusa.core.util.SecurityContext;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
@@ -19,7 +21,9 @@ class RequestStreamHandler implements IRequestStreamHandler {
 
     @Override
     public HandlerFunction<ServerResponse> handle(String script, String styling, String fileName) {
-        return request ->ok().contentType(MediaType.TEXT_HTML).bodyValue(INSTANCE.inject(request, null, fileName, script, styling));
+        final SecurityContext securityContext = new SecurityContext(null);
+        ActiveSessionRegistry.getInstance().registerSecurityContext(securityContext);
+        return request ->ok().contentType(MediaType.TEXT_HTML).bodyValue(INSTANCE.inject(request, securityContext, fileName, script, styling));
     }
 
 }

@@ -1,6 +1,8 @@
 package io.getmedusa.medusa.core.router;
 
+import io.getmedusa.medusa.core.registry.ActiveSessionRegistry;
 import io.getmedusa.medusa.core.util.SecurityContext;
+import io.getmedusa.medusa.core.websocket.EventOptionalParams;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.context.ReactiveSecurityContextHolder;
@@ -22,10 +24,12 @@ class RequestStreamHandlerWithSecurity implements IRequestStreamHandler {
 
     @Override
     public HandlerFunction<ServerResponse> handle(String script, String styling, String fileName) {
+        EventOptionalParams.securityEnabled = true;
         return request -> ReactiveSecurityContextHolder.getContext().flatMap(authenticationHolder ->
                 {
                     try {
                         final SecurityContext securityContext = new SecurityContext(authenticationHolder.getAuthentication());
+                        ActiveSessionRegistry.getInstance().registerSecurityContext(securityContext);
                         return ok().contentType(MediaType.TEXT_HTML).bodyValue(INSTANCE.inject(request, securityContext, fileName, script, styling));
                     } catch (Exception e) {
                         e.printStackTrace();
