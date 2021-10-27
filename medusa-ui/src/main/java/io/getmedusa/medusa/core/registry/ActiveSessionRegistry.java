@@ -17,7 +17,9 @@ public class ActiveSessionRegistry {
 
     private static final ActiveSessionRegistry INSTANCE = new ActiveSessionRegistry();
 
-    private ActiveSessionRegistry() { }
+    private ActiveSessionRegistry() {
+    }
+
     public static ActiveSessionRegistry getInstance() {
         return INSTANCE;
     }
@@ -30,13 +32,13 @@ public class ActiveSessionRegistry {
             .build();
 
     public void add(WebSocketSession session) {
-        if(null == session) return;
+        if (null == session) return;
         System.out.println("Start session: " + session.getId());
         registry.put(session.getId(), session);
     }
 
     public void remove(WebSocketSession session) {
-        if(null == session) return;
+        if (null == session) return;
         System.out.println("END of session : " + session.getId());
         registry.remove(session.getId());
         registrySecurityContext.remove(session.getId());
@@ -60,7 +62,7 @@ public class ActiveSessionRegistry {
     public void sendToSession(Object objToSend, String sessionId) {
         Flux<WebSocketMessage> data = objToFlux(objToSend);
         final WebSocketSession webSocketSession = registry.get(sessionId);
-        if(null != webSocketSession) webSocketSession.send(data).subscribe();
+        if (null != webSocketSession) webSocketSession.send(data).subscribe();
     }
 
     public WebSocketSession getWebsocketByID(String id) {
