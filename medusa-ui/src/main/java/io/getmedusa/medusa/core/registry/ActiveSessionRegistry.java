@@ -47,10 +47,20 @@ public class ActiveSessionRegistry {
     }
 
     public void sendToAll(Object objToSend) {
-        Flux<WebSocketMessage> data = Flux.just(WebsocketMessageUtils.fromObject(objToSend));
+        Flux<WebSocketMessage> data = objToFlux(objToSend);
         for (WebSocketSession session : getAllSessions()) {
             session.send(data).subscribe();
         }
+    }
+
+    private Flux<WebSocketMessage> objToFlux(Object objToSend) {
+        return Flux.just(WebsocketMessageUtils.fromObject(objToSend));
+    }
+
+    public void sendToSession(Object objToSend, String sessionId) {
+        Flux<WebSocketMessage> data = objToFlux(objToSend);
+        final WebSocketSession webSocketSession = registry.get(sessionId);
+        if(null != webSocketSession) webSocketSession.send(data).subscribe();
     }
 
     public WebSocketSession getWebsocketByID(String id) {
