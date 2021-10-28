@@ -64,19 +64,36 @@ public enum HTMLInjector {
      * @param script cached websocket script
      * @return parsed html
      */
-    public String inject(ServerRequest request, SecurityContext securityContext, String fileName, String script, String styling) {
+    public String inject(ServerRequest request, SecurityContext securityContext, String fileName, String script, String styling, String csrfToken) {
         try {
             if(this.script == null) this.script = script;
             if(this.styling == null) this.styling = styling;
             String htmlString = HTMLCache.getInstance().getHTML(fileName);
-            return htmlStringInject(request, securityContext, htmlString);
+            return htmlStringInject(request, securityContext, csrfToken, htmlString);
         } catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException(e);
         }
     }
 
+    /**
+     * TODO
+     * @param request
+     * @param securityContext
+     * @param fileName
+     * @param script
+     * @param styling
+     * @return
+     */
+    public String inject(ServerRequest request, SecurityContext securityContext, String fileName, String script, String styling) {
+        return inject(request, securityContext, fileName, script, styling, null);
+    }
+
     String htmlStringInject(ServerRequest request, SecurityContext securityContext, String htmlString) {
+        return htmlStringInject(request, securityContext, null, htmlString);
+    }
+
+    String htmlStringInject(ServerRequest request, SecurityContext securityContext, String csrfToken, String htmlString) {
         final Map<String, Object> variables = newLargestFirstMap();
 
         final String matchedPath = matchRequestPath(request);
@@ -92,6 +109,7 @@ public enum HTMLInjector {
         result = classAppendTag.injectWithVariables(result, variables);
         result = genericMTag.injectWithVariables(result, variables);
         result = hydraMenuTag.injectWithVariables(result);
+        result = result.replace("{{_csrf}}", csrfToken);
         injectVariablesInScript(result, variables);
 
         String html = injectScript(matchedPath, result, securityContext.getUniqueId());

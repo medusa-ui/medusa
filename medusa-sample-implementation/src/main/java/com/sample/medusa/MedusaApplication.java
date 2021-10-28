@@ -4,6 +4,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import reactor.blockhound.BlockHound;
 import reactor.blockhound.integration.BlockHoundIntegration;
+import reactor.core.publisher.Hooks;
 
 import java.util.ServiceLoader;
 import java.util.stream.StreamSupport;
@@ -12,6 +13,7 @@ import java.util.stream.StreamSupport;
 public class MedusaApplication {
 
 	public static void main(String[] args) {
+		Hooks.onOperatorDebug();
 		errorOnAnyBlockingCalls();
 		try {
 			SpringApplication.run(MedusaApplication.class, args);
