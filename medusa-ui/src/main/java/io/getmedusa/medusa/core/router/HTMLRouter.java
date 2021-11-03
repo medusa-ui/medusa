@@ -52,7 +52,7 @@ class HTMLRouter {
                     requestStreamHandler.handle(script, styling, fileName));
         })
         .reduce(RouterFunction::and)
-        .orElse(null);
+        .orElseThrow(() -> new RuntimeException("Could not route"));
     }
 
     private String loadDefaultStyle(Resource style) {

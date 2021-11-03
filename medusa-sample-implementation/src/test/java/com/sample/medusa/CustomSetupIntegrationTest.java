@@ -7,15 +7,15 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class CustomSetupIntegrationTest extends AbstractSeleniumTest {
+class CustomSetupIntegrationTest extends AbstractSeleniumTest {
 
     @Test
     @DisplayName("By default, PageAttributes are initialised in the setupAttributes-method")
-    public void defaultPage(){
-        driver.get(BASE + "/test/setup/default?name=Hello World!");
+    void defaultPage(){
+        goTo("/test/setup/default?name=Hello World!");
 
         String pageSource = driver.getPageSource();
-        Assertions.assertTrue(pageSource.contains("guest"));
+        Assertions.assertTrue(pageSource.contains("guest") || pageSource.contains("user"));
         Assertions.assertTrue(pageSource.contains("Hello World!"));
         Assertions.assertTrue(pageSource.contains("0")); //counter
 
@@ -26,8 +26,8 @@ public class CustomSetupIntegrationTest extends AbstractSeleniumTest {
 
     @Test
     @DisplayName("Only using ServerRequest to initialise PageAttributes should be possible")
-    public void requestPage(){
-        driver.get(BASE + "/test/setup/request?name=Hello Medusa!");
+    void requestPage(){
+        goTo("/test/setup/request?name=Hello Medusa!");
 
         String pageSource = driver.getPageSource();
         Assertions.assertTrue(pageSource.contains("Hello Medusa!"));
@@ -40,8 +40,8 @@ public class CustomSetupIntegrationTest extends AbstractSeleniumTest {
 
     @Test
     @DisplayName("Setting up PageAttributes should not be mandatory")
-    public void emptyPage(){
-        driver.get(BASE + "/test/setup/empty");
+    void emptyPage(){
+        goTo("/test/setup/empty");
 
         String pageSource = driver.getPageSource();
         Assertions.assertTrue(pageSource.contains("counter"));
@@ -53,11 +53,11 @@ public class CustomSetupIntegrationTest extends AbstractSeleniumTest {
 
     @Test
     @DisplayName("Only using SecurityContext to initialise PageAttributes should be possible")
-    public void securePage(){
-        driver.get(BASE + "/test/setup/secure");
+    void securePage(){
+        goTo("/test/setup/secure");
 
         String pageSource = driver.getPageSource();
-        Assertions.assertTrue(pageSource.contains("guest"));
+        Assertions.assertTrue(pageSource.contains("guest") || pageSource.contains("user"));
         Assertions.assertTrue(pageSource.contains("0")); //counter
 
         clickById("btn_count");
