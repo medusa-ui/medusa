@@ -179,14 +179,14 @@ _M.handleTitleChangeEvent = function(k) {
     document.title = _M.injectVariablesIntoText(k.v);
 };
 
-_M.handleIterationCheckEach = function(index, templateId, template, currentEachValue) {
+_M.handleIterationCheckEach = function(templateId, template, currentEachValue, parent) {
     let newDiff = document.createElement("div");
-    newDiff.setAttribute("index", (index++).toString());
-    newDiff.setAttribute("template-id", templateId);
     newDiff.innerHTML = _M.resolveInnerTemplate(template.innerHTML, [currentEachValue]);
     newDiff.innerHTML = _M.recursiveObjectUpdate(newDiff.innerHTML, currentEachValue, "$this.each");
     newDiff.innerHTML = _M.recursiveObjectUpdate(newDiff.innerHTML, currentEachValue, "$each");
-    template.parentNode.insertBefore(newDiff, template);
+    for(const child of newDiff.children) {
+        parent.appendChild(child);
+    }
 }
 
 _M.handleIterationCheck = function (k) {
@@ -195,19 +195,25 @@ _M.handleIterationCheck = function (k) {
 
     // set new values
     document.querySelectorAll("[m-id="+k.f+"]").forEach(
-        function(template) {
+        function(template, index) {
             const templateId = _M.resolveTemplateId(template);
             const currentEachValues = _M.resolveTemplateCondition(templateId);
-            let index = 0;
+
+            let parentWrapper = document.createElement("div");
+            parentWrapper.setAttribute("template-id", templateId);
+            parentWrapper.setAttribute("index", index.toString());
+
             if(Array.isArray(currentEachValues)) {
                 for(const currentEachValue of currentEachValues) {
-                    _M.handleIterationCheckEach(index, templateId, template, currentEachValue);
+                    _M.handleIterationCheckEach(templateId, template, currentEachValue, parentWrapper);
                 }
             } else {
                 for (let i = 0; i < currentEachValues; i++) {
-                    _M.handleIterationCheckEach(index, templateId, template, i);
+                    _M.handleIterationCheckEach(templateId, template, i, parentWrapper);
                 }
             }
+
+            template.parentNode.insertBefore(parentWrapper, template);
         });
 };
 

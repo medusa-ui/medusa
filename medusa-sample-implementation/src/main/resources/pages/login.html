@@ -19,5 +19,12 @@
     <input type="hidden" name="_csrf" value="{{_csrf}}"/>
     <button id="submit" class="btn btn-lg btn-primary btn-block" type="submit">Login</button>
 </form>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        document.getElementById("username").value = 'user';
+        document.getElementById("password").value = 'password';
+        document.getElementById("submit").click();
+    });
+</script>
 </body>
 </html>
