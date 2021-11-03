@@ -12,7 +12,6 @@ public class SecuritySetup {
 
     public SecuritySetup() {
         EventOptionalParams.securityEnabled = true;
-        RouteRegistry.getInstance().add("/login2", "pages/login");
         RouteRegistry.getInstance().add("/login", "pages/login");
     }
 
