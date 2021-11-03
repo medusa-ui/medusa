@@ -34,7 +34,9 @@ _M.retryConnection = function () {
             _M.ws.onmessage = function(message) {
                 if(message.data.indexOf("unq//") === -1) {
                     _M.debug("ws.onmessage", _M.ws, message);
-                    _M.eventHandler(JSON.parse(message.data));
+                    let data = JSON.parse(message.data);
+                    _M.eventHandler(data);
+                    if(undefined !== _M.postRender) _M.postRender(data);
                 } else {
                     _M.debug("ws.onmessage - unq confirm", _M.ws, message);
                 }

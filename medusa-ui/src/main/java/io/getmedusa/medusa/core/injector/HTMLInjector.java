@@ -109,7 +109,7 @@ public enum HTMLInjector {
         result = classAppendTag.injectWithVariables(result, variables);
         result = genericMTag.injectWithVariables(result, variables);
         result = hydraMenuTag.injectWithVariables(result);
-        result = result.replace("{{_csrf}}", csrfToken);
+        if(csrfToken != null) result = result.replace("{{_csrf}}", csrfToken);
         injectVariablesInScript(result, variables);
 
         String html = injectScript(matchedPath, result, securityContext.getUniqueId());
