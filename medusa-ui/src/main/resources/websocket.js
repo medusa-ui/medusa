@@ -35,6 +35,7 @@ _M.retryConnection = function () {
                 if(message.data.indexOf("unq//") === -1) {
                     _M.debug("ws.onmessage", _M.ws, message);
                     let data = JSON.parse(message.data);
+                    if(typeof _M.preRender !== "undefined") { _M.preRender(data); }
                     _M.eventHandler(data);
                     if(typeof _M.postRender !== "undefined") { _M.postRender(data); }
                 } else {
@@ -55,6 +56,10 @@ _M.log = function(responseEvent) {
 _M.eventHandler = function(e) {
     _M.debug(e);
 
+    if(!(Array.isArray(e) && (typeof e[0]['f'] !== "undefined" || typeof e[0]['t'] !== "undefined"))) {
+        return;
+    }
+    
     //e = full event, k = individual event per key, k.f = field, k.v = value or relevant id, k.t = type, k.c = condition
     e.forEach(k => {
         if(typeof k.t === "undefined") { //the default event, a value change, contains the least amount of data, so it has no 'type'
