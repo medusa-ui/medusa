@@ -2,8 +2,9 @@ var _M = _M || {};
 
 _M.ws = null;
 _M.timeoutTimer = 0;
-_M.debugMode = true;
+_M.debugMode = false;
 _M.parser = new DOMParser();
+const isLocal = window.location.host.indexOf("localhost") !== -1;
 
 _M.retryConnection = function () {
     setTimeout(function() {
@@ -14,7 +15,7 @@ _M.retryConnection = function () {
         }
 
         try{
-            _M.ws = new WebSocket("ws://" + window.location.host + "%WEBSOCKET_URL%");
+            _M.ws = new WebSocket(((isLocal) ? "ws://" : "wss://") + window.location.host + "%WEBSOCKET_URL%");
             if(_M.ws.readyState === _M.ws.CLOSED || _M.ws.readyState === _M.ws.CLOSING) {
                 _M.retryConnection();
             }
@@ -35,7 +36,7 @@ _M.retryConnection = function () {
                 if(message.data.indexOf("unq//") === -1) {
                     _M.debug("ws.onmessage", _M.ws, message);
                     let data = JSON.parse(message.data);
-                    if(typeof _M.preRender !== "undefined") { _M.preRender(data); }
+                    if(typeof _M.preEventHandler !== "undefined") { _M.preEventHandler(data); }
                     _M.eventHandler(data);
                     if(typeof _M.postRender !== "undefined") { _M.postRender(data); }
                 } else {
@@ -215,7 +216,7 @@ _M.handleIterationCheck = function (k) {
                     _M.handleIterationCheckEach(templateId, template, i, parentWrapper);
                 }
             }
-
+            if(typeof _M.preRender !== "undefined") { _M.preRender(k, parentWrapper); }
             template.parentNode.insertBefore(parentWrapper, template);
         });
 };

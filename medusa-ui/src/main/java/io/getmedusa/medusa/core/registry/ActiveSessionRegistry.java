@@ -36,13 +36,11 @@ public class ActiveSessionRegistry {
 
     public void add(WebSocketSession session) {
         if (null == session) return;
-        System.out.println("Start session: " + session.getId());
         registry.put(session.getId(), session);
     }
 
     public void remove(WebSocketSession session) {
         if (null == session) return;
-        System.out.println("END of session : " + session.getId());
         registry.remove(session.getId());
         registrySecurityContext.remove(session.getId());
     }
@@ -64,8 +62,7 @@ public class ActiveSessionRegistry {
 
     public void sendToSession(Object objToSend, String sessionId) {
         final WebSocketSession webSocketSession = registry.get(sessionId);
-        if(objToSend instanceof DOMChanges) {
-            DOMChanges domChanges = (DOMChanges) objToSend;
+        if(objToSend instanceof DOMChanges domChanges) {
             objToSend = DOM_CHANGES_EXECUTION.process(webSocketSession, domChanges.build());
         }
         Flux<WebSocketMessage> data = objToFlux(objToSend);

@@ -4,8 +4,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.getmedusa.medusa.core.annotation.UIEventController;
 import io.getmedusa.medusa.core.injector.DOMChanges;
 import io.getmedusa.medusa.core.injector.DOMChanges.DOMChange;
-import io.getmedusa.medusa.core.registry.*;
+import io.getmedusa.medusa.core.registry.ActiveSessionRegistry;
+import io.getmedusa.medusa.core.registry.EventHandlerRegistry;
 import io.getmedusa.medusa.core.util.ExpressionEval;
+import io.getmedusa.medusa.core.util.ObjectMapperBuilder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.expression.spel.SpelEvaluationException;
 import org.springframework.stereotype.Component;
@@ -13,9 +15,9 @@ import org.springframework.web.reactive.socket.HandshakeInfo;
 import org.springframework.web.reactive.socket.WebSocketHandler;
 import org.springframework.web.reactive.socket.WebSocketSession;
 import reactor.core.publisher.Mono;
-import io.getmedusa.medusa.core.util.ObjectMapperBuilder;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Handles the lifecycle of the websocket session
@@ -45,7 +47,7 @@ public class ReactiveWebSocketHandler implements WebSocketHandler {
 
         return session.send(session.receive()
                         .map(msg -> interpretEvent(session, msg.getPayloadAsText()))
-                        .map(session::textMessage).doFinally(sig -> ActiveSessionRegistry.getInstance().remove(session)));
+                        .map(session::textMessage).doFinally(sig -> closeSession(session)));
     }
 
     private void securityCheckForOrigin(WebSocketSession session) {
@@ -99,5 +101,11 @@ public class ReactiveWebSocketHandler implements WebSocketHandler {
         } catch (SpelEvaluationException e) {
             throw new IllegalArgumentException("Event '" + event + "' could not be executed", e);
         }
+    }
+
+    private void closeSession(WebSocketSession session) {
+        final UIEventController eventController = EventHandlerRegistry.getInstance().get(session);
+        eventController.exit(session);
+        ActiveSessionRegistry.getInstance().remove(session);
     }
 }
