@@ -4,7 +4,8 @@ _M.ws = null;
 _M.timeoutTimer = 0;
 _M.debugMode = false;
 _M.parser = new DOMParser();
-const isLocal = window.location.host.indexOf("localhost") !== -1;
+// const isLocal = window.location.host.indexOf("localhost") !== -1;
+const protocol = "%PROTOCOL%://" // inject protocol via application properties en String replacement
 
 _M.retryConnection = function () {
     setTimeout(function() {
@@ -15,7 +16,7 @@ _M.retryConnection = function () {
         }
 
         try{
-            _M.ws = new WebSocket(((isLocal) ? "ws://" : "wss://") + window.location.host + "%WEBSOCKET_URL%");
+            _M.ws = new WebSocket(protocol + window.location.host + "%WEBSOCKET_URL%");
             if(_M.ws.readyState === _M.ws.CLOSED || _M.ws.readyState === _M.ws.CLOSING) {
                 _M.retryConnection();
             }

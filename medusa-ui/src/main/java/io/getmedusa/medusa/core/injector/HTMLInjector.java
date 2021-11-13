@@ -29,6 +29,7 @@ public enum HTMLInjector {
     public static final String EVENT_EMITTER = "/event-emitter/";
     private String script = null;
     private String styling = null;
+    private String webSocketProtocol = "wss";
 
     private final ClickTag clickTag;
     private final OnEnterTag onEnterTag;
@@ -53,6 +54,10 @@ public enum HTMLInjector {
         this.genericMTag = new GenericMTag();
         this.hydraMenuTag = new HydraMenuTag();
         this.urlReplacer = new HydraURLReplacer();
+    }
+
+    public void setWebSocketProtocol(String webSocketProtocol) {
+        this.webSocketProtocol = webSocketProtocol;
     }
 
     /**
@@ -151,7 +156,9 @@ public enum HTMLInjector {
         if(script != null) {
             injectedHTML = html.replaceFinal("</body>",
                     "<script id=\"m-websocket-setup\">\n" +
-                    script.replaceFirst("%WEBSOCKET_URL%", EVENT_EMITTER + path.hashCode()).replaceFirst("%SECURITY_CONTEXT_ID%", uniqueId) +
+                    script.replaceFirst("%WEBSOCKET_URL%", EVENT_EMITTER + path.hashCode())
+                          .replaceFirst("%SECURITY_CONTEXT_ID%", uniqueId)
+                          .replaceFirst("%PROTOCOL%", webSocketProtocol) +
                     "</script>\n<script id=\"m-variable-setup\"></script>\n</body>");
         }
         injectedHTML = addStyling(injectedHTML);

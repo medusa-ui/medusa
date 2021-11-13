@@ -1,6 +1,7 @@
 package io.getmedusa.medusa.core.websocket.hydra;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.getmedusa.medusa.core.injector.HTMLInjector;
 import io.getmedusa.medusa.core.injector.HydraURLReplacer;
 import io.getmedusa.medusa.core.registry.HydraRegistry;
 import io.getmedusa.medusa.core.registry.RouteRegistry;
@@ -41,10 +42,15 @@ public class HydraConnection implements ApplicationListener<ApplicationEvent> {
 
     public HydraConnection(@Value("${hydra.name}") String name,
                            @Value("${hydra.url}") String hydraEndpoint,
+                           @Value("${hydra.websocket.protocol:wss}") String websocketProtocol,
                            ResourcePatternResolver resourceResolver) {
         this.hydraHealthRegistration = new HydraHealthRegistration(name);
         this.resourceResolver = resourceResolver;
-        this.hydraHealthWsUri = "ws://URI/services/health".replace("URI", hydraEndpoint);
+        this.hydraHealthWsUri = "PROTOCOL://URI/services/health"
+                .replaceFirst("PROTOCOL",websocketProtocol)
+                .replaceFirst("URI", hydraEndpoint);
+        /* TODO check if 'here' is the right place to access HTMLInjector */
+        HTMLInjector.INSTANCE.setWebSocketProtocol(websocketProtocol);
     }
 
     @Override
@@ -94,10 +100,13 @@ public class HydraConnection implements ApplicationListener<ApplicationEvent> {
         }
     }
 
+    /* TODO what with pub-key als payload */
     private void reactToIncomingUpdate(String payloadAsText) {
         new Thread(() -> {
             try {
-                HydraRegistry.update(objectMapper.readValue(payloadAsText, HydraStatus.class));
+                if(! payloadAsText.contains("pub-key")) {
+                    HydraRegistry.update(objectMapper.readValue(payloadAsText, HydraStatus.class));
+                }
             } catch (Exception e) {
                 throw new IllegalArgumentException(e);
             }
