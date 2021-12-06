@@ -6,13 +6,15 @@ public class HydraHealthRegistration {
 
     private int port;
     private final String name;
+    private final String secret;
     private Set<String> endpoints = new HashSet<>();
     private Set<String> websockets = new HashSet<>();
     private Set<String> staticResources = new HashSet<>();
     private Map<String, Set<HydraMenuItem>> menuItems = new HashMap<>();
 
-    public HydraHealthRegistration(String name) {
+    public HydraHealthRegistration(String name, String secret) {
         this.name = name;
+        this.secret = secret;
     }
 
     public void setPort(int port) {
@@ -57,5 +59,9 @@ public class HydraHealthRegistration {
 
     public void setMenuItems(Map<String, Set<HydraMenuItem>> menuItems) {
         this.menuItems = menuItems;
+    }
+
+    public String getSecret() {
+        return secret;
     }
 }

@@ -48,8 +48,10 @@ public class HydraConnection implements ApplicationListener<ApplicationEvent> {
 
     public HydraConnection(@Value("${hydra.name}") String name,
                            @Value("${hydra.url}") String hydraEndpoint,
+                           @Value("${hydra.secret}") String secret,
                            ResourcePatternResolver resourceResolver) {
-        this.hydraHealthRegistration = new HydraHealthRegistration(name);
+        if(secret.length() < 32) throw new SecurityException("Hydra secret must at least be 32 characters long");
+        this.hydraHealthRegistration = new HydraHealthRegistration(name, secret);
         this.resourceResolver = resourceResolver;
         this.hydraHealthWsUri = "ws://URI/services/health".replace("URI", hydraEndpoint);
     }
