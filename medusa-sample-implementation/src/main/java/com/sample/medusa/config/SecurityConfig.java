@@ -3,7 +3,6 @@ package com.sample.medusa.config;
 
 import io.getmedusa.medusa.core.filters.JWTTokenInterpreter;
 import org.springframework.context.annotation.Bean;
-import org.springframework.http.codec.ServerCodecConfigurer;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.config.web.server.SecurityWebFiltersOrder;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
@@ -12,8 +11,8 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.server.authentication.RedirectServerAuthenticationSuccessHandler;
 import org.springframework.security.web.server.SecurityWebFilterChain;
+import org.springframework.security.web.server.authentication.RedirectServerAuthenticationSuccessHandler;
 
 @EnableWebFluxSecurity
 public class SecurityConfig {
@@ -34,7 +33,7 @@ public class SecurityConfig {
                 .loginPage("/login")
                 .authenticationSuccessHandler(new RedirectServerAuthenticationSuccessHandler("/"))
                 .and().addFilterAfter(new JWTTokenInterpreter(), SecurityWebFiltersOrder.AUTHENTICATION)
-                .and().csrf().and().build();
+                .csrf().and().build();
     }
 
     @Bean
