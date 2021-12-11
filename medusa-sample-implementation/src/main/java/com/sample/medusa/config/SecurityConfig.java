@@ -1,7 +1,10 @@
 package com.sample.medusa.config;
 
+
+import io.getmedusa.medusa.core.filters.JWTTokenInterpreter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
+import org.springframework.security.config.web.server.SecurityWebFiltersOrder;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.core.userdetails.MapReactiveUserDetailsService;
 import org.springframework.security.core.userdetails.User;
@@ -14,7 +17,6 @@ import org.springframework.security.web.server.authentication.RedirectServerAuth
 @EnableWebFluxSecurity
 public class SecurityConfig {
 
-    @Bean
     public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
         return http
                 .authorizeExchange()
@@ -30,7 +32,7 @@ public class SecurityConfig {
                 .formLogin()
                 .loginPage("/login")
                 .authenticationSuccessHandler(new RedirectServerAuthenticationSuccessHandler("/"))
-                .and()
+                .and().addFilterAfter(new JWTTokenInterpreter(), SecurityWebFiltersOrder.AUTHENTICATION)
                 .csrf().and().build();
     }
 

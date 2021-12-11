@@ -23,7 +23,12 @@ import reactor.util.retry.Retry;
 
 import java.io.IOException;
 import java.net.URI;
+import java.security.KeyFactory;
+import java.security.interfaces.RSAPublicKey;
+import java.security.spec.X509EncodedKeySpec;
+import java.util.Base64;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -39,10 +44,14 @@ public class HydraConnection implements ApplicationListener<ApplicationEvent> {
     private final HydraHealthRegistration hydraHealthRegistration;
     final ResourcePatternResolver resourceResolver;
 
+    public static RSAPublicKey publicKey = null;
+
     public HydraConnection(@Value("${hydra.name}") String name,
                            @Value("${hydra.url}") String hydraEndpoint,
+                           @Value("${hydra.secret}") String secret,
                            ResourcePatternResolver resourceResolver) {
-        this.hydraHealthRegistration = new HydraHealthRegistration(name);
+        if(secret.length() < 32) throw new SecurityException("Hydra secret must at least be 32 characters long");
+        this.hydraHealthRegistration = new HydraHealthRegistration(name, secret);
         this.resourceResolver = resourceResolver;
         this.hydraHealthWsUri = "ws://URI/services/health".replace("URI", hydraEndpoint);
     }
@@ -60,9 +69,8 @@ public class HydraConnection implements ApplicationListener<ApplicationEvent> {
                 healthRegistrationJSON = objectMapper.writeValueAsString(hydraHealthRegistration);
 
                 connectToHydra();
-            }
-            if(event instanceof WebServerInitializedEvent ) {
-                hydraHealthRegistration.setPort(((WebServerInitializedEvent) event).getWebServer().getPort());
+            } else if(event instanceof WebServerInitializedEvent e) {
+                hydraHealthRegistration.setPort(e.getWebServer().getPort());
             }
         } catch (Exception e) {
             throw new IllegalStateException(e);
@@ -97,11 +105,23 @@ public class HydraConnection implements ApplicationListener<ApplicationEvent> {
     private void reactToIncomingUpdate(String payloadAsText) {
         new Thread(() -> {
             try {
-                HydraRegistry.update(objectMapper.readValue(payloadAsText, HydraStatus.class));
+                if(payloadAsText.contains("pub-key")) {
+                    handleUpdateToPublicKey(objectMapper, payloadAsText);
+                } else {
+                    HydraRegistry.update(objectMapper.readValue(payloadAsText, HydraStatus.class));
+                }
             } catch (Exception e) {
                 throw new IllegalArgumentException(e);
             }
         }).start();
+    }
+
+    private static void handleUpdateToPublicKey(ObjectMapper mapper, String payloadAsText) throws Exception {
+        Map<String, String> pubKey = mapper.readValue(payloadAsText, Map.class);
+        byte[] decodedKey = Base64.getDecoder().decode(pubKey.get("pub-key"));
+        X509EncodedKeySpec spec = new X509EncodedKeySpec(decodedKey);
+        KeyFactory kf = KeyFactory.getInstance("RSA");
+        publicKey = (RSAPublicKey) kf.generatePublic(spec);
     }
 
     private Set<String> determineListOfStaticResources() throws IOException {

@@ -13,8 +13,7 @@ import java.util.stream.StreamSupport;
 public class MedusaApplication {
 
 	public static void main(String[] args) {
-		Hooks.onOperatorDebug();
-		errorOnAnyBlockingCalls();
+		//errorOnAnyBlockingCalls();
 		try {
 			SpringApplication.run(MedusaApplication.class, args);
 		} catch (Exception e) {
