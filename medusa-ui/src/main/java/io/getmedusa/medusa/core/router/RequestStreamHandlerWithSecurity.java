@@ -4,6 +4,7 @@ import io.getmedusa.medusa.core.registry.ActiveSessionRegistry;
 import io.getmedusa.medusa.core.util.SecurityContext;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.ReactiveSecurityContextHolder;
 import org.springframework.security.web.server.csrf.CsrfToken;
 import org.springframework.stereotype.Component;
@@ -33,7 +34,7 @@ class RequestStreamHandlerWithSecurity implements IRequestStreamHandler {
                     return ok().contentType(MediaType.TEXT_HTML).bodyValue(INSTANCE.inject(request, securityContext, fileName, script, styling, csrfToken.getToken()));
 
                 } else {
-                    return ReactiveSecurityContextHolder.getContext().flatMap(authenticationHolder ->
+                    return ReactiveSecurityContextHolder.getContext().switchIfEmpty(Mono.just(new EmptySecurityContext())).flatMap(authenticationHolder ->
                             {
                                 try {
                                     final SecurityContext securityContext = new SecurityContext(authenticationHolder.getAuthentication());
@@ -50,4 +51,16 @@ class RequestStreamHandlerWithSecurity implements IRequestStreamHandler {
         };
     }
 
+    private class EmptySecurityContext implements org.springframework.security.core.context.SecurityContext {
+
+        @Override
+        public Authentication getAuthentication() {
+            return null;
+        }
+
+        @Override
+        public void setAuthentication(Authentication authentication) {
+
+        }
+    }
 }
