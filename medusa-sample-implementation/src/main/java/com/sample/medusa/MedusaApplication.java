@@ -4,6 +4,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import reactor.blockhound.BlockHound;
 import reactor.blockhound.integration.BlockHoundIntegration;
+import reactor.core.publisher.Hooks;
 
 import java.util.ServiceLoader;
 import java.util.stream.StreamSupport;

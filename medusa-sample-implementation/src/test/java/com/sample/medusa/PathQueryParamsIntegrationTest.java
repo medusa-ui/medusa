@@ -6,11 +6,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class PathQueryParamsIntegrationTest extends AbstractSeleniumTest {
+class PathQueryParamsIntegrationTest extends AbstractSeleniumTest {
 
     @Test
-    public void testAllProvided() {
-        driver.get(BASE + "/test/upper/selenium/normal/test?value=12&person=2");
+    void testAllProvided() {
+        goTo("/test/upper/selenium/normal/test?value=12&person=2");
         String pageSource = driver.getPageSource();
 
         Assertions.assertTrue(pageSource.contains("SELENIUM"));
@@ -20,8 +20,8 @@ public class PathQueryParamsIntegrationTest extends AbstractSeleniumTest {
     }
 
     @Test
-    public void testDefaultQueryParam() {
-        driver.get(BASE + "/test/upper/test/normal/other?person=1");
+    void testDefaultQueryParam() {
+        goTo("/test/upper/test/normal/other?person=1");
         String pageSource = driver.getPageSource();
 
         Assertions.assertTrue(pageSource.contains("TEST"));

@@ -1,10 +1,12 @@
 package io.getmedusa.medusa.core.injector.tag;
 
 import io.getmedusa.medusa.core.injector.tag.meta.InjectionResult;
+import io.getmedusa.medusa.core.registry.ActiveSessionRegistry;
 import io.getmedusa.medusa.core.registry.HydraRegistry;
 import io.getmedusa.medusa.core.websocket.hydra.HydraMenuItem;
 import io.getmedusa.medusa.core.websocket.hydra.meta.HydraStatus;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.*;
@@ -19,6 +21,12 @@ class HydraMenuTagTest {
                     <nav h-menu="example-menu"></nav>
                     </body>
                     </html>""");
+
+    @BeforeEach
+    void setup() {
+        ActiveSessionRegistry.getInstance().clear();
+    }
+
     @Test
     void testTag() {
         Set<HydraMenuItem> menuItems = new HashSet<>();

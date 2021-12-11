@@ -4,6 +4,7 @@ import io.getmedusa.medusa.core.util.SecurityContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.reactive.function.server.ServerRequest;
+import org.springframework.web.reactive.socket.WebSocketSession;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -32,6 +33,9 @@ public class UIEventController implements UIEventWithAttributes {
 
     private Method setupAttributesMethod;
     private SetupAttributesMethodType setupAttributesMethodType = NONE;
+
+    private Method exitMethod;
+
     private final Object eventHandler;
 
     /**
@@ -48,6 +52,8 @@ public class UIEventController implements UIEventWithAttributes {
         } else {
             if(!DEFAULT_SETUP.equals(uiEventPage.setup())) throw new IllegalArgumentException("Setup method '" + uiEventPage.setup() + "' does not exist on " + eventHandler.getClass());
         }
+
+        this.exitMethod = determineExitMethod(eventHandler);
     }
 
     private SetupAttributesMethodType setupMethodType(Object uiEventPageObject, Method matchingMethod, List<Class<?>> parameterTypes) {
@@ -63,6 +69,16 @@ public class UIEventController implements UIEventWithAttributes {
             return SECURED_REQUEST;
         } else {
             throw new RuntimeException(uiEventPageObject.getClass().getName() + "." + matchingMethod.getName() + " only parameters of type ServerRequest and SecurityContext accepted");
+        }
+    }
+
+    public void exit(WebSocketSession session) {
+        if(this.exitMethod != null) {
+            try {
+                this.exitMethod.invoke(this.eventHandler, session);
+            } catch (Throwable e) {
+                logger.error("exit method failed due to: " + e.getMessage(), e );
+            }
         }
     }
 
@@ -106,6 +122,15 @@ public class UIEventController implements UIEventWithAttributes {
                 if (!returningPageAttributes(method)) {
                     throw new RuntimeException(uiEventPageObject.getClass().getName() + "." + method.getName() + " should return PageAttributes but was " + method.getReturnType());
                 }
+                return method;
+            }
+        }
+        return null;
+    }
+
+    private Method determineExitMethod(Object uiEventPageObject) {
+        for(Method method :  uiEventPageObject.getClass().getMethods()) {
+            if ("exit".equals(method.getName())) {
                 return method;
             }
         }

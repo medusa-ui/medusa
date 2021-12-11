@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Medusa without wrapping divs</title>
+</head>
+<body>
+
+<section id="people">
+    [$foreach $people]
+    <div class="person">
+        <p>[$this.each.name]</p>
+    </div>
+    [$end for]
+</section>
+
+<button id="render" m-click="render()">Re-render</button>
+
+</body>
+</html>

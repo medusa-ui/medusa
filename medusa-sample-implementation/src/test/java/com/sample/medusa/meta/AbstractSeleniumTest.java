@@ -111,6 +111,11 @@ public class AbstractSeleniumTest {
     protected void goTo(String url) {
         driver.get(BASE + url);
         waitUntilPageLoaded();
+        if(driver.getCurrentUrl().endsWith("/login")) {
+            login();
+            waitUntilPageLoaded();
+            driver.get(BASE + url);
+        }
     }
 
     private void waitUntilPageLoaded() {
