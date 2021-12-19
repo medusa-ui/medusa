@@ -35,6 +35,7 @@ public class IterationTag extends AbstractTag {
         // </div>
 
         Elements foreachElements = injectionResult.getDocument().getElementsByTag("m:foreach");
+        foreachElements.sort(Comparator.comparingInt(o -> o.getElementsByTag("m:foreach").size()));
         for (Element foreachElement : foreachElements) {
             Element clone = foreachElement.clone();
             final String collection = foreachElement.attr("collection");
