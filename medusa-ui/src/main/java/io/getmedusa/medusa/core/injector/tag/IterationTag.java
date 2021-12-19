@@ -88,7 +88,7 @@ public class IterationTag extends AbstractTag {
     }
 
     private String tempGenerateTemplateID(Element foreachElement, String collection) {
-        final String tId = "t-" + Math.abs(foreachElement.html().hashCode());
+        final String tId = "t-" + Math.abs(foreachElement.html().hashCode()); //TODO deal with parent nodes
         IterationRegistry.getInstance().add(tId, collection);
         return tId;
     }
@@ -101,6 +101,7 @@ public class IterationTag extends AbstractTag {
         if(eachName != null) element = element.attr(TagConstants.M_EACH, eachName);
 
         element.appendChildren(template.childNodesCopy());
+        element.getElementsByTag("template").remove();
 
         return element;
     }

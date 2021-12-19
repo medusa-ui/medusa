@@ -1,6 +1,5 @@
 package io.getmedusa.medusa.core.injector.tag;
 
-import io.getmedusa.medusa.core.injector.tag.meta.ForEachElement;
 import io.getmedusa.medusa.core.injector.tag.meta.InjectionResult;
 import io.getmedusa.medusa.core.util.EachParser;
 import org.jsoup.Jsoup;
@@ -25,6 +24,15 @@ class IterationTagTest {
             <html lang="en">
             <body>
             <m:foreach collection="list-of-values"><p>Medusa</p></m:foreach>
+            </html>""";
+
+    public static final String MULTIPLE_HTML =
+            """
+            <!DOCTYPE html>
+            <html lang="en">
+            <body>
+            <m:foreach collection="list-of-values"><p>Medusa</p></m:foreach>
+            <m:foreach collection="other-list-of-values"><p>Medusa</p></m:foreach>
             </html>""";
 
     public static final String HTML_NESTED =
@@ -53,13 +61,19 @@ class IterationTagTest {
             </html>
             """;
 
-    public static final String HTML_MULTIPLE_FORS =
+    public static final String HTML_W_ELEMENT_NESTED =
             """
-                    <!DOCTYPE html>
-                    <html lang="en">
-                    <body>
-                    <m:foreach collection="list-of-values"><p>Medusa 1</p></m:foreach> x <m:foreach collection="list-of-values"><p>Medusa 2</p></m:foreach></body>
-                    </html>""";
+            <!DOCTYPE html>
+            <html lang="en">
+            <body>
+                <m:foreach collection="list-of-values" eachName="myItem">
+                    <m:foreach collection="other-list-of-values" eachName="myItem2">
+                        <p>Each value: <m:text item="myItem" /> :: <m:text item="myItem2" /></p>
+                    </m:foreach>
+                </m:foreach>
+            </body>
+            </html>
+            """;
 
     private final ServerRequest request = MockServerRequest.builder().build();
 
@@ -100,6 +114,21 @@ class IterationTagTest {
     }
 
     @Test
+    void testMultipleLists() {
+        Map<String, Object> variables = new HashMap<>();
+        final List<Integer> listOfValues = Arrays.asList(1, 2, 3);
+        final List<Integer> otherListOfValues = Arrays.asList(4, 5);
+        variables.put("list-of-values", listOfValues);
+        variables.put("other-list-of-values", otherListOfValues);
+
+        InjectionResult result = TAG.inject(new InjectionResult(MULTIPLE_HTML), variables, request);
+        System.out.println(result.getHTML());
+        Assertions.assertFalse(result.getHTML().contains("m:foreach"));
+        Assertions.assertTrue(result.getHTML().contains("<template") && result.getHTML().contains("</template>"));
+        Assertions.assertEquals(listOfValues.size() + otherListOfValues.size() + variables.size(), countOccurrences(result.getHTML()));
+    }
+
+    @Test
     void testNestedList() {
         Map<String, Object> variables = new HashMap<>();
         final List<Integer> outerList = Arrays.asList(1, 2);
@@ -113,7 +142,8 @@ class IterationTagTest {
         Assertions.assertFalse(result.getHTML().contains("m:foreach"));
         Assertions.assertTrue(result.getHTML().contains("<template") && result.getHTML().contains("</template>"));
 
-        Map<String, List<Element>> templateElements = findDivsWithTemplate(Jsoup.parse(result.getHTML()));
+        final Document document = Jsoup.parse(result.getHTML());
+        Map<String, List<Element>> templateElements = findDivsWithTemplate(document);
 
         Assertions.assertEquals(2, templateElements.keySet().size());
         final String[] keySet = templateElements.keySet().toArray(new String[0]);
@@ -123,6 +153,8 @@ class IterationTagTest {
         int sizeSmallest = Math.min(sizeFirst, sizeSecond);
         Assertions.assertEquals(sizeSmallest, outerList.size());
         Assertions.assertEquals(sizeBiggest, innerList.size() * outerList.size());
+
+        Assertions.assertEquals(variables.size(), document.getElementsByTag("template").size());
     }
 
     @Test
@@ -148,6 +180,65 @@ class IterationTagTest {
         }
     }
 
+    @Test
+    void testMultipleEach() {
+        Map<String, Object> variables = new HashMap<>();
+        final List<Integer> loopValues = Arrays.asList(1, 2, 3, 4, 5);
+        variables.put("list-of-values", loopValues);
+        InjectionResult result = TAG.inject(new InjectionResult(HTML_W_ELEMENT), variables, request);
+        result = new ValueTag().inject(result, variables, request);
+
+        System.out.println(result.getHTML());
+        Assertions.assertFalse(result.getHTML().contains("m:foreach"));
+        Assertions.assertTrue(result.getHTML().contains("<template") && result.getHTML().contains("</template>"));
+        Map<String, List<Element>> templateElements = findDivsWithTemplate(Jsoup.parse(result.getHTML()));
+        List<Element> divs = templateElements.get(templateElements.keySet().stream().findFirst().get());
+
+        Assertions.assertEquals(5, divs.size());
+        for(Element div : divs) {
+            Assertions.assertFalse(div.text().contains("myItem"), "myItem should be replaced");
+            final String eachValAsString = div.text().replace("Each value:", "").trim();
+            final Integer eachVal = Integer.parseInt(eachValAsString);
+            Assertions.assertTrue(loopValues.contains(eachVal));
+        }
+    }
+
+    @Test
+    void testNestedEach() {
+        Map<String, Object> variables = new HashMap<>();
+        final List<Integer> listOfValues = Arrays.asList(1, 2, 3);
+        final List<String> otherListOfValues = Arrays.asList("ABC", "DEF");
+        variables.put("list-of-values", listOfValues);
+        variables.put("other-list-of-values", otherListOfValues);
+
+        InjectionResult result = TAG.inject(new InjectionResult(HTML_W_ELEMENT_NESTED), variables, request);
+        result = new ValueTag().inject(result, variables, request);
+
+        System.out.println(result.getHTML());
+        Assertions.assertFalse(result.getHTML().contains("m:foreach"));
+        Assertions.assertTrue(result.getHTML().contains("<template") && result.getHTML().contains("</template>"));
+        Map<String, List<Element>> templateElements = findDivsWithTemplate(Jsoup.parse(result.getHTML()));
+        List<Element> divs = new ArrayList<>();
+        for(String key : templateElements.keySet()) {
+            List<Element> foundElems = templateElements.get(key);
+            if(foundElems.size() > divs.size()) divs = foundElems;
+        }
+
+        Assertions.assertEquals(listOfValues.size() * otherListOfValues.size(), divs.size());
+        for(Element div : divs) {
+            Assertions.assertFalse(div.text().contains("myItem"), "myItem should be replaced");
+            Assertions.assertFalse(div.text().contains("myItem2"), "myItem2 should be replaced");
+            final String eachValAsString = div.text().replace("Each value:", "").trim();
+            final String[] eachValAsSplit = eachValAsString.split(" :: ");
+
+            final Integer eachValInteger = Integer.parseInt(eachValAsSplit[0]);
+            final String eachValString = eachValAsSplit[1];
+
+            Assertions.assertTrue(listOfValues.contains(eachValInteger));
+            Assertions.assertTrue(otherListOfValues.contains(eachValString));
+        }
+    }
+
     private Map<String, List<Element>> findDivsWithTemplate(Document doc) {
         Map<String, List<Element>> result = new HashMap<>();
 
@@ -162,46 +253,6 @@ class IterationTagTest {
         }
 
         return result;
-    }
-
-    @Test
-    void testDepthParser() {
-        List<ForEachElement> elements = PARSER.buildDepthElements(HTML);
-        Assertions.assertEquals(1, elements.size());
-
-        ForEachElement element = elements.iterator().next();
-        Assertions.assertNull(element.getParent());
-        Assertions.assertEquals(0, element.getDepth());
-        Assertions.assertEquals("list-of-values", element.condition);
-    }
-
-    @Test
-    void testDepthParserMultiple() {
-        List<ForEachElement> elements = PARSER.buildDepthElements(HTML_MULTIPLE_FORS);
-        Assertions.assertEquals(2, elements.size());
-
-        ForEachElement element = elements.iterator().next();
-        Assertions.assertNull(element.getParent());
-        Assertions.assertEquals(0, element.getDepth());
-        Assertions.assertEquals("list-of-values", element.condition);
-
-        element = elements.iterator().next();
-        Assertions.assertNull(element.getParent());
-        Assertions.assertEquals(0, element.getDepth());
-        Assertions.assertEquals("list-of-values", element.condition);
-    }
-
-    @Test
-    void testForEachWithElement() {
-        Map<String, Object> variables = new HashMap<>();
-        variables.put("list-of-values", Arrays.asList(1,2,3,4,5));
-        InjectionResult result = TAG.injectWithVariables(new InjectionResult(HTML_W_ELEMENT), variables);
-        System.out.println(result.getHTML());
-        Assertions.assertFalse(result.getHTML().contains("$foreach"));
-        Assertions.assertTrue(result.getHTML().contains("<template") && result.getHTML().contains("</template>"));
-        for (int i = 1; i <= 5; i++) {
-            Assertions.assertTrue(result.getHTML().contains("<p>Bought " + i + "</p>"));
-        }
     }
 
     long countOccurrences(String block) {
