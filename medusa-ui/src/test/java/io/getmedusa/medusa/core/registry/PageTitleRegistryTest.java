@@ -12,6 +12,8 @@ import reactor.core.publisher.Mono;
 
 import java.net.URI;
 
+import static org.jsoup.Jsoup.parse;
+
 class PageTitleRegistryTest {
 
     private final PageTitleRegistry registry = PageTitleRegistry.getInstance();
@@ -25,7 +27,7 @@ class PageTitleRegistryTest {
     void testAddFullTitle() {
         Resource resource = Mockito.mock(Resource.class);
         Mockito.when(resource.getFilename()).thenReturn("test");
-        registry.addTitle("test", "<title>[$counter-value]</title>");
+        registry.addTitle("test", parse("<title>[$counter-value]</title>"));
         Assertions.assertEquals("[$counter-value]", getTitleViaRegistry("test"));
     }
 
@@ -33,7 +35,7 @@ class PageTitleRegistryTest {
     void testAddPartialTitle() {
         Resource resource = Mockito.mock(Resource.class);
         Mockito.when(resource.getFilename()).thenReturn("test");
-        registry.addTitle("test", "<title>Hello [$counter-value] Medusa</title>");
+        registry.addTitle("test", parse("<title>Hello [$counter-value] Medusa</title>"));
         Assertions.assertEquals("Hello [$counter-value] Medusa", getTitleViaRegistry("test"));
     }
 
@@ -41,7 +43,7 @@ class PageTitleRegistryTest {
     void testAddTitleWithHTMLWithNoTitle() {
         Resource resource = Mockito.mock(Resource.class);
         Mockito.when(resource.getFilename()).thenReturn("test");
-        registry.addTitle("test", "<html></html>");
+        registry.addTitle("test", parse("<html></html>"));
         Assertions.assertNull(getTitleViaRegistry("test"));
     }
 

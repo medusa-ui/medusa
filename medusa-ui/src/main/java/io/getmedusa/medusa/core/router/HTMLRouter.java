@@ -6,6 +6,7 @@ import io.getmedusa.medusa.core.registry.PageTitleRegistry;
 import io.getmedusa.medusa.core.registry.RouteRegistry;
 import io.getmedusa.medusa.core.util.FilenameHandler;
 import io.getmedusa.medusa.core.websocket.ReactiveWebSocketHandler;
+import org.jsoup.nodes.Document;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.Ordered;
@@ -74,8 +75,8 @@ class HTMLRouter {
         try {
             final String fileName = getPath(html);
             if(!PageTitleRegistry.getInstance().hasTitle(hash)) {
-                String htmlContent = HTMLCache.getInstance().getHTMLOrAdd(fileName, StreamUtils.copyToString(html.getInputStream(), CHARSET));
-                PageTitleRegistry.getInstance().addTitle(hash, htmlContent);
+                Document document = HTMLCache.getInstance().getHTMLOrAdd(fileName, StreamUtils.copyToString(html.getInputStream(), CHARSET));
+                PageTitleRegistry.getInstance().addTitle(hash, document);
             }
         } catch (IOException e) {
             e.printStackTrace();
