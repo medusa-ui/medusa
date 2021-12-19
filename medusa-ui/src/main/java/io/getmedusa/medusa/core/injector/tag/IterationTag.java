@@ -4,12 +4,14 @@ import io.getmedusa.medusa.core.injector.tag.meta.Div;
 import io.getmedusa.medusa.core.injector.tag.meta.DivResolver;
 import io.getmedusa.medusa.core.injector.tag.meta.ForEachElement;
 import io.getmedusa.medusa.core.injector.tag.meta.InjectionResult;
+import io.getmedusa.medusa.core.registry.EachValueRegistry;
 import io.getmedusa.medusa.core.registry.IterationRegistry;
 import io.getmedusa.medusa.core.util.EachParser;
 import org.jsoup.nodes.Element;
 import org.jsoup.nodes.Node;
 import org.jsoup.parser.Tag;
 import org.jsoup.select.Elements;
+import org.springframework.web.reactive.function.server.ServerRequest;
 
 import java.util.*;
 
@@ -17,31 +19,36 @@ import static java.util.Collections.sort;
 
 public class IterationTag extends AbstractTag {
 
-    public InjectionResult inject(InjectionResult injectionResult, Map<String, Object> variables) {
-        //[$foreach $orders]
-        //  <div><p>Product: [$each.product.name] Number: [$each.number] <button m-click="cancelOrder('[$each.id]')">Remove</button> </p></div>
-        //[$end for]
+    public InjectionResult inject(InjectionResult injectionResult, Map<String, Object> variables, ServerRequest request) {
+        //<m:foreach collection="orders" eachName="order">
+        //  <p>
+        //      Product: <m:text item="order.product.name" /> Number: <m:text item="order.number" />
+        //      <button m-click="cancelOrder(order.id)">Remove</button>
+        //  </p>
+        //</m:foreach>
         //becomes
         //<template m-id="t-625272461">
-        //  <div>
-        //     <p>Product: [$this.each.product.name] Number: [$this.each.number] </p>
-        //  </div>
+        //     <p>Product: [$this.each.product.name] Number: [$this.each.number]
+        //     <button m-click="cancelOrder(order.id)">Remove</button>
+        //     </p>
         //</template>
-        //<div index="0" template-id="t-625272461">
-        //      <p>Product: Whitewood Number: 5</p>
-        // /div>
-        // <div index="1" template-id="t-625272461">
+        //<div index="0" template-id="t-625272461" m-each="order">
+        //  <p>Product: Whitewood Number: 5
+        //  <button m-click="cancelOrder(order.id)">Remove</button>
+        //  </p>
+        //</div>
+        //<div index="1" template-id="t-625272461">
         //     <p>Product: Darkwoods Number: 3</p>
-        // </div>
+        //</div>
 
-        Elements foreachElements = injectionResult.getDocument().getElementsByTag("m:foreach");
-        foreachElements.sort(Comparator.comparingInt(o -> o.getElementsByTag("m:foreach").size()));
+        Elements foreachElements = injectionResult.getDocument().getElementsByTag(TagConstants.ITERATION_TAG);
+        foreachElements.sort(Comparator.comparingInt(o -> o.getElementsByTag(TagConstants.ITERATION_TAG).size()));
         for (Element foreachElement : foreachElements) {
             Element clone = foreachElement.clone();
-            final String collection = foreachElement.attr("collection");
+            final String collection = foreachElement.attr(TagConstants.ITERATION_TAG_COLLECTION_ATTR);
 
             final String templateID = tempGenerateTemplateID(clone, collection);
-            final String eachName = conditionalAttribute(foreachElement, "eachName");
+            final String eachName = conditionalAttribute(foreachElement, TagConstants.ITERATION_TAG_EACH_ATTR);
 
             Node template = createTemplate(templateID, clone);
             foreachElement.children().remove();
@@ -53,13 +60,13 @@ public class IterationTag extends AbstractTag {
                 Object[] arrayCondition = conditionAsArray(conditionParsed);
                 for (int i = 0; i < arrayCondition.length; i++) {
                     Object obj = arrayCondition[i];
-                    handleIteration(foreachElement, template, i, obj, templateID);
+                    handleIteration(foreachElement, template, i, obj, templateID, eachName, request);
                 }
             } else {
                 //condition parsed is a single value, to which we count up
                 Long iterationCondition = Long.parseLong(conditionParsed.toString());
                 for (int i = 0; i < iterationCondition; i++) {
-                    handleIteration(foreachElement, template, i, i, templateID);
+                    handleIteration(foreachElement, template, i, i, templateID, eachName, request);
                 }
             }
             foreachElement.unwrap();
@@ -70,13 +77,14 @@ public class IterationTag extends AbstractTag {
 
     private Node createTemplate(String templateID, Element foreachElement) {
         Element node = new Element(Tag.valueOf("template"), "")
-                .attr("m-id", templateID);
+                .attr(TagConstants.M_ID, templateID);
         node.appendChildren(foreachElement.children());
         return node;
     }
 
-    private void handleIteration(Element foreachElement, Node template, int index, Object obj, String templateId) {
-        foreachElement.appendChild(createDiv(template, obj, index, templateId));
+    private void handleIteration(Element foreachElement, Node template, int index, Object obj, String templateId, String eachName, ServerRequest request) {
+        if(null != eachName) EachValueRegistry.getInstance().add(request, eachName, index, obj);
+        foreachElement.appendChild(createDiv(template, index, templateId, eachName));
     }
 
     private String tempGenerateTemplateID(Element foreachElement, String collection) {
@@ -85,10 +93,12 @@ public class IterationTag extends AbstractTag {
         return tId;
     }
 
-    private Node createDiv(Node template, Object obj, int index, String templateId) {
+    private Node createDiv(Node template, int index, String templateId, String eachName) {
         Element element = new Element(Tag.valueOf("div"), "")
-                .attr("index", Integer.toString(index))
-                .attr("template-id", templateId);
+                .attr(TagConstants.INDEX, Integer.toString(index))
+                .attr(TagConstants.TEMPLATE_ID, templateId);
+
+        if(eachName != null) element = element.attr(TagConstants.M_EACH, eachName);
 
         element.appendChildren(template.childNodesCopy());
 

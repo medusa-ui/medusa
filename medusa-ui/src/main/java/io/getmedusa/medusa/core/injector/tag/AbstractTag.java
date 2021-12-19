@@ -11,7 +11,7 @@ public abstract class AbstractTag {
         keyValidation(variableKey);
 
         final Object value = ExpressionEval.evalItemAsString(variableKey, variables);
-        if(value == null) return variableKey;
+        if(value == null) return null;
         return value.toString();
     }
 

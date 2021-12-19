@@ -33,7 +33,9 @@ public abstract class ExpressionEval {
     }
 
     public static String evalItemAsString(String itemToEval, Map<String, Object> variables) {
-        return interpretValue(itemToEval, variables).toString();
+        Object val = interpretValue(itemToEval, variables);
+        if(val == null) return null;
+        return val.toString();
     }
 
     public static Object evalItemAsObj(String itemToEval, Map<String, Object> variables) {
@@ -60,7 +62,7 @@ public abstract class ExpressionEval {
                 throw unableToRenderFullObjectException(value, objValue.getClass());
             }
         }
-        return value;
+        return null;
     }
 
     private static IllegalArgumentException unableToRenderFullObjectException(String value, Class<? extends Object> objValueClass) {

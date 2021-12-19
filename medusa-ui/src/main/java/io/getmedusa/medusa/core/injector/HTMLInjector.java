@@ -4,6 +4,7 @@ import io.getmedusa.medusa.core.annotation.UIEventWithAttributes;
 import io.getmedusa.medusa.core.cache.HTMLCache;
 import io.getmedusa.medusa.core.injector.tag.*;
 import io.getmedusa.medusa.core.injector.tag.meta.InjectionResult;
+import io.getmedusa.medusa.core.registry.EachValueRegistry;
 import io.getmedusa.medusa.core.registry.EventHandlerRegistry;
 import io.getmedusa.medusa.core.registry.IterationRegistry;
 import io.getmedusa.medusa.core.registry.RouteRegistry;
@@ -103,20 +104,24 @@ public enum HTMLInjector {
         final UIEventWithAttributes uiEventController = EventHandlerRegistry.getInstance().get(matchedPath);
         if(uiEventController != null) variables.putAll(uiEventController.setupAttributes(request, securityContext).getPageVariables());
 
-        InjectionResult result = iterationTag.inject(new InjectionResult(document), variables);
-        //       result = conditionalTag.injectWithVariables(result, variables);
+        try {
+            InjectionResult result = iterationTag.inject(new InjectionResult(document), variables, request);
+            //       result = conditionalTag.injectWithVariables(result, variables);
 //        result = clickTag.inject(result.getHtml());
 //        result = onEnterTag.inject(result.getHtml());
 //        result = changeTag.inject(result.getHtml());
-        result = valueTag.inject(result, variables);
+            result = valueTag.inject(result, variables, request);
 //        result = classAppendTag.injectWithVariables(result, variables);
 //        result = genericMTag.injectWithVariables(result, variables);
 //        result = hydraMenuTag.injectWithVariables(result);
 
-        injectVariablesInScript(result, variables);
+            injectVariablesInScript(result, variables);
 
-        String html = injectScript(matchedPath, result, securityContext.getUniqueId(), csrfToken);
-        return urlReplacer.replaceUrls(html, request.headers());
+            String html = injectScript(matchedPath, result, securityContext.getUniqueId(), csrfToken);
+            return urlReplacer.replaceUrls(html, request.headers());
+        } finally {
+            EachValueRegistry.getInstance().clear(request);
+        }
     }
 
     private String matchRequestPath(ServerRequest request) {

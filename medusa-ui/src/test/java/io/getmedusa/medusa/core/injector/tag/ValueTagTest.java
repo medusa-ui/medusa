@@ -3,6 +3,8 @@ package io.getmedusa.medusa.core.injector.tag;
 import io.getmedusa.medusa.core.injector.tag.meta.InjectionResult;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.springframework.mock.web.reactive.function.server.MockServerRequest;
+import org.springframework.web.reactive.function.server.ServerRequest;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -19,11 +21,13 @@ class ValueTagTest {
     public static final String HTML_WITH_SPACES = "<p>Counter: <m:text item=\" counter-value   \" /></p>";
     public static final String HTML_WITH_COMPLEX_OBJECT = "<p>Counter: <m:text item=\"obj.exampleValue\" /></p>";
 
+    private final ServerRequest request = MockServerRequest.builder().build();
+
     @Test
     void testWithValueStandard() {
         Map<String, Object> variables = new HashMap<>();
         variables.put("counter-value", 123);
-        String html = TAG.inject(new InjectionResult(HTML), variables).getHTML();
+        String html = TAG.inject(new InjectionResult(HTML), variables, request).getHTML();
         System.out.println(html);
         Assertions.assertTrue(html.contains("123"));
         Assertions.assertTrue(html.contains("from-value=\"counter-value\""));
@@ -34,7 +38,7 @@ class ValueTagTest {
     void testWithValueComplex() {
         Map<String, Object> variables = new HashMap<>();
         variables.put("obj", new ComplexObject("123"));
-        String html = TAG.inject(new InjectionResult(HTML_WITH_COMPLEX_OBJECT), variables).getHTML();
+        String html = TAG.inject(new InjectionResult(HTML_WITH_COMPLEX_OBJECT), variables, request).getHTML();
         System.out.println(html);
         Assertions.assertTrue(html.contains("123"));
         Assertions.assertTrue(html.contains("from-value=\"obj.exampleValue\""));
@@ -45,7 +49,7 @@ class ValueTagTest {
     void testWithValueAsAttribute() {
         Map<String, Object> variables = new HashMap<>();
         variables.put("counter-value", 2654);
-        String html = TAG.inject(new InjectionResult(HTML_VALUE_AS_ATTRIBUTE), variables).getHTML();
+        String html = TAG.inject(new InjectionResult(HTML_VALUE_AS_ATTRIBUTE), variables, request).getHTML();
         System.out.println(html);
         Assertions.assertTrue(html.contains("2654"));
         Assertions.assertTrue(html.contains("from-value=\"counter-value\""));
@@ -57,7 +61,7 @@ class ValueTagTest {
     void testWithValueAsComplexAttribute() {
         Map<String, Object> variables = new HashMap<>();
         variables.put("obj", new ComplexObject("2654"));
-        String html = TAG.inject(new InjectionResult(HTML_VALUE_AS_COMPLEX_ATTRIBUTE), variables).getHTML();
+        String html = TAG.inject(new InjectionResult(HTML_VALUE_AS_COMPLEX_ATTRIBUTE), variables, request).getHTML();
         System.out.println(html);
         Assertions.assertTrue(html.contains("2654"));
         Assertions.assertTrue(html.contains("from-value=\"obj.exampleValue\""));
@@ -69,7 +73,7 @@ class ValueTagTest {
     void testWrappedInTag() {
         Map<String, Object> variables = new HashMap<>();
         variables.put("counter-value", 98798);
-        String html = TAG.inject(new InjectionResult(HTML_WRAPPED_IN_TAG), variables).getHTML();
+        String html = TAG.inject(new InjectionResult(HTML_WRAPPED_IN_TAG), variables, request).getHTML();
         System.out.println(html);
         Assertions.assertTrue(html.contains(">98798<"));
         Assertions.assertTrue(html.contains("from-value=\"counter-value\""));
@@ -90,7 +94,7 @@ class ValueTagTest {
     void testWithValueWithSpaces() {
         Map<String, Object> variables = new HashMap<>();
         variables.put("counter-value", 321);
-        String html = TAG.inject(new InjectionResult(HTML_WITH_SPACES), variables).getHTML();
+        String html = TAG.inject(new InjectionResult(HTML_WITH_SPACES), variables, request).getHTML();
         System.out.println(html);
         Assertions.assertTrue(html.contains("321"));
         Assertions.assertTrue(html.contains("from-value=\"counter-value\""));
@@ -103,7 +107,7 @@ class ValueTagTest {
         variables.put("counter-value", new ComplexObject("xyz"));
 
         try {
-            String html = TAG.inject(new InjectionResult(HTML_WRAPPED_IN_TAG), variables).getHTML();
+            String html = TAG.inject(new InjectionResult(HTML_WRAPPED_IN_TAG), variables, request).getHTML();
             System.out.println(html);
             Assertions.fail();
         } catch (IllegalArgumentException e) {
