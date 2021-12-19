@@ -39,7 +39,8 @@ public class ExampleEventHandler {
                 .with("done-waiting", false)
                 .with("search-result", "")
 
-                .with("principal", securityContext.getUserDetails().getUsername())
+                .with("principal", "anonymous")
+                //.with("principal", securityContext.getUserDetails().getUsername())
 
                 // query param + conversion
                 .with("query-param-q", request.queryParam("q").orElse("nothing"), parameterValue -> "query parameter q: " + parameterValue)
