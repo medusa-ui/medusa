@@ -13,6 +13,7 @@ public class TempPageWithXMLEventHandler {
 
     public PageAttributes setupAttributes() {
         return new PageAttributes()
+                .with("title", "Medusa demo :: " + UUID.randomUUID() + ":: Page XML")
                 .with("example-value", UUID.randomUUID().toString())
                 .with("someVariable", new SecureRandom().nextInt(9999))
                 .with("outerLoop", List.of(1, 2))

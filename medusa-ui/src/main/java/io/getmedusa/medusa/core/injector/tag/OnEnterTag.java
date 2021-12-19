@@ -3,7 +3,7 @@ package io.getmedusa.medusa.core.injector.tag;
 import org.springframework.stereotype.Component;
 
 @Component
-public class OnEnterTag extends AbstractTag {
+public class OnEnterTag extends _AbstractTag {
 
     @Override
     String pattern() {

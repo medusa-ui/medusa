@@ -5,12 +5,55 @@ import io.getmedusa.medusa.core.injector.tag.meta.DivResolver;
 import io.getmedusa.medusa.core.injector.tag.meta.ForEachElement;
 import io.getmedusa.medusa.core.injector.tag.meta.InjectionResult;
 import io.getmedusa.medusa.core.util.EachParser;
+import org.jsoup.nodes.Element;
+import org.jsoup.nodes.Node;
+import org.jsoup.parser.Tag;
+import org.jsoup.select.Elements;
 
 import java.util.*;
 
 import static java.util.Collections.sort;
 
-public class IterationTag {
+public class IterationTag extends AbstractTag {
+
+    public InjectionResult inject(InjectionResult injectionResult, Map<String, Object> variables) {
+        //TODO comments
+
+        Elements foreachElements = injectionResult.getDocument().getElementsByTag("m:foreach");
+        for (Element foreachElement : foreachElements) {
+            final String collection = foreachElement.attr("collection");
+            final String eachName = conditionalAttribute(foreachElement, "eachName");
+
+            Object conditionParsed = parseConditionWithVariables(collection, variables);
+            if (conditionParsed instanceof Collection) {
+                //a true 'foreach', the 'each' becomes each element of the collection
+                Object[] arrayCondition = conditionAsArray(conditionParsed);
+                for (Object obj : arrayCondition) {
+                    foreachElement.appendChild(createDiv(obj));
+                }
+            } else {
+                //condition parsed is a single value, to which we count up
+                Long iterationCondition = Long.parseLong(conditionParsed.toString());
+                for (int i = 0; i < iterationCondition; i++) {
+                    foreachElement.appendChild(createDiv(i));
+                }
+            }
+            foreachElement.unwrap();
+        }
+
+        return injectionResult;
+    }
+
+    private Node createDiv(Object obj) {
+        return new Element(Tag.valueOf("div"), "")
+                .text(obj.toString());
+    }
+
+    private String conditionalAttribute(Element e, String attr) {
+        if (e.hasAttr(attr)) return e.attr(attr);
+        return null;
+    }
+
 
     private static final EachParser PARSER = new EachParser();
 
@@ -39,8 +82,8 @@ public class IterationTag {
     }
 
     private void addChildren(List<ForEachElement> depthElements) {
-        for(ForEachElement element : depthElements) {
-            if(element.hasParent()) {
+        for (ForEachElement element : depthElements) {
+            if (element.hasParent()) {
                 element.getParent().addChild(element);
             }
         }
@@ -48,9 +91,9 @@ public class IterationTag {
 
     private List<Div> buildDivs(Map<String, Object> variables, List<ForEachElement> depthElements) {
         List<Div> complexDivStructure = new ArrayList<>();
-        for(ForEachElement element : depthElements) {
+        for (ForEachElement element : depthElements) {
             //only run on the parent layer, as this code will traverse through children itself
-            if(element.getDepth() == 0) {
+            if (element.getDepth() == 0) {
                 Object conditionParsed = parseConditionWithVariables(element.condition, variables);
                 if (conditionParsed instanceof Collection) {
                     //a true 'foreach', the 'each' becomes each element of the collection
@@ -59,7 +102,7 @@ public class IterationTag {
                     complexDivStructure.add(overallParent);
 
                     for (Object eachObject : iterationCondition) {
-                        complexDivStructure.addAll(createDivForChildren(variables, element, new Div(element, eachObject, overallParent) ));
+                        complexDivStructure.addAll(createDivForChildren(variables, element, new Div(element, eachObject, overallParent)));
                     }
 
                 } else {
@@ -69,7 +112,7 @@ public class IterationTag {
                     complexDivStructure.add(overallParent);
 
                     for (int i = 0; i < iterationCondition; i++) {
-                        complexDivStructure.addAll(createDivForChildren(variables, element, new Div(element, i, overallParent) ));
+                        complexDivStructure.addAll(createDivForChildren(variables, element, new Div(element, i, overallParent)));
                     }
                 }
             }
@@ -81,8 +124,8 @@ public class IterationTag {
         List<Div> complexDivStructure = new ArrayList<>();
         complexDivStructure.add(parentDiv);
 
-        if(element.hasChildren()) {
-            for(ForEachElement child : element.getChildren()) {
+        if (element.hasChildren()) {
+            for (ForEachElement child : element.getChildren()) {
                 Object childConditionParsed = parseConditionWithVariables(child.condition, variables);
                 final boolean hasChildElement;
                 if (childConditionParsed instanceof Collection) {
@@ -103,7 +146,7 @@ public class IterationTag {
                     }
                 }
 
-                if(!hasChildElement) {
+                if (!hasChildElement) {
                     ForEachElement empty = new ForEachElement(child.blockHTML, "");
                     empty.setParent(child.getParent());
                     Div div = new Div(empty, null, parentDiv);
@@ -120,16 +163,16 @@ public class IterationTag {
         //a. resolve depth-first
         //b. add parent/child references
         //c. take note of which divs are root divs
-        for(Div div : complexStructure) {
+        for (Div div : complexStructure) {
             div.setResolvedHTML(div.getElement().getInnerHTML());
             Div parentDiv = div.getParent();
-            if(parentDiv != null) parentDiv.getChildren().add(div);
-            if(div.isRoot()) rootElements.add(div);
+            if (parentDiv != null) parentDiv.getChildren().add(div);
+            if (div.isRoot()) rootElements.add(div);
         }
 
         //then go over all root divs
         //and build up the HTML parent -> child
-        for(Div root : rootElements) {
+        for (Div root : rootElements) {
             //build template based on the element (parent -> child)
             String template = DivResolver.buildTemplate(root.getElement());
 
@@ -146,7 +189,7 @@ public class IterationTag {
 
     private String buildFinalHTML(Div root) {
         StringBuilder builder = new StringBuilder();
-        for(Div child : root.getChildren()) {
+        for (Div child : root.getChildren()) {
             builder.append(child.getResolvedHTML());
         }
         return builder.toString();
@@ -154,18 +197,17 @@ public class IterationTag {
 
     private String deepResolve(Div div) {
         Map<String, StringBuilder> childMap = new HashMap<>();
-        for(Div child : div.getChildren()) {
+        for (Div child : div.getChildren()) {
             StringBuilder builder = childMap.getOrDefault(child.getElement().blockHTML, new StringBuilder());
             builder.append(deepResolve(child));
             childMap.put(child.getElement().blockHTML, builder);
         }
 
-        for(Map.Entry<String, StringBuilder> entry : childMap.entrySet()) {
+        for (Map.Entry<String, StringBuilder> entry : childMap.entrySet()) {
             div.setResolvedHTML(div.getResolvedHTML().replace(entry.getKey(), entry.getValue().toString()));
         }
 
         div.setResolvedHTML(DivResolver.resolve(div));
-
         return div.getResolvedHTML();
     }
 
@@ -173,11 +215,4 @@ public class IterationTag {
     private Object[] conditionAsArray(Object conditionParsed) {
         return ((Collection<Object>) conditionParsed).toArray();
     }
-
-    private Object parseConditionWithVariables(String condition, Map<String, Object> variables) {
-        final Object variable = variables.getOrDefault(condition, new ArrayList<>());
-        if(variable == null) return Collections.emptyList();
-        return variable;
-    }
-
 }

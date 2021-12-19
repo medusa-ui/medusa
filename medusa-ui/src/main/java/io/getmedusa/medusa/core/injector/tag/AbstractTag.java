@@ -1,60 +1,28 @@
 package io.getmedusa.medusa.core.injector.tag;
 
-import io.getmedusa.medusa.core.injector.tag.meta.InjectionResult;
+import io.getmedusa.medusa.core.util.ExpressionEval;
 
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public abstract class AbstractTag {
 
-    abstract String tagValue();
-    abstract String pattern();
-    abstract String substitutionLogic(String fullMatch, String tagContent);
+    protected String variableToString(String variableKey, Map<String, Object> variables) {
+        keyValidation(variableKey);
 
-    protected final Pattern pattern = Pattern.compile(pattern(), Pattern.CASE_INSENSITIVE);
-
-    protected Matcher buildMatcher(String html) {
-        return pattern.matcher(html);
+        final Object value = ExpressionEval.evalItemAsString(variableKey, variables);
+        if(value == null) return variableKey;
+        return value.toString();
     }
 
-    protected String standardPattern() {
-        return "("+tagValue() + "=\".+?\")|("+tagValue() + "='.+?')";
+    protected Object parseConditionWithVariables(String condition, Map<String, Object> variables) {
+        keyValidation(condition);
+        final Object variable = ExpressionEval.evalItemAsObj(condition, variables);
+        if(variable == null) return Collections.emptyList();
+        return variable;
     }
 
-
-    /**
-     * Replaces the m-tags in HTML with usable HTML tags on pageload
-     * @param result
-     * @return
-     */
-    public InjectionResult inject(InjectionResult result) {
-        Matcher matcher = buildMatcher(result.getHTML());
-
-        final Map<String, String> replacements = new HashMap<>();
-        while (matcher.find()) {
-            final String fullMatch = matcher.group(0);
-            replacements.put(fullMatch, substitutionLogic(fullMatch, fullMatchToTagContent(fullMatch)));
-        }
-
-        for(Map.Entry<String, String> entrySet : replacements.entrySet()) {
-            //result = result.replace(entrySet.getKey(),  entrySet.getValue());
-        }
-        return result;
-    }
-
-    public String fullMatchToTagContent(String fullMatch) {
-        String tagContent = fullMatch;
-        if(tagContent.contains("=")) tagContent = tagContent.replaceFirst(tagValue() + "=", "");
-        if(tagContent.startsWith("\"")) tagContent = tagContent.substring(1, tagContent.length() - 1);
-        if(tagContent.startsWith("[$")) tagContent = tagContent.substring(2, tagContent.length() - 1);
-        if(tagContent.startsWith("'")) tagContent = tagContent.substring(1, tagContent.length() - 1).replace("\"","'");
-        return tagContent.trim();
-    }
-
-    public InjectionResult inject(String html) {
-        InjectionResult result = null;// new InjectionResult(html);
-        return inject(result);
+    private void keyValidation(String variableKey) {
+        if(variableKey == null) throw new IllegalStateException("Variable key '" + variableKey + "' should either exist or shows an error in internal parsing logic.");
     }
 }

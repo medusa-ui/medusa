@@ -23,7 +23,7 @@ public abstract class ExpressionEval {
     public static String eval(String expressionToInterpret, Map<String, Object> variables) {
         Matcher matcher = pattern.matcher(expressionToInterpret);
         while (matcher.find()) {
-            expressionToInterpret = expressionToInterpret.replace(matcher.group(), interpretValue(matcher.group(), variables));
+            expressionToInterpret = expressionToInterpret.replace(matcher.group(), evalItemAsString(matcher.group(), variables));
         }
         if (SpelExpressionParserHelper.isExpression(expressionToInterpret)) {
             return SpelExpressionParserHelper.getStringValue(expressionToInterpret);
@@ -32,18 +32,22 @@ public abstract class ExpressionEval {
         }
     }
 
-    public static String evalItem(String itemToEval, Map<String, Object> variables) {
+    public static String evalItemAsString(String itemToEval, Map<String, Object> variables) {
+        return interpretValue(itemToEval, variables).toString();
+    }
+
+    public static Object evalItemAsObj(String itemToEval, Map<String, Object> variables) {
         return interpretValue(itemToEval, variables);
     }
 
-    private static String interpretValue(String value, Map<String, Object> variables) {
+    private static Object interpretValue(String value, Map<String, Object> variables) {
         if (!variables.containsKey(value)) {
             if (value.contains(".")) {
                 String[] variableKeySplit = value.split("\\.", 2);
                 Object objValue = variables.get(variableKeySplit[0]);
                 Object subValue = SpelExpressionParserHelper.getValue(variableKeySplit[1], objValue);
                 if (subValue.getClass().getPackage().getName().startsWith("java.")) {
-                    return subValue.toString();
+                    return subValue;
                 } else {
                     throw unableToRenderFullObjectException(value, subValue.getClass());
                 }
@@ -51,7 +55,7 @@ public abstract class ExpressionEval {
         } else {
             Object objValue = variables.get(value);
             if (objValue.getClass().getPackage().getName().startsWith("java.")) {
-                return objValue.toString();
+                return objValue;
             } else {
                 throw unableToRenderFullObjectException(value, objValue.getClass());
             }

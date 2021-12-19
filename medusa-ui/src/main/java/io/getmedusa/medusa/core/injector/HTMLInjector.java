@@ -103,7 +103,7 @@ public enum HTMLInjector {
         final UIEventWithAttributes uiEventController = EventHandlerRegistry.getInstance().get(matchedPath);
         if(uiEventController != null) variables.putAll(uiEventController.setupAttributes(request, securityContext).getPageVariables());
 
-        InjectionResult result = iterationTag.injectWithVariables(new InjectionResult(document), variables);
+        InjectionResult result = iterationTag.inject(new InjectionResult(document), variables);
         //       result = conditionalTag.injectWithVariables(result, variables);
 //        result = clickTag.inject(result.getHtml());
 //        result = onEnterTag.inject(result.getHtml());
@@ -112,10 +112,10 @@ public enum HTMLInjector {
 //        result = classAppendTag.injectWithVariables(result, variables);
 //        result = genericMTag.injectWithVariables(result, variables);
 //        result = hydraMenuTag.injectWithVariables(result);
-        // if(csrfToken != null) result = result.replace("{{_csrf}}", csrfToken);
+
         injectVariablesInScript(result, variables);
 
-        String html = injectScript(matchedPath, result, securityContext.getUniqueId());
+        String html = injectScript(matchedPath, result, securityContext.getUniqueId(), csrfToken);
         return urlReplacer.replaceUrls(html, request.headers());
     }
 
@@ -149,7 +149,7 @@ public enum HTMLInjector {
         }
     }
 
-    private String injectScript(String path, InjectionResult html, String uniqueId) {
+    private String injectScript(String path, InjectionResult html, String uniqueId, String csrfToken) {
         String injectedHTML = html.getHTML();
         if(script != null) {
             final String bodyEndTagReplacement = "<script id=\"m-websocket-setup\">\n" +
@@ -163,6 +163,7 @@ public enum HTMLInjector {
             }
         }
         injectedHTML = addStyling(injectedHTML);
+        if(csrfToken != null) injectedHTML = injectedHTML.replace("{{_csrf}}", csrfToken);
         return injectedHTML;
     }
 

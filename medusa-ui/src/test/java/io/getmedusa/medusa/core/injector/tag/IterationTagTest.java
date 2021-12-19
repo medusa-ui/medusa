@@ -18,8 +18,10 @@ class IterationTagTest {
                     <!DOCTYPE html>
                     <html lang="en">
                     <body>
-                    [$foreach $list-of-values]<p>Medusa</p>[$end for]</body>
+                    <m:foreach collection="list-of-values"><p>Medusa</p></m:foreach>
                     </html>""";
+
+    //TODO nested
 
     public static final String HTML_W_ELEMENT =
             """
@@ -36,6 +38,20 @@ class IterationTagTest {
                     <body>
                     [$foreach $list-of-values]<p>Medusa 1</p>[$end for] x [$foreach $list-of-values]<p>Medusa 2</p>[$end for]</body>
                     </html>""";
+
+    //TODO multiple + nested
+
+    @Test
+    void testSingleElementList() {
+        System.out.println(HTML);
+        Map<String, Object> variables = new HashMap<>();
+        variables.put("list-of-values", Collections.singletonList(1));
+        InjectionResult result = TAG.inject(new InjectionResult(HTML), variables);
+        System.out.println(result.getHTML());
+        Assertions.assertFalse(result.getHTML().contains("m:foreach"));
+        Assertions.assertTrue(result.getHTML().contains("<template") && result.getHTML().contains("</template>"));
+        Assertions.assertEquals(2, countOccurrences(result.getHTML()));
+    }
 
     @Test
     void testDepthParser() {
@@ -73,18 +89,6 @@ class IterationTagTest {
         Assertions.assertFalse(result.getHTML().contains("$foreach"));
         Assertions.assertTrue(result.getHTML().contains("<template") && result.getHTML().contains("</template>"));
         Assertions.assertEquals(1, countOccurrences(result.getHTML()));
-    }
-
-    @Test
-    void testSingleElementList() {
-        System.out.println(HTML);
-        Map<String, Object> variables = new HashMap<>();
-        variables.put("list-of-values", Collections.singletonList(1));
-        InjectionResult result = TAG.injectWithVariables(new InjectionResult(HTML), variables);
-        System.out.println(result.getHTML());
-        Assertions.assertFalse(result.getHTML().contains("$foreach"));
-        Assertions.assertTrue(result.getHTML().contains("<template") && result.getHTML().contains("</template>"));
-        Assertions.assertEquals(2, countOccurrences(result.getHTML()));
     }
 
     @Test

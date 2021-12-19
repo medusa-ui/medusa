@@ -1,7 +1,6 @@
 package io.getmedusa.medusa.core.injector.tag;
 
 import io.getmedusa.medusa.core.injector.tag.meta.InjectionResult;
-import io.getmedusa.medusa.core.util.ExpressionEval;
 import org.jsoup.nodes.Element;
 import org.jsoup.nodes.Node;
 import org.jsoup.parser.Tag;
@@ -9,7 +8,7 @@ import org.jsoup.select.Elements;
 
 import java.util.Map;
 
-public class ValueTag {
+public class ValueTag extends AbstractTag {
 
     public InjectionResult inject(InjectionResult result, Map<String, Object> variables) {
         handleMTextTag(result, variables);
@@ -49,13 +48,5 @@ public class ValueTag {
         return new Element(Tag.valueOf("span"), "")
                 .text(variableValue)
                 .attr("from-value", item);
-    }
-
-    private String variableToString(String variableKey, Map<String, Object> variables) {
-        if(variableKey == null) throw new IllegalStateException("Variable key '" + variableKey + "' should either exist or shows an error in internal parsing logic.");
-
-        final Object value = ExpressionEval.evalItem(variableKey, variables);
-        if(value == null) return variableKey;
-        return value.toString();
     }
 }
