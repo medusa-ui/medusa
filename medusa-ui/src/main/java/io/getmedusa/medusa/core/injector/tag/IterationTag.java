@@ -4,6 +4,7 @@ import io.getmedusa.medusa.core.injector.tag.meta.Div;
 import io.getmedusa.medusa.core.injector.tag.meta.DivResolver;
 import io.getmedusa.medusa.core.injector.tag.meta.ForEachElement;
 import io.getmedusa.medusa.core.injector.tag.meta.InjectionResult;
+import io.getmedusa.medusa.core.registry.IterationRegistry;
 import io.getmedusa.medusa.core.util.EachParser;
 import org.jsoup.nodes.Element;
 import org.jsoup.nodes.Node;
@@ -17,25 +18,47 @@ import static java.util.Collections.sort;
 public class IterationTag extends AbstractTag {
 
     public InjectionResult inject(InjectionResult injectionResult, Map<String, Object> variables) {
-        //TODO comments
+        //[$foreach $orders]
+        //  <div><p>Product: [$each.product.name] Number: [$each.number] <button m-click="cancelOrder('[$each.id]')">Remove</button> </p></div>
+        //[$end for]
+        //becomes
+        //<template m-id="t-625272461">
+        //  <div>
+        //     <p>Product: [$this.each.product.name] Number: [$this.each.number] </p>
+        //  </div>
+        //</template>
+        //<div index="0" template-id="t-625272461">
+        //      <p>Product: Whitewood Number: 5</p>
+        // /div>
+        // <div index="1" template-id="t-625272461">
+        //     <p>Product: Darkwoods Number: 3</p>
+        // </div>
 
         Elements foreachElements = injectionResult.getDocument().getElementsByTag("m:foreach");
         for (Element foreachElement : foreachElements) {
+            Element clone = foreachElement.clone();
             final String collection = foreachElement.attr("collection");
+
+            final String templateID = tempGenerateTemplateID(clone, collection);
             final String eachName = conditionalAttribute(foreachElement, "eachName");
+
+            Node template = createTemplate(templateID, clone);
+            foreachElement.children().remove();
+            foreachElement.appendChild(template);
 
             Object conditionParsed = parseConditionWithVariables(collection, variables);
             if (conditionParsed instanceof Collection) {
                 //a true 'foreach', the 'each' becomes each element of the collection
                 Object[] arrayCondition = conditionAsArray(conditionParsed);
-                for (Object obj : arrayCondition) {
-                    foreachElement.appendChild(createDiv(obj));
+                for (int i = 0; i < arrayCondition.length; i++) {
+                    Object obj = arrayCondition[i];
+                    handleIteration(foreachElement, template, i, obj, templateID);
                 }
             } else {
                 //condition parsed is a single value, to which we count up
                 Long iterationCondition = Long.parseLong(conditionParsed.toString());
                 for (int i = 0; i < iterationCondition; i++) {
-                    foreachElement.appendChild(createDiv(i));
+                    handleIteration(foreachElement, template, i, i, templateID);
                 }
             }
             foreachElement.unwrap();
@@ -44,9 +67,31 @@ public class IterationTag extends AbstractTag {
         return injectionResult;
     }
 
-    private Node createDiv(Object obj) {
-        return new Element(Tag.valueOf("div"), "")
-                .text(obj.toString());
+    private Node createTemplate(String templateID, Element foreachElement) {
+        Element node = new Element(Tag.valueOf("template"), "")
+                .attr("m-id", templateID);
+        node.appendChildren(foreachElement.children());
+        return node;
+    }
+
+    private void handleIteration(Element foreachElement, Node template, int index, Object obj, String templateId) {
+        foreachElement.appendChild(createDiv(template, obj, index, templateId));
+    }
+
+    private String tempGenerateTemplateID(Element foreachElement, String collection) {
+        final String tId = "t-" + Math.abs(foreachElement.html().hashCode());
+        IterationRegistry.getInstance().add(tId, collection);
+        return tId;
+    }
+
+    private Node createDiv(Node template, Object obj, int index, String templateId) {
+        Element element = new Element(Tag.valueOf("div"), "")
+                .attr("index", Integer.toString(index))
+                .attr("template-id", templateId);
+
+        element.appendChildren(template.childNodesCopy());
+
+        return element;
     }
 
     private String conditionalAttribute(Element e, String attr) {
