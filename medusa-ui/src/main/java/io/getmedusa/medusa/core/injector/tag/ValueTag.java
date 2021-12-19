@@ -2,101 +2,60 @@ package io.getmedusa.medusa.core.injector.tag;
 
 import io.getmedusa.medusa.core.injector.tag.meta.InjectionResult;
 import io.getmedusa.medusa.core.util.ExpressionEval;
+import org.jsoup.nodes.Element;
+import org.jsoup.nodes.Node;
+import org.jsoup.parser.Tag;
+import org.jsoup.select.Elements;
 
-import java.util.HashMap;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class ValueTag {
 
-    private static final char DOUBLE_QUOTE = '\"';
-    protected final Pattern pattern = Pattern.compile("\\[\\$(?!(parent\\.){1,99}each|this\\.each|if|else|end).*?\\]", Pattern.CASE_INSENSITIVE);
-
-    public InjectionResult injectWithVariables(InjectionResult result, Map<String, Object> variables) {
-        String html = result.getHtml();
-        html = replaceTitle(html, variables);
-
-        Matcher matcher = pattern.matcher(html);
-        Map<String, String> replacements = new HashMap<>();
-
-        while (matcher.find()) {
-            Context context = determineContext(html, matcher);
-
-            final String match = matcher.group(0);
-            final String searchKey = toSearchKey(match);
-            final String value = ExpressionEval.eval(searchKey, variables);
-            final String variableKey = match.substring(2, match.length() - 1).trim();
-
-            if(context.equals(Context.AS_ATTRIBUTE)) {
-                final String replacement = value + DOUBLE_QUOTE + " from-value=\"" + variableKey + "\"";
-                replacements.put(match + DOUBLE_QUOTE, replacement);
-            } else if(context.equals(Context.AS_WRAPPED_IN_TAG)) {
-                final String replacement = " from-value=\"" + variableKey + "\">" + value;
-                replacements.put(">" + match, replacement);
-            } else {
-                replacements.put(match, "<span from-value=\"" + variableKey + "\">"+value+"</span>");
-            }
-        }
-
-        for(Map.Entry<String, String> replacement : replacements.entrySet()) {
-           while(html.contains(replacement.getKey()) && !replacement.getValue().contains(replacement.getKey())) {
-                html = html.replace(replacement.getKey(), replacement.getValue());
-            }
-        }
-
-        result.setHtml(html);
+    public InjectionResult inject(InjectionResult result, Map<String, Object> variables) {
+        handleMTextTag(result, variables);
+        handleMValueAttribute(result, variables);
         return result;
     }
 
-    private String toSearchKey(String match) {
-        String key = match.substring(1, match.length() - 1).trim();
-        if(key.contains("$ ")) {
-            key = key.replace("$ ", "$");
+    private void handleMTextTag(InjectionResult result, Map<String, Object> variables) {
+        //<m:text item="counter-value" /> w/ "counter-value" = 123
+        //becomes
+        //<span from-value="counter-value">123</span>
+
+        Elements mTextTags = result.getDocument().getElementsByTag("m:text");
+        for (Element mTextTag : mTextTags) {
+            final String item = mTextTag.attr("item").trim();
+            final String variableValue = variableToString(item, variables);
+            mTextTag.replaceWith(createSpan(item, variableValue));
         }
-        return key;
     }
 
-    private String replaceTitle(String html, Map<String, Object> variables) {
-        Pattern titlePattern = Pattern.compile("<title>.+</title>", Pattern.CASE_INSENSITIVE);
-        Matcher titleMatcher = titlePattern.matcher(html);
+    private void handleMValueAttribute(InjectionResult result, Map<String, Object> variables) {
+        //<input type="text" m:value="counter-value" /> w/ "counter-value" = 123
+        //becomes
+        //<input type="text" from-value="counter-value" value="123" />
 
-        if (titleMatcher.find()) {
-            final String title = titleMatcher.group(0);
-            String titleCopy = title;
-
-            Matcher matcher = pattern.matcher(title);
-
-            while (matcher.find()) {
-                final String match = matcher.group(0);
-                final String variableKey = match.substring(1, match.length() - 1).trim();
-                final Object value = ExpressionEval.eval(variableKey, variables);
-                if(value == null) throw new IllegalStateException("Variable key '" + variableKey + "' should either exist or shows an error in internal parsing logic.");
-                final String valueAsString = value.toString();
-                titleCopy = titleCopy.replace(match, valueAsString);
-            }
-            html = html.replace(title, titleCopy);
+        Elements tagsWithMValue = result.getDocument().getElementsByAttribute("m:value");
+        for (Element tagWithMValue : tagsWithMValue) {
+            final String item = tagWithMValue.attr("m:value").trim();
+            final String variableValue = variableToString(item, variables);
+            tagWithMValue.removeAttr("m:value");
+            tagWithMValue.val(variableValue);
+            tagWithMValue.attr("from-value", item);
         }
-
-        return html;
     }
 
-    private Context determineContext(String html, Matcher matcher) {
-        char before = html.charAt(matcher.start(0) - 1);
-        char after = html.charAt(matcher.end(0));
-
-        if(DOUBLE_QUOTE == before && DOUBLE_QUOTE == after) {
-            return Context.AS_ATTRIBUTE;
-        } else if('>' == before && '<' == after) {
-            return Context.AS_WRAPPED_IN_TAG;
-        }
-
-        return Context.AS_PLAIN_VALUE;
+    private Node createSpan(String item, String variableValue) {
+        return new Element(Tag.valueOf("span"), "")
+                .text(variableValue)
+                .attr("from-value", item);
     }
 
-    private enum Context {
-        AS_ATTRIBUTE,
-        AS_WRAPPED_IN_TAG,
-        AS_PLAIN_VALUE
+    private String variableToString(String variableKey, Map<String, Object> variables) {
+        if(variableKey == null) throw new IllegalStateException("Variable key '" + variableKey + "' should either exist or shows an error in internal parsing logic.");
+
+        final Object value = ExpressionEval.evalItem(variableKey, variables);
+        if(value == null) return variableKey;
+        return value.toString();
     }
 }

@@ -17,7 +17,7 @@ public class GenericMTag {
     public static final Pattern patternMAttribute = Pattern.compile("m-\\w+?=[\\s\"'].*?\\$.*?[\"']", Pattern.CASE_INSENSITIVE);
 
     public InjectionResult injectWithVariables(InjectionResult html, Map<String, Object> variables) {
-        String htmlString = html.getHtml();
+        String htmlString = html.getHTML();
 
         Matcher matcherFull = patternTagWithMAttribute.matcher(htmlString);
         while (matcherFull.find()) {
@@ -50,7 +50,7 @@ public class GenericMTag {
             htmlString = htmlString.replace(tag, newTag);
         }
 
-        html.setHtml(htmlString);
+        //html.setHtml(htmlString);
         return html;
     }
 

@@ -16,7 +16,7 @@ public class ConditionalTag {
     public static final Pattern patternIfEnd = Pattern.compile("\\[\\$end if]", Pattern.CASE_INSENSITIVE);
 
     public InjectionResult injectWithVariables(InjectionResult html, Map<String, Object> variables) {
-        final List<String> ifBlocks = determineIfBlocksWithNoInnerBlocks(html.getHtml());
+        final List<String> ifBlocks = determineIfBlocksWithNoInnerBlocks(html.getHTML());
 
         for(String ifBlock : ifBlocks){
             Set<String> conditions = new HashSet<>();
@@ -38,7 +38,7 @@ public class ConditionalTag {
         }
 
         //if any still present, we're dealing with inner ifs and need to parse these again
-        if(html.getHtml().contains("[$if(")) return injectWithVariables(html, variables);
+        if(html.getHTML().contains("[$if(")) return injectWithVariables(html, variables);
 
         return html;
     }
@@ -87,9 +87,9 @@ public class ConditionalTag {
         }
 
         if(ifBlock.startsWith("[$else")) {
-            html.replace(ifBlock, wrapperEnd + ifBlock.replaceFirst(patternElse.pattern(), wrapperStart).replace("[$end if]", wrapperEnd));
+            //html.replace(ifBlock, wrapperEnd + ifBlock.replaceFirst(patternElse.pattern(), wrapperStart).replace("[$end if]", wrapperEnd));
         } else {
-            html.replace(ifBlock, ifBlock.replaceFirst(patternIfStart.pattern(), wrapperStart).replace("[$end if]", wrapperEnd));
+            //html.replace(ifBlock, ifBlock.replaceFirst(patternIfStart.pattern(), wrapperStart).replace("[$end if]", wrapperEnd));
         }
     }
 

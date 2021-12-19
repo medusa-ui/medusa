@@ -15,7 +15,7 @@ public class ClassAppendTag {
     public static final Pattern patternClassAppend = Pattern.compile("m-class-append=((\".*?\")|('.*?'))", Pattern.CASE_INSENSITIVE);
 
     public InjectionResult injectWithVariables(InjectionResult html, Map<String, Object> variables) {
-        String htmlString = html.getHtml();
+        String htmlString = html.getHTML();
 
         Matcher matcherFull = patternClassAppendFull.matcher(htmlString);
         while (matcherFull.find()) {
@@ -24,7 +24,7 @@ public class ClassAppendTag {
             htmlString = htmlString.replaceAll(patternClassAppend.pattern(), "");
         }
 
-        html.setHtml(htmlString);
+        //html.setHtml(htmlString);
         return html;
     }
 

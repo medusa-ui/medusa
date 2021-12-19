@@ -117,10 +117,10 @@ class NestedIterationTagTest {
         System.out.println();
         System.out.println("RESULT");
         System.out.println("/*****/");
-        System.out.println(result.getHtml());
-        Assertions.assertFalse(result.getHtml().contains("$foreach"));
-        Assertions.assertTrue(result.getHtml().contains("<template") && result.getHtml().contains("</template>"));
-        Assertions.assertEquals(2, countOccurrences(result.getHtml()));
+        System.out.println(result.getHTML());
+        Assertions.assertFalse(result.getHTML().contains("$foreach"));
+        Assertions.assertTrue(result.getHTML().contains("<template") && result.getHTML().contains("</template>"));
+        Assertions.assertEquals(2, countOccurrences(result.getHTML()));
     }
 
     @Test
@@ -128,10 +128,10 @@ class NestedIterationTagTest {
         Map<String, Object> variables = new HashMap<>();
         variables.put("list-of-values", Arrays.asList(1,2,3,4,5));
         InjectionResult result = TAG.injectWithVariables(new InjectionResult(HTML), variables);
-        System.out.println(result.getHtml());
-        Assertions.assertFalse(result.getHtml().contains("$foreach"));
-        Assertions.assertTrue(result.getHtml().contains("<template") && result.getHtml().contains("</template>"));
-        Assertions.assertEquals(2, countOccurrences(result.getHtml()));
+        System.out.println(result.getHTML());
+        Assertions.assertFalse(result.getHTML().contains("$foreach"));
+        Assertions.assertTrue(result.getHTML().contains("<template") && result.getHTML().contains("</template>"));
+        Assertions.assertEquals(2, countOccurrences(result.getHTML()));
     }
 
     @Test
@@ -139,10 +139,10 @@ class NestedIterationTagTest {
         Map<String, Object> variables = new HashMap<>();
         variables.put("list-of-values", Collections.singletonList(1));
         InjectionResult result = TAG.injectWithVariables(new InjectionResult(HTML_DEEPER), variables);
-        System.out.println(result.getHtml());
-        Assertions.assertFalse(result.getHtml().contains("$foreach"));
-        Assertions.assertTrue(result.getHtml().contains("<template") && result.getHtml().contains("</template>"));
-        Assertions.assertEquals(3, countOccurrences(result.getHtml()));
+        System.out.println(result.getHTML());
+        Assertions.assertFalse(result.getHTML().contains("$foreach"));
+        Assertions.assertTrue(result.getHTML().contains("<template") && result.getHTML().contains("</template>"));
+        Assertions.assertEquals(3, countOccurrences(result.getHTML()));
     }
 
     //[$foreach $persons] [$foreach $fruits][$this.each][$end for] [$end for]
@@ -152,10 +152,10 @@ class NestedIterationTagTest {
         variables.put("fruits", Collections.singletonList("Orange"));
         variables.put("persons", Collections.singletonList("John"));
         InjectionResult result = TAG.injectWithVariables(new InjectionResult(HTML_WITH_EACH), variables);
-        System.out.println(result.getHtml());
+        System.out.println(result.getHTML());
 
-        Assertions.assertFalse(result.getHtml().contains("John"));
-        Assertions.assertTrue(result.getHtml().contains("Orange"));
+        Assertions.assertFalse(result.getHTML().contains("John"));
+        Assertions.assertTrue(result.getHTML().contains("Orange"));
     }
 
     @Test
@@ -164,10 +164,10 @@ class NestedIterationTagTest {
         variables.put("fruits", Collections.singletonList("Orange"));
         variables.put("persons", Collections.singletonList("John"));
         InjectionResult result = TAG.injectWithVariables(new InjectionResult(HTML_WITH_EACH_PARENT), variables);
-        System.out.println(result.getHtml());
+        System.out.println(result.getHTML());
 
-        Assertions.assertTrue(result.getHtml().contains("John"));
-        Assertions.assertFalse(result.getHtml().contains("Orange"));
+        Assertions.assertTrue(result.getHTML().contains("John"));
+        Assertions.assertFalse(result.getHTML().contains("Orange"));
     }
 
     @Test
@@ -177,17 +177,17 @@ class NestedIterationTagTest {
         variables.put("child", new ArrayList<>(Arrays.asList("A","B")));
 
         InjectionResult result = new IterationTag().injectWithVariables(new InjectionResult(HTML_BUG), variables);
-        System.out.println(result.getHtml());
+        System.out.println(result.getHTML());
 
-        Assertions.assertTrue(result.getHtml().contains("1 - A"));
-        Assertions.assertTrue(result.getHtml().contains("1 - B"));
-        Assertions.assertTrue(result.getHtml().contains("2 - A"));
-        Assertions.assertTrue(result.getHtml().contains("2 - B"));
+        Assertions.assertTrue(result.getHTML().contains("1 - A"));
+        Assertions.assertTrue(result.getHTML().contains("1 - B"));
+        Assertions.assertTrue(result.getHTML().contains("2 - A"));
+        Assertions.assertTrue(result.getHTML().contains("2 - B"));
 
-        Assertions.assertTrue(result.getHtml().contains("3 - A"));
-        Assertions.assertTrue(result.getHtml().contains("3 - B"));
-        Assertions.assertTrue(result.getHtml().contains("4 - A"));
-        Assertions.assertTrue(result.getHtml().contains("4 - B"));
+        Assertions.assertTrue(result.getHTML().contains("3 - A"));
+        Assertions.assertTrue(result.getHTML().contains("3 - B"));
+        Assertions.assertTrue(result.getHTML().contains("4 - A"));
+        Assertions.assertTrue(result.getHTML().contains("4 - B"));
     }
 
     @Test

@@ -32,8 +32,11 @@ public abstract class ExpressionEval {
         }
     }
 
+    public static String evalItem(String itemToEval, Map<String, Object> variables) {
+        return interpretValue(itemToEval, variables);
+    }
+
     private static String interpretValue(String value, Map<String, Object> variables) {
-        if (value.startsWith("$")) value = value.substring(1);
         if (!variables.containsKey(value)) {
             if (value.contains(".")) {
                 String[] variableKeySplit = value.split("\\.", 2);

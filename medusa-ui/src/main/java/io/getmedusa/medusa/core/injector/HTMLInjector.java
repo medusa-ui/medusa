@@ -8,6 +8,8 @@ import io.getmedusa.medusa.core.registry.EventHandlerRegistry;
 import io.getmedusa.medusa.core.registry.IterationRegistry;
 import io.getmedusa.medusa.core.registry.RouteRegistry;
 import io.getmedusa.medusa.core.util.SecurityContext;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 import org.springframework.web.reactive.function.server.ServerRequest;
 
 import java.nio.charset.Charset;
@@ -68,8 +70,8 @@ public enum HTMLInjector {
         try {
             if(this.script == null) this.script = script;
             if(this.styling == null) this.styling = styling;
-            String htmlString = HTMLCache.getInstance().getHTML(fileName);
-            return htmlStringInject(request, securityContext, csrfToken, htmlString);
+            Document document = HTMLCache.getInstance().getDocument(fileName);
+            return htmlStringInject(request, securityContext, csrfToken, document);
         } catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException(e);
@@ -89,27 +91,28 @@ public enum HTMLInjector {
         return inject(request, securityContext, fileName, script, styling, null);
     }
 
+    //only used in testing
     String htmlStringInject(ServerRequest request, SecurityContext securityContext, String htmlString) {
-        return htmlStringInject(request, securityContext, null, htmlString);
+        return htmlStringInject(request, securityContext, null, Jsoup.parse(htmlString));
     }
 
-    String htmlStringInject(ServerRequest request, SecurityContext securityContext, String csrfToken, String htmlString) {
+    String htmlStringInject(ServerRequest request, SecurityContext securityContext, String csrfToken, Document document) {
         final Map<String, Object> variables = newLargestFirstMap();
 
         final String matchedPath = matchRequestPath(request);
         final UIEventWithAttributes uiEventController = EventHandlerRegistry.getInstance().get(matchedPath);
         if(uiEventController != null) variables.putAll(uiEventController.setupAttributes(request, securityContext).getPageVariables());
 
-        InjectionResult result = iterationTag.injectWithVariables(new InjectionResult(htmlString), variables);
-        result = conditionalTag.injectWithVariables(result, variables);
-        result = clickTag.inject(result.getHtml());
-        result = onEnterTag.inject(result.getHtml());
-        result = changeTag.inject(result.getHtml());
-        result = valueTag.injectWithVariables(result, variables);
-        result = classAppendTag.injectWithVariables(result, variables);
-        result = genericMTag.injectWithVariables(result, variables);
-        result = hydraMenuTag.injectWithVariables(result);
-        if(csrfToken != null) result = result.replace("{{_csrf}}", csrfToken);
+        InjectionResult result = iterationTag.injectWithVariables(new InjectionResult(document), variables);
+        //       result = conditionalTag.injectWithVariables(result, variables);
+//        result = clickTag.inject(result.getHtml());
+//        result = onEnterTag.inject(result.getHtml());
+//        result = changeTag.inject(result.getHtml());
+        result = valueTag.inject(result, variables);
+//        result = classAppendTag.injectWithVariables(result, variables);
+//        result = genericMTag.injectWithVariables(result, variables);
+//        result = hydraMenuTag.injectWithVariables(result);
+        // if(csrfToken != null) result = result.replace("{{_csrf}}", csrfToken);
         injectVariablesInScript(result, variables);
 
         String html = injectScript(matchedPath, result, securityContext.getUniqueId());
@@ -147,15 +150,19 @@ public enum HTMLInjector {
     }
 
     private String injectScript(String path, InjectionResult html, String uniqueId) {
-        String injectedHTML = html.getHtml();
+        String injectedHTML = html.getHTML();
         if(script != null) {
-            injectedHTML = html.replaceFinal("</body>",
-                    "<script id=\"m-websocket-setup\">\n" +
+            final String bodyEndTagReplacement = "<script id=\"m-websocket-setup\">\n" +
                     script.replaceFirst("%WEBSOCKET_URL%", EVENT_EMITTER + path.hashCode()).replaceFirst("%SECURITY_CONTEXT_ID%", uniqueId) +
-                    "</script>\n<script id=\"m-variable-setup\"></script>\n</body>");
+                    "</script>\n<script id=\"m-variable-setup\"></script>\n</body>";
+            injectedHTML = injectedHTML.replace("</body>", bodyEndTagReplacement);
+
+            //TODO necessary?
+            for(String s : html.getScripts()) {
+                injectedHTML = injectedHTML.replace("<script id=\"m-variable-setup\"></script>", "<script id=\"m-variable-setup\">" + s + "</script>");
+            }
         }
         injectedHTML = addStyling(injectedHTML);
-
         return injectedHTML;
     }
 

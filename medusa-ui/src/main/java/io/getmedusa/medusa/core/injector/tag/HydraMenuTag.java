@@ -15,7 +15,7 @@ public class HydraMenuTag {
     public static final Pattern patternMenuAttribute = Pattern.compile("h-menu=[\"'].*?[\"']", Pattern.CASE_INSENSITIVE);
 
     public InjectionResult injectWithVariables(InjectionResult html) {
-        String htmlString = html.getHtml();
+        String htmlString = html.getHTML();
         Matcher matcherFull = patternTagWithMenuAttribute.matcher(htmlString);
         while (matcherFull.find()) {
             final String tag = matcherFull.group().trim();
@@ -51,7 +51,7 @@ public class HydraMenuTag {
             htmlString = htmlString.replace(tag, tagContents);
         }
 
-        html.setHtml(htmlString);
+        //html.setHtml(htmlString);
 
         return html;
     }

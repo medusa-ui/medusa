@@ -21,7 +21,7 @@ class GenericMTagTest {
         Map<String, Object> variables = new HashMap<>();
         variables.put("three-items", false);
         variables.put("items-bought-size", 1);
-        String parsedHTML = TAG.injectWithVariables(new InjectionResult(HTML_WITHOUT_CLASS), variables).getHtml();
+        String parsedHTML = TAG.injectWithVariables(new InjectionResult(HTML_WITHOUT_CLASS), variables).getHTML();
         System.out.println(parsedHTML);
 
         Assertions.assertFalse(parsedHTML.contains("m-disabled"));
@@ -37,7 +37,7 @@ class GenericMTagTest {
         Map<String, Object> variables = new HashMap<>();
         variables.put("three-items", true);
         variables.put("items-bought-size", 0);
-        String parsedHTML = TAG.injectWithVariables(new InjectionResult(HTML_WITH_CLASS), variables).getHtml();
+        String parsedHTML = TAG.injectWithVariables(new InjectionResult(HTML_WITH_CLASS), variables).getHTML();
         System.out.println(parsedHTML);
 
         Assertions.assertFalse(parsedHTML.contains("m-disabled"));
@@ -53,7 +53,7 @@ class GenericMTagTest {
     void testParsingWithStyleAndHTML() {
         Map<String, Object> variables = new HashMap<>();
         variables.put("three-items", true);
-        String parsedHTML = TAG.injectWithVariables(new InjectionResult(HTML_WITH_STYLE_HIDE), variables).getHtml();
+        String parsedHTML = TAG.injectWithVariables(new InjectionResult(HTML_WITH_STYLE_HIDE), variables).getHTML();
         System.out.println(parsedHTML);
 
         Assertions.assertEquals(1, countOccurrences(parsedHTML, "style="));

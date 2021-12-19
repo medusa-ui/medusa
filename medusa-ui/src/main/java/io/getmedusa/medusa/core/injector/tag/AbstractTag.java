@@ -30,7 +30,7 @@ public abstract class AbstractTag {
      * @return
      */
     public InjectionResult inject(InjectionResult result) {
-        Matcher matcher = buildMatcher(result.getHtml());
+        Matcher matcher = buildMatcher(result.getHTML());
 
         final Map<String, String> replacements = new HashMap<>();
         while (matcher.find()) {
@@ -39,7 +39,7 @@ public abstract class AbstractTag {
         }
 
         for(Map.Entry<String, String> entrySet : replacements.entrySet()) {
-            result = result.replace(entrySet.getKey(),  entrySet.getValue());
+            //result = result.replace(entrySet.getKey(),  entrySet.getValue());
         }
         return result;
     }
@@ -54,7 +54,7 @@ public abstract class AbstractTag {
     }
 
     public InjectionResult inject(String html) {
-        InjectionResult result = new InjectionResult(html);
+        InjectionResult result = null;// new InjectionResult(html);
         return inject(result);
     }
 }

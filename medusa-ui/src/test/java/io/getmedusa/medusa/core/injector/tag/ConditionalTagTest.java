@@ -30,25 +30,25 @@ class ConditionalTagTest {
     @Test
     void testConditionalSimpleInvisible() {
         InjectionResult parsedHTML = conditionalTag.injectWithVariables(new InjectionResult(conditionalHTMLSingle), Collections.singletonMap("counter-value", "1"));
-        System.out.println(parsedHTML.getHtml());
+        System.out.println(parsedHTML.getHTML());
 
-        Assertions.assertTrue(parsedHTML.getHtml().startsWith("<h1>Hello Medusa 1</h1>\n" + "<div class=\"if-"));
-        Assertions.assertTrue(parsedHTML.getHtml().endsWith("\" style=\"display:none;\">\n    <p>Visible?</p>\n</div>\n<p>Hello Medusa 1</p>"));
+        Assertions.assertTrue(parsedHTML.getHTML().startsWith("<h1>Hello Medusa 1</h1>\n" + "<div class=\"if-"));
+        Assertions.assertTrue(parsedHTML.getHTML().endsWith("\" style=\"display:none;\">\n    <p>Visible?</p>\n</div>\n<p>Hello Medusa 1</p>"));
     }
 
     @Test
     void testConditionalSimpleVisible() {
         InjectionResult parsedHTML = conditionalTag.injectWithVariables(new InjectionResult(conditionalHTMLSingle), Collections.singletonMap("counter-value", "10"));
-        System.out.println(parsedHTML.getHtml());
+        System.out.println(parsedHTML.getHTML());
 
-        Assertions.assertTrue(parsedHTML.getHtml().startsWith("<h1>Hello Medusa 1</h1>\n" + "<div class=\"if-"));
-        Assertions.assertTrue(parsedHTML.getHtml().endsWith("\">\n    <p>Visible?</p>\n</div>\n<p>Hello Medusa 1</p>"));
+        Assertions.assertTrue(parsedHTML.getHTML().startsWith("<h1>Hello Medusa 1</h1>\n" + "<div class=\"if-"));
+        Assertions.assertTrue(parsedHTML.getHTML().endsWith("\">\n    <p>Visible?</p>\n</div>\n<p>Hello Medusa 1</p>"));
     }
 
     @Test
     void testElse() {
         InjectionResult parsedHTML = conditionalTag.injectWithVariables(new InjectionResult(conditionalHTMLMulti), Collections.singletonMap("counter-value", "10"));
-        System.out.println(parsedHTML.getHtml());
-        Assertions.assertFalse(parsedHTML.getHtml().contains("$else"));
+        System.out.println(parsedHTML.getHTML());
+        Assertions.assertFalse(parsedHTML.getHTML().contains("$else"));
     }
 }

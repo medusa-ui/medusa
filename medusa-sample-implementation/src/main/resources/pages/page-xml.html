@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:m="https://medusa-ui.dev">
+<head>
+    <meta charset="UTF-8">
+    <title m:item="title"></title>
+    <link href="/stylesheet.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter&family=Merriweather&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<h1>🦑 Hello Medusa :: Page with xml tags</h1>
+
+<a href="/">Back to overview</a>
+
+    <h2>Loop <m:text item="someVariable" /></h2>
+    <div>
+        <p><m:text item="example-value" /></p>
+
+        <m:foreach collection="outerLoop" eachName="outerItem">
+            <m:foreach collection="innerLoop" eachName="innerItem">
+                <m:if condition="innerItem" eq="a">
+
+                    <p>Outer loop: <m:text item="outerItem" /></p>
+                    <p>Inner loop: <m:text item="innerLoop" /></p>
+                    <button m-click="buy('coffee')">Buy some coffee</button>
+
+                    <m:elseif conditionItem="innerItem" eq="b">
+
+                        <p>B</p>
+                        <button m-click="buy('tea', 'sugar', 3,'cookie')">Buy some tea and sugar</button>
+
+                    </m:elseif>
+                    <m:else>
+
+                        <p>C</p>
+                        <button m-click="buy('coffee, sugar but no cream','cookies (2 pieces)')">Breaking stuff</button>
+
+                    </m:else>
+                </m:if>
+            </m:foreach>
+        </m:foreach>
+    </div>
+
+</body>
+</html>

@@ -15,7 +15,7 @@ public class IterationTag {
     private static final EachParser PARSER = new EachParser();
 
     public InjectionResult injectWithVariables(InjectionResult injectionResult, Map<String, Object> variables) {
-        String html = injectionResult.getHtml();
+        String html = injectionResult.getHTML();
 
         //find all the foreaches, split them up and order them as deepest-first
         final List<ForEachElement> depthElements = PARSER.buildDepthElements(html);
@@ -34,7 +34,7 @@ public class IterationTag {
         //child elements get merged together until parent elements can be merged into the html
         html = renderHTML(html, complexStructure);
 
-        injectionResult.setHtml(html);
+        //injectionResult.setHtml(html);
         return injectionResult;
     }
 

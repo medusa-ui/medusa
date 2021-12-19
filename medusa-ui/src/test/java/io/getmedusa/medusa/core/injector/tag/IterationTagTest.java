@@ -69,10 +69,10 @@ class IterationTagTest {
         Map<String, Object> variables = new HashMap<>();
         variables.put("list-of-values", new ArrayList<>());
         InjectionResult result = TAG.injectWithVariables(new InjectionResult(HTML), variables);
-        System.out.println(result.getHtml());
-        Assertions.assertFalse(result.getHtml().contains("$foreach"));
-        Assertions.assertTrue(result.getHtml().contains("<template") && result.getHtml().contains("</template>"));
-        Assertions.assertEquals(1, countOccurrences(result.getHtml()));
+        System.out.println(result.getHTML());
+        Assertions.assertFalse(result.getHTML().contains("$foreach"));
+        Assertions.assertTrue(result.getHTML().contains("<template") && result.getHTML().contains("</template>"));
+        Assertions.assertEquals(1, countOccurrences(result.getHTML()));
     }
 
     @Test
@@ -81,10 +81,10 @@ class IterationTagTest {
         Map<String, Object> variables = new HashMap<>();
         variables.put("list-of-values", Collections.singletonList(1));
         InjectionResult result = TAG.injectWithVariables(new InjectionResult(HTML), variables);
-        System.out.println(result.getHtml());
-        Assertions.assertFalse(result.getHtml().contains("$foreach"));
-        Assertions.assertTrue(result.getHtml().contains("<template") && result.getHtml().contains("</template>"));
-        Assertions.assertEquals(2, countOccurrences(result.getHtml()));
+        System.out.println(result.getHTML());
+        Assertions.assertFalse(result.getHTML().contains("$foreach"));
+        Assertions.assertTrue(result.getHTML().contains("<template") && result.getHTML().contains("</template>"));
+        Assertions.assertEquals(2, countOccurrences(result.getHTML()));
     }
 
     @Test
@@ -92,10 +92,10 @@ class IterationTagTest {
         Map<String, Object> variables = new HashMap<>();
         variables.put("list-of-values", Arrays.asList(1,2,3,4,5));
         InjectionResult result = TAG.injectWithVariables(new InjectionResult(HTML), variables);
-        System.out.println(result.getHtml());
-        Assertions.assertFalse(result.getHtml().contains("$foreach"));
-        Assertions.assertTrue(result.getHtml().contains("<template") && result.getHtml().contains("</template>"));
-        Assertions.assertEquals(6, countOccurrences(result.getHtml()));
+        System.out.println(result.getHTML());
+        Assertions.assertFalse(result.getHTML().contains("$foreach"));
+        Assertions.assertTrue(result.getHTML().contains("<template") && result.getHTML().contains("</template>"));
+        Assertions.assertEquals(6, countOccurrences(result.getHTML()));
 
     }
 
@@ -104,11 +104,11 @@ class IterationTagTest {
         Map<String, Object> variables = new HashMap<>();
         variables.put("list-of-values", Arrays.asList(1,2,3,4,5));
         InjectionResult result = TAG.injectWithVariables(new InjectionResult(HTML_W_ELEMENT), variables);
-        System.out.println(result.getHtml());
-        Assertions.assertFalse(result.getHtml().contains("$foreach"));
-        Assertions.assertTrue(result.getHtml().contains("<template") && result.getHtml().contains("</template>"));
+        System.out.println(result.getHTML());
+        Assertions.assertFalse(result.getHTML().contains("$foreach"));
+        Assertions.assertTrue(result.getHTML().contains("<template") && result.getHTML().contains("</template>"));
         for (int i = 1; i <= 5; i++) {
-            Assertions.assertTrue(result.getHtml().contains("<p>Bought " + i + "</p>"));
+            Assertions.assertTrue(result.getHTML().contains("<p>Bought " + i + "</p>"));
         }
     }
 

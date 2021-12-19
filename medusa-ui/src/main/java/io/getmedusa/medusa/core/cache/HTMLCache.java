@@ -32,7 +32,12 @@ public class HTMLCache {
         return Jsoup.parse(html.replaceAll("(?s)<!--.*?-->", ""));
     }
 
+    @Deprecated
     public String getHTML(String filename) {
         return CACHE.get(filename).html();
+    }
+
+    public Document getDocument(String fileName) {
+        return CACHE.get(fileName).clone();
     }
 }

@@ -35,7 +35,7 @@ class HydraMenuTagTest {
 
         HydraRegistry.update(new HydraStatus(Collections.singletonMap("example-menu", menuItems)));
 
-        final String html = TAG.injectWithVariables(INPUT).getHtml();
+        final String html = TAG.injectWithVariables(INPUT).getHTML();
 
         System.out.println(html);
 
@@ -50,7 +50,7 @@ class HydraMenuTagTest {
     @Test
     void testNoItems() {
         HydraRegistry.update(new HydraStatus(new HashMap<>(Map.of("example-menux", new HashSet<>()))));
-        final String html = TAG.injectWithVariables(INPUT).getHtml();
+        final String html = TAG.injectWithVariables(INPUT).getHTML();
 
         Assertions.assertFalse(html.contains("nav h-menu=\"example-menu\""));
 
