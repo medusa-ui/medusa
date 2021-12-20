@@ -3,52 +3,61 @@ package io.getmedusa.medusa.core.injector.tag;
 import io.getmedusa.medusa.core.injector.tag.meta.InjectionResult;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.springframework.mock.web.reactive.function.server.MockServerRequest;
+import org.springframework.web.reactive.function.server.ServerRequest;
 
-import java.util.Collections;
+import java.util.Map;
 
 class ConditionalTagTest {
 
-    private final String conditionalHTMLSingle =
-            """
-                    <h1>Hello Medusa 1</h1>
-                    [$if($counter-value > 5)]
-                        <p>Visible?</p>
-                    [$end if]
-                    <p>Hello Medusa 1</p>""";
+    private static final String HTML_EQ_SIMPLE = """
+                    <m:if condition="some-variable" eq="a">
+                        <p>A</p>
+                    </m:if>
+            """;
 
-    //if($counter-value < 5)
-    private final String conditionalHTMLMulti = """
-            <p>test</p>
-            [$if($counter-value > 5)]
-                <p>Counter is above 5</p>
-            [$else]
-                <p>Counter is under 5</p>
-            [$end if]""";
+    private static final String HTML_EQ_ELSE = """
+                    <m:if condition="some-variable" eq="a">
+                        <p>A</p>
+                        
+                        <m:else>
+                            <p>B</p>
+                        </m:else>
+                    </m:if>
+            """;
 
-    private final ConditionalTag conditionalTag = new ConditionalTag();
+    private static final String HTML_EQ_ELSE_IF = """
+                    <m:if condition="some-variable" eq="a">
+                        <p>A</p>
+                        <m:elseif condition="innerItem" eq="b">
+                            <p>B</p>
+                        </m:elseif>
+                        <m:else>
+                            <p>C</p>
+                        </m:else>
+                    </m:if>
+            """;
+
+    //TODO eq w/ variable
+    //TODO nested
+    //TODO as part of iteration w/ each
+    //TODO gt
+    //TODO lt
+    //TODO gte
+    //TODO lte
+    //TODO not
+    //TODO complex objects
+
+    private static final ConditionalTag TAG = new ConditionalTag();
+    private final ServerRequest request = MockServerRequest.builder().build();
 
     @Test
-    void testConditionalSimpleInvisible() {
-        InjectionResult parsedHTML = conditionalTag.injectWithVariables(new InjectionResult(conditionalHTMLSingle), Collections.singletonMap("counter-value", "1"));
-        System.out.println(parsedHTML.getHTML());
+    void testSimpleHTML() {
+        String htmlA = TAG.inject(new InjectionResult(HTML_EQ_SIMPLE), Map.of("some-variable", "a"), request).getHTML();
+        String htmlB = TAG.inject(new InjectionResult(HTML_EQ_SIMPLE), Map.of("some-variable", "b"), request).getHTML();
+        System.out.println(htmlA);
+        System.out.println(htmlB);
 
-        Assertions.assertTrue(parsedHTML.getHTML().startsWith("<h1>Hello Medusa 1</h1>\n" + "<div class=\"if-"));
-        Assertions.assertTrue(parsedHTML.getHTML().endsWith("\" style=\"display:none;\">\n    <p>Visible?</p>\n</div>\n<p>Hello Medusa 1</p>"));
-    }
-
-    @Test
-    void testConditionalSimpleVisible() {
-        InjectionResult parsedHTML = conditionalTag.injectWithVariables(new InjectionResult(conditionalHTMLSingle), Collections.singletonMap("counter-value", "10"));
-        System.out.println(parsedHTML.getHTML());
-
-        Assertions.assertTrue(parsedHTML.getHTML().startsWith("<h1>Hello Medusa 1</h1>\n" + "<div class=\"if-"));
-        Assertions.assertTrue(parsedHTML.getHTML().endsWith("\">\n    <p>Visible?</p>\n</div>\n<p>Hello Medusa 1</p>"));
-    }
-
-    @Test
-    void testElse() {
-        InjectionResult parsedHTML = conditionalTag.injectWithVariables(new InjectionResult(conditionalHTMLMulti), Collections.singletonMap("counter-value", "10"));
-        System.out.println(parsedHTML.getHTML());
-        Assertions.assertFalse(parsedHTML.getHTML().contains("$else"));
+        Assertions.assertTrue(htmlA.contains("123"));
     }
 }

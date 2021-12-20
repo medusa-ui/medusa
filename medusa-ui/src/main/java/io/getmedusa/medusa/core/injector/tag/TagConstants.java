@@ -21,6 +21,18 @@ public class TagConstants {
 
     //text - attributes
 
+    //conditional - tags
+    public static final String CONDITIONAL_TAG = "m:if"; //each on div
+    public static final String CONDITIONAL_TAG_CONDITION_ATTR = "condition";
+    public static final String CONDITIONAL_TAG_EQUALS = "eq";
+    public static final String CONDITIONAL_TAG_GREATER_THAN = "gt";
+    public static final String CONDITIONAL_TAG_GREATER_THAN_OR_EQ = "gte";
+    public static final String CONDITIONAL_TAG_LESS_THAN = "lt";
+    public static final String CONDITIONAL_TAG_LESS_THAN_OR_EQ = "lte";
+
+    //conditional - attributes
+
+
 
     private TagConstants() {}
 }

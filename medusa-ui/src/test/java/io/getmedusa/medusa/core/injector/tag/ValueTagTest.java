@@ -78,17 +78,6 @@ class ValueTagTest {
         Assertions.assertTrue(html.contains("from-value=\"counter-value\""));
     }
 
-/*
-    @Test
-    void testWrappedInTitle() {
-        Map<String, Object> variables = new HashMap<>();
-        variables.put("counter-value", 4564);
-        String html = TAG.injectWithVariables(new InjectionResult(HTML_TITLE), variables).getHtml();
-        System.out.println(html);
-        Assertions.assertEquals("<title>Welcome to Medusa :: 4564 :: More title</title>", html);
-    }
-*/
-
     @Test
     void testWithValueWithSpaces() {
         Map<String, Object> variables = new HashMap<>();

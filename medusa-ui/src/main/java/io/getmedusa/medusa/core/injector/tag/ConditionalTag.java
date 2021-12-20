@@ -2,7 +2,13 @@ package io.getmedusa.medusa.core.injector.tag;
 
 import io.getmedusa.medusa.core.injector.tag.meta.InjectionResult;
 import io.getmedusa.medusa.core.registry.ConditionalRegistry;
+import io.getmedusa.medusa.core.util.ExpressionEval;
 import io.getmedusa.medusa.core.util.IdentifierGenerator;
+import org.jsoup.nodes.Element;
+import org.jsoup.nodes.Node;
+import org.jsoup.parser.Tag;
+import org.jsoup.select.Elements;
+import org.springframework.web.reactive.function.server.ServerRequest;
 
 import java.util.*;
 import java.util.regex.Matcher;
@@ -10,6 +16,68 @@ import java.util.regex.Pattern;
 
 public class ConditionalTag {
     private static final ConditionalRegistry CONDITIONAL_REGISTRY = ConditionalRegistry.getInstance();
+
+    public InjectionResult inject(InjectionResult result, Map<String, Object> variables, ServerRequest request) {
+        //TODO conditionItem vs conditionString? if needed, be explicit
+        //<m:if condition="innerItem" eq="a">
+        //    <p>A</p>
+        //    <m:elseif conditionItem="innerItem" eq="b">
+        //
+        //    </m:elseif>
+        //    <m:else>
+        //
+        //    </m:else>
+        //</m:if>
+        //becomes
+        //
+
+        Elements conditionalElements = result.getDocument().getElementsByTag(TagConstants.CONDITIONAL_TAG);
+        for(Element conditionalElement : conditionalElements) {
+            Object conditionItemValue = getConditionItemValue(variables, conditionalElement);
+
+            boolean isVisible = false;
+            if(conditionalElement.hasAttr(TagConstants.CONDITIONAL_TAG_EQUALS)) {
+                Object comparisonItemValue = getComparisonItemValue(variables, conditionalElement);
+                System.out.println(conditionItemValue + " vs " + comparisonItemValue);
+                isVisible = conditionItemValue.equals(comparisonItemValue);
+            }
+
+            conditionalElement.replaceWith(createWrapper(conditionalElement, isVisible));
+        }
+
+        return result;
+    }
+
+    private Node createWrapper(Element element, boolean isVisible) {
+        Element node = new Element(Tag.valueOf("div"), "");
+                //.attr(TagConstants.M_ID, templateID);
+
+        final String ifID = IdentifierGenerator.generateIfID(element.html());
+        final String condition = "1 == 1"; //TODO
+        CONDITIONAL_REGISTRY.add(ifID, condition);
+
+        if(!isVisible) {
+            node.attr("style", "display:none;");
+        }
+
+        node.appendChildren(element.children());
+
+        return node;
+    }
+
+    private Object getComparisonItemValue(Map<String, Object> variables, Element conditionalElement) {
+        final String comparisonItem = conditionalElement.attr(TagConstants.CONDITIONAL_TAG_EQUALS);
+        Object comparisonItemValue = ExpressionEval.evalItemAsObj(comparisonItem, variables);
+        if(null == comparisonItemValue) comparisonItemValue = comparisonItem;
+        return comparisonItemValue;
+    }
+
+    private Object getConditionItemValue(Map<String, Object> variables, Element conditionalElement) {
+        final String conditionItem = conditionalElement.attr(TagConstants.CONDITIONAL_TAG_CONDITION_ATTR);
+        Object conditionItemValue = ExpressionEval.evalItemAsObj(conditionItem, variables);
+        if(null == conditionItemValue) conditionItemValue = conditionItem;
+        return conditionItemValue;
+    }
 
     public static final Pattern patternIfStart = Pattern.compile("\\[\\$if\\(.+?]", Pattern.CASE_INSENSITIVE);
     public static final Pattern patternElse = Pattern.compile("\\[\\$ ?else ?(if\\(.+?)?]", Pattern.CASE_INSENSITIVE);
@@ -80,6 +148,7 @@ public class ConditionalTag {
         final String divId = IdentifierGenerator.generateIfID(ifBlock);
 
         CONDITIONAL_REGISTRY.add(divId, conditionParsed);
+
         String wrapperStart = "<div class=\""+divId+"\">";
         String wrapperEnd = "</div>";
         if(!CONDITIONAL_REGISTRY.evaluate(divId, variables)) {
