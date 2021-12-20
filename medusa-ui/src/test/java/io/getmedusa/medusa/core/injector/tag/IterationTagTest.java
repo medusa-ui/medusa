@@ -1,7 +1,6 @@
 package io.getmedusa.medusa.core.injector.tag;
 
 import io.getmedusa.medusa.core.injector.tag.meta.InjectionResult;
-import io.getmedusa.medusa.core.util.EachParser;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -16,7 +15,6 @@ import java.util.*;
 class IterationTagTest {
 
     private static final IterationTag TAG = new IterationTag();
-    private static final EachParser PARSER = new EachParser();
 
     public static final String HTML =
             """
@@ -76,8 +74,6 @@ class IterationTagTest {
             """;
 
     private final ServerRequest request = MockServerRequest.builder().build();
-
-    //TODO multiple + nested
 
     @Test
     void testSingleElementList() {

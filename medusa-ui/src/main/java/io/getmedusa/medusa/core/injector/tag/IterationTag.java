@@ -7,6 +7,7 @@ import io.getmedusa.medusa.core.injector.tag.meta.InjectionResult;
 import io.getmedusa.medusa.core.registry.EachValueRegistry;
 import io.getmedusa.medusa.core.registry.IterationRegistry;
 import io.getmedusa.medusa.core.util.EachParser;
+import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.nodes.Node;
 import org.jsoup.parser.Tag;
@@ -47,7 +48,7 @@ public class IterationTag extends AbstractTag {
             Element clone = foreachElement.clone();
             final String collection = foreachElement.attr(TagConstants.ITERATION_TAG_COLLECTION_ATTR);
 
-            final String templateID = tempGenerateTemplateID(clone, collection);
+            final String templateID = generateTemplateID(foreachElement, collection);
             final String eachName = conditionalAttribute(foreachElement, TagConstants.ITERATION_TAG_EACH_ATTR);
 
             Node template = createTemplate(templateID, clone);
@@ -72,7 +73,36 @@ public class IterationTag extends AbstractTag {
             foreachElement.unwrap();
         }
 
+        labelNestedTemplates(injectionResult.getDocument());
+
         return injectionResult;
+    }
+
+    private void labelNestedTemplates(Document document) {
+        Elements templates = document.getElementsByTag("template");
+        templates.sort(Comparator.comparingInt(o -> o.getElementsByTag("template").size()));
+        for(Element template : templates) {
+            Element templateParent = findTemplateParent(template.parents());
+            if(templateParent != null) {
+                final String originalTemplateId = template.attr(TagConstants.M_ID);
+                final String templateAttributeId = templateParent.attr(TagConstants.M_ID) + "#" + originalTemplateId;
+                template.attr(TagConstants.M_ID, templateAttributeId);
+
+                Elements divs = document.getElementsByAttributeValue(TagConstants.TEMPLATE_ID, originalTemplateId);
+                for(Element div : divs) {
+                    div.attr(TagConstants.TEMPLATE_ID, templateAttributeId);
+                }
+            }
+        }
+    }
+
+    private Element findTemplateParent(Elements parents) {
+        for(Element template : parents) {
+            if(template.hasAttr(TagConstants.M_ID)){
+                return template;
+            }
+        }
+        return null;
     }
 
     private Node createTemplate(String templateID, Element foreachElement) {
@@ -87,8 +117,8 @@ public class IterationTag extends AbstractTag {
         foreachElement.appendChild(createDiv(template, index, templateId, eachName));
     }
 
-    private String tempGenerateTemplateID(Element foreachElement, String collection) {
-        final String tId = "t-" + Math.abs(foreachElement.html().hashCode()); //TODO deal with parent nodes
+    private String generateTemplateID(Element foreachElement, String collection) {
+        String tId = "t-" + Math.abs(foreachElement.html().hashCode());
         IterationRegistry.getInstance().add(tId, collection);
         return tId;
     }
