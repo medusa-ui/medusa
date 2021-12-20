@@ -16,6 +16,8 @@ public class TagConstants {
     //text - tags
     public static final String TEXT_TAG = "m:text";
     public static final String TEXT_TAG_ITEM_ATTR = "item";
+    public static final String M_VALUE = "m:value";
+    public static final String FROM_VALUE = "from-value";
 
     //text - attributes
 

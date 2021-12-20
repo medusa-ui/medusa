@@ -341,6 +341,36 @@ class IterationTagTest {
         }
     }
 
+    @Test
+    void testNestedWithComplexAttributeValuesEach() {
+        Map<String, Object> variables = new HashMap<>();
+        final List<ComplexObject> listOfValues = Arrays.asList(new ComplexObject("1"), new ComplexObject("2"), new ComplexObject("3"));
+        final List<ComplexObject> otherListOfValues = Arrays.asList(new ComplexObject("ABC"), new ComplexObject("DEF"));
+        variables.put("list-of-values", listOfValues);
+        variables.put("other-list-of-values", otherListOfValues);
+
+        InjectionResult result = TAG.inject(new InjectionResult(HTML_W_ELEMENT_NESTED_AND_COMPLEX_VALUE_AS_ATTRIBUTE), variables, request);
+        result = new ValueTag().inject(result, variables, request);
+
+        System.out.println(result.getHTML());
+        Assertions.assertFalse(result.getHTML().contains("m:foreach"));
+        Assertions.assertTrue(result.getHTML().contains("<template") && result.getHTML().contains("</template>"));
+        Map<String, List<Element>> templateElements = findDivsWithTemplate(Jsoup.parse(result.getHTML()));
+        List<Element> divs = new ArrayList<>();
+        for(String key : templateElements.keySet()) {
+            List<Element> foundElems = templateElements.get(key);
+            if(foundElems.size() > divs.size()) divs = foundElems;
+        }
+
+        Assertions.assertEquals(listOfValues.size() * otherListOfValues.size(), divs.size());
+        for(Element div : divs) {
+            Assertions.assertFalse(div.text().contains("myItem"), "myItem should be replaced");
+            Assertions.assertFalse(div.text().contains("myItem2"), "myItem2 should be replaced");
+            final String eachValAsString = div.getElementsByTag("input").val();
+            Assertions.assertTrue(List.of("ABC", "DEF").contains(eachValAsString));
+        }
+    }
+
     private Map<String, List<Element>> findDivsWithTemplate(Document doc) {
         Map<String, List<Element>> result = new HashMap<>();
 

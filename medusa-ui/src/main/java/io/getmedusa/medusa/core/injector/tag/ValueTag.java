@@ -68,22 +68,22 @@ public class ValueTag extends AbstractTag {
         //becomes
         //<input type="text" from-value="counter-value" value="123" />
 
-        Elements tagsWithMValue = result.getDocument().getElementsByAttribute("m:value");
+        Elements tagsWithMValue = result.getDocument().getElementsByAttribute(TagConstants.M_VALUE);
         for (Element tagWithMValue : tagsWithMValue) {
-            final String item = tagWithMValue.attr("m:value").trim();
+            final String item = tagWithMValue.attr(TagConstants.M_VALUE).trim();
             Object variableValue = getPossibleEachValue(tagWithMValue, item, request);
             if(null == variableValue) variableValue = variableToString(item, variables);
             if(null == variableValue) variableValue = item;
 
             tagWithMValue.removeAttr("m:value");
             tagWithMValue.val(variableValue.toString());
-            tagWithMValue.attr("from-value", item);
+            tagWithMValue.attr(TagConstants.FROM_VALUE, item);
         }
     }
 
     private Node createSpan(String item, String variableValue) {
         return new Element(Tag.valueOf("span"), "")
                 .text(variableValue)
-                .attr("from-value", item);
+                .attr(TagConstants.FROM_VALUE, item);
     }
 }
