@@ -2,6 +2,7 @@ package io.getmedusa.medusa.core.injector.tag;
 
 import io.getmedusa.medusa.core.injector.tag.meta.InjectionResult;
 import io.getmedusa.medusa.core.registry.EachValueRegistry;
+import io.getmedusa.medusa.core.util.ExpressionEval;
 import org.jsoup.nodes.Element;
 import org.jsoup.nodes.Node;
 import org.jsoup.parser.Tag;
@@ -26,19 +27,33 @@ public class ValueTag extends AbstractTag {
         Elements mTextTags = result.getDocument().getElementsByTag(TagConstants.TEXT_TAG);
         for (Element mTextTag : mTextTags) {
             final String item = mTextTag.attr(TagConstants.TEXT_TAG_ITEM_ATTR).trim();
-            String variableValue = variableToString(item, variables);
-            if(null == variableValue) variableValue = getPossibleEachValue(mTextTag, item, request).toString();
-            mTextTag.replaceWith(createSpan(item, variableValue));
+            Object variableValue = getPossibleEachValue(mTextTag, item, request);
+            if(null == variableValue) variableValue = variableToString(item, variables);
+            if(null == variableValue) variableValue = item;
+            mTextTag.replaceWith(createSpan(item, variableValue.toString()));
         }
     }
 
     private Object getPossibleEachValue(Element currentElem, String eachName, ServerRequest request) {
-        Element parentWithEachName = findParentWithEachName(currentElem.parents(), eachName);
+        String nameToSearch = eachName;
+        String restOfValue = null;
+        boolean requiresObjectIntrospection = nameToSearch.contains(".");
+        if(requiresObjectIntrospection) {
+            final String[] split = nameToSearch.split("\\.", 2);
+            nameToSearch = split[0];
+            restOfValue = split[1];
+        }
+
+        Element parentWithEachName = findParentWithEachName(currentElem.parents(), nameToSearch);
         if(null != parentWithEachName) {
             int index = Integer.parseInt(parentWithEachName.attr(TagConstants.INDEX));
-            return EachValueRegistry.getInstance().get(request, eachName, index);
+            Object valueToReturn = EachValueRegistry.getInstance().get(request, nameToSearch, index);
+            if(requiresObjectIntrospection) {
+                valueToReturn = ExpressionEval.evalObject(restOfValue, valueToReturn);
+            }
+            return valueToReturn;
         }
-        return eachName; //default
+        return null;
     }
 
     private Element findParentWithEachName(Elements parents, String eachName) {
@@ -56,10 +71,12 @@ public class ValueTag extends AbstractTag {
         Elements tagsWithMValue = result.getDocument().getElementsByAttribute("m:value");
         for (Element tagWithMValue : tagsWithMValue) {
             final String item = tagWithMValue.attr("m:value").trim();
-            String variableValue = variableToString(item, variables);
-            if(null == variableValue) variableValue = getPossibleEachValue(tagWithMValue, item, request).toString();
+            Object variableValue = getPossibleEachValue(tagWithMValue, item, request);
+            if(null == variableValue) variableValue = variableToString(item, variables);
+            if(null == variableValue) variableValue = item;
+
             tagWithMValue.removeAttr("m:value");
-            tagWithMValue.val(variableValue);
+            tagWithMValue.val(variableValue.toString());
             tagWithMValue.attr("from-value", item);
         }
     }

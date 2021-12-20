@@ -86,6 +86,33 @@ class IterationTagTest {
             </html>
             """;
 
+    public static final String HTML_W_COMPLEX_ELEMENT_NESTED =
+            """
+            <!DOCTYPE html>
+            <html lang="en">
+            <body>
+                <m:foreach collection="list-of-values" eachName="myItem">
+                    <m:foreach collection="other-list-of-values" eachName="myItem2">
+                        <p>Each value: <m:text item="myItem.exampleValue" /> :: <m:text item="myItem2.exampleValue" /></p>
+                    </m:foreach>
+                </m:foreach>
+            </body>
+            </html>
+            """;
+
+    public static final String HTML_W_ELEMENT_NESTED_AND_COMPLEX_VALUE_AS_ATTRIBUTE = """
+            <!DOCTYPE html>
+            <html lang="en">
+            <body>
+                <m:foreach collection="list-of-values" eachName="myItem">
+                    <m:foreach collection="other-list-of-values" eachName="myItem2">
+                        <p>Each value: <m:text item="myItem.exampleValue" /> :: <input type="text" m:value="myItem2.exampleValue" /></p>
+                    </m:foreach>
+                </m:foreach>
+            </body>
+            </html>
+            """;
+
     private final ServerRequest request = MockServerRequest.builder().build();
 
     @Test
@@ -278,6 +305,42 @@ class IterationTagTest {
         }
     }
 
+    @Test
+    void testNestedComplexEach() {
+        Map<String, Object> variables = new HashMap<>();
+        final List<ComplexObject> listOfValues = Arrays.asList(new ComplexObject("1"), new ComplexObject("2"), new ComplexObject("3"));
+        final List<ComplexObject> otherListOfValues = Arrays.asList(new ComplexObject("ABC"), new ComplexObject("DEF"));
+        variables.put("list-of-values", listOfValues);
+        variables.put("other-list-of-values", otherListOfValues);
+
+        InjectionResult result = TAG.inject(new InjectionResult(HTML_W_COMPLEX_ELEMENT_NESTED), variables, request);
+        result = new ValueTag().inject(result, variables, request);
+
+        System.out.println(result.getHTML());
+        Assertions.assertFalse(result.getHTML().contains("m:foreach"));
+        Assertions.assertTrue(result.getHTML().contains("<template") && result.getHTML().contains("</template>"));
+        Map<String, List<Element>> templateElements = findDivsWithTemplate(Jsoup.parse(result.getHTML()));
+        List<Element> divs = new ArrayList<>();
+        for(String key : templateElements.keySet()) {
+            List<Element> foundElems = templateElements.get(key);
+            if(foundElems.size() > divs.size()) divs = foundElems;
+        }
+
+        Assertions.assertEquals(listOfValues.size() * otherListOfValues.size(), divs.size());
+        for(Element div : divs) {
+            Assertions.assertFalse(div.text().contains("myItem"), "myItem should be replaced");
+            Assertions.assertFalse(div.text().contains("myItem2"), "myItem2 should be replaced");
+            final String eachValAsString = div.text().replace("Each value:", "").trim();
+            final String[] eachValAsSplit = eachValAsString.split(" :: ");
+
+            final String eachValInteger = eachValAsSplit[0];
+            final String eachValString = eachValAsSplit[1];
+
+            Assertions.assertTrue(List.of("1", "2", "3").contains(eachValInteger));
+            Assertions.assertTrue(List.of("ABC", "DEF").contains(eachValString));
+        }
+    }
+
     private Map<String, List<Element>> findDivsWithTemplate(Document doc) {
         Map<String, List<Element>> result = new HashMap<>();
 
@@ -296,6 +359,19 @@ class IterationTagTest {
 
     long countOccurrences(String block) {
         return Arrays.stream(block.split("<p>Medusa</p>")).count()-1;
+    }
+
+    class ComplexObject {
+
+        private final String exampleValue;
+
+        public ComplexObject(String exampleValue) {
+            this.exampleValue = exampleValue;
+        }
+
+        public String getExampleValue() {
+            return exampleValue;
+        }
     }
 
 }

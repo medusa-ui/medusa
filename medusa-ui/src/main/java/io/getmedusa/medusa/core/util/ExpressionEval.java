@@ -2,6 +2,7 @@ package io.getmedusa.medusa.core.util;
 
 import io.getmedusa.medusa.core.injector.DOMChanges;
 import io.getmedusa.medusa.core.injector.tag.meta.ForEachElement;
+import org.springframework.expression.spel.SpelEvaluationException;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
@@ -33,9 +34,13 @@ public abstract class ExpressionEval {
     }
 
     public static String evalItemAsString(String itemToEval, Map<String, Object> variables) {
-        Object val = interpretValue(itemToEval, variables);
-        if(val == null) return null;
-        return val.toString();
+        try {
+            Object val = interpretValue(itemToEval, variables);
+            if (val == null) return null;
+            return val.toString();
+        } catch (SpelEvaluationException e) {
+            return null;
+        }
     }
 
     public static Object evalItemAsObj(String itemToEval, Map<String, Object> variables) {
