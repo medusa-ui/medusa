@@ -38,7 +38,6 @@ public class ConditionalTag {
             boolean isVisible = false;
             if(conditionalElement.hasAttr(TagConstants.CONDITIONAL_TAG_EQUALS)) {
                 Object comparisonItemValue = getComparisonItemValue(variables, conditionalElement);
-                System.out.println(conditionItemValue + " vs " + comparisonItemValue);
                 isVisible = conditionItemValue.equals(comparisonItemValue);
             }
 
@@ -49,10 +48,11 @@ public class ConditionalTag {
     }
 
     private Node createWrapper(Element element, boolean isVisible) {
-        Element node = new Element(Tag.valueOf("div"), "");
-                //.attr(TagConstants.M_ID, templateID);
-
         final String ifID = IdentifierGenerator.generateIfID(element.html());
+
+        Element node = new Element(Tag.valueOf("div"), "")
+                .attr(TagConstants.M_IF, ifID);
+
         final String condition = "1 == 1"; //TODO
         CONDITIONAL_REGISTRY.add(ifID, condition);
 

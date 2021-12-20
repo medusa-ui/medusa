@@ -31,8 +31,7 @@ public class TagConstants {
     public static final String CONDITIONAL_TAG_LESS_THAN_OR_EQ = "lte";
 
     //conditional - attributes
-
-
+    public static final String M_IF = "m-if";
 
     private TagConstants() {}
 }

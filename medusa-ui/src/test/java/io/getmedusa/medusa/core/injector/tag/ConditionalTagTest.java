@@ -1,6 +1,7 @@
 package io.getmedusa.medusa.core.injector.tag;
 
 import io.getmedusa.medusa.core.injector.tag.meta.InjectionResult;
+import org.jsoup.nodes.Document;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.mock.web.reactive.function.server.MockServerRequest;
@@ -53,11 +54,20 @@ class ConditionalTagTest {
 
     @Test
     void testSimpleHTML() {
-        String htmlA = TAG.inject(new InjectionResult(HTML_EQ_SIMPLE), Map.of("some-variable", "a"), request).getHTML();
-        String htmlB = TAG.inject(new InjectionResult(HTML_EQ_SIMPLE), Map.of("some-variable", "b"), request).getHTML();
-        System.out.println(htmlA);
-        System.out.println(htmlB);
+        Document htmlA = TAG.inject(new InjectionResult(HTML_EQ_SIMPLE), Map.of("some-variable", "a"), request).getDocument();
+        Document htmlB = TAG.inject(new InjectionResult(HTML_EQ_SIMPLE), Map.of("some-variable", "b"), request).getDocument();
 
-        Assertions.assertTrue(htmlA.contains("123"));
+        removeNonDisplayedElements(htmlA);
+        removeNonDisplayedElements(htmlB);
+
+        System.out.println(htmlA.html());
+        System.out.println(htmlB.html());
+
+        Assertions.assertEquals("A", htmlA.text());
+        Assertions.assertEquals("", htmlB.text());
+    }
+
+    private void removeNonDisplayedElements(Document doc) {
+        doc.getElementsByAttributeValue("style", "display:none;").remove();
     }
 }
