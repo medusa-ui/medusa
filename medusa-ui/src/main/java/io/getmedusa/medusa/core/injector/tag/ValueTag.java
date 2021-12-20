@@ -27,9 +27,7 @@ public class ValueTag extends AbstractTag {
         for (Element mTextTag : mTextTags) {
             final String item = mTextTag.attr(TagConstants.TEXT_TAG_ITEM_ATTR).trim();
             String variableValue = variableToString(item, variables);
-            if(null == variableValue) {
-                variableValue = getPossibleEachValue(mTextTag, item, request).toString();
-            }
+            if(null == variableValue) variableValue = getPossibleEachValue(mTextTag, item, request).toString();
             mTextTag.replaceWith(createSpan(item, variableValue));
         }
     }
@@ -58,7 +56,8 @@ public class ValueTag extends AbstractTag {
         Elements tagsWithMValue = result.getDocument().getElementsByAttribute("m:value");
         for (Element tagWithMValue : tagsWithMValue) {
             final String item = tagWithMValue.attr("m:value").trim();
-            final String variableValue = variableToString(item, variables);
+            String variableValue = variableToString(item, variables);
+            if(null == variableValue) variableValue = getPossibleEachValue(tagWithMValue, item, request).toString();
             tagWithMValue.removeAttr("m:value");
             tagWithMValue.val(variableValue);
             tagWithMValue.attr("from-value", item);

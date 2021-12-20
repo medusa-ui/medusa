@@ -17,7 +17,6 @@ class ValueTagTest {
     public static final String HTML_VALUE_AS_ATTRIBUTE = "<input type=\"text\" m:value=\"counter-value\" />";
     public static final String HTML_VALUE_AS_COMPLEX_ATTRIBUTE = "<input type=\"text\" m:value=\"obj.exampleValue\" />";
     public static final String HTML_WRAPPED_IN_TAG = "<p><m:text item=\"counter-value\" /></p>";
-    //public static final String HTML_TITLE = "<title>Welcome to Medusa :: [$counter-value] :: More title</title>";
     public static final String HTML_WITH_SPACES = "<p>Counter: <m:text item=\" counter-value   \" /></p>";
     public static final String HTML_WITH_COMPLEX_OBJECT = "<p>Counter: <m:text item=\"obj.exampleValue\" /></p>";
 

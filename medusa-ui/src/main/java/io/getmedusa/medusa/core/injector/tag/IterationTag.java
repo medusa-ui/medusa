@@ -65,7 +65,7 @@ public class IterationTag extends AbstractTag {
                 }
             } else {
                 //condition parsed is a single value, to which we count up
-                Long iterationCondition = Long.parseLong(conditionParsed.toString());
+                long iterationCondition = Long.parseLong(conditionParsed.toString());
                 for (int i = 0; i < iterationCondition; i++) {
                     handleIteration(foreachElement, template, i, i, templateID, eachName, request);
                 }

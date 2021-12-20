@@ -73,6 +73,19 @@ class IterationTagTest {
             </html>
             """;
 
+    public static final String HTML_W_ELEMENT_NESTED_AND_VALUE_AS_ATTRIBUTE = """
+            <!DOCTYPE html>
+            <html lang="en">
+            <body>
+                <m:foreach collection="list-of-values" eachName="myItem">
+                    <m:foreach collection="other-list-of-values" eachName="myItem2">
+                        <p>Each value: <m:text item="myItem" /> :: <input type="text" m:value="myItem2" /></p>
+                    </m:foreach>
+                </m:foreach>
+            </body>
+            </html>
+            """;
+
     private final ServerRequest request = MockServerRequest.builder().build();
 
     @Test
@@ -232,6 +245,36 @@ class IterationTagTest {
 
             Assertions.assertTrue(listOfValues.contains(eachValInteger));
             Assertions.assertTrue(otherListOfValues.contains(eachValString));
+        }
+    }
+
+    @Test
+    void testNestedWithAttributeValuesEach() {
+        Map<String, Object> variables = new HashMap<>();
+        final List<Integer> listOfValues = Arrays.asList(1, 2, 3);
+        final List<String> otherListOfValues = Arrays.asList("ABC", "DEF");
+        variables.put("list-of-values", listOfValues);
+        variables.put("other-list-of-values", otherListOfValues);
+
+        InjectionResult result = TAG.inject(new InjectionResult(HTML_W_ELEMENT_NESTED_AND_VALUE_AS_ATTRIBUTE), variables, request);
+        result = new ValueTag().inject(result, variables, request);
+
+        System.out.println(result.getHTML());
+        Assertions.assertFalse(result.getHTML().contains("m:foreach"));
+        Assertions.assertTrue(result.getHTML().contains("<template") && result.getHTML().contains("</template>"));
+        Map<String, List<Element>> templateElements = findDivsWithTemplate(Jsoup.parse(result.getHTML()));
+        List<Element> divs = new ArrayList<>();
+        for(String key : templateElements.keySet()) {
+            List<Element> foundElems = templateElements.get(key);
+            if(foundElems.size() > divs.size()) divs = foundElems;
+        }
+
+        Assertions.assertEquals(listOfValues.size() * otherListOfValues.size(), divs.size());
+        for(Element div : divs) {
+            Assertions.assertFalse(div.text().contains("myItem"), "myItem should be replaced");
+            Assertions.assertFalse(div.text().contains("myItem2"), "myItem2 should be replaced");
+            final String eachValAsString = div.getElementsByTag("input").val();
+            Assertions.assertTrue(otherListOfValues.contains(eachValAsString));
         }
     }
 
