@@ -32,6 +32,8 @@ public class TagConstants {
 
     //conditional - attributes
     public static final String M_IF = "m-if";
+    public static final String M_ELSE = "m:else";
+    public static final String M_ELSEIF = "m:elseif";
 
     private TagConstants() {}
 }

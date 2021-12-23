@@ -67,6 +67,22 @@ class ConditionalTagTest {
         Assertions.assertEquals("", htmlB.text());
     }
 
+    @Test
+    void testElse() {
+        Document htmlA = TAG.inject(new InjectionResult(HTML_EQ_ELSE), Map.of("some-variable", "a"), request).getDocument();
+        Document htmlB = TAG.inject(new InjectionResult(HTML_EQ_ELSE), Map.of("some-variable", "b"), request).getDocument();
+
+        removeNonDisplayedElements(htmlA);
+        removeNonDisplayedElements(htmlB);
+
+        System.out.println(htmlA.html());
+        System.out.println(htmlB.html());
+
+        Assertions.assertEquals("A", htmlA.text());
+        Assertions.assertEquals("B", htmlB.text());
+    }
+
+
     private void removeNonDisplayedElements(Document doc) {
         doc.getElementsByAttributeValue("style", "display:none;").remove();
     }

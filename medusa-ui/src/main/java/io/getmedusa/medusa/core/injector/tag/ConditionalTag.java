@@ -4,9 +4,8 @@ import io.getmedusa.medusa.core.injector.tag.meta.InjectionResult;
 import io.getmedusa.medusa.core.registry.ConditionalRegistry;
 import io.getmedusa.medusa.core.util.ExpressionEval;
 import io.getmedusa.medusa.core.util.IdentifierGenerator;
+import io.getmedusa.medusa.core.util.WrapperUtils;
 import org.jsoup.nodes.Element;
-import org.jsoup.nodes.Node;
-import org.jsoup.parser.Tag;
 import org.jsoup.select.Elements;
 import org.springframework.web.reactive.function.server.ServerRequest;
 
@@ -33,36 +32,65 @@ public class ConditionalTag {
 
         Elements conditionalElements = result.getDocument().getElementsByTag(TagConstants.CONDITIONAL_TAG);
         for(Element conditionalElement : conditionalElements) {
-            Object conditionItemValue = getConditionItemValue(variables, conditionalElement);
-
-            boolean isVisible = false;
-            if(conditionalElement.hasAttr(TagConstants.CONDITIONAL_TAG_EQUALS)) {
-                Object comparisonItemValue = getComparisonItemValue(variables, conditionalElement);
-                isVisible = conditionItemValue.equals(comparisonItemValue);
-            }
-
-            conditionalElement.replaceWith(createWrapper(conditionalElement, isVisible));
+            handleIfElement(variables, conditionalElement);
         }
 
         return result;
     }
 
-    private Node createWrapper(Element element, boolean isVisible) {
-        final String ifID = IdentifierGenerator.generateIfID(element.html());
+    private void handleIfElement(Map<String, Object> variables, Element conditionalElement) {
 
-        Element node = new Element(Tag.valueOf("div"), "")
-                .attr(TagConstants.M_IF, ifID);
+        final String ifId = generateIfID(conditionalElement);
+        final Object conditionItemValue = getConditionItemValue(variables, conditionalElement);
 
-        final String condition = "1 == 1"; //TODO
-        CONDITIONAL_REGISTRY.add(ifID, condition);
-
-        if(!isVisible) {
-            node.attr("style", "display:none;");
+        boolean isMainElementVisible = false;
+        if(conditionalElement.hasAttr(TagConstants.CONDITIONAL_TAG_EQUALS)) {
+            Object comparisonItemValue = getComparisonItemValue(variables, conditionalElement);
+            isMainElementVisible = conditionItemValue.equals(comparisonItemValue);
         }
 
-        node.appendChildren(element.children());
+        final Element elseElement = getElseElement(conditionalElement);
+        final Elements mainElements = filterMainElements(conditionalElement, elseElement);
 
-        return node;
+        //wrapping
+        final Element fullConditionalWrapper = WrapperUtils.wrapAndReplace(conditionalElement, "m-if-wrapper");
+        fullConditionalWrapper.attr(TagConstants.M_IF, ifId);
+
+        final Element mainElementWrapper = WrapperUtils.wrap(mainElements, "m-if-main");
+
+        Element defaultElseWrapper = null;
+        if(elseElement != null) defaultElseWrapper = WrapperUtils.wrapAndReplace(elseElement, "m-if-default-else");
+
+        //visibility
+        if(isMainElementVisible) {
+            hide(defaultElseWrapper);
+        } else {
+            hide(mainElementWrapper);
+        }
+    }
+
+    private Elements filterMainElements(Element conditionalElement, Element ... elementsToFilter) {
+        List<Element> elementsToFilterList = Arrays.asList(elementsToFilter);
+        return new Elements(conditionalElement.children().stream().filter(e -> !elementsToFilterList.contains(e)).toList());
+    }
+
+    private Element getElseElement(Element conditionalElement) {
+        final Elements elements = conditionalElement.getElementsByTag(TagConstants.M_ELSE);
+        if(elements.isEmpty()) return null;
+        if(elements.size() > 1) throw new IllegalStateException("m:if condition can only have one m:else condition. Use m:else if for multiple conditions.");
+        return elements.get(0);
+    }
+
+    private String generateIfID(Element element) {
+        final String ifID = IdentifierGenerator.generateIfID(element.html());
+        final String condition = "1 == 1"; //TODO
+        CONDITIONAL_REGISTRY.add(ifID, condition);
+        return ifID;
+    }
+
+    private Element hide(Element elementToHide) {
+        if(elementToHide == null) return null;
+        return elementToHide.attr("style", "display:none;");
     }
 
     private Object getComparisonItemValue(Map<String, Object> variables, Element conditionalElement) {
