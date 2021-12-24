@@ -1,5 +1,6 @@
 package io.getmedusa.medusa.core.injector.tag.meta;
 
+import io.getmedusa.medusa.core.injector.tag.meta.VisibilityDetermination.ConditionResult;
 import io.getmedusa.medusa.core.util.WrapperUtils;
 import org.jsoup.nodes.Element;
 
@@ -12,9 +13,9 @@ public class ElseIfElement {
     private final boolean valid;
 
     public ElseIfElement(Element element, Map<String, Object> variables) {
-        final VisibilityDetermination.ConditionResult conditionResult = VisibilityDetermination.getInstance().determine(variables, element);
-        this.condition = conditionResult.getCondition();
-        this.valid = conditionResult.isVisible();
+        final ConditionResult conditionResult = VisibilityDetermination.getInstance().determine(variables, element);
+        this.condition = conditionResult.condition();
+        this.valid = conditionResult.visible();
         this.element = WrapperUtils.wrapAndReplace(element, "m-if-else");
     }
 

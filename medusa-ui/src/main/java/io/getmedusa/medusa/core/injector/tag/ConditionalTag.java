@@ -42,7 +42,7 @@ public class ConditionalTag {
 
     private void handleIfElement(Map<String, Object> variables, Element conditionalElement) {
         final ConditionResult mainCondition = VisibilityDetermination.getInstance().determine(variables, conditionalElement);
-        final String ifId = generateIfID(conditionalElement, mainCondition.getCondition());
+        final String ifId = generateIfID(conditionalElement, mainCondition.condition());
 
         //find elements
         final Element elseElement = getElseElement(conditionalElement);
@@ -50,13 +50,13 @@ public class ConditionalTag {
         final Elements mainElements = filterMainElements(conditionalElement, elseElement, elseIfElements);
 
         //wrapping
-        final Element fullConditionalWrapper = addFullWrapperAndReplaceMIFElement(conditionalElement, ifId);
+        addFullWrapperAndReplaceMIFElement(conditionalElement, ifId);
         final Element mainElementWrapper = wrapMainElement(mainElements);
         final Element defaultElseWrapper = wrapDefaultElseElement(elseElement);
 
         //visibility
         final ElseIfElement activeElseIf;
-        if(!mainCondition.isVisible()) {
+        if(!mainCondition.visible()) {
             activeElseIf = determineActiveElseIf(elseIfElements); //determine which elseIf is relevant, if any
         } else {
             activeElseIf = null; //not relevant, overruled by main node
@@ -64,7 +64,7 @@ public class ConditionalTag {
 
         hideAll(elseIfElements, activeElseIf);
         if(null == activeElseIf) {
-            if (mainCondition.isVisible()) {
+            if (mainCondition.visible()) {
                 hide(defaultElseWrapper);
             } else {
                 hide(mainElementWrapper);
