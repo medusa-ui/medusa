@@ -40,14 +40,52 @@ class ConditionalTagTest {
             """;
 
     //TODO eq w/ variable
+    //TODO eq w/ boolean
     //TODO nested
     //TODO as part of iteration w/ each
-    //TODO gt
-    //TODO lt
-    //TODO gte
-    //TODO lte
-    //TODO not
     //TODO complex objects
+
+    private static final String HTML_GT_SIMPLE = """
+                    <m:if condition="some-variable" gt="1">
+                        <p>A</p>
+                    </m:if>
+            """;
+
+    private static final String HTML_LT_SIMPLE = """
+                    <m:if condition="some-variable" lt="10">
+                        <p>A</p>
+                    </m:if>
+            """;
+
+    private static final String HTML_GTE_SIMPLE = """
+                    <m:if condition="some-variable" gte="5">
+                        <p>A</p>
+                    </m:if>
+            """;
+
+    private static final String HTML_LTE_SIMPLE = """
+                    <m:if condition="some-variable" lte="5">
+                        <p>A</p>
+                    </m:if>
+            """;
+
+    private static final String HTML_NOT_SIMPLE = """
+                    <m:if condition="some-variable" not="5">
+                        <p>A</p>
+                    </m:if>
+            """;
+
+    private static final String HTML_RANGE_SIMPLE = """
+                    <m:if condition="some-variable" lte="50" gt="0">
+                        <p>A</p>
+                    </m:if>
+            """;
+
+    private static final String HTML_RANGE_SWAPPED = """
+                    <m:if condition="some-variable" gt="1" lte="50">
+                        <p>A</p>
+                    </m:if>
+            """;
 
     private static final ConditionalTag TAG = new ConditionalTag();
     private final ServerRequest request = MockServerRequest.builder().build();
@@ -99,6 +137,111 @@ class ConditionalTagTest {
         Assertions.assertEquals("A", htmlA.text());
         Assertions.assertEquals("B", htmlB.text());
         Assertions.assertEquals("C", htmlC.text());
+    }
+
+    @Test
+    void testSimpleGT() {
+        Document htmlA = TAG.inject(new InjectionResult(HTML_GT_SIMPLE), Map.of("some-variable", "5"), request).getDocument();
+        Document htmlB = TAG.inject(new InjectionResult(HTML_GT_SIMPLE), Map.of("some-variable", "0"), request).getDocument();
+
+        removeNonDisplayedElements(htmlA);
+        removeNonDisplayedElements(htmlB);
+
+        System.out.println(htmlA.html());
+        System.out.println(htmlB.html());
+
+        Assertions.assertEquals("A", htmlA.text());
+        Assertions.assertEquals("", htmlB.text());
+    }
+
+    @Test
+    void testSimpleLT() {
+        Document htmlA = TAG.inject(new InjectionResult(HTML_LT_SIMPLE), Map.of("some-variable", "5"), request).getDocument();
+        Document htmlB = TAG.inject(new InjectionResult(HTML_LT_SIMPLE), Map.of("some-variable", "15"), request).getDocument();
+
+        removeNonDisplayedElements(htmlA);
+        removeNonDisplayedElements(htmlB);
+
+        System.out.println(htmlA.html());
+        System.out.println(htmlB.html());
+
+        Assertions.assertEquals("A", htmlA.text());
+        Assertions.assertEquals("", htmlB.text());
+    }
+
+    @Test
+    void testSimpleGTE() {
+        Document htmlA = TAG.inject(new InjectionResult(HTML_GTE_SIMPLE), Map.of("some-variable", "5"), request).getDocument();
+        Document htmlB = TAG.inject(new InjectionResult(HTML_GTE_SIMPLE), Map.of("some-variable", "1"), request).getDocument();
+
+        removeNonDisplayedElements(htmlA);
+        removeNonDisplayedElements(htmlB);
+
+        System.out.println(htmlA.html());
+        System.out.println(htmlB.html());
+
+        Assertions.assertEquals("A", htmlA.text());
+        Assertions.assertEquals("", htmlB.text());
+    }
+
+    @Test
+    void testSimpleLTE() {
+        Document htmlA = TAG.inject(new InjectionResult(HTML_LTE_SIMPLE), Map.of("some-variable", "5"), request).getDocument();
+        Document htmlB = TAG.inject(new InjectionResult(HTML_LTE_SIMPLE), Map.of("some-variable", "20"), request).getDocument();
+
+        removeNonDisplayedElements(htmlA);
+        removeNonDisplayedElements(htmlB);
+
+        System.out.println(htmlA.html());
+        System.out.println(htmlB.html());
+
+        Assertions.assertEquals("A", htmlA.text());
+        Assertions.assertEquals("", htmlB.text());
+    }
+
+    @Test
+    void testSimpleNOT() {
+        Document htmlA = TAG.inject(new InjectionResult(HTML_NOT_SIMPLE), Map.of("some-variable", "1"), request).getDocument();
+        Document htmlB = TAG.inject(new InjectionResult(HTML_NOT_SIMPLE), Map.of("some-variable", "5"), request).getDocument();
+
+        removeNonDisplayedElements(htmlA);
+        removeNonDisplayedElements(htmlB);
+
+        System.out.println(htmlA.html());
+        System.out.println(htmlB.html());
+
+        Assertions.assertEquals("A", htmlA.text());
+        Assertions.assertEquals("", htmlB.text());
+    }
+
+    @Test
+    void testSimpleRange() {
+        Document htmlA = TAG.inject(new InjectionResult(HTML_RANGE_SIMPLE), Map.of("some-variable", "5"), request).getDocument();
+        Document htmlB = TAG.inject(new InjectionResult(HTML_RANGE_SIMPLE), Map.of("some-variable", "500"), request).getDocument();
+
+        removeNonDisplayedElements(htmlA);
+        removeNonDisplayedElements(htmlB);
+
+        System.out.println(htmlA.html());
+        System.out.println(htmlB.html());
+
+        Assertions.assertEquals("A", htmlA.text());
+        Assertions.assertEquals("", htmlB.text());
+    }
+
+    @Test
+    void testSwappedRange() {
+        Document htmlA = TAG.inject(new InjectionResult(HTML_RANGE_SIMPLE), Map.of("some-variable", "5"), request).getDocument();
+        Document htmlB = TAG.inject(new InjectionResult(HTML_RANGE_SIMPLE), Map.of("some-variable", "500"), request).getDocument();
+
+        removeNonDisplayedElements(htmlA);
+        removeNonDisplayedElements(htmlB);
+
+        System.out.println(htmlA.html());
+        System.out.println(htmlB.html());
+
+        Assertions.assertEquals("A", htmlA.text());
+        Assertions.assertEquals("", htmlB.text());
     }
 
     private void removeNonDisplayedElements(Document doc) {

@@ -25,6 +25,7 @@ public class TagConstants {
     public static final String CONDITIONAL_TAG = "m:if"; //each on div
     public static final String CONDITIONAL_TAG_CONDITION_ATTR = "condition";
     public static final String CONDITIONAL_TAG_EQUALS = "eq";
+    public static final String CONDITIONAL_TAG_NOT = "not";
     public static final String CONDITIONAL_TAG_GREATER_THAN = "gt";
     public static final String CONDITIONAL_TAG_GREATER_THAN_OR_EQ = "gte";
     public static final String CONDITIONAL_TAG_LESS_THAN = "lt";
