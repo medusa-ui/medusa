@@ -30,7 +30,7 @@ class ConditionalTagTest {
     private static final String HTML_EQ_ELSE_IF = """
                     <m:if condition="some-variable" eq="a">
                         <p>A</p>
-                        <m:elseif condition="innerItem" eq="b">
+                        <m:elseif condition="some-other-variable" eq="1">
                             <p>B</p>
                         </m:elseif>
                         <m:else>
@@ -82,6 +82,24 @@ class ConditionalTagTest {
         Assertions.assertEquals("B", htmlB.text());
     }
 
+    @Test
+    void testElseIf() {
+        Document htmlA = TAG.inject(new InjectionResult(HTML_EQ_ELSE_IF), Map.of("some-variable", "a", "some-other-variable", "1"), request).getDocument();
+        Document htmlB = TAG.inject(new InjectionResult(HTML_EQ_ELSE_IF), Map.of("some-variable", "b", "some-other-variable", "1"), request).getDocument();
+        Document htmlC = TAG.inject(new InjectionResult(HTML_EQ_ELSE_IF), Map.of("some-variable", "c", "some-other-variable", "2"), request).getDocument();
+
+        removeNonDisplayedElements(htmlA);
+        removeNonDisplayedElements(htmlB);
+        removeNonDisplayedElements(htmlC);
+
+        System.out.println(htmlA.html());
+        System.out.println(htmlB.html());
+        System.out.println(htmlC.html());
+
+        Assertions.assertEquals("A", htmlA.text());
+        Assertions.assertEquals("B", htmlB.text());
+        Assertions.assertEquals("C", htmlC.text());
+    }
 
     private void removeNonDisplayedElements(Document doc) {
         doc.getElementsByAttributeValue("style", "display:none;").remove();
