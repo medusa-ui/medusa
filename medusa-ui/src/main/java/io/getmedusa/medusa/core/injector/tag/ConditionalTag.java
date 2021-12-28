@@ -19,20 +19,8 @@ public class ConditionalTag {
     private static final ConditionalRegistry CONDITIONAL_REGISTRY = ConditionalRegistry.getInstance();
 
     public InjectionResult inject(InjectionResult result, Map<String, Object> variables, ServerRequest request) {
-        //TODO conditionItem vs conditionString? if needed, be explicit
-        //<m:if condition="innerItem" eq="a">
-        //    <p>A</p>
-        //    <m:elseif conditionItem="innerItem" eq="b">
-        //
-        //    </m:elseif>
-        //    <m:else>
-        //
-        //    </m:else>
-        //</m:if>
-        //becomes
-        //
-
         Elements conditionalElements = result.getDocument().getElementsByTag(TagConstants.CONDITIONAL_TAG);
+        conditionalElements.sort(Comparator.comparingInt(o -> o.getElementsByTag(TagConstants.CONDITIONAL_TAG).size()));
         for(Element conditionalElement : conditionalElements) {
             handleIfElement(variables, conditionalElement);
         }
@@ -94,10 +82,9 @@ public class ConditionalTag {
         return elements.stream().map(e -> new ElseIfElement(e, variables)).toList();
     }
 
-    private Element addFullWrapperAndReplaceMIFElement(Element conditionalElement, String ifId) {
+    private void addFullWrapperAndReplaceMIFElement(Element conditionalElement, String ifId) {
         final Element fullConditionalWrapper = WrapperUtils.wrapAndReplace(conditionalElement, "m-if-wrapper");
         fullConditionalWrapper.attr(TagConstants.M_IF, ifId);
-        return fullConditionalWrapper;
     }
 
     private Element wrapMainElement(Elements mainElements) {
@@ -130,9 +117,9 @@ public class ConditionalTag {
         return ifID;
     }
 
-    private Element hide(Element elementToHide) {
-        if(elementToHide == null) return null;
-        return elementToHide.attr("style", "display:none;");
+    private void hide(Element elementToHide) {
+        if(elementToHide == null) return;
+        elementToHide.attr("style", "display:none;");
     }
 
     public static final Pattern patternIfStart = Pattern.compile("\\[\\$if\\(.+?]", Pattern.CASE_INSENSITIVE);

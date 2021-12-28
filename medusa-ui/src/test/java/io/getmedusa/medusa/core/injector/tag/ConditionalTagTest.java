@@ -12,13 +12,13 @@ import java.util.Map;
 class ConditionalTagTest {
 
     private static final String HTML_EQ_SIMPLE = """
-                    <m:if condition="some-variable" eq="a">
+                    <m:if condition="some-variable" eq="'a'">
                         <p>A</p>
                     </m:if>
             """;
 
     private static final String HTML_EQ_ELSE = """
-                    <m:if condition="some-variable" eq="a">
+                    <m:if condition="some-variable" eq="'a'">
                         <p>A</p>
                         
                         <m:else>
@@ -28,7 +28,7 @@ class ConditionalTagTest {
             """;
 
     private static final String HTML_EQ_ELSE_IF = """
-                    <m:if condition="some-variable" eq="a">
+                    <m:if condition="some-variable" eq="'a'">
                         <p>A</p>
                         <m:elseif condition="some-other-variable" eq="1">
                             <p>B</p>
@@ -39,11 +39,39 @@ class ConditionalTagTest {
                     </m:if>
             """;
 
-    //TODO eq w/ variable
-    //TODO eq w/ boolean
-    //TODO nested
+    private static final String HTML_EQ_VARIABLE = """
+                    <m:if condition="some-variable.name" eq="a.name">
+                        <p>A</p>
+                    </m:if>
+            """;
+
+    private static final String HTML_EQ_BOOL = """
+                    <m:if condition="some-variable" eq="true">
+                        <p>A</p>
+                    </m:if>
+            """;
+
+    private static final String HTML_EQ_ELSE_IF_NESTED = """
+                    <m:if condition="some-variable" eq="'a'">
+                        <m:if condition="another-variable" eq="'a'">
+                            <p>A</p>
+                            <m:elseif condition="some-other-variable" eq="1">
+                                <p>B</p>
+                            </m:elseif>
+                            <m:else>
+                                <p>C</p>
+                            </m:else>
+                        </m:if>
+                        <m:elseif condition="some-other-variable" eq="1">
+                            <p>B</p>
+                        </m:elseif>
+                        <m:else>
+                            <p>C</p>
+                        </m:else>
+                    </m:if>
+            """;
+
     //TODO as part of iteration w/ each
-    //TODO complex objects
 
     private static final String HTML_GT_SIMPLE = """
                     <m:if condition="some-variable" gt="1">
@@ -125,6 +153,25 @@ class ConditionalTagTest {
         Document htmlA = TAG.inject(new InjectionResult(HTML_EQ_ELSE_IF), Map.of("some-variable", "a", "some-other-variable", "1"), request).getDocument();
         Document htmlB = TAG.inject(new InjectionResult(HTML_EQ_ELSE_IF), Map.of("some-variable", "b", "some-other-variable", "1"), request).getDocument();
         Document htmlC = TAG.inject(new InjectionResult(HTML_EQ_ELSE_IF), Map.of("some-variable", "c", "some-other-variable", "2"), request).getDocument();
+
+        removeNonDisplayedElements(htmlA);
+        removeNonDisplayedElements(htmlB);
+        removeNonDisplayedElements(htmlC);
+
+        System.out.println(htmlA.html());
+        System.out.println(htmlB.html());
+        System.out.println(htmlC.html());
+
+        Assertions.assertEquals("A", htmlA.text());
+        Assertions.assertEquals("B", htmlB.text());
+        Assertions.assertEquals("C", htmlC.text());
+    }
+
+    @Test
+    void testElseIfNested() {
+        Document htmlA = TAG.inject(new InjectionResult(HTML_EQ_ELSE_IF_NESTED), Map.of("some-variable", "'a'", "another-variable", "'a'", "some-other-variable", "1"), request).getDocument();
+        Document htmlB = TAG.inject(new InjectionResult(HTML_EQ_ELSE_IF_NESTED), Map.of("some-variable", "'b'", "another-variable", "'a'","some-other-variable", "1"), request).getDocument();
+        Document htmlC = TAG.inject(new InjectionResult(HTML_EQ_ELSE_IF_NESTED), Map.of("some-variable", "'c'", "another-variable", "'a'","some-other-variable", "2"), request).getDocument();
 
         removeNonDisplayedElements(htmlA);
         removeNonDisplayedElements(htmlB);
@@ -231,8 +278,38 @@ class ConditionalTagTest {
 
     @Test
     void testSwappedRange() {
-        Document htmlA = TAG.inject(new InjectionResult(HTML_RANGE_SIMPLE), Map.of("some-variable", "5"), request).getDocument();
-        Document htmlB = TAG.inject(new InjectionResult(HTML_RANGE_SIMPLE), Map.of("some-variable", "500"), request).getDocument();
+        Document htmlA = TAG.inject(new InjectionResult(HTML_RANGE_SWAPPED), Map.of("some-variable", "5"), request).getDocument();
+        Document htmlB = TAG.inject(new InjectionResult(HTML_RANGE_SWAPPED), Map.of("some-variable", "500"), request).getDocument();
+
+        removeNonDisplayedElements(htmlA);
+        removeNonDisplayedElements(htmlB);
+
+        System.out.println(htmlA.html());
+        System.out.println(htmlB.html());
+
+        Assertions.assertEquals("A", htmlA.text());
+        Assertions.assertEquals("", htmlB.text());
+    }
+
+    @Test
+    void testSimpleHTMLVariable() {
+        Document htmlA = TAG.inject(new InjectionResult(HTML_EQ_VARIABLE), Map.of("some-variable", new Person("こんにちは世界"), "a", new Person("こんにちは世界")), request).getDocument();
+        Document htmlB = TAG.inject(new InjectionResult(HTML_EQ_VARIABLE), Map.of("some-variable", new Person("नमस्ते दुनिया"), "a", new Person("こんにちは世界")), request).getDocument();
+
+        removeNonDisplayedElements(htmlA);
+        removeNonDisplayedElements(htmlB);
+
+        System.out.println(htmlA.html());
+        System.out.println(htmlB.html());
+
+        Assertions.assertEquals("A", htmlA.text());
+        Assertions.assertEquals("", htmlB.text());
+    }
+
+    @Test
+    void testSimpleHTMLBoolean() {
+        Document htmlA = TAG.inject(new InjectionResult(HTML_EQ_BOOL), Map.of("some-variable", true), request).getDocument();
+        Document htmlB = TAG.inject(new InjectionResult(HTML_EQ_BOOL), Map.of("some-variable", false), request).getDocument();
 
         removeNonDisplayedElements(htmlA);
         removeNonDisplayedElements(htmlB);
@@ -246,5 +323,18 @@ class ConditionalTagTest {
 
     private void removeNonDisplayedElements(Document doc) {
         doc.getElementsByAttributeValue("style", "display:none;").remove();
+    }
+
+    private class Person {
+
+        private final String name;
+
+        public Person(String name){
+            this.name = name;
+        }
+
+        public String getName() {
+            return name;
+        }
     }
 }

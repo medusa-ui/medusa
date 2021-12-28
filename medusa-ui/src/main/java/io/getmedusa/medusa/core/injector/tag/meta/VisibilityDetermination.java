@@ -21,37 +21,53 @@ public class VisibilityDetermination {
         Boolean visible = null;
         if(element.hasAttr(CONDITIONAL_TAG_EQUALS)) {
             Object comparisonItem = getComparisonItemValue(vars, element, CONDITIONAL_TAG_EQUALS);
-            visible = logicalAnd(visible, conditionItem.equals(comparisonItem));
+            visible = logicalAnd(visible, compareObjects(conditionItem, comparisonItem));
         }
 
         if(element.hasAttr(CONDITIONAL_TAG_NOT)) {
-            Object comparisonItemValue = getComparisonItemValue(vars, element, CONDITIONAL_TAG_NOT);
-            visible = logicalAnd(visible, !conditionItem.equals(comparisonItemValue));
+            Object comparisonItem = getComparisonItemValue(vars, element, CONDITIONAL_TAG_NOT);
+            visible = logicalAnd(visible, !compareObjects(conditionItem, comparisonItem));
         }
 
         if(element.hasAttr(CONDITIONAL_TAG_GREATER_THAN)) {
-            Object comparisonItemValue = getComparisonItemValue(vars, element, CONDITIONAL_TAG_GREATER_THAN);
-            visible = logicalAnd(visible, doBigDecimalComparison(conditionItem, comparisonItemValue) > 0);
+            Object comparisonItem = getComparisonItemValue(vars, element, CONDITIONAL_TAG_GREATER_THAN);
+            visible = logicalAnd(visible, doBigDecimalComparison(conditionItem, comparisonItem) > 0);
         }
 
         if(element.hasAttr(CONDITIONAL_TAG_LESS_THAN)) {
-            Object comparisonItemValue = getComparisonItemValue(vars, element, CONDITIONAL_TAG_LESS_THAN);
-            visible = logicalAnd(visible, doBigDecimalComparison(conditionItem, comparisonItemValue) < 0);
+            Object comparisonItem = getComparisonItemValue(vars, element, CONDITIONAL_TAG_LESS_THAN);
+            visible = logicalAnd(visible, doBigDecimalComparison(conditionItem, comparisonItem) < 0);
         }
 
         if(element.hasAttr(CONDITIONAL_TAG_GREATER_THAN_OR_EQ)) {
-            Object comparisonItemValue = getComparisonItemValue(vars, element, CONDITIONAL_TAG_GREATER_THAN_OR_EQ);
-            final int comparison = doBigDecimalComparison(conditionItem, comparisonItemValue);
+            Object comparisonItem = getComparisonItemValue(vars, element, CONDITIONAL_TAG_GREATER_THAN_OR_EQ);
+            final int comparison = doBigDecimalComparison(conditionItem, comparisonItem);
             visible = logicalAnd(visible, comparison > 0 || comparison == 0);
         }
 
         if(element.hasAttr(CONDITIONAL_TAG_LESS_THAN_OR_EQ)) {
-            Object comparisonItemValue = getComparisonItemValue(vars, element, CONDITIONAL_TAG_LESS_THAN_OR_EQ);
-            final int comparison = doBigDecimalComparison(conditionItem, comparisonItemValue);
+            Object comparisonItem = getComparisonItemValue(vars, element, CONDITIONAL_TAG_LESS_THAN_OR_EQ);
+            final int comparison = doBigDecimalComparison(conditionItem, comparisonItem);
             visible = logicalAnd(visible, comparison < 0 || comparison == 0);
         }
 
         return new ConditionResult(Boolean.TRUE.equals(visible), "");
+    }
+
+    private boolean compareObjects(Object conditionItem, Object comparisonItem) {
+        return wrapped(conditionItem).equals(wrapped(comparisonItem)) ||
+                asBoolean(conditionItem).equals(asBoolean(comparisonItem));
+    }
+
+    private Object asBoolean(Object item) {
+        if(Boolean.TRUE.toString().equals(item)) return true;
+        return item;
+    }
+
+    private String wrapped(Object item) {
+        if(null == item) return "''";
+        if(!item.toString().startsWith("'")) return "'" + item + "'";
+        return item.toString();
     }
 
     private Boolean logicalAnd(Boolean existingValue, boolean newValue) {
