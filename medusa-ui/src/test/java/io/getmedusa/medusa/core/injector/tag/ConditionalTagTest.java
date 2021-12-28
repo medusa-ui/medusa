@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.mock.web.reactive.function.server.MockServerRequest;
 import org.springframework.web.reactive.function.server.ServerRequest;
 
+import java.util.List;
 import java.util.Map;
 
 class ConditionalTagTest {
@@ -71,7 +72,23 @@ class ConditionalTagTest {
                     </m:if>
             """;
 
-    //TODO as part of iteration w/ each
+    private static final String HTML_EQ_SIMPLE_ITERATION = """
+                    <m:foreach collection="list-of-values">
+                        <m:if condition="some-variable" eq="1">
+                            <p>A</p>
+                        </m:if>
+                    </m:foreach>
+            """;
+
+    private static final String HTML_EQ_EACH_ITERATION = """
+                    <m:foreach collection="list-of-values" eachName="myItem">
+                        <m:if condition="myItem" eq="1">
+                            <p>A</p>
+                        </m:if>
+                    </m:foreach>
+            """;
+
+    //TODO each with object
 
     private static final String HTML_GT_SIMPLE = """
                     <m:if condition="some-variable" gt="1">
@@ -116,6 +133,8 @@ class ConditionalTagTest {
             """;
 
     private static final ConditionalTag TAG = new ConditionalTag();
+    private static final IterationTag ITERATION_TAG = new IterationTag();
+    private static final ValueTag VALUE_TAG = new ValueTag();
     private final ServerRequest request = MockServerRequest.builder().build();
 
     @Test
@@ -321,11 +340,59 @@ class ConditionalTagTest {
         Assertions.assertEquals("", htmlB.text());
     }
 
-    private void removeNonDisplayedElements(Document doc) {
-        doc.getElementsByAttributeValue("style", "display:none;").remove();
+    @Test
+    void testSimpleIteration() {
+        final Map<String, Object> variablesA = Map.of("list-of-values", List.of(1, 2), "some-variable", 1);
+        final Map<String, Object> variablesB = Map.of("list-of-values", List.of(1, 2), "some-variable", 2);
+
+        Document htmlA =  ITERATION_TAG.inject(TAG.inject(new InjectionResult(HTML_EQ_SIMPLE_ITERATION), variablesA, request), variablesA, request).getDocument();
+        Document htmlB = ITERATION_TAG.inject(TAG.inject(new InjectionResult(HTML_EQ_SIMPLE_ITERATION), variablesB, request), variablesB, request).getDocument();
+
+        removeNonDisplayedElements(htmlA);
+        removeNonDisplayedElements(htmlB);
+
+        System.out.println(htmlA.html());
+        System.out.println(htmlB.html());
+
+        Assertions.assertEquals("A A", htmlA.text());
+        Assertions.assertEquals("", htmlB.text());
     }
 
-    private class Person {
+    @Test
+    void testEachIteration() {
+        final Map<String, Object> variablesA = Map.of("list-of-values", List.of(1, 1));
+        final Map<String, Object> variablesB = Map.of("list-of-values", List.of(1, 2, 3));
+
+        Document htmlA =  TAG.inject(
+                                    VALUE_TAG.inject(
+                                            ITERATION_TAG.inject(new InjectionResult(HTML_EQ_EACH_ITERATION),
+                                            variablesA, request),
+                                    variablesA, request),
+                            variablesA, request).getDocument();
+
+        Document htmlB =  TAG.inject(
+                                    VALUE_TAG.inject(
+                                            ITERATION_TAG.inject(new InjectionResult(HTML_EQ_EACH_ITERATION),
+                                                    variablesB, request),
+                                            variablesB, request),
+                                    variablesB, request).getDocument();
+
+        removeNonDisplayedElements(htmlA);
+        removeNonDisplayedElements(htmlB);
+
+        System.out.println(htmlA.html());
+        System.out.println(htmlB.html());
+
+        Assertions.assertEquals("A A", htmlA.text());
+        Assertions.assertEquals("A", htmlB.text());
+    }
+
+    private void removeNonDisplayedElements(Document doc) {
+        doc.getElementsByAttributeValue("style", "display:none;").remove();
+        doc.getElementsByTag("template").remove();
+    }
+
+    private static class Person {
 
         private final String name;
 

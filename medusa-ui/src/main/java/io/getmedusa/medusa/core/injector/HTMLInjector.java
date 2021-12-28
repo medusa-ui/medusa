@@ -106,11 +106,11 @@ public enum HTMLInjector {
 
         try {
             InjectionResult result = iterationTag.inject(new InjectionResult(document), variables, request);
+            result = valueTag.inject(result, variables, request); //also handles each values
             result = conditionalTag.inject(result, variables, request);
 //        result = clickTag.inject(result.getHtml());
 //        result = onEnterTag.inject(result.getHtml());
 //        result = changeTag.inject(result.getHtml());
-            result = valueTag.inject(result, variables, request);
 //        result = classAppendTag.injectWithVariables(result, variables);
 //        result = genericMTag.injectWithVariables(result, variables);
 //        result = hydraMenuTag.injectWithVariables(result);

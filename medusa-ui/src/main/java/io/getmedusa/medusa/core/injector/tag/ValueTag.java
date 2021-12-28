@@ -16,7 +16,17 @@ public class ValueTag extends AbstractTag {
     public InjectionResult inject(InjectionResult result, Map<String, Object> variables, ServerRequest request) {
         handleMTextTag(result, variables, request);
         handleMValueAttribute(result, variables, request);
+        handleMIfCondition(result, variables, request);
         return result;
+    }
+
+    private void handleMIfCondition(InjectionResult result, Map<String, Object> variables, ServerRequest request) {
+        Elements mIfTags = result.getDocument().getElementsByTag(TagConstants.CONDITIONAL_TAG);
+        for (Element mIfTag : mIfTags) {
+            final String item = mIfTag.attr(TagConstants.CONDITIONAL_TAG_CONDITION_ATTR).trim();
+            Object variableValue = getPossibleEachValue(mIfTag, item, request);
+            if(null != variableValue) mIfTag.attr(TagConstants.CONDITIONAL_TAG_CONDITION_ATTR, variableValue.toString());
+        }
     }
 
     private void handleMTextTag(InjectionResult result, Map<String, Object> variables, ServerRequest request) {
