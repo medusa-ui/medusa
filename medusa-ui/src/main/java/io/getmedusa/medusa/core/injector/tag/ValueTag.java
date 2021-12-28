@@ -22,6 +22,9 @@ public class ValueTag extends AbstractTag {
 
     private void handleMIfCondition(InjectionResult result, Map<String, Object> variables, ServerRequest request) {
         Elements mIfTags = result.getDocument().getElementsByTag(TagConstants.CONDITIONAL_TAG);
+        Elements mElseIfTags = result.getDocument().getElementsByTag(TagConstants.M_ELSEIF);
+        mIfTags.addAll(mElseIfTags);
+
         for (Element mIfTag : mIfTags) {
             final String item = mIfTag.attr(TagConstants.CONDITIONAL_TAG_CONDITION_ATTR).trim();
             Object variableValue = getPossibleEachValue(mIfTag, item, request);

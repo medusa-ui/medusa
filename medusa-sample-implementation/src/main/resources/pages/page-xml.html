@@ -20,13 +20,15 @@
 
         <m:foreach collection="outerLoop" eachName="outerItem">
             <m:foreach collection="innerLoop" eachName="innerItem">
-                <m:if condition="innerItem" eq="a">
 
-                    <p>Outer loop: <m:text item="outerItem" /></p>
-                    <p>Inner loop: <m:text item="innerLoop" /></p>
+                <p>Outer loop: <m:text item="outerItem" /></p>
+                <p>Inner loop: <m:text item="innerItem" /></p>
+
+                <m:if condition="innerItem" eq="'a'">
+                    <p>A</p>
                     <button m-click="buy('coffee')">Buy some coffee</button>
 
-                    <m:elseif conditionItem="innerItem" eq="b">
+                    <m:elseif condition="innerItem" eq="'b'">
 
                         <p>B</p>
                         <button m-click="buy('tea', 'sugar', 3,'cookie')">Buy some tea and sugar</button>
