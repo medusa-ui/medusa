@@ -88,7 +88,13 @@ class ConditionalTagTest {
                     </m:foreach>
             """;
 
-    //TODO each with object
+    private static final String HTML_EQ_EACH_ITERATION_W_OBJECT = """
+                    <m:foreach collection="people" eachName="person">
+                        <m:if condition="person.name" eq="'John'">
+                            <p>This is John</p>
+                        </m:if>
+                    </m:foreach>
+            """;
 
     private static final String HTML_GT_SIMPLE = """
                     <m:if condition="some-variable" gt="1">
@@ -385,6 +391,35 @@ class ConditionalTagTest {
 
         Assertions.assertEquals("A A", htmlA.text());
         Assertions.assertEquals("A", htmlB.text());
+    }
+
+    @Test
+    void testEachIterationWithObject() {
+        final Map<String, Object> variablesA = Map.of("people", List.of(new Person("Jane"), new Person("John"), new Person("Peter")));
+        final Map<String, Object> variablesB = Map.of("people", List.of(new Person("A"), new Person("B"), new Person("C")));
+
+        Document htmlA =  TAG.inject(
+                VALUE_TAG.inject(
+                        ITERATION_TAG.inject(new InjectionResult(HTML_EQ_EACH_ITERATION_W_OBJECT),
+                                variablesA, request),
+                        variablesA, request),
+                variablesA, request).getDocument();
+
+        Document htmlB =  TAG.inject(
+                VALUE_TAG.inject(
+                        ITERATION_TAG.inject(new InjectionResult(HTML_EQ_EACH_ITERATION_W_OBJECT),
+                                variablesB, request),
+                        variablesB, request),
+                variablesB, request).getDocument();
+
+        removeNonDisplayedElements(htmlA);
+        removeNonDisplayedElements(htmlB);
+
+        System.out.println(htmlA.html());
+        System.out.println(htmlB.html());
+
+        Assertions.assertEquals("This is John", htmlA.text());
+        Assertions.assertEquals("", htmlB.text());
     }
 
     private void removeNonDisplayedElements(Document doc) {

@@ -19,13 +19,27 @@ public class ConditionalTag {
     private static final ConditionalRegistry CONDITIONAL_REGISTRY = ConditionalRegistry.getInstance();
 
     public InjectionResult inject(InjectionResult result, Map<String, Object> variables, ServerRequest request) {
-        Elements conditionalElements = result.getDocument().getElementsByTag(TagConstants.CONDITIONAL_TAG);
+        Elements conditionalElements = findConditionalElements(result);
         conditionalElements.sort(Comparator.comparingInt(o -> o.getElementsByTag(TagConstants.CONDITIONAL_TAG).size()));
         for(Element conditionalElement : conditionalElements) {
             handleIfElement(variables, conditionalElement);
         }
 
         return result;
+    }
+
+    private Elements findConditionalElements(InjectionResult result) {
+        final Elements elementsByTag = result.getDocument().getElementsByTag(TagConstants.CONDITIONAL_TAG);
+        return new Elements(elementsByTag.stream().filter(this::hasNoTemplateTagParent).toList());
+    }
+
+    private boolean hasNoTemplateTagParent(Element tag) {
+        for(Element parent : tag.parents()) {
+            if(TagConstants.TEMPLATE_TAG.equals(parent.tagName())) {
+                return false;
+            }
+        }
+        return true;
     }
 
     private void handleIfElement(Map<String, Object> variables, Element conditionalElement) {

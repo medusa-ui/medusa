@@ -25,7 +25,7 @@ public class ValueTag extends AbstractTag {
         for (Element mIfTag : mIfTags) {
             final String item = mIfTag.attr(TagConstants.CONDITIONAL_TAG_CONDITION_ATTR).trim();
             Object variableValue = getPossibleEachValue(mIfTag, item, request);
-            if(null != variableValue) mIfTag.attr(TagConstants.CONDITIONAL_TAG_CONDITION_ATTR, variableValue.toString());
+            if(null != variableValue) mIfTag.attr(TagConstants.CONDITIONAL_TAG_CONDITION_ATTR, "'" + variableValue + "'");
         }
     }
 

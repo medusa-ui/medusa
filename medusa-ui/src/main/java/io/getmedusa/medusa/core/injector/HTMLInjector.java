@@ -106,7 +106,7 @@ public enum HTMLInjector {
 
         try {
             InjectionResult result = iterationTag.inject(new InjectionResult(document), variables, request);
-            result = valueTag.inject(result, variables, request); //also handles each values
+            result = valueTag.inject(result, variables, request); //also handles each values (for example for m:if conditions)
             result = conditionalTag.inject(result, variables, request);
 //        result = clickTag.inject(result.getHtml());
 //        result = onEnterTag.inject(result.getHtml());

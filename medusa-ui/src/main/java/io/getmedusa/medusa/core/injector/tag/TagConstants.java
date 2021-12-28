@@ -36,5 +36,7 @@ public class TagConstants {
     public static final String M_ELSE = "m:else";
     public static final String M_ELSEIF = "m:elseif";
 
+    public static final Object TEMPLATE_TAG = "template";
+
     private TagConstants() {}
 }
