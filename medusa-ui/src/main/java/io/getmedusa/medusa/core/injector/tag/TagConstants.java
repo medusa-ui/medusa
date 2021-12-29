@@ -50,10 +50,16 @@ public class TagConstants {
     public static final String M_ONENTER_ADDITIONAL = "onkeydown";
     public static final String PREVENT_DEFAULT = "_M.preventDefault(event)";
 
-    //
+    //mclassappend - attributes
     public static final String M_CLASS_APPEND = "m:class-append";
+
+    //mselected - attributes
     public static final String M_SELECTED = "m:selected";
     public static final String M_SELECTED_REPLACEMENT = "selected";
+
+    //hydra
+    public static final String H_MENU = "h:menu";
+    public static final String H_MENU_ATTR = "h-menu";
 
     private TagConstants() {}
 }

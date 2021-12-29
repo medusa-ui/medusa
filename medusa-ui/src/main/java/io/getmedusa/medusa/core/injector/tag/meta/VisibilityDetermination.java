@@ -2,6 +2,7 @@ package io.getmedusa.medusa.core.injector.tag.meta;
 
 import io.getmedusa.medusa.core.util.ExpressionEval;
 import org.jsoup.nodes.Element;
+import org.springframework.expression.spel.SpelEvaluationException;
 
 import java.math.BigDecimal;
 import java.util.Map;
@@ -90,9 +91,13 @@ public class VisibilityDetermination {
 
     private Object getConditionItemValue(Map<String, Object> variables, Element conditionalElement) {
         final String conditionItem = conditionalElement.attr(CONDITIONAL_TAG_CONDITION_ATTR);
-        Object conditionItemValue = ExpressionEval.evalItemAsObj(conditionItem, variables);
-        if(null == conditionItemValue) conditionItemValue = conditionItem;
-        return conditionItemValue;
+        try {
+            Object conditionItemValue = ExpressionEval.evalItemAsObj(conditionItem, variables);
+            if(null == conditionItemValue) conditionItemValue = conditionItem;
+            return conditionItemValue;
+        } catch (SpelEvaluationException e) {
+            return conditionItem;
+        }
     }
 
     private VisibilityDetermination() {}

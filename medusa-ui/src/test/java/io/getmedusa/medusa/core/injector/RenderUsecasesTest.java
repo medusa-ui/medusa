@@ -3,6 +3,7 @@ package io.getmedusa.medusa.core.injector;
 import io.getmedusa.medusa.core.annotation.PageAttributes;
 import io.getmedusa.medusa.core.annotation.UIEventPage;
 import io.getmedusa.medusa.core.annotation.UIEventWithAttributes;
+import io.getmedusa.medusa.core.injector.tag.AbstractTest;
 import io.getmedusa.medusa.core.registry.EventHandlerRegistry;
 import io.getmedusa.medusa.core.util.SecurityContext;
 import io.getmedusa.medusa.core.util.TestRequest;
@@ -15,7 +16,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-class RenderUsecasesTest {
+class RenderUsecasesTest extends AbstractTest {
 
     private SecurityContext securityContext = new SecurityContext(null);
 
@@ -25,15 +26,16 @@ class RenderUsecasesTest {
         EventHandlerRegistry.getInstance().add(htmlFileName, new HandlerImpl(Collections.singletonMap("counter-value", 3)));
         String nestedIf =
                 """
-                        [$if($counter-value > 5)]
-                           <p>Counter is above 5</p>
-                        [$end if]""";
+               <m:if condition="counter-value" gt="5">
+                   <p>Counter is above 5</p>
+                </m:if>
+                """;
 
         String result = HTMLInjector.INSTANCE.htmlStringInject(new TestRequest(), securityContext, nestedIf);
         System.out.println(result);
 
-        Assertions.assertFalse(result.contains("[$if"));
-        Assertions.assertFalse(result.contains("[$end"));
+        Assertions.assertFalse(result.contains("<m:if"));
+        Assertions.assertFalse(result.contains("</m:if>"));
     }
     
     @Test
@@ -41,16 +43,16 @@ class RenderUsecasesTest {
         final String result = HTMLInjector.INSTANCE.htmlStringInject(new TestRequest(), securityContext, """
                 <body>
                 <h1>Hello Medusa</h1>
-                [$if(3 > 5)]
-                <p>Counter is above 5</p>
-                [$end if]
+                <m:if condition="3" gt="5">
+                    <p>Counter is above 5</p>
+                </m:if>
                 <p>Counter: <span></span></p>
-                <button m-click="increaseCounter(2)">Increase counter</button>
+                <button m:click="increaseCounter(2)">Increase counter</button>
                 </body>
         """);
 
         System.out.println(result);
-        Assertions.assertFalse(result.contains("m-click"));
+        Assertions.assertFalse(result.contains("m:click"));
     }
 
     @Test
@@ -58,30 +60,30 @@ class RenderUsecasesTest {
         final String htmlFileName = path();
         EventHandlerRegistry.getInstance().add(htmlFileName, new HandlerImpl(Collections.singletonMap("counter-value", 3)));
         String nestedIf = """
-                [$if($counter-value > 2)]
-                    [$if($counter-value > 5)]
+                <m:if condition="counter-value" gt="2">
+                    <m:if condition="counter-value" gt="5">
                         <p>Counter is above 5</p>
-                    [$end if]
-                [$end if]""";
+                    </m:if>
+                </m:if>""";
 
         String result = HTMLInjector.INSTANCE.htmlStringInject(new TestRequest(), securityContext, nestedIf);
         System.out.println(result);
 
-        Assertions.assertFalse(result.contains("[$if"));
-        Assertions.assertFalse(result.contains("[$end"));
+        Assertions.assertFalse(result.contains("<m:if"));
+        Assertions.assertFalse(result.contains("</m:if>"));
     }
 
     @Test
     void testSimpleForeach() {
         final String htmlFileName = path();
         EventHandlerRegistry.getInstance().add(htmlFileName, new HandlerImpl(Collections.singletonMap("counter-value", 3)));
-        String nestedIf = "[$foreach $counter-value]<p>Hello, Medusa</p>[$end for]";
+        String nestedIf = "<m:foreach collection=\"counter-value\"><p>Hello, Medusa</p></m:foreach>";
 
         String result = HTMLInjector.INSTANCE.htmlStringInject(new TestRequest(), securityContext, nestedIf);
         System.out.println(result);
 
-        Assertions.assertFalse(result.contains("[$foreach"));
-        Assertions.assertFalse(result.contains("[$end"));
+        Assertions.assertFalse(result.contains("<m:foreach"));
+        Assertions.assertFalse(result.contains("</m:foreach>"));
         Assertions.assertEquals(3 + 1, countOccurrences(result, "Hello, Medusa")); //1 template + counter-value
     }
 
@@ -90,17 +92,19 @@ class RenderUsecasesTest {
         final String htmlFileName = path();
         EventHandlerRegistry.getInstance().add(htmlFileName, new HandlerImpl(Collections.singletonMap("counter-value", 2)));
         String nestedIf = """
-                [$if($counter-value > 2)]
-                    [$foreach $counter-value]
+                <m:if condition="counter-value" gt="2">
+                    <m:foreach collection="counter-value">
                         <p>Hello, Medusa</p>
-                    [$end for][$end if]""";
+                    </m:foreach>
+                </m:if>""";
 
         String result = HTMLInjector.INSTANCE.htmlStringInject(new TestRequest(), securityContext, nestedIf);
         System.out.println(result);
 
-        Assertions.assertFalse(result.contains("[$if"));
-        Assertions.assertFalse(result.contains("[$foreach"));
-        Assertions.assertFalse(result.contains("[$end"));
+        Assertions.assertFalse(result.contains("<m:if"));
+        Assertions.assertFalse(result.contains("</m:if>"));
+        Assertions.assertFalse(result.contains("<m:foreach"));
+        Assertions.assertFalse(result.contains("</m:foreach>"));
         Assertions.assertEquals(2 + 1, countOccurrences(result, "Hello, Medusa")); //1 template + counter-value
     }
 
@@ -110,17 +114,19 @@ class RenderUsecasesTest {
         EventHandlerRegistry.getInstance().add(htmlFileName, new HandlerImpl(Collections.singletonMap("counter-value", 2)));
         String nestedIf =
                 """
-                        [$foreach $counter-value]
-                            [$if($counter-value > 2)]
+                        <m:foreach collection="counter-value">
+                            <m:if condition="counter-value" gt="2">
                                 <p>Hello, Medusa</p>
-                            [$end if][$end for]""";
+                            </m:if>
+                        </m:foreach>""";
 
         String result = HTMLInjector.INSTANCE.htmlStringInject(new TestRequest(), securityContext, nestedIf);
         System.out.println(result);
 
-        Assertions.assertFalse(result.contains("[$if"));
-        Assertions.assertFalse(result.contains("[$foreach"));
-        Assertions.assertFalse(result.contains("[$end"));
+        Assertions.assertFalse(result.contains("<m:if"));
+        Assertions.assertFalse(result.contains("</m:if>"));
+        Assertions.assertFalse(result.contains("<m:foreach"));
+        Assertions.assertFalse(result.contains("</m:foreach>"));
         Assertions.assertEquals(2 + 1, countOccurrences(result, "Hello, Medusa")); //1 template + counter-value
     }
 
@@ -129,19 +135,19 @@ class RenderUsecasesTest {
         final String htmlFileName = path();
         EventHandlerRegistry.getInstance().add(htmlFileName, new HandlerImpl(Collections.singletonMap("counter-list", Arrays.asList("Zeus", "Poseidon", "Hera"))));
         String nestedIf = """
-                [$foreach $counter-list]
-                <p>Hello, [$each]</p>
-                [$end for]""";
+                <m:foreach collection="counter-list" eachName="name">
+                <p>Hello, <m:text item="name" /></p>
+                </m:foreach>""";
 
         String result = HTMLInjector.INSTANCE.htmlStringInject(new TestRequest(), securityContext, nestedIf);
         System.out.println(result);
 
-        Assertions.assertFalse(result.contains("[$foreach"));
-        Assertions.assertFalse(result.contains("[$end"));
+        Assertions.assertFalse(result.contains("<m:foreach"));
+        Assertions.assertFalse(result.contains("</m:foreach>"));
 
-        Assertions.assertTrue(result.contains("Hello, Zeus</p>"));
-        Assertions.assertTrue(result.contains("Hello, Poseidon</p>"));
-        Assertions.assertTrue(result.contains("Hello, Hera</p>"));
+        Assertions.assertTrue(result.contains("Hello, <span from-value=\"name\">Zeus</span></p>"));
+        Assertions.assertTrue(result.contains("Hello, <span from-value=\"name\">Poseidon</span></p>"));
+        Assertions.assertTrue(result.contains("Hello, <span from-value=\"name\">Hera</span></p>"));
     }
 
     @Test
@@ -149,19 +155,20 @@ class RenderUsecasesTest {
         final String htmlFileName = path();
         EventHandlerRegistry.getInstance().add(htmlFileName, new HandlerImpl(Collections.singletonMap("counter-value", 3)));
         String nestedIf = """
-                [$foreach $counter-value]
-                <p>Hello, Medusa [$each]</p>
-                [$end for]""";
+                <m:foreach collection="counter-value" eachName="name">
+                    <p>Hello, Medusa <m:text item="name" /></p>
+                </m:foreach>""";
 
         String result = HTMLInjector.INSTANCE.htmlStringInject(new TestRequest(), securityContext, nestedIf);
         System.out.println(result);
 
-        Assertions.assertFalse(result.contains("[$foreach"));
-        Assertions.assertFalse(result.contains("[$end"));
+        Assertions.assertFalse(result.contains("<m:foreach"));
+        Assertions.assertFalse(result.contains("</m:foreach>"));
+
         Assertions.assertEquals(3 + 1, countOccurrences(result, "Hello, Medusa")); //1 template + counter-value
-        Assertions.assertTrue(result.contains("Medusa 0</p>"));
-        Assertions.assertTrue(result.contains("Medusa 1</p>"));
-        Assertions.assertTrue(result.contains("Medusa 2</p>"));
+        Assertions.assertTrue(result.contains("Medusa <span from-value=\"name\">0</span></p>"));
+        Assertions.assertTrue(result.contains("Medusa <span from-value=\"name\">1</span></p>"));
+        Assertions.assertTrue(result.contains("Medusa <span from-value=\"name\">2</span></p>"));
     }
 
     @Test
@@ -169,18 +176,18 @@ class RenderUsecasesTest {
         final String htmlFileName = path();
         EventHandlerRegistry.getInstance().add(htmlFileName, new HandlerImpl(Collections.singletonMap("object-list", Arrays.asList(new ExampleClass(new ExampleClass(3355)), new ExampleClass(new ExampleClass(4512))))));
         String nestedIf = """
-                [$foreach $object-list]
-                <p>Hello, [$each.innerClass.number]</p>
-                [$end for]""";
+                <m:foreach collection="object-list" eachName="each">
+                <p>Hello, <m:text item="each.innerClass.number" /></p>
+                </m:foreach>""";
 
         String result = HTMLInjector.INSTANCE.htmlStringInject(new TestRequest(), securityContext, nestedIf);
         System.out.println(result);
 
-        Assertions.assertFalse(result.contains("[$foreach"));
-        Assertions.assertFalse(result.contains("[$end"));
+        Assertions.assertFalse(result.contains("<m:foreach"));
+        Assertions.assertFalse(result.contains("</m:foreach>"));
 
-        Assertions.assertTrue(result.contains("Hello, 3355</p>"));
-        Assertions.assertTrue(result.contains("Hello, 4512</p>"));
+        Assertions.assertTrue(result.contains("Hello, <span from-value=\"each.innerClass.number\">3355</span></p>"));
+        Assertions.assertTrue(result.contains("Hello, <span from-value=\"each.innerClass.number\">4512</span></p>"));
     }
 
     @Test
@@ -188,16 +195,16 @@ class RenderUsecasesTest {
         final String htmlFileName = path();
         EventHandlerRegistry.getInstance().add(htmlFileName, new HandlerImpl(Collections.singletonMap("obj-value", new ExampleClass(987))));
         String nestedIf =
-                """
-                        [$if($obj-value.number > 5)]
+                """     
+                        <m:if condition="obj-value.number" gt="5">
                            <p>Counter is above 5</p>
-                        [$end if]""";
+                        </m:if>""";
 
         String result = HTMLInjector.INSTANCE.htmlStringInject(new TestRequest(), securityContext, nestedIf);
         System.out.println(result);
 
-        Assertions.assertFalse(result.contains("[$if"));
-        Assertions.assertFalse(result.contains("[$end"));
+        Assertions.assertFalse(result.contains("<m:if"));
+        Assertions.assertFalse(result.contains("</m:if>"));
     }
 
     @Test
@@ -207,12 +214,12 @@ class RenderUsecasesTest {
         names.put("name-per", "Perseus");
         names.put("name-med", "Medusa");
         EventHandlerRegistry.getInstance().add(htmlFileName, new HandlerImpl(names));
-        String divContent = "<div>Above the sea that cries and breaks, Swift [$name-per] with [$name-med]'s snakes, Set free the maiden white like snow</div>";
+        String divContent = "<div>Above the sea that cries and breaks, Swift <m:text item=\"name-per\" /> with <m:text item=\"name-med\" />'s snakes, Set free the maiden white like snow</div>";
 
         String result = HTMLInjector.INSTANCE.htmlStringInject(new TestRequest(), securityContext, divContent);
         System.out.println(result);
 
-        Assertions.assertEquals("<div>Above the sea that cries and breaks, Swift <span from-value=\"name-per\">Perseus</span> with <span from-value=\"name-med\">Medusa</span>'s snakes, Set free the maiden white like snow</div>", result);
+        Assertions.assertTrue(result.contains("Above the sea that cries and breaks, Swift <span from-value=\"name-per\">Perseus</span> with <span from-value=\"name-med\">Medusa</span>'s snakes, Set free the maiden white like snow"));
     }
 
     @Test
@@ -222,51 +229,51 @@ class RenderUsecasesTest {
         names.put("wrapper1", new ExampleClass(14132));
         names.put("wrapper2", new ExampleClass(89452));
         EventHandlerRegistry.getInstance().add(htmlFileName, new HandlerImpl(names));
-        String divContent = "<div>1264135664 can be achieved by multiplying [$wrapper1.number] with [$wrapper2.number], though you might need a calculator</div>";
+        String divContent = "<div>1264135664 can be achieved by multiplying <m:text item=\"wrapper1.number\" /> with <m:text item=\"wrapper2.number\" />, though you might need a calculator</div>";
 
         String result = HTMLInjector.INSTANCE.htmlStringInject(new TestRequest(), securityContext, divContent);
         System.out.println(result);
 
-        Assertions.assertEquals("<div>1264135664 can be achieved by multiplying <span from-value=\"wrapper1.number\">14132</span> with <span from-value=\"wrapper2.number\">89452</span>, though you might need a calculator</div>", result);
+        Assertions.assertTrue(result.contains("1264135664 can be achieved by multiplying <span from-value=\"wrapper1.number\">14132</span> with <span from-value=\"wrapper2.number\">89452</span>, though you might need a calculator"));
     }
 
     @Test
     void testConditionalClassAppendClassExists() {
         final String htmlFileName = path();
-        EventHandlerRegistry.getInstance().add(htmlFileName, new HandlerImpl(Collections.singletonMap("counter-value", 5)));
-        String nestedIf = "<div id=\"example-color-block\" class=\"color-block\" m-class-append=\"$counter-value > 2 ? 'wide' : 'square'\"></div>";
+        EventHandlerRegistry.getInstance().add(htmlFileName, new HandlerImpl(Collections.singletonMap("clazz", "wide")));
+        String nestedIf = "<div id=\"example-color-block\" class=\"color-block\" m:class-append=\"clazz\"></div>";
 
         String result = HTMLInjector.INSTANCE.htmlStringInject(new TestRequest(), securityContext, nestedIf);
         System.out.println("result: " + result);
 
-        Assertions.assertFalse(result.contains("m-class-append"));
-        Assertions.assertTrue(result.startsWith("<div id=\"example-color-block\" class=\"color-block wide\" data-base-class=\"color-block\" data-from=\""));
+        Assertions.assertFalse(result.contains("m:class-append"));
+        Assertions.assertTrue(result.contains("<div id=\"example-color-block\" class=\"color-block wide\" data-base-class=\"color-block\" data-from=\"clazz\"></div>"));
     }
 
     @Test
     void testConditionalClassAppendClassDoesNotExist() {
         final String htmlFileName = path();
-        EventHandlerRegistry.getInstance().add(htmlFileName, new HandlerImpl(Collections.singletonMap("counter-value", 5)));
-        String nestedIf = "<div id=\"example-color-block\" m-class-append=\"$counter-value > 2 ? 'wide' : 'square'\"></div>";
+        EventHandlerRegistry.getInstance().add(htmlFileName, new HandlerImpl(Collections.singletonMap("clazz", "wide")));
+        String nestedIf = "<div id=\"example-color-block\" m:class-append=\"clazz\"></div>";
 
         String result = HTMLInjector.INSTANCE.htmlStringInject(new TestRequest(), securityContext, nestedIf);
         System.out.println("result: " + result);
 
-        Assertions.assertFalse(result.contains("m-class-append"));
-        Assertions.assertTrue(result.startsWith("<div id=\"example-color-block\" class=\" wide\" data-base-class=\"\" data-from=\""));
+        Assertions.assertFalse(result.contains("m:class-append"));
+        Assertions.assertTrue(result.contains("<div id=\"example-color-block\" data-base-class=\"\" data-from=\"clazz\" class=\"wide\"></div>"));
     }
 
     @Test
     void testConditionalClassWithObjectTraversal() {
         final String htmlFileName = path();
-        EventHandlerRegistry.getInstance().add(htmlFileName, new HandlerImpl(Collections.singletonMap("wrapper1", new ExampleClass(14132))));
-        String nestedIf = "<div id=\"example-color-block\" class=\"color-block\" m-class-append=\"$wrapper1.number > 2 ? 'wide' : 'square'\"></div>";
+        EventHandlerRegistry.getInstance().add(htmlFileName, new HandlerImpl(Collections.singletonMap("wrapper1", new Person("wide"))));
+        String nestedIf = "<div id=\"example-color-block\" class=\"color-block\" m:class-append=\"wrapper1.name\"></div>";
 
         String result = HTMLInjector.INSTANCE.htmlStringInject(new TestRequest(), securityContext, nestedIf);
         System.out.println("result: " + result);
 
-        Assertions.assertFalse(result.contains("m-class-append"));
-        Assertions.assertTrue(result.startsWith("<div id=\"example-color-block\" class=\"color-block wide\" data-base-class=\"color-block\" data-from=\""));
+        Assertions.assertFalse(result.contains("m:class-append"));
+        Assertions.assertTrue(result.contains("<div id=\"example-color-block\" class=\"color-block wide\" data-base-class=\"color-block\" data-from=\""));
     }
 
     // utility

@@ -20,6 +20,8 @@ public class ClassAppendTag extends AbstractTag {
             if(null == variableValue) variableValue = newClass;
 
             classAppendAttribute.removeAttr(TagConstants.M_CLASS_APPEND);
+            classAppendAttribute.attr("data-base-class", classAppendAttribute.attr("class"));
+            classAppendAttribute.attr("data-from", newClass);
             classAppendAttribute.addClass(variableValue.toString());
         }
         return result;

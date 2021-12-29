@@ -20,10 +20,12 @@ public class SelectedTag extends AbstractTag {
             if(null == variableValue) variableValue = selectedItem;
 
             mSelected.removeAttr(TagConstants.M_SELECTED);
-            Elements options = mSelected.getElementsByAttributeValue("value", variableValue.toString());
+            Elements options = mSelected.getElementsByTag("option");
             for(Element option : options) {
-                if("option".equals(option.tagName())) {
+                if(variableValue.toString().equals(option.val())) {
                     option.attr(TagConstants.M_SELECTED_REPLACEMENT, TagConstants.M_SELECTED_REPLACEMENT);
+                } else {
+                    option.removeAttr(TagConstants.M_SELECTED_REPLACEMENT);
                 }
             }
         }

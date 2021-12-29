@@ -4,59 +4,51 @@ import io.getmedusa.medusa.core.injector.tag.meta.InjectionResult;
 import io.getmedusa.medusa.core.registry.HydraRegistry;
 import io.getmedusa.medusa.core.websocket.hydra.HydraMenuItem;
 import io.getmedusa.medusa.core.websocket.hydra.meta.HydraStatus;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
+import org.springframework.web.reactive.function.server.ServerRequest;
 
+import java.util.Map;
 import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-public class HydraMenuTag {
+public class HydraMenuTag extends AbstractTag {
 
-    public static final Pattern patternTagWithMenuAttribute = Pattern.compile("<[^<>]+? h-menu=[\"'].*?[\"']*?>", Pattern.CASE_INSENSITIVE);
-    public static final Pattern patternMenuAttribute = Pattern.compile("h-menu=[\"'].*?[\"']", Pattern.CASE_INSENSITIVE);
+    @Override
+    public InjectionResult inject(InjectionResult result, Map<String, Object> variables, ServerRequest request) {
+        Elements hMenus = result.getDocument().getElementsByAttribute(TagConstants.H_MENU);
+        for(Element hMenu : hMenus) {
+            final String menuName = hMenu.attr(TagConstants.H_MENU);
+            hMenu.removeAttr(TagConstants.H_MENU);
 
-    public InjectionResult injectWithVariables(InjectionResult html) {
-        String htmlString = html.getHTML();
-        Matcher matcherFull = patternTagWithMenuAttribute.matcher(htmlString);
-        while (matcherFull.find()) {
-            final String tag = matcherFull.group().trim();
+            Element ul = createUL(menuName);
 
-            StringBuilder tagContents = new StringBuilder();
-
-            Matcher matcherTag = patternMenuAttribute.matcher(tag);
-            while (matcherTag.find()) {
-                final String rawHMenuName = matcherTag.group().trim();
-
-                tagContents.append(tag.replace(rawHMenuName, ""));
-
-                String menuName = rawHMenuName.replace("h-menu=", "").substring(1);
-                menuName = menuName.substring(0, menuName.length() - 1);
-
-                tagContents.append("<ul h-menu=\"");
-                tagContents.append(menuName);
-                tagContents.append("\">");
-
-                final HydraStatus status = HydraRegistry.getStatus();
-                if(null != status) {
-                    final Set<HydraMenuItem> menuItems = status.getMenuItems().get(menuName);
-                    if(menuItems != null) {
-                        for (HydraMenuItem menuItem : menuItems) {
-                            tagContents.append(toHTMLMenuItem(menuItem));
-                        }
+            final HydraStatus status = HydraRegistry.getStatus();
+            if(null != status) {
+                final Set<HydraMenuItem> menuItems = status.getMenuItems().get(menuName);
+                if(menuItems != null) {
+                    for (HydraMenuItem menuItem : menuItems) {
+                        ul.appendChild(createLI(menuItem.endpoint(), menuItem.labelWithFallback()));
                     }
                 }
-
-                tagContents.append("</ul>");
             }
 
-            htmlString = htmlString.replace(tag, tagContents);
+            hMenu.appendChild(ul);
         }
 
-        //html.setHtml(htmlString);
-
-        return html;
+        return result;
     }
 
-    private String toHTMLMenuItem(HydraMenuItem menuItem) {
-        return "<li><a href=\"" + menuItem.endpoint() + "\">" + menuItem.labelWithFallback() + "</a></li>";
+    private Element createUL(String menuName) {
+        return new Element("ul").attr(TagConstants.H_MENU_ATTR, menuName);
     }
+
+    private Element createLI(String url, String name) {
+        Element li = new Element("li");
+        Element a = new Element("a");
+        a.attr("href", url);
+        a.text(name);
+        li.appendChild(a);
+        return li;
+    }
+
 }

@@ -23,7 +23,7 @@ class SelectedTagTest extends AbstractTest {
         Document doc = inject(HTML, Map.of("selected-option", "saab"));
         System.out.println(doc.html());
 
-        Elements selectedElements = doc.getElementsByAttributeValue("selected", "selected");
+        Elements selectedElements = doc.select("option[selected]");
         Assertions.assertEquals(1, selectedElements.size());
         Assertions.assertEquals("Saab", selectedElements.first().text());
     }

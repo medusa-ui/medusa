@@ -14,7 +14,7 @@ class ClassAppendTagTest extends AbstractTest {
     void testSimple() {
         Document doc = inject(HTML_CLASS_APPEND, Map.of("a", "abcd"));
         System.out.println(doc.html());
-        Assertions.assertEquals("<p class=\"existing-class another-existing-class abcd\">Hello world</p>", doc.getElementsByTag("p").outerHtml());
+        Assertions.assertEquals("<p class=\"existing-class another-existing-class abcd\" data-base-class=\"existing-class another-existing-class\" data-from=\"a\">Hello world</p>", doc.getElementsByTag("p").outerHtml());
     }
 
 }

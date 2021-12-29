@@ -1,6 +1,5 @@
 package io.getmedusa.medusa.core.injector.tag;
 
-import io.getmedusa.medusa.core.injector.tag.meta.InjectionResult;
 import io.getmedusa.medusa.core.registry.ActiveSessionRegistry;
 import io.getmedusa.medusa.core.registry.HydraRegistry;
 import io.getmedusa.medusa.core.websocket.hydra.HydraMenuItem;
@@ -11,16 +10,15 @@ import org.junit.jupiter.api.Test;
 
 import java.util.*;
 
-class HydraMenuTagTest {
+class HydraMenuTagTest extends AbstractTest {
 
-    private static final HydraMenuTag TAG = new HydraMenuTag();
-    private static final InjectionResult INPUT = new InjectionResult("""
+    private static final String INPUT = """
                     <!DOCTYPE html>
                     <html lang="en">
                     <body>
-                    <nav h-menu="example-menu"></nav>
+                    <nav h:menu="example-menu"></nav>
                     </body>
-                    </html>""");
+                    </html>""";
 
     @BeforeEach
     void setup() {
@@ -35,26 +33,29 @@ class HydraMenuTagTest {
 
         HydraRegistry.update(new HydraStatus(Collections.singletonMap("example-menu", menuItems)));
 
-        final String html = TAG.injectWithVariables(INPUT).getHTML();
+        final String html = inject(INPUT, Collections.emptyMap()).html();
 
         System.out.println(html);
 
         Assertions.assertFalse(html.contains("nav h-menu=\"example-menu\""));
 
-        Assertions.assertTrue(html.contains("<ul h-menu=\"example-menu\"><li><a href="));
+        Assertions.assertTrue(html.contains("<ul h-menu=\"example-menu\">"));
         Assertions.assertTrue(html.contains("<li><a href=\"https://google.com\">Google.com</a></li>"));
         Assertions.assertTrue(html.contains("<li><a href=\"https://google.be\">https://google.be</a></li>"));
-        Assertions.assertTrue(html.contains("</li></ul></nav>"));
+        Assertions.assertTrue(html.contains("</li>"));
+        Assertions.assertTrue(html.contains("</ul>"));
+        Assertions.assertTrue(html.contains("</nav>"));
     }
 
     @Test
     void testNoItems() {
         HydraRegistry.update(new HydraStatus(new HashMap<>(Map.of("example-menux", new HashSet<>()))));
-        final String html = TAG.injectWithVariables(INPUT).getHTML();
+        final String html = inject(INPUT, Collections.emptyMap()).html();
 
         Assertions.assertFalse(html.contains("nav h-menu=\"example-menu\""));
 
         Assertions.assertTrue(html.contains("<ul h-menu=\"example-menu\">"));
-        Assertions.assertTrue(html.contains("</ul></nav>"));
+        Assertions.assertTrue(html.contains("</ul>"));
+        Assertions.assertTrue(html.contains("</nav>"));
     }
 }

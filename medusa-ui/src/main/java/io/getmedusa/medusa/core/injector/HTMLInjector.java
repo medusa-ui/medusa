@@ -34,14 +34,6 @@ public enum HTMLInjector {
     private String script = null;
     private String styling = null;
 
-    private final HydraMenuTag hydraMenuTag;
-    private final HydraURLReplacer urlReplacer;
-
-    HTMLInjector() {
-        this.hydraMenuTag = new HydraMenuTag();
-        this.urlReplacer = new HydraURLReplacer();
-    }
-
     public static List<Tag> getTags() {
         return List.of(
                 new IterationTag(),
@@ -52,7 +44,9 @@ public enum HTMLInjector {
                 new OnEnterTag(),
                 new ClassAppendTag(),
                 new SelectedTag(),
-                new GenericMTag()
+                new GenericMTag(),
+                new HydraMenuTag(),
+                new HydraURLReplacer()
         );
     }
 
@@ -110,8 +104,7 @@ public enum HTMLInjector {
             }
             injectVariablesInScript(result, variables);
 
-            String html = injectScript(matchedPath, result, securityContext.getUniqueId(), csrfToken);
-            return urlReplacer.replaceUrls(html, request.headers());
+            return injectScript(matchedPath, result, securityContext.getUniqueId(), csrfToken);
         } finally {
             EachValueRegistry.getInstance().clear(request);
         }
