@@ -43,6 +43,13 @@ public class TagConstants {
     public static final String M_CHANGE = "m:change";
     public static final String M_CHANGE_REPLACEMENT = "oninput";
 
+    //monenter - attributes
+    public static final String M_ONENTER = "m:onenter";
+    public static final String M_ONENTER_REPLACEMENT = "onkeyup";
+
+    public static final String M_ONENTER_ADDITIONAL = "onkeydown";
+    public static final String PREVENT_DEFAULT = "_M.preventDefault(event)";
+
 
     private TagConstants() {}
 }

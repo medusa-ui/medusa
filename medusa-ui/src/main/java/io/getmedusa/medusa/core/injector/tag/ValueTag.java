@@ -16,7 +16,8 @@ public class ValueTag extends AbstractTag {
 
     protected static final List<String> M_ATTR_TO_REPLACE = List.of(
         TagConstants.M_CLICK,
-        TagConstants.M_CHANGE
+        TagConstants.M_CHANGE,
+        TagConstants.M_ONENTER
     );
 
     @Override
