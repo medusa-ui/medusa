@@ -74,7 +74,7 @@ class HTMLRouter {
         Resource html = resourceLoader.getResource("classpath:/" + resourcePath);
         try {
             final String fileName = getPath(html);
-            if(!PageTitleRegistry.getInstance().hasTitle(hash)) {
+            if(!PageTitleRegistry.getInstance().hasTitle(hash) && html.exists()) {
                 Document document = HTMLCache.getInstance().getHTMLOrAdd(fileName, StreamUtils.copyToString(html.getInputStream(), CHARSET));
                 PageTitleRegistry.getInstance().addTitle(hash, document);
             }

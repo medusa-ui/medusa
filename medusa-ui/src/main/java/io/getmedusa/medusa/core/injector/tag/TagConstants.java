@@ -19,6 +19,7 @@ public class TagConstants {
     public static final String TEXT_TAG_ITEM_ATTR = "item";
     public static final String M_VALUE = "m:value";
     public static final String FROM_VALUE = "from-value";
+    public static final String M_ITEM = "m:item";
 
     //conditional - tags
     public static final String CONDITIONAL_TAG = "m:if"; //each on div
@@ -60,6 +61,7 @@ public class TagConstants {
     //hydra
     public static final String H_MENU = "h:menu";
     public static final String H_MENU_ATTR = "h-menu";
+
 
     private TagConstants() {}
 }

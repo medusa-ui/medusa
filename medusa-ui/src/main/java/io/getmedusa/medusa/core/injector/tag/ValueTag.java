@@ -21,6 +21,7 @@ public class ValueTag extends AbstractTag {
     @Override
     public InjectionResult inject(InjectionResult result, Map<String, Object> variables, ServerRequest request) {
         handleMTextTag(result, variables, request);
+        handleItemTag(result, variables, request);
         handleMValueAttribute(result, variables, request);
         handleMIfCondition(result, variables, request);
 
@@ -84,8 +85,6 @@ public class ValueTag extends AbstractTag {
         }
     }
 
-
-
     private void handleMValueAttribute(InjectionResult result, Map<String, Object> variables, ServerRequest request) {
         //<input type="text" m:value="counter-value" /> w/ "counter-value" = 123
         //becomes
@@ -101,6 +100,17 @@ public class ValueTag extends AbstractTag {
             tagWithMValue.removeAttr("m:value");
             tagWithMValue.val(variableValue.toString());
             tagWithMValue.attr(TagConstants.FROM_VALUE, item);
+        }
+    }
+
+    private void handleItemTag(InjectionResult result, Map<String, Object> variables, ServerRequest request) {
+        Elements items = result.getDocument().getElementsByAttribute(TagConstants.M_ITEM);
+        for(Element item : items) {
+            final String lookup = item.attr(TagConstants.M_ITEM);
+            item.removeAttr(TagConstants.M_ITEM);
+            Object variableValue = variableToString(lookup, variables);
+            if(null == variableValue) variableValue = item;
+            item.text(variableValue.toString());
         }
     }
 
