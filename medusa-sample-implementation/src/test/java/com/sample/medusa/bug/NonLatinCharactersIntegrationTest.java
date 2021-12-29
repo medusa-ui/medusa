@@ -19,10 +19,10 @@ class NonLatinCharactersIntegrationTest extends AbstractSeleniumTest {
 
         clickById("swap");
 
-        Assertions.assertEquals("Medusa in other languages : 美杜莎", title());
-
         Assertions.assertEquals("Value1: 美杜莎", getTextById("val1"));
         Assertions.assertEquals("Value2: 메두사", getTextById("val2"));
+
+        Assertions.assertEquals("Medusa in other languages : 美杜莎", title());
     }
 
     @Test

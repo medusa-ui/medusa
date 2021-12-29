@@ -111,6 +111,7 @@ public class ValueTag extends AbstractTag {
             Object variableValue = variableToString(lookup, variables);
             if(null == variableValue) variableValue = item;
             item.text(variableValue.toString());
+            item.attr(TagConstants.FROM_VALUE, lookup);
         }
     }
 

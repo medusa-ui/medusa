@@ -3,7 +3,7 @@ var _M = _M || {};
 _M.ws = null;
 _M.timeoutTimer = 0;
 _M.retryAttempts = 0;
-_M.debugMode = false;
+_M.debugMode = true;
 _M.retryMode = false;
 _M.fatalMode = false;
 _M.parser = new DOMParser();
@@ -142,20 +142,18 @@ _M.handleHydraMenuItemChange = function (k) {
 };
 
 _M.injectVariablesIntoExpression = function(expression) {
-    const found = expression.match(new RegExp("\\$[\\w-]+","g"));
-    if(found) {
-        for(const toReplace of found) {
-            expression = expression.replaceAll(toReplace, _M.variables[toReplace.substring(1)]);
+    for(const key of Object.keys(_M.variables)) {
+        if(expression.indexOf(key) !== -1) {
+            expression = expression.replaceAll(key, _M.variables[key]);
         }
     }
     return expression;
 };
 
 _M.injectVariablesIntoText = function(text) {
-    const found = text.match(new RegExp("\\[\\$(\\w-?)+?]","g"));
-    if(found) {
-        for(const toReplace of found) {
-            text = text.replaceAll(toReplace, _M.variables[toReplace.substring(2, toReplace.length-1)]);
+    for(const key of Object.keys(_M.variables)) {
+        if(text.indexOf(key) !== -1) {
+            text = text.replaceAll(key, _M.variables[key]);
         }
     }
     return text;
@@ -314,9 +312,13 @@ _M.recursiveObjectUpdate = function(html, obj, path) {
     return html;
 };
 
+_M.findElementByMIF = function(key) {
+    return document.querySelectorAll("[m-if='" + key + "'] .m-if-main");
+}
+
 _M.handleConditionCheckEvent = function(k) {
     let conditionEval = _M.evalCondition(_M.injectVariablesIntoExpression(k.c));
-    let elems = document.getElementsByClassName(k.v);
+    let elems = _M.findElementByMIF(k.v);
     _M.handleVisibilityConditionals(elems, conditionEval);
 
     //update templates if needed
