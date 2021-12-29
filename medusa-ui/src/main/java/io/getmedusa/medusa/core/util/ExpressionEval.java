@@ -1,7 +1,6 @@
 package io.getmedusa.medusa.core.util;
 
 import io.getmedusa.medusa.core.injector.DOMChanges;
-import io.getmedusa.medusa.core.injector.tag.meta.ForEachElement;
 import org.springframework.expression.spel.SpelEvaluationException;
 
 import java.io.UnsupportedEncodingException;
@@ -91,12 +90,5 @@ public abstract class ExpressionEval {
         } catch (UnsupportedEncodingException e) {
             throw new IllegalStateException(e);
         }
-    }
-
-    public static ForEachElement evalForEachElement(String path, ForEachElement element) {
-        final Object value = SpelExpressionParserHelper.getValue(escape(path), element);
-        if(value == null) return null;
-        if(!(value instanceof ForEachElement)) throw new IllegalArgumentException("The element [" + element + "] was not a proper for each element, but instead [" + value.getClass().getName() + "]");
-        return (ForEachElement) value;
     }
 }

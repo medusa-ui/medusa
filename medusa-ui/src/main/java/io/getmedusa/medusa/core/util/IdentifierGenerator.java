@@ -1,7 +1,5 @@
 package io.getmedusa.medusa.core.util;
 
-import io.getmedusa.medusa.core.injector.tag.meta.ForEachElement;
-
 public class IdentifierGenerator {
 
     private IdentifierGenerator() {}
@@ -11,15 +9,6 @@ public class IdentifierGenerator {
 
     public static String generateIfID(String value) {
         return "if-" + Math.abs(value.hashCode());
-    }
-
-    public static String generateTemplateID(ForEachElement value) {
-        String prefix = "";
-        if(value.getParent() != null) {
-            prefix = generateTemplateID(value.getParent()) + "#";
-        }
-
-        return prefix + "t-" + Math.abs(value.blockHTML.hashCode());
     }
 
     public static String generateClassConditionalID(String value) {
