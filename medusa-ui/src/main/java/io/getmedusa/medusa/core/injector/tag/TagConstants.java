@@ -52,6 +52,8 @@ public class TagConstants {
 
     //
     public static final String M_CLASS_APPEND = "m:class-append";
+    public static final String M_SELECTED = "m:selected";
+    public static final String M_SELECTED_REPLACEMENT = "selected";
 
     private TagConstants() {}
 }

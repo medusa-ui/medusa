@@ -34,8 +34,6 @@ public enum HTMLInjector {
     private String script = null;
     private String styling = null;
 
-    //TODO this.value, this.type, this.name (OnEnterTagTest)
-
     private final HydraMenuTag hydraMenuTag;
     private final HydraURLReplacer urlReplacer;
 
@@ -53,6 +51,7 @@ public enum HTMLInjector {
                 new ChangeTag(),
                 new OnEnterTag(),
                 new ClassAppendTag(),
+                new SelectedTag(),
                 new GenericMTag()
         );
     }
