@@ -5,7 +5,7 @@ import io.getmedusa.medusa.core.util.ExpressionEval;
 import java.util.Collections;
 import java.util.Map;
 
-public abstract class AbstractTag {
+public abstract class AbstractTag implements Tag {
 
     protected String variableToString(String variableKey, Map<String, Object> variables) {
         keyValidation(variableKey);

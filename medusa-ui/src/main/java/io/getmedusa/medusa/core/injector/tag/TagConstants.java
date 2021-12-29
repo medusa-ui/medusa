@@ -39,6 +39,9 @@ public class TagConstants {
     public static final String M_CLICK = "m:click";
     public static final String M_CLICK_REPLACEMENT = "onclick";
 
+    //mchange - attributes;
+    public static final String M_CHANGE = "m:change";
+    public static final String M_CHANGE_REPLACEMENT = "oninput";
 
 
     private TagConstants() {}

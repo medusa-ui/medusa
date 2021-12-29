@@ -9,25 +9,37 @@ import org.jsoup.parser.Tag;
 import org.jsoup.select.Elements;
 import org.springframework.web.reactive.function.server.ServerRequest;
 
+import java.util.List;
 import java.util.Map;
 
 public class ValueTag extends AbstractTag {
 
+    protected static final List<String> M_ATTR_TO_REPLACE = List.of(
+        TagConstants.M_CLICK,
+        TagConstants.M_CHANGE
+    );
+
+    @Override
     public InjectionResult inject(InjectionResult result, Map<String, Object> variables, ServerRequest request) {
         handleMTextTag(result, variables, request);
         handleMValueAttribute(result, variables, request);
         handleMIfCondition(result, variables, request);
-        handleMClick(result, variables, request);
+
+        for(String tagAttr : M_ATTR_TO_REPLACE) {
+            handleMAttr(result, variables, request, tagAttr);
+        }
+
         return result;
     }
 
-    private void handleMClick(InjectionResult result, Map<String, Object> variables, ServerRequest request) {
-        Elements mClickTags = result.getDocument().getElementsByAttribute(TagConstants.M_CLICK);
+    private void handleMAttr(InjectionResult result, Map<String, Object> variables, ServerRequest request, String attr) {
+        Elements mClickTags = result.getDocument().getElementsByAttribute(attr);
 
         for (Element mClickTag : mClickTags) {
-            String item = mClickTag.attr(TagConstants.M_CLICK).trim();
-            String parametersAsOneString = item.substring(item.indexOf('(') + 1, item.indexOf(')'));
-            for(String parameter : parametersAsOneString.split(",")) {
+            String item = mClickTag.attr(attr).trim();
+            for(String parameterRough : splitParameterString(item)) {
+                final String parameter = parameterRough.trim();
+
                 Object variableValue = getPossibleEachValue(mClickTag, parameter, request);
                 if(null == variableValue) variableValue = variableToString(parameter, variables);
                 if(null == variableValue) variableValue = parameter;
@@ -37,8 +49,13 @@ public class ValueTag extends AbstractTag {
                     item = item.replace(parameter.trim(), "'" + replacementValue+ "'");
                 }
             }
-           mClickTag.attr(TagConstants.M_CLICK, item);
+           mClickTag.attr(attr, item);
         }
+    }
+
+    private String[] splitParameterString(String item) {
+        String parametersAsOneString = item.substring(item.indexOf('(') + 1, item.indexOf(')'));
+        return parametersAsOneString.split(",");
     }
 
     private void handleMIfCondition(InjectionResult result, Map<String, Object> variables, ServerRequest request) {

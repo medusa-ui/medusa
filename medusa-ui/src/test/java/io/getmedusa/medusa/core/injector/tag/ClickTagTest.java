@@ -14,7 +14,8 @@ class ClickTagTest extends AbstractTest {
     public static final String HTML_DOUBLE_QUOTES = "<button m:click='sayHelloTo(\"Jane Doe\", 2)'>Hello!</button>";
     public static final String HTML_BOOLEAN = "<button m:click='turnOn(true)'>Lightswitch ON</button>";
     public static final String HTML_INTEGER = "<button m:click='increaseCount(2)'>Add two people</button>";
-    public static final String HTML_OBJECT = "<button m:click='addName(person.name, 1)'>Add name</button>";
+    public static final String HTML_OBJECT = "<button m:click='addName(person.name)'>Add name</button>";
+    public static final String HTML_OBJECT_MULTI = "<button m:click='addName(1, person.name, 1)'>Add name</button>";
     private static final String HTML_EACH_ITERATION = """
                     <m:foreach collection="people" eachName="person">
                         <button m:click='addName("你好世界", 1)'>Add name</button>
@@ -68,13 +69,23 @@ class ClickTagTest extends AbstractTest {
     }
 
     @Test
-    void testObject() {
+    void testObjectSingleParam() {
         Document document = inject(HTML_OBJECT, Map.of("person", new Person("안녕하세요 세계")));
         String html = document.html();
         System.out.println(html);
 
         Assertions.assertFalse(html.contains("m:click"), "m:click should be replaced with an onclick");
-        Assertions.assertTrue(html.contains("onclick=\"_M.sendEvent(this, 'addName(\\'안녕하세요 세계\\', 1)')\""));
+        Assertions.assertTrue(html.contains("onclick=\"_M.sendEvent(this, 'addName(\\'안녕하세요 세계\\')')\""));
+    }
+
+    @Test
+    void testObjectMultipleParams() {
+        Document document = inject(HTML_OBJECT_MULTI, Map.of("person", new Person("안녕하세요 세계")));
+        String html = document.html();
+        System.out.println(html);
+
+        Assertions.assertFalse(html.contains("m:click"), "m:click should be replaced with an onclick");
+        Assertions.assertTrue(html.contains("onclick=\"_M.sendEvent(this, 'addName(1, \\'안녕하세요 세계\\', 1)')\""));
     }
 
     @Test

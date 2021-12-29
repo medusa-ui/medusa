@@ -13,9 +13,10 @@ import org.springframework.web.reactive.function.server.ServerRequest;
 
 import java.util.*;
 
-public class ConditionalTag {
+public class ConditionalTag extends AbstractTag {
     private static final ConditionalRegistry CONDITIONAL_REGISTRY = ConditionalRegistry.getInstance();
 
+    @Override
     public InjectionResult inject(InjectionResult result, Map<String, Object> variables, ServerRequest request) {
         Elements conditionalElements = findConditionalElements(result);
         conditionalElements.sort(Comparator.comparingInt(o -> o.getElementsByTag(TagConstants.CONDITIONAL_TAG).size()));

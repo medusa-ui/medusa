@@ -15,6 +15,7 @@ import org.springframework.web.reactive.function.server.ServerRequest;
 
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
@@ -33,12 +34,7 @@ public enum HTMLInjector {
     private String script = null;
     private String styling = null;
 
-    private final ClickTag clickTag;
     private final OnEnterTag onEnterTag;
-    private final ChangeTag changeTag;
-    private final ValueTag valueTag;
-    private final ConditionalTag conditionalTag;
-    private final IterationTag iterationTag;
     private final ClassAppendTag classAppendTag;
     private final GenericMTag genericMTag;
 
@@ -46,16 +42,21 @@ public enum HTMLInjector {
     private final HydraURLReplacer urlReplacer;
 
     HTMLInjector() {
-        this.clickTag = new ClickTag();
         this.onEnterTag = new OnEnterTag();
-        this.changeTag = new ChangeTag();
-        this.valueTag = new ValueTag();
-        this.conditionalTag = new ConditionalTag();
-        this.iterationTag = new IterationTag();
         this.classAppendTag = new ClassAppendTag();
         this.genericMTag = new GenericMTag();
         this.hydraMenuTag = new HydraMenuTag();
         this.urlReplacer = new HydraURLReplacer();
+    }
+
+    public static List<Tag> getTags() {
+        return List.of(
+                new IterationTag(),
+                new ValueTag(),
+                new ConditionalTag(),
+                new ClickTag(),
+                new ChangeTag()
+        );
     }
 
     /**
@@ -105,17 +106,11 @@ public enum HTMLInjector {
         if(uiEventController != null) variables.putAll(uiEventController.setupAttributes(request, securityContext).getPageVariables());
 
         try {
-            InjectionResult result = iterationTag.inject(new InjectionResult(document), variables, request);
-            result = valueTag.inject(result, variables, request); //also handles each values (for example for m:if conditions)
-            result = conditionalTag.inject(result, variables, request);
-
-            result = clickTag.inject(result, variables, request);
-//        result = onEnterTag.inject(result.getHtml());
-//        result = changeTag.inject(result.getHtml());
-//        result = classAppendTag.injectWithVariables(result, variables);
-//        result = genericMTag.injectWithVariables(result, variables);
-//        result = hydraMenuTag.injectWithVariables(result);
-
+            InjectionResult result = new InjectionResult(document);
+            List<Tag> tags = HTMLInjector.getTags();
+            for(Tag tag : tags) {
+                result = tag.inject(result, variables, request);
+            }
             injectVariablesInScript(result, variables);
 
             String html = injectScript(matchedPath, result, securityContext.getUniqueId(), csrfToken);
