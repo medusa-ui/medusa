@@ -10,8 +10,6 @@ import java.util.Map;
 
 class OnEnterTagTest extends AbstractTest {
 
-    //TODO this.value, this.type, this.name
-
     public static final String HTML = "<input m:onenter=\"sayHelloTo('John Doe')\" type=\"text\" name=\"term\" autocomplete=\"off\" />";
     public static final String HTML_DOUBLE_QUOTES = "<input m:onenter='sayHelloTo(\"Jane Doe\", 2)' type=\"text\" name=\"term\" autocomplete=\"off\" />";
     public static final String HTML_BOOLEAN = "<input m:onenter='turnOn(true)' type=\"text\" name=\"term\" autocomplete=\"off\" />";
