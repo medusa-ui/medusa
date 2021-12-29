@@ -12,14 +12,13 @@ public class TagConstants {
     public static final String TEMPLATE_ID = "template-id"; //template id on div
     public static final String INDEX = "index"; //index on div
     public static final String M_ID = "m-id"; //template id on template itself
+    public static final Object TEMPLATE_TAG = "template";
 
     //text - tags
     public static final String TEXT_TAG = "m:text";
     public static final String TEXT_TAG_ITEM_ATTR = "item";
     public static final String M_VALUE = "m:value";
     public static final String FROM_VALUE = "from-value";
-
-    //text - attributes
 
     //conditional - tags
     public static final String CONDITIONAL_TAG = "m:if"; //each on div
@@ -36,7 +35,11 @@ public class TagConstants {
     public static final String M_ELSE = "m:else";
     public static final String M_ELSEIF = "m:elseif";
 
-    public static final Object TEMPLATE_TAG = "template";
+    //mclick - attributes
+    public static final String M_CLICK = "m:click";
+    public static final String M_CLICK_REPLACEMENT = "onclick";
+
+
 
     private TagConstants() {}
 }

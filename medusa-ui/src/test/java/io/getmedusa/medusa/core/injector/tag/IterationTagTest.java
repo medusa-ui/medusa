@@ -1,20 +1,15 @@
 package io.getmedusa.medusa.core.injector.tag;
 
-import io.getmedusa.medusa.core.injector.tag.meta.InjectionResult;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.springframework.mock.web.reactive.function.server.MockServerRequest;
-import org.springframework.web.reactive.function.server.ServerRequest;
 
 import java.util.*;
 
-class IterationTagTest {
-
-    private static final IterationTag TAG = new IterationTag();
+class IterationTagTest extends AbstractTest {
 
     public static final String HTML =
             """
@@ -113,40 +108,38 @@ class IterationTagTest {
             </html>
             """;
 
-    private final ServerRequest request = MockServerRequest.builder().build();
-
     @Test
     void testSingleElementList() {
         System.out.println(HTML);
         Map<String, Object> variables = new HashMap<>();
         variables.put("list-of-values", Collections.singletonList(1));
-        InjectionResult result = TAG.inject(new InjectionResult(HTML), variables, request);
-        System.out.println(result.getHTML());
-        Assertions.assertFalse(result.getHTML().contains("m:foreach"));
-        Assertions.assertTrue(result.getHTML().contains("<template") && result.getHTML().contains("</template>"));
-        Assertions.assertEquals(2, countOccurrences(result.getHTML()));
+        String html = inject(HTML, variables).html();
+        System.out.println(html);
+        Assertions.assertFalse(html.contains("m:foreach"));
+        Assertions.assertTrue(html.contains("<template") && html.contains("</template>"));
+        Assertions.assertEquals(2, countOccurrences(html));
     }
 
     @Test
     void testMultipleElementList() {
         Map<String, Object> variables = new HashMap<>();
         variables.put("list-of-values", Arrays.asList(1,2,3,4,5));
-        InjectionResult result = TAG.inject(new InjectionResult(HTML), variables, request);
-        System.out.println(result.getHTML());
-        Assertions.assertFalse(result.getHTML().contains("m:foreach"));
-        Assertions.assertTrue(result.getHTML().contains("<template") && result.getHTML().contains("</template>"));
-        Assertions.assertEquals(6, countOccurrences(result.getHTML()));
+        String html = inject(HTML, variables).html();
+        System.out.println(html);
+        Assertions.assertFalse(html.contains("m:foreach"));
+        Assertions.assertTrue(html.contains("<template") && html.contains("</template>"));
+        Assertions.assertEquals(6, countOccurrences(html));
     }
 
     @Test
     void testEmptyList() {
         Map<String, Object> variables = new HashMap<>();
         variables.put("list-of-values", new ArrayList<>());
-        InjectionResult result = TAG.inject(new InjectionResult(HTML), variables, request);
-        System.out.println(result.getHTML());
-        Assertions.assertFalse(result.getHTML().contains("m:foreach"));
-        Assertions.assertTrue(result.getHTML().contains("<template") && result.getHTML().contains("</template>"));
-        Assertions.assertEquals(1, countOccurrences(result.getHTML()));
+        String html = inject(HTML, variables).html();
+        System.out.println(html);
+        Assertions.assertFalse(html.contains("m:foreach"));
+        Assertions.assertTrue(html.contains("<template") && html.contains("</template>"));
+        Assertions.assertEquals(1, countOccurrences(html));
     }
 
     @Test
@@ -157,11 +150,11 @@ class IterationTagTest {
         variables.put("list-of-values", listOfValues);
         variables.put("other-list-of-values", otherListOfValues);
 
-        InjectionResult result = TAG.inject(new InjectionResult(MULTIPLE_HTML), variables, request);
-        System.out.println(result.getHTML());
-        Assertions.assertFalse(result.getHTML().contains("m:foreach"));
-        Assertions.assertTrue(result.getHTML().contains("<template") && result.getHTML().contains("</template>"));
-        Assertions.assertEquals(listOfValues.size() + otherListOfValues.size() + variables.size(), countOccurrences(result.getHTML()));
+        String html = inject(MULTIPLE_HTML, variables).html();
+        System.out.println(html);
+        Assertions.assertFalse(html.contains("m:foreach"));
+        Assertions.assertTrue(html.contains("<template") && html.contains("</template>"));
+        Assertions.assertEquals(listOfValues.size() + otherListOfValues.size() + variables.size(), countOccurrences(html));
     }
 
     @Test
@@ -173,12 +166,12 @@ class IterationTagTest {
         variables.put("outer-list", outerList);
         variables.put("inner-list", innerList);
 
-        InjectionResult result = TAG.inject(new InjectionResult(HTML_NESTED), variables, request);
-        System.out.println(result.getHTML());
-        Assertions.assertFalse(result.getHTML().contains("m:foreach"));
-        Assertions.assertTrue(result.getHTML().contains("<template") && result.getHTML().contains("</template>"));
+        String html = inject(HTML_NESTED, variables).html();
+        System.out.println(html);
+        Assertions.assertFalse(html.contains("m:foreach"));
+        Assertions.assertTrue(html.contains("<template") && html.contains("</template>"));
 
-        final Document document = Jsoup.parse(result.getHTML());
+        final Document document = Jsoup.parse(html);
         Map<String, List<Element>> templateElements = findDivsWithTemplate(document);
 
         Assertions.assertEquals(2, templateElements.keySet().size());
@@ -198,13 +191,12 @@ class IterationTagTest {
         Map<String, Object> variables = new HashMap<>();
         final List<Integer> loopValues = Arrays.asList(1, 2, 3, 4, 5);
         variables.put("list-of-values", loopValues);
-        InjectionResult result = TAG.inject(new InjectionResult(HTML_W_ELEMENT), variables, request);
-        result = new ValueTag().inject(result, variables, request);
+        String html = inject(HTML_W_ELEMENT, variables).html();
 
-        System.out.println(result.getHTML());
-        Assertions.assertFalse(result.getHTML().contains("m:foreach"));
-        Assertions.assertTrue(result.getHTML().contains("<template") && result.getHTML().contains("</template>"));
-        Map<String, List<Element>> templateElements = findDivsWithTemplate(Jsoup.parse(result.getHTML()));
+        System.out.println(html);
+        Assertions.assertFalse(html.contains("m:foreach"));
+        Assertions.assertTrue(html.contains("<template") && html.contains("</template>"));
+        Map<String, List<Element>> templateElements = findDivsWithTemplate(Jsoup.parse(html));
         List<Element> divs = templateElements.get(templateElements.keySet().stream().findFirst().get());
 
         Assertions.assertEquals(5, divs.size());
@@ -221,13 +213,12 @@ class IterationTagTest {
         Map<String, Object> variables = new HashMap<>();
         final List<Integer> loopValues = Arrays.asList(1, 2, 3, 4, 5);
         variables.put("list-of-values", loopValues);
-        InjectionResult result = TAG.inject(new InjectionResult(HTML_W_ELEMENT), variables, request);
-        result = new ValueTag().inject(result, variables, request);
+        String html = inject(HTML_W_ELEMENT, variables).html();
 
-        System.out.println(result.getHTML());
-        Assertions.assertFalse(result.getHTML().contains("m:foreach"));
-        Assertions.assertTrue(result.getHTML().contains("<template") && result.getHTML().contains("</template>"));
-        Map<String, List<Element>> templateElements = findDivsWithTemplate(Jsoup.parse(result.getHTML()));
+        System.out.println(html);
+        Assertions.assertFalse(html.contains("m:foreach"));
+        Assertions.assertTrue(html.contains("<template") && html.contains("</template>"));
+        Map<String, List<Element>> templateElements = findDivsWithTemplate(Jsoup.parse(html));
         List<Element> divs = templateElements.get(templateElements.keySet().stream().findFirst().get());
 
         Assertions.assertEquals(5, divs.size());
@@ -247,13 +238,12 @@ class IterationTagTest {
         variables.put("list-of-values", listOfValues);
         variables.put("other-list-of-values", otherListOfValues);
 
-        InjectionResult result = TAG.inject(new InjectionResult(HTML_W_ELEMENT_NESTED), variables, request);
-        result = new ValueTag().inject(result, variables, request);
+        String html = inject(HTML_W_ELEMENT_NESTED, variables).html();
 
-        System.out.println(result.getHTML());
-        Assertions.assertFalse(result.getHTML().contains("m:foreach"));
-        Assertions.assertTrue(result.getHTML().contains("<template") && result.getHTML().contains("</template>"));
-        Map<String, List<Element>> templateElements = findDivsWithTemplate(Jsoup.parse(result.getHTML()));
+        System.out.println(html);
+        Assertions.assertFalse(html.contains("m:foreach"));
+        Assertions.assertTrue(html.contains("<template") && html.contains("</template>"));
+        Map<String, List<Element>> templateElements = findDivsWithTemplate(Jsoup.parse(html));
         List<Element> divs = new ArrayList<>();
         for(String key : templateElements.keySet()) {
             List<Element> foundElems = templateElements.get(key);
@@ -283,13 +273,12 @@ class IterationTagTest {
         variables.put("list-of-values", listOfValues);
         variables.put("other-list-of-values", otherListOfValues);
 
-        InjectionResult result = TAG.inject(new InjectionResult(HTML_W_ELEMENT_NESTED_AND_VALUE_AS_ATTRIBUTE), variables, request);
-        result = new ValueTag().inject(result, variables, request);
+        String html = inject(HTML_W_ELEMENT_NESTED_AND_VALUE_AS_ATTRIBUTE, variables).html();
 
-        System.out.println(result.getHTML());
-        Assertions.assertFalse(result.getHTML().contains("m:foreach"));
-        Assertions.assertTrue(result.getHTML().contains("<template") && result.getHTML().contains("</template>"));
-        Map<String, List<Element>> templateElements = findDivsWithTemplate(Jsoup.parse(result.getHTML()));
+        System.out.println(html);
+        Assertions.assertFalse(html.contains("m:foreach"));
+        Assertions.assertTrue(html.contains("<template") && html.contains("</template>"));
+        Map<String, List<Element>> templateElements = findDivsWithTemplate(Jsoup.parse(html));
         List<Element> divs = new ArrayList<>();
         for(String key : templateElements.keySet()) {
             List<Element> foundElems = templateElements.get(key);
@@ -313,13 +302,12 @@ class IterationTagTest {
         variables.put("list-of-values", listOfValues);
         variables.put("other-list-of-values", otherListOfValues);
 
-        InjectionResult result = TAG.inject(new InjectionResult(HTML_W_COMPLEX_ELEMENT_NESTED), variables, request);
-        result = new ValueTag().inject(result, variables, request);
+        String html = inject(HTML_W_COMPLEX_ELEMENT_NESTED, variables).html();
 
-        System.out.println(result.getHTML());
-        Assertions.assertFalse(result.getHTML().contains("m:foreach"));
-        Assertions.assertTrue(result.getHTML().contains("<template") && result.getHTML().contains("</template>"));
-        Map<String, List<Element>> templateElements = findDivsWithTemplate(Jsoup.parse(result.getHTML()));
+        System.out.println(html);
+        Assertions.assertFalse(html.contains("m:foreach"));
+        Assertions.assertTrue(html.contains("<template") && html.contains("</template>"));
+        Map<String, List<Element>> templateElements = findDivsWithTemplate(Jsoup.parse(html));
         List<Element> divs = new ArrayList<>();
         for(String key : templateElements.keySet()) {
             List<Element> foundElems = templateElements.get(key);
@@ -349,13 +337,12 @@ class IterationTagTest {
         variables.put("list-of-values", listOfValues);
         variables.put("other-list-of-values", otherListOfValues);
 
-        InjectionResult result = TAG.inject(new InjectionResult(HTML_W_ELEMENT_NESTED_AND_COMPLEX_VALUE_AS_ATTRIBUTE), variables, request);
-        result = new ValueTag().inject(result, variables, request);
+        String html = inject(HTML_W_ELEMENT_NESTED_AND_COMPLEX_VALUE_AS_ATTRIBUTE, variables).html();
 
-        System.out.println(result.getHTML());
-        Assertions.assertFalse(result.getHTML().contains("m:foreach"));
-        Assertions.assertTrue(result.getHTML().contains("<template") && result.getHTML().contains("</template>"));
-        Map<String, List<Element>> templateElements = findDivsWithTemplate(Jsoup.parse(result.getHTML()));
+        System.out.println(html);
+        Assertions.assertFalse(html.contains("m:foreach"));
+        Assertions.assertTrue(html.contains("<template") && html.contains("</template>"));
+        Map<String, List<Element>> templateElements = findDivsWithTemplate(Jsoup.parse(html));
         List<Element> divs = new ArrayList<>();
         for(String key : templateElements.keySet()) {
             List<Element> foundElems = templateElements.get(key);
@@ -389,19 +376,6 @@ class IterationTagTest {
 
     long countOccurrences(String block) {
         return Arrays.stream(block.split("<p>Medusa</p>")).count()-1;
-    }
-
-    class ComplexObject {
-
-        private final String exampleValue;
-
-        public ComplexObject(String exampleValue) {
-            this.exampleValue = exampleValue;
-        }
-
-        public String getExampleValue() {
-            return exampleValue;
-        }
     }
 
 }

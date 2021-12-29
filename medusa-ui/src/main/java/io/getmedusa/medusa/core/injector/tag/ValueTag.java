@@ -17,7 +17,28 @@ public class ValueTag extends AbstractTag {
         handleMTextTag(result, variables, request);
         handleMValueAttribute(result, variables, request);
         handleMIfCondition(result, variables, request);
+        handleMClick(result, variables, request);
         return result;
+    }
+
+    private void handleMClick(InjectionResult result, Map<String, Object> variables, ServerRequest request) {
+        Elements mClickTags = result.getDocument().getElementsByAttribute(TagConstants.M_CLICK);
+
+        for (Element mClickTag : mClickTags) {
+            String item = mClickTag.attr(TagConstants.M_CLICK).trim();
+            String parametersAsOneString = item.substring(item.indexOf('(') + 1, item.indexOf(')'));
+            for(String parameter : parametersAsOneString.split(",")) {
+                Object variableValue = getPossibleEachValue(mClickTag, parameter, request);
+                if(null == variableValue) variableValue = variableToString(parameter, variables);
+                if(null == variableValue) variableValue = parameter;
+
+                final String replacementValue = variableValue.toString().trim();
+                if(!replacementValue.equals(parameter.trim())) {
+                    item = item.replace(parameter.trim(), "'" + replacementValue+ "'");
+                }
+            }
+           mClickTag.attr(TagConstants.M_CLICK, item);
+        }
     }
 
     private void handleMIfCondition(InjectionResult result, Map<String, Object> variables, ServerRequest request) {

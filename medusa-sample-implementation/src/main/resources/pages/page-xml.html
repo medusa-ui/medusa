@@ -26,19 +26,16 @@
 
                 <m:if condition="innerItem" eq="'a'">
                     <p>A</p>
-                    <button m-click="buy('coffee')">Buy some coffee</button>
+                    <button m:click="buy('coffee')">Buy some coffee</button>
 
                     <m:elseif condition="innerItem" eq="'b'">
-
                         <p>B</p>
-                        <button m-click="buy('tea', 'sugar', 3,'cookie')">Buy some tea and sugar</button>
-
+                        <button m:click="buy('tea', 'sugar', 3,'cookie')">Buy some tea and sugar</button>
                     </m:elseif>
+
                     <m:else>
-
                         <p>C</p>
-                        <button m-click="buy('coffee, sugar but no cream','cookies (2 pieces)')">Breaking stuff</button>
-
+                        <button m:click="buy('coffee, sugar but no cream','cookies (2 pieces)')">Breaking stuff</button>
                     </m:else>
                 </m:if>
             </m:foreach>
