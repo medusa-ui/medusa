@@ -22,12 +22,13 @@
 
     <!-- does not work as expected -->
     <!-- restrict choice of elements -->
-    <xs:group name="medusa">
-        <xs:choice>
+    <xs:group name="medusa" >
+        <xs:sequence>
+            <xs:any/>
             <xs:element ref="m:text" />
             <xs:element ref="m:foreach" />
             <xs:element ref="m:if" />
-        </xs:choice>
+        </xs:sequence>
     </xs:group>
 
     <xs:element name="text" >
