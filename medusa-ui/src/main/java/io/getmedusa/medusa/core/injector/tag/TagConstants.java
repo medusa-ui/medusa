@@ -50,6 +50,8 @@ public class TagConstants {
     public static final String M_ONENTER_ADDITIONAL = "onkeydown";
     public static final String PREVENT_DEFAULT = "_M.preventDefault(event)";
 
+    //
+    public static final String M_CLASS_APPEND = "m:class-append";
 
     private TagConstants() {}
 }

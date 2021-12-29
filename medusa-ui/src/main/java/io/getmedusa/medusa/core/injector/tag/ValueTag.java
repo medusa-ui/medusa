@@ -1,8 +1,6 @@
 package io.getmedusa.medusa.core.injector.tag;
 
 import io.getmedusa.medusa.core.injector.tag.meta.InjectionResult;
-import io.getmedusa.medusa.core.registry.EachValueRegistry;
-import io.getmedusa.medusa.core.util.ExpressionEval;
 import org.jsoup.nodes.Element;
 import org.jsoup.nodes.Node;
 import org.jsoup.parser.Tag;
@@ -86,34 +84,7 @@ public class ValueTag extends AbstractTag {
         }
     }
 
-    private Object getPossibleEachValue(Element currentElem, String eachName, ServerRequest request) {
-        String nameToSearch = eachName;
-        String restOfValue = null;
-        boolean requiresObjectIntrospection = nameToSearch.contains(".");
-        if(requiresObjectIntrospection) {
-            final String[] split = nameToSearch.split("\\.", 2);
-            nameToSearch = split[0];
-            restOfValue = split[1];
-        }
 
-        Element parentWithEachName = findParentWithEachName(currentElem.parents(), nameToSearch);
-        if(null != parentWithEachName) {
-            int index = Integer.parseInt(parentWithEachName.attr(TagConstants.INDEX));
-            Object valueToReturn = EachValueRegistry.getInstance().get(request, nameToSearch, index);
-            if(requiresObjectIntrospection) {
-                valueToReturn = ExpressionEval.evalObject(restOfValue, valueToReturn);
-            }
-            return valueToReturn;
-        }
-        return null;
-    }
-
-    private Element findParentWithEachName(Elements parents, String eachName) {
-        for(Element parent : parents) {
-            if(parent.hasAttr(TagConstants.M_EACH) && parent.attr(TagConstants.M_EACH).equals(eachName)) return parent;
-        }
-        return null;
-    }
 
     private void handleMValueAttribute(InjectionResult result, Map<String, Object> variables, ServerRequest request) {
         //<input type="text" m:value="counter-value" /> w/ "counter-value" = 123

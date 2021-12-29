@@ -54,7 +54,8 @@ public enum HTMLInjector {
                 new ConditionalTag(),
                 new ClickTag(),
                 new ChangeTag(),
-                new OnEnterTag()
+                new OnEnterTag(),
+                new ClassAppendTag()
         );
     }
 
