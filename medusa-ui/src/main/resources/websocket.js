@@ -313,7 +313,7 @@ _M.recursiveObjectUpdate = function(html, obj, path) {
 };
 
 _M.findElementByMIF = function(key) {
-    return document.querySelectorAll("[m-if='" + key + "'] .m-if-main");
+    return document.querySelectorAll("[m-if='" + key + "']");
 }
 
 _M.handleConditionCheckEvent = function(k) {

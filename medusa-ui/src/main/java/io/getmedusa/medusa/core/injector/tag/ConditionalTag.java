@@ -29,17 +29,25 @@ public class ConditionalTag extends AbstractTag {
 
     private void handleIfElement(Map<String, Object> variables, Element conditionalElement) {
         final ConditionResult mainCondition = VisibilityDetermination.getInstance().determine(variables, conditionalElement);
-        final String ifId = generateIfID(conditionalElement, mainCondition.condition());
+
+        List<String> conditions = new ArrayList<>();
+        conditions.add(mainCondition.condition());
 
         //find elements
         final Element elseElement = getElseElement(conditionalElement);
         final List<ElseIfElement> elseIfElements = getElseIfElements(conditionalElement, variables); //pre-wrapped
         final Elements mainElements = filterMainElements(conditionalElement, elseElement, elseIfElements);
 
+        for(ElseIfElement elseIfElement : elseIfElements) {
+            conditions.add(elseIfElement.getCondition());
+            addIfId(elseIfElement.getElement(), elseIfElement.getCondition());
+        }
+
         //wrapping
-        addFullWrapperAndReplaceMIFElement(conditionalElement, ifId);
-        final Element mainElementWrapper = wrapMainElement(mainElements);
+        WrapperUtils.wrapAndReplace(conditionalElement, "m-if-wrapper");
+        final Element mainElementWrapper = wrapMainElement(mainElements, mainCondition.condition());
         final Element defaultElseWrapper = wrapDefaultElseElement(elseElement);
+        addIfId(defaultElseWrapper, oppositeOfCombinedConditions(conditions));
 
         //visibility
         final ElseIfElement activeElseIf;
@@ -62,6 +70,20 @@ public class ConditionalTag extends AbstractTag {
         }
     }
 
+    public String oppositeOfCombinedConditions(List<String> conditions) {
+        StringBuilder condition = new StringBuilder("!(");
+        String appender = "";
+        for(String c : conditions) {
+            condition.append(appender);
+            condition.append(c);
+            appender = " || ";
+
+        }
+
+        condition.append(")");
+        return condition.toString();
+    }
+
     private void hideAll(List<ElseIfElement> elseIfElements, ElseIfElement activeElseIf) {
         for(ElseIfElement e : elseIfElements) {
             if(!e.equals(activeElseIf)) {
@@ -81,19 +103,22 @@ public class ConditionalTag extends AbstractTag {
         return elements.stream().map(e -> new ElseIfElement(e, variables)).toList();
     }
 
-    private void addFullWrapperAndReplaceMIFElement(Element conditionalElement, String ifId) {
-        final Element fullConditionalWrapper = WrapperUtils.wrapAndReplace(conditionalElement, "m-if-wrapper");
-        fullConditionalWrapper.attr(TagConstants.M_IF, ifId);
-    }
-
-    private Element wrapMainElement(Elements mainElements) {
-        return WrapperUtils.wrap(mainElements, "m-if-main");
+    private Element wrapMainElement(Elements mainElements, String condition) {
+        Element mainWrapper = WrapperUtils.wrap(mainElements, "m-if-main");
+        addIfId(mainWrapper, condition);
+        return mainWrapper;
     }
 
     private Element wrapDefaultElseElement(Element elseElement) {
         Element defaultElseWrapper = null;
         if(elseElement != null) defaultElseWrapper = WrapperUtils.wrapAndReplace(elseElement, "m-if-default-else");
         return defaultElseWrapper;
+    }
+
+    private Element addIfId(Element element, String condition) {
+        if(element == null) return null;
+        element.attr(TagConstants.M_IF, generateIfID(element, condition));
+        return element;
     }
 
     private Elements filterMainElements(Element conditionalElement, Element defaultElseElement, List<ElseIfElement> elseIfElements) {

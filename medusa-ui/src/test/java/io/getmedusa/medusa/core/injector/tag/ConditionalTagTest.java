@@ -391,4 +391,10 @@ class ConditionalTagTest extends AbstractTest {
         Assertions.assertEquals("This is John", htmlA.text());
         Assertions.assertEquals("", htmlB.text());
     }
+
+    @Test
+    void testElseConditionGeneration() {
+        String conditionElse = new ConditionalTag().oppositeOfCombinedConditions(List.of("X == 1", "X == 2"));
+        Assertions.assertEquals("!(X == 1 || X == 2)", conditionElse);
+    }
 }
