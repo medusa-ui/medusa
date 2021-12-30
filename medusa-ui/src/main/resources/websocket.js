@@ -203,12 +203,6 @@ _M.handleTitleChangeEvent = function(k) {
     document.title = _M.injectVariablesIntoText(k.v);
 };
 
-_M.handleIterationCheckEach = function(templateId, template, currentEachValue, parent) {
-    let newDiff = document.createElement("div");
-    newDiff.innerHTML = _M.resolveInnerTemplate(template.innerHTML, [currentEachValue]);
-    while (newDiff.firstChild) parent.appendChild(newDiff.firstChild);
-}
-
 _M.handleIterationCheck = function (k) {
     // clear old values
     document.querySelectorAll("[template-id="+k.f+"]").forEach(function(e) { e.remove(); });
@@ -261,21 +255,6 @@ _M.buildIterationBlockMEachHandling = function (divWithMEach) {
     }
 }
 
-_M.resolveTemplateEachValues = function (wrapper, rootIndex) {
-    wrapper.querySelectorAll("[m-each]").forEach(function (divWithMEach) {
-        const templateMap = _M.buildTemplateMap(divWithMEach, rootIndex);
-
-        for(const mapEntry of templateMap) {
-            divWithMEach.querySelectorAll("[from-value='"+mapEntry['eachName']+"']").forEach(function (specificSpan) {
-                const index = parseInt(mapEntry['index']);
-                const conditional = _M.conditionals[mapEntry['templateId']];
-                specificSpan.textContent = _M.variables[conditional][index];
-            });
-        }
-    });
-    return wrapper;
-}
-
 _M.buildTemplateMap = function (divWithMEach) {
     const map = [];
     let evalNode = divWithMEach;
@@ -306,43 +285,6 @@ _M.resolveTemplateCondition = function (templateId) {
     const condition = _M.conditionals[templateId];
     return _M.variables[condition];
 }
-
-_M.resolveInnerTemplateEach = function (index, parents, currentEachValue, templateId, template, replacement) {
-    index = index++;
-    let localParent = [...parents]; //clone
-    localParent.unshift(currentEachValue);
-    let replacementInner = "<div index='" + index++ + "' template-id='" + templateId + "'>" + _M.resolveInnerTemplate(template.innerHTML, localParent) + "</div>";
-    replacement += replacementInner;
-    return replacement;
-}
-
-_M.resolveInnerTemplate = function (innerContent, parents) {
-    innerContent = innerContent.toString();
-
-    //if this contains template, then run the resolver one layer deeper;
-    if(innerContent.includes("<template m-id=")) {
-         let doc = _M.parser.parseFromString(innerContent, "text/html");
-         doc.querySelectorAll("template").forEach(function (template) {
-             const templateId = _M.resolveTemplateId(template);
-             const eachValues = _M.resolveTemplateCondition(templateId);
-             let index = 0;
-             let replacement = "";
-             if(Array.isArray(eachValues)) {
-                 for (const currentEachValue of eachValues) {
-                     replacement = _M.resolveInnerTemplateEach(index, parents, currentEachValue, templateId, template, replacement);
-                 }
-             } else {
-                 for (let i = 0; i < eachValues; i++) {
-                     replacement = _M.resolveInnerTemplateEach(index, parents, i, templateId, template, replacement);
-                 }
-             }
-
-             innerContent = innerContent.replaceAll("<template m-id=\""+ templateId +"\">" + template.innerHTML + "</template>", replacement);
-         });
-    }
-
-    return innerContent;
-};
 
 _M.unwrap = function (node){
     return node.replaceWith(...node.childNodes);
