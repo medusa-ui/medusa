@@ -20,6 +20,8 @@ public abstract class AbstractTag implements Tag {
     }
 
     protected Object getPossibleEachValue(Element currentElem, String eachName, ServerRequest request) {
+        if(hasTemplateAsParent(currentElem)) return eachName;
+
         String nameToSearch = eachName;
         String restOfValue = null;
         boolean requiresObjectIntrospection = nameToSearch.contains(".");
@@ -31,7 +33,9 @@ public abstract class AbstractTag implements Tag {
 
         Element parentWithEachName = findParentWithEachName(currentElem.parents(), nameToSearch);
         if(null != parentWithEachName) {
-            int index = Integer.parseInt(parentWithEachName.attr(TagConstants.INDEX));
+            String indexAsString = parentWithEachName.attr(TagConstants.INDEX);
+            if(indexAsString.length() == 0) indexAsString = "0";
+            int index = Integer.parseInt(indexAsString);
             Object valueToReturn = EachValueRegistry.getInstance().get(request, nameToSearch, index);
             if(requiresObjectIntrospection) {
                 valueToReturn = ExpressionEval.evalObject(restOfValue, valueToReturn);
@@ -39,6 +43,14 @@ public abstract class AbstractTag implements Tag {
             return valueToReturn;
         }
         return null;
+    }
+
+    private boolean hasTemplateAsParent(Element elements) {
+        Elements parents = elements.parents();
+        for(Element parent : parents) {
+            if(TagConstants.TEMPLATE_TAG.equals(parent.tagName())) return true;
+        }
+        return false;
     }
 
     private Element findParentWithEachName(Elements parents, String eachName) {

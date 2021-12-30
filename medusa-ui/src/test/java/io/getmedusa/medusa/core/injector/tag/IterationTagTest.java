@@ -132,6 +132,22 @@ class IterationTagTest extends AbstractTest {
     }
 
     @Test
+    void testSimpleIndexes() {
+        Map<String, Object> variables = new HashMap<>();
+        variables.put("list-of-values", Arrays.asList(1,2,3,4,5));
+        Document doc = inject(HTML, variables);
+        removeNonDisplayedElements(doc);
+
+        System.out.println(doc.html());
+
+        int expectedValue = 0;
+        for(Element indexElement : doc.getElementsByAttribute("index")) {
+            int actualValue = Integer.parseInt(indexElement.attr("index"));
+            Assertions.assertEquals(expectedValue++, actualValue);
+        }
+    }
+
+    @Test
     void testEmptyList() {
         Map<String, Object> variables = new HashMap<>();
         variables.put("list-of-values", new ArrayList<>());
@@ -266,6 +282,28 @@ class IterationTagTest extends AbstractTest {
     }
 
     @Test
+    void testNestedIndexes() {
+        Map<String, Object> variables = new HashMap<>();
+        final List<Integer> listOfValues = Arrays.asList(10, 20, 30, 40, 50);
+        final List<String> otherListOfValues = Arrays.asList("ABC", "DEF", "XYZ");
+        variables.put("list-of-values", listOfValues);
+        variables.put("other-list-of-values", otherListOfValues);
+
+        Document doc = inject(HTML_W_ELEMENT_NESTED, variables);
+
+        removeNonDisplayedElements(doc);
+
+        System.out.println(doc.html());
+
+        StringBuilder chain = new StringBuilder();
+        for(Element indexElement : doc.getElementsByAttribute("index")) {
+            int actualValue = Integer.parseInt(indexElement.attr("index"));
+            chain.append(actualValue);
+        }
+        Assertions.assertEquals("00121012201230124012", chain.toString());
+    }
+
+    @Test
     void testNestedWithAttributeValuesEach() {
         Map<String, Object> variables = new HashMap<>();
         final List<Integer> listOfValues = Arrays.asList(1, 2, 3);
@@ -361,9 +399,9 @@ class IterationTagTest extends AbstractTest {
     private Map<String, List<Element>> findDivsWithTemplate(Document doc) {
         Map<String, List<Element>> result = new HashMap<>();
 
-        Elements elementsWithTemplateId = doc.getElementsByAttribute("template-id");
+        Elements elementsWithTemplateId = doc.getElementsByAttribute("index");
         for(Element elementWithTemplateId : elementsWithTemplateId) {
-            if(elementWithTemplateId.tag().getName().equals("div") && !elementWithTemplateId.parent().tag().getName().equals("template")) {
+            if(elementWithTemplateId.tag().getName().equals("div") && !elementWithTemplateId.parent().parent().tagName().equals("template")) {
                 final String templateId = elementWithTemplateId.attr("template-id");
                 List<Element> elements = result.getOrDefault(templateId, new ArrayList<>());
                 elements.add(elementWithTemplateId);

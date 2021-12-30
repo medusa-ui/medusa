@@ -206,8 +206,6 @@ _M.handleTitleChangeEvent = function(k) {
 _M.handleIterationCheckEach = function(templateId, template, currentEachValue, parent) {
     let newDiff = document.createElement("div");
     newDiff.innerHTML = _M.resolveInnerTemplate(template.innerHTML, [currentEachValue]);
-    newDiff.innerHTML = _M.recursiveObjectUpdate(newDiff.innerHTML, currentEachValue, "$this.each");
-    newDiff.innerHTML = _M.recursiveObjectUpdate(newDiff.innerHTML, currentEachValue, "$each");
     while (newDiff.firstChild) parent.appendChild(newDiff.firstChild);
 }
 
@@ -216,28 +214,89 @@ _M.handleIterationCheck = function (k) {
     document.querySelectorAll("[template-id="+k.f+"]").forEach(function(e) { e.remove(); });
 
     // set new values
-    document.querySelectorAll("[m-id="+k.f+"]").forEach(
-        function(template, index) {
-            const templateId = _M.resolveTemplateId(template);
-            const currentEachValues = _M.resolveTemplateCondition(templateId);
+    document.querySelectorAll("[m-id="+k.f+"]").forEach(function(template) {
+        const templateId = _M.resolveTemplateId(template);
+        const currentEachValues = _M.resolveTemplateCondition(templateId);
+        const divTemplate = template.content.children[0];
 
-            let parentWrapper = document.createElement("div");
-            parentWrapper.setAttribute("template-id", templateId);
-            parentWrapper.setAttribute("index", index.toString());
-
-            if(Array.isArray(currentEachValues)) {
-                for(const currentEachValue of currentEachValues) {
-                    _M.handleIterationCheckEach(templateId, template, currentEachValue, parentWrapper);
-                }
-            } else {
-                for (let i = 0; i < currentEachValues; i++) {
-                    _M.handleIterationCheckEach(templateId, template, i, parentWrapper);
-                }
+        let index = 0;
+        if(Array.isArray(currentEachValues)) {
+            for(const currentEachValue of currentEachValues) {
+                const block = _M.buildIterationBlock(currentEachValue, divTemplate, index++);
+                if(typeof _M.preRender !== "undefined") { _M.preRender(k, block); }
+                template.parentNode.insertBefore(block, template);
             }
-            if(typeof _M.preRender !== "undefined") { _M.preRender(k, parentWrapper); }
-            template.parentNode.insertBefore(parentWrapper, template);
-        });
+        } else {
+            for (let i = 0; i < currentEachValues; i++) {
+                const block = _M.buildIterationBlock(i, divTemplate, index++);
+                if(typeof _M.preRender !== "undefined") { _M.preRender(k, block); }
+                template.parentNode.insertBefore(block, template);
+            }
+        }
+    });
 };
+_M.buildIterationBlock = function (rootEachValue, templateDiv, index) {
+    const node = templateDiv.cloneNode(true);
+    node.querySelectorAll("template").forEach(function (templateNode) { templateNode.remove(); });
+    node.setAttribute("index", index.toString());
+
+    _M.buildIterationBlockMEachHandling(node);
+    node.querySelectorAll("[m-each]").forEach(function (divWithMEach) {
+        _M.buildIterationBlockMEachHandling(divWithMEach);
+    });
+
+    return node;
+}
+
+_M.buildIterationBlockMEachHandling = function (divWithMEach) {
+    const templateMap = _M.buildTemplateMap(divWithMEach);
+
+    for(const mapEntry of templateMap) {
+        const eachName = mapEntry['eachName'];
+        divWithMEach.querySelectorAll("[from-value='"+eachName+"']").forEach(function (specificSpan) {
+            const index = parseInt(mapEntry['index']);
+            const conditional = _M.conditionals[mapEntry['templateId']];
+            specificSpan.textContent = _M.variables[conditional][index];
+        });
+    }
+}
+
+_M.resolveTemplateEachValues = function (wrapper, rootIndex) {
+    wrapper.querySelectorAll("[m-each]").forEach(function (divWithMEach) {
+        const templateMap = _M.buildTemplateMap(divWithMEach, rootIndex);
+
+        for(const mapEntry of templateMap) {
+            divWithMEach.querySelectorAll("[from-value='"+mapEntry['eachName']+"']").forEach(function (specificSpan) {
+                const index = parseInt(mapEntry['index']);
+                const conditional = _M.conditionals[mapEntry['templateId']];
+                specificSpan.textContent = _M.variables[conditional][index];
+            });
+        }
+    });
+    return wrapper;
+}
+
+_M.buildTemplateMap = function (divWithMEach) {
+    const map = [];
+    let evalNode = divWithMEach;
+
+    while(evalNode !== null) {
+        if(evalNode.getAttribute("template-id") !== null) {
+            const currentEachName = evalNode.getAttribute("m-each");
+            if(null !== currentEachName) {
+                const currentTemplateId = evalNode.getAttribute("template-id");
+                let currentIndex = evalNode.getAttribute("index");
+                map.push({
+                    "templateId": currentTemplateId.substring(currentTemplateId.lastIndexOf("#") + 1),
+                    "index": currentIndex,
+                    "eachName": currentEachName
+                });
+            }
+        }
+        evalNode = evalNode.parentNode;
+    }
+    return map;
+}
 
 _M.resolveTemplateId = function (template) {
     return template.attributes["m-id"].nodeValue;
@@ -253,17 +312,6 @@ _M.resolveInnerTemplateEach = function (index, parents, currentEachValue, templa
     let localParent = [...parents]; //clone
     localParent.unshift(currentEachValue);
     let replacementInner = "<div index='" + index++ + "' template-id='" + templateId + "'>" + _M.resolveInnerTemplate(template.innerHTML, localParent) + "</div>";
-    replacementInner = _M.recursiveObjectUpdate(replacementInner, currentEachValue, "$this.each");
-    replacementInner = _M.recursiveObjectUpdate(replacementInner, currentEachValue, "$each");
-
-    let parentPath = "$parent";
-    for (let i = 1; i < localParent.length; i++) {
-        if (i > 1) {
-            parentPath += ".parent";
-        }
-        replacementInner = _M.recursiveObjectUpdate(replacementInner, localParent[i], parentPath + ".each");
-    }
-
     replacement += replacementInner;
     return replacement;
 }

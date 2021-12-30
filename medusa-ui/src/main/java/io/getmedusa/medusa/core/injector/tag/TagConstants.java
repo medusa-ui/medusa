@@ -12,7 +12,7 @@ public class TagConstants {
     public static final String TEMPLATE_ID = "template-id"; //template id on div
     public static final String INDEX = "index"; //index on div
     public static final String M_ID = "m-id"; //template id on template itself
-    public static final Object TEMPLATE_TAG = "template";
+    public static final String TEMPLATE_TAG = "template";
 
     //text - tags
     public static final String TEXT_TAG = "m:text";

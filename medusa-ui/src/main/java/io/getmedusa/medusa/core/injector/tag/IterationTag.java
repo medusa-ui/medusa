@@ -14,6 +14,8 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.Map;
 
+import static io.getmedusa.medusa.core.injector.tag.TagConstants.*;
+
 public class IterationTag extends AbstractTag {
 
     @Override
@@ -48,7 +50,7 @@ public class IterationTag extends AbstractTag {
             final String templateID = generateTemplateID(foreachElement, collection);
             final String eachName = conditionalAttribute(foreachElement, TagConstants.ITERATION_TAG_EACH_ATTR);
 
-            Node template = createTemplate(templateID, clone);
+            Node template = createTemplate(templateID, clone, eachName);
             foreachElement.children().remove();
             foreachElement.appendChild(template);
 
@@ -76,18 +78,18 @@ public class IterationTag extends AbstractTag {
     }
 
     private void labelNestedTemplates(Document document) {
-        Elements templates = document.getElementsByTag("template");
-        templates.sort(Comparator.comparingInt(o -> o.getElementsByTag("template").size()));
+        Elements templates = document.getElementsByTag(TEMPLATE_TAG);
+        templates.sort((o1, o2) -> o2.getElementsByTag(TEMPLATE_TAG).size() - o1.getElementsByTag(TEMPLATE_TAG).size());
         for(Element template : templates) {
             Element templateParent = findTemplateParent(template.parents());
             if(templateParent != null) {
-                final String originalTemplateId = template.attr(TagConstants.M_ID);
-                final String templateAttributeId = templateParent.attr(TagConstants.M_ID) + "#" + originalTemplateId;
-                template.attr(TagConstants.M_ID, templateAttributeId);
+                final String originalTemplateId = template.attr(M_ID);
+                final String templateAttributeId = templateParent.attr(M_ID) + "#" + originalTemplateId;
+                template.attr(M_ID, templateAttributeId);
 
-                Elements divs = document.getElementsByAttributeValue(TagConstants.TEMPLATE_ID, originalTemplateId);
+                Elements divs = document.getElementsByAttributeValue(TEMPLATE_ID, originalTemplateId);
                 for(Element div : divs) {
-                    div.attr(TagConstants.TEMPLATE_ID, templateAttributeId);
+                    div.attr(TEMPLATE_ID, templateAttributeId);
                 }
             }
         }
@@ -95,17 +97,24 @@ public class IterationTag extends AbstractTag {
 
     private Element findTemplateParent(Elements parents) {
         for(Element template : parents) {
-            if(template.hasAttr(TagConstants.M_ID)){
+            if(template.hasAttr(M_ID)){
                 return template;
             }
         }
         return null;
     }
 
-    private Node createTemplate(String templateID, Element foreachElement) {
-        Element node = new Element(Tag.valueOf("template"), "")
-                .attr(TagConstants.M_ID, templateID);
-        node.appendChildren(foreachElement.children());
+    private Node createTemplate(String templateID, Element foreachElement, String eachName) {
+        Element node = new Element(Tag.valueOf(TEMPLATE_TAG), "")
+                .attr(M_ID, templateID);
+
+        Element divWrapper = new Element("div");
+        if(eachName != null) divWrapper.attr("m-each", eachName);
+        divWrapper.attr(TEMPLATE_ID, templateID);
+
+        divWrapper.appendChildren(foreachElement.children());
+        node.appendChild(divWrapper);
+
         return node;
     }
 
@@ -120,15 +129,14 @@ public class IterationTag extends AbstractTag {
         return tId;
     }
 
-    private Node createDiv(Node template, int index, String templateId, String eachName) {
-        Element element = new Element(Tag.valueOf("div"), "")
-                .attr(TagConstants.INDEX, Integer.toString(index))
-                .attr(TagConstants.TEMPLATE_ID, templateId);
+    private Element createDiv(Node template, int index, String templateId, String eachName) {
+        Element element = (Element) template.childNodesCopy().get(0);
+        element.attr(TagConstants.INDEX, Integer.toString(index))
+                .attr(TEMPLATE_ID, templateId);
 
         if(eachName != null) element = element.attr(TagConstants.M_EACH, eachName);
 
-        element.appendChildren(template.childNodesCopy());
-        element.getElementsByTag("template").remove();
+        element.getElementsByTag(TEMPLATE_TAG).remove();
 
         return element;
     }
