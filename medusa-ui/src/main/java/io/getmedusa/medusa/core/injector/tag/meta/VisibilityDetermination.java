@@ -89,9 +89,13 @@ public class VisibilityDetermination {
     }
 
     private int doBigDecimalComparison(Object conditionItemValue, Object comparisonItemValue) {
-        BigDecimal conditionItemValueAsBigDecimal = new BigDecimal(conditionItemValue.toString());
-        BigDecimal comparisonItemValueAsBigDecimal = new BigDecimal(comparisonItemValue.toString());
-        return conditionItemValueAsBigDecimal.compareTo(comparisonItemValueAsBigDecimal);
+        try {
+            BigDecimal conditionItemValueAsBigDecimal = new BigDecimal(conditionItemValue.toString());
+            BigDecimal comparisonItemValueAsBigDecimal = new BigDecimal(comparisonItemValue.toString());
+            return conditionItemValueAsBigDecimal.compareTo(comparisonItemValueAsBigDecimal);
+        } catch (NumberFormatException e) {
+            return -1;
+        }
     }
 
     private Object getComparisonItemValue(Map<String, Object> variables, Element conditionalElement, String tag) {
