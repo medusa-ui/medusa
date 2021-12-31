@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class ReferenceIntegrationTest extends AbstractSeleniumTest {
+class ReferenceIntegrationTest extends AbstractSeleniumTest {
 
     private static final String page = "/test/reference";
 
@@ -17,7 +17,7 @@ public class ReferenceIntegrationTest extends AbstractSeleniumTest {
 
     @Test
     @DisplayName("It should be possible to get an attribute value when referring to an element by its id")
-    public void testAdd(){
+    void testAdd(){
         goTo(page);
 
         fillFieldById("_first","13");
@@ -34,7 +34,7 @@ public class ReferenceIntegrationTest extends AbstractSeleniumTest {
 
     @Test
     @DisplayName("Combining value of attribute from element by its id and attribute on element itself, should be possible")
-    public void testMinus(){
+    void testMinus(){
         goTo(page);
 
         fillFieldById("_first","65");
@@ -50,7 +50,7 @@ public class ReferenceIntegrationTest extends AbstractSeleniumTest {
 
     @Test
     @DisplayName("Wrapping referenced values as String should be possible")
-    public void testMultiply(){
+    void testMultiply(){
         goTo(page);
 
         clickById("btn_42m");
