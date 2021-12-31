@@ -28,6 +28,14 @@ class ClickTagTest extends AbstractTest {
                     </m:foreach>
             """;
 
+    public static final String HTML_DIFF_BETWEEN_LITERAL_AND_OBJECT = """
+                    <m:foreach collection="names" eachName="person4">
+                    <m:foreach collection="people" eachName="person3">
+                        <button m:click="person(person.name, 'person', person2, 'person2', person3.name, 'person3', person4, 'person4')">_</button>
+                    </m:foreach>
+                    </m:foreach>
+            """;
+
     @Test
     void testSimple() {
         Document document = inject(HTML, Collections.emptyMap());
@@ -111,5 +119,22 @@ class ClickTagTest extends AbstractTest {
         Assertions.assertFalse(html.contains("m:click"), "m:click should be replaced with an onclick");
         Assertions.assertTrue(html.contains("onclick=\"_M.sendEvent(this, 'addName(\\'안녕하세요 세계\\', 1)"));
     }
+
+    @Test
+    void testUnderstandTheDifferenceBetweenLiteralsAndObjects() {
+        Document document = inject(HTML_DIFF_BETWEEN_LITERAL_AND_OBJECT,
+                Map.of("person", new Person("person A"),
+                        "person2", "person (B)",
+                        "people", List.of(new Person("person - C")),
+                        "names", List.of("D's person")));
+        String html = document.html();
+        System.out.println(html);
+
+        String onClick = document.getElementsByTag("button").last().attr("onclick");
+
+        Assertions.assertFalse(html.contains("m:click"), "m:click should be replaced with an onclick");
+        Assertions.assertEquals("_M.sendEvent(this, 'person(\\'person A\\', \\'person\\', \\'person (B)\\', \\'person2\\', \\'person - C\\', \\'person3\\', \\'D\\\\'s person\\', \\'person4\\')')", onClick);
+    }
+
 
 }

@@ -1,12 +1,15 @@
 package io.getmedusa.medusa.core.injector.tag;
 
 import io.getmedusa.medusa.core.injector.tag.meta.InjectionResult;
+import io.getmedusa.medusa.core.util.ElementUtils;
+import io.getmedusa.medusa.core.util.ExpressionEval;
 import org.jsoup.nodes.Element;
 import org.jsoup.nodes.Node;
 import org.jsoup.parser.Tag;
 import org.jsoup.select.Elements;
 import org.springframework.web.reactive.function.server.ServerRequest;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -36,9 +39,21 @@ public class ValueTag extends AbstractTag {
         Elements mClickTags = result.getDocument().getElementsByAttribute(attr);
 
         for (Element mClickTag : mClickTags) {
+            if(ElementUtils.hasTemplateAsParent(mClickTag)) continue;
             String item = mClickTag.attr(attr).trim();
-            for(String parameterRough : splitParameterString(item)) {
+
+            final int startIndexOfParameters = item.indexOf('(');
+            String methodName = item.substring(0, startIndexOfParameters);
+            String parametersAsOneString = item.substring(startIndexOfParameters + 1, item.lastIndexOf(')'));
+            String[] roughParameters = parametersAsOneString.split(",");
+            List<String> parameters = new ArrayList<>();
+            for(String parameterRough : roughParameters) {
                 final String parameter = parameterRough.trim();
+
+                if(ExpressionEval.isQuoted(parameter)) {
+                    parameters.add(parameter);
+                    continue;
+                }
 
                 Object variableValue = getPossibleEachValue(mClickTag, parameter, request);
                 if(null == variableValue) variableValue = variableToString(parameter, variables);
@@ -46,11 +61,32 @@ public class ValueTag extends AbstractTag {
 
                 final String replacementValue = variableValue.toString().trim();
                 if(!replacementValue.equals(parameter.trim())) {
-                    item = item.replace(parameter.trim(), "'" + replacementValue+ "'");
+                    parameters.add(wrap(escape(replacementValue)));
                 }
             }
-           mClickTag.attr(attr, item);
+            mClickTag.attr(attr, toMethod(methodName, parameters));
         }
+    }
+
+    private String toMethod(String methodName, List<String> parameters) {
+        StringBuilder builder = new StringBuilder(methodName);
+        builder.append("(");
+        String comma = "";
+        for(String parameter : parameters) {
+            builder.append(comma);
+            builder.append(parameter);
+            comma = ", ";
+        }
+        builder.append(")");
+        return builder.toString();
+    }
+
+    private String escape(String valueToEscape) {
+        return valueToEscape.replace("'", "\\'");
+    }
+
+    private String wrap(String valueToWrap) {
+        return "'" + valueToWrap + "'";
     }
 
     private String[] splitParameterString(String item) {

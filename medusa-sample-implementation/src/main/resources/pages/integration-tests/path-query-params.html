@@ -1,5 +1,7 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en"
+      xmlns:m="https://medusa-ui.dev" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="https://medusa-ui.dev https://raw.githubusercontent.com/medusa-ui/medusa/poc/xml-parser/medusa-ui.xsd">
 <head>
     <meta charset="UTF-8">
     <title>Medusa page attributes</title>
@@ -9,10 +11,10 @@
 </head>
 <body>
 <h1>🦑 Hello page attributes</h1>
-<p>Path attribute converted to uppercase: [$path-to-upper]</p>
-<p>Path attribute as provided: [$path-as-is]</p>
+<p>Path attribute converted to uppercase: <m:text item="path-to-upper" /></p>
+<p>Path attribute as provided: <m:text item="path-as-is" /></p>
 <br/>
-<p>Query parameter as provided: [$query-as-is]</p>
-<p>Query parameter converted: [$query-person.name]</p>
+<p>Query parameter as provided: <m:text item="query-as-is" /></p>
+<p>Query parameter converted: <m:text item="query-person.name" /></p>
 </body>
 </html>

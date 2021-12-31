@@ -1,6 +1,7 @@
 package io.getmedusa.medusa.core.injector.tag;
 
 import io.getmedusa.medusa.core.registry.EachValueRegistry;
+import io.getmedusa.medusa.core.util.ElementUtils;
 import io.getmedusa.medusa.core.util.ExpressionEval;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -20,7 +21,7 @@ public abstract class AbstractTag implements Tag {
     }
 
     protected Object getPossibleEachValue(Element currentElem, String eachName, ServerRequest request) {
-        if(hasTemplateAsParent(currentElem)) return eachName;
+        if(ElementUtils.hasTemplateAsParent(currentElem)) return eachName;
 
         String nameToSearch = eachName;
         String restOfValue = null;
@@ -43,14 +44,6 @@ public abstract class AbstractTag implements Tag {
             return valueToReturn;
         }
         return null;
-    }
-
-    private boolean hasTemplateAsParent(Element elements) {
-        Elements parents = elements.parents();
-        for(Element parent : parents) {
-            if(TagConstants.TEMPLATE_TAG.equals(parent.tagName())) return true;
-        }
-        return false;
     }
 
     private Element findParentWithEachName(Elements parents, String eachName) {

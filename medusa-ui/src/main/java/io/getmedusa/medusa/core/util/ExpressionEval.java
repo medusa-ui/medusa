@@ -55,7 +55,7 @@ public abstract class ExpressionEval {
         }
     }
 
-    private static boolean isQuoted(String itemToEval) {
+    public static boolean isQuoted(String itemToEval) {
         return (itemToEval.startsWith("'") && itemToEval.endsWith("'")) || (itemToEval.startsWith("\"") && itemToEval.endsWith("\""));
     }
 

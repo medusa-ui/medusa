@@ -25,6 +25,7 @@ public class ExampleEventHandler {
         counters.put(uuid, 0);
 
         return new PageAttributes()
+                .with("title", "Medusa test page :: 0")
                 .with("uuid", uuid)
                 .with("increase", ++increase)
                 .with("counter-value", counter)
