@@ -66,7 +66,7 @@ class WrapperUtilsTest {
     }
 
     @Test
-    void testWrapMultipleElements_Single() {
+    void testWrapMultipleElementsSingle() {
         Document document = Jsoup.parse(HTML);
         Elements pTags = document.getElementsByTag("p");
         WrapperUtils.wrap(pTags, "sample-wrapper");

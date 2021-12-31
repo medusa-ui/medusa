@@ -21,9 +21,9 @@ public class ValueTag extends AbstractTag {
     @Override
     public InjectionResult inject(InjectionResult result, Map<String, Object> variables, ServerRequest request) {
         handleMTextTag(result, variables, request);
-        handleItemTag(result, variables, request);
+        handleItemTag(result, variables);
         handleMValueAttribute(result, variables, request);
-        handleMIfCondition(result, variables, request);
+        handleMIfCondition(result, request);
 
         for(String tagAttr : M_ATTR_TO_REPLACE) {
             handleMAttr(result, variables, request, tagAttr);
@@ -58,7 +58,7 @@ public class ValueTag extends AbstractTag {
         return parametersAsOneString.split(",");
     }
 
-    private void handleMIfCondition(InjectionResult result, Map<String, Object> variables, ServerRequest request) {
+    private void handleMIfCondition(InjectionResult result, ServerRequest request) {
         Elements mIfTags = result.getDocument().getElementsByTag(TagConstants.CONDITIONAL_TAG);
         Elements mElseIfTags = result.getDocument().getElementsByTag(TagConstants.M_ELSEIF);
         mIfTags.addAll(mElseIfTags);
@@ -103,7 +103,7 @@ public class ValueTag extends AbstractTag {
         }
     }
 
-    private void handleItemTag(InjectionResult result, Map<String, Object> variables, ServerRequest request) {
+    private void handleItemTag(InjectionResult result, Map<String, Object> variables) {
         Elements items = result.getDocument().getElementsByAttribute(TagConstants.M_ITEM);
         for(Element item : items) {
             final String lookup = item.attr(TagConstants.M_ITEM);

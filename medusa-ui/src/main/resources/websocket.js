@@ -246,10 +246,10 @@ _M.buildIterationBlockMEachHandling = function (divWithMEach) {
     const templateMap = _M.buildTemplateMap(divWithMEach);
 
     for(const mapEntry of templateMap) {
-        const eachName = mapEntry['eachName'];
+        const eachName = mapEntry["eachName"];
         divWithMEach.querySelectorAll("[from-value='"+eachName+"']").forEach(function (specificSpan) {
-            const index = parseInt(mapEntry['index']);
-            const conditional = _M.conditionals[mapEntry['templateId']];
+            const index = parseInt(mapEntry["index"], 10);
+            const conditional = _M.conditionals[mapEntry["templateId"]];
             specificSpan.textContent = _M.variables[conditional][index];
         });
     }

@@ -41,14 +41,14 @@ public class IterationTag extends AbstractTag {
         //     <p>Product: Darkwoods Number: 3</p>
         //</div>
 
-        Elements foreachElements = injectionResult.getDocument().getElementsByTag(TagConstants.ITERATION_TAG);
-        foreachElements.sort(Comparator.comparingInt(o -> o.getElementsByTag(TagConstants.ITERATION_TAG).size()));
+        Elements foreachElements = injectionResult.getDocument().getElementsByTag(ITERATION_TAG);
+        foreachElements.sort(Comparator.comparingInt(o -> o.getElementsByTag(ITERATION_TAG).size()));
         for (Element foreachElement : foreachElements) {
             Element clone = foreachElement.clone();
-            final String collection = foreachElement.attr(TagConstants.ITERATION_TAG_COLLECTION_ATTR);
+            final String collection = foreachElement.attr(ITERATION_TAG_COLLECTION_ATTR);
 
             final String templateID = generateTemplateID(foreachElement, collection);
-            final String eachName = conditionalAttribute(foreachElement, TagConstants.ITERATION_TAG_EACH_ATTR);
+            final String eachName = conditionalAttribute(foreachElement, ITERATION_TAG_EACH_ATTR);
 
             Node template = createTemplate(templateID, clone, eachName);
             foreachElement.children().remove();
@@ -131,10 +131,10 @@ public class IterationTag extends AbstractTag {
 
     private Element createDiv(Node template, int index, String templateId, String eachName) {
         Element element = (Element) template.childNodesCopy().get(0);
-        element.attr(TagConstants.INDEX, Integer.toString(index))
+        element.attr(INDEX, Integer.toString(index))
                 .attr(TEMPLATE_ID, templateId);
 
-        if(eachName != null) element = element.attr(TagConstants.M_EACH, eachName);
+        if(eachName != null) element = element.attr(M_EACH, eachName);
 
         element.getElementsByTag(TEMPLATE_TAG).remove();
 
