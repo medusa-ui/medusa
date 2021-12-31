@@ -247,11 +247,38 @@ _M.buildIterationBlockMEachHandling = function (divWithMEach) {
 
     for(const mapEntry of templateMap) {
         const eachName = mapEntry["eachName"];
-        divWithMEach.querySelectorAll("[from-value='"+eachName+"']").forEach(function (specificSpan) {
+        divWithMEach.querySelectorAll("[from-value^='"+eachName+"']").forEach(function (specificSpan) {
+            const deeperObjectPath = _M.determineDeeperObjectPath(specificSpan.getAttribute("from-value"));
             const index = parseInt(mapEntry["index"], 10);
             const conditional = _M.conditionals[mapEntry["templateId"]];
-            specificSpan.textContent = _M.variables[conditional][index];
+            let foundObject = _M.variables[conditional][index];
+            foundObject = _M.findThroughObjectPath(foundObject, deeperObjectPath);
+            const via = specificSpan.getAttribute("via");
+            if(via === null) {
+                specificSpan.textContent = foundObject;
+            } else {
+                specificSpan.setAttribute(via, foundObject);
+            }
         });
+    }
+}
+
+_M.findThroughObjectPath = function (object, path) {
+    if(path.length === 0) return object;
+
+    while (path.length > 0) {
+        object = object[path[0]];
+        path = path.slice(1);
+    }
+
+    return object;
+}
+
+_M.determineDeeperObjectPath = function (path) {
+    if(path.indexOf(".") === -1) {
+        return [];
+    } else {
+        return path.split(".").slice(1);
     }
 }
 

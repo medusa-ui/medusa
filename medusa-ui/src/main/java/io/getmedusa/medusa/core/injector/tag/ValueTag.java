@@ -100,6 +100,7 @@ public class ValueTag extends AbstractTag {
             tagWithMValue.removeAttr("m:value");
             tagWithMValue.val(variableValue.toString());
             tagWithMValue.attr(TagConstants.FROM_VALUE, item);
+            tagWithMValue.attr(TagConstants.VIA_ATTR, "value");
         }
     }
 

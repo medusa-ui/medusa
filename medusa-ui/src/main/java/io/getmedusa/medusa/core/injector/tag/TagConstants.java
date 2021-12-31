@@ -61,6 +61,7 @@ public class TagConstants {
     //hydra
     public static final String H_MENU = "h:menu";
     public static final String H_MENU_ATTR = "h-menu";
+    public static final String VIA_ATTR = "via";
 
 
     private TagConstants() {}
