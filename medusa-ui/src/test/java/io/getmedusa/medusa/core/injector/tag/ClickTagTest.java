@@ -31,7 +31,7 @@ class ClickTagTest extends AbstractTest {
     public static final String HTML_DIFF_BETWEEN_LITERAL_AND_OBJECT = """
                     <m:foreach collection="names" eachName="person4">
                     <m:foreach collection="people" eachName="person3">
-                        <button m:click="person(person.name, 'person', person2, 'person2', person3.name, 'person3', person4, 'person4')">_</button>
+                        <button m:click="person(1, person.name, 'person', 2, person2, 'person2', 3, person3.name, 'person3', 4, person4, 'person4')">_</button>
                     </m:foreach>
                     </m:foreach>
             """;
@@ -133,7 +133,7 @@ class ClickTagTest extends AbstractTest {
         String onClick = document.getElementsByTag("button").last().attr("onclick");
 
         Assertions.assertFalse(html.contains("m:click"), "m:click should be replaced with an onclick");
-        Assertions.assertEquals("_M.sendEvent(this, 'person(\\'person A\\', \\'person\\', \\'person (B)\\', \\'person2\\', \\'person - C\\', \\'person3\\', \\'D\\\\'s person\\', \\'person4\\')')", onClick);
+        Assertions.assertEquals("_M.sendEvent(this, 'person(1, \\'person A\\', \\'person\\', 2, \\'person (B)\\', \\'person2\\', 3, \\'person - C\\', \\'person3\\', 4, \\'D\\\\'s person\\', \\'person4\\')')", onClick);
     }
 
 

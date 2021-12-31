@@ -50,7 +50,7 @@ public class ValueTag extends AbstractTag {
             for(String parameterRough : roughParameters) {
                 final String parameter = parameterRough.trim();
 
-                if(ExpressionEval.isQuoted(parameter)) {
+                if(ExpressionEval.isQuoted(parameter) || ExpressionEval.isNumber(parameter) || ExpressionEval.isBoolean(parameter)) {
                     parameters.add(parameter);
                     continue;
                 }

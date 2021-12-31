@@ -4,6 +4,7 @@ import io.getmedusa.medusa.core.injector.DOMChanges;
 import org.springframework.expression.spel.SpelEvaluationException;
 
 import java.io.UnsupportedEncodingException;
+import java.math.BigDecimal;
 import java.net.URLDecoder;
 import java.nio.charset.Charset;
 import java.util.Map;
@@ -103,5 +104,18 @@ public abstract class ExpressionEval {
         } catch (UnsupportedEncodingException e) {
             throw new IllegalStateException(e);
         }
+    }
+
+    public static boolean isNumber(String parameter) {
+        try {
+            new BigDecimal(parameter);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    public static boolean isBoolean(String parameter) {
+        return Boolean.TRUE.toString().equals(parameter) || Boolean.FALSE.toString().equals(parameter);
     }
 }
