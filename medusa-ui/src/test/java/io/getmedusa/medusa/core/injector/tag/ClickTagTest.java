@@ -83,7 +83,7 @@ class ClickTagTest extends AbstractTest {
         System.out.println(html);
 
         Assertions.assertFalse(html.contains("m:click"), "m:click should be replaced with an onclick");
-        Assertions.assertTrue(html.contains("onclick=\"_M.sendEvent(this, 'addName(\\'안녕하세요 세계\\')')\""));
+        Assertions.assertTrue(html.contains("onclick=\"_M.sendEvent(this, 'addName(person.name)')"));
     }
 
     @Test
@@ -93,7 +93,7 @@ class ClickTagTest extends AbstractTest {
         System.out.println(html);
 
         Assertions.assertFalse(html.contains("m:click"), "m:click should be replaced with an onclick");
-        Assertions.assertTrue(html.contains("onclick=\"_M.sendEvent(this, 'addName(1, \\'안녕하세요 세계\\', 1)')\""));
+        Assertions.assertTrue(html.contains("onclick=\"_M.sendEvent(this, 'addName(1, person.name, 1)')\""));
     }
 
     @Test
@@ -117,9 +117,10 @@ class ClickTagTest extends AbstractTest {
         System.out.println(html);
 
         Assertions.assertFalse(html.contains("m:click"), "m:click should be replaced with an onclick");
-        Assertions.assertTrue(html.contains("onclick=\"_M.sendEvent(this, 'addName(\\'안녕하세요 세계\\', 1)"));
+        Assertions.assertTrue(html.contains("onclick=\"_M.sendEvent(this, 'addName(person.name, 1)"));
     }
 
+    //TODO this is wrong, we should be referring to variables where possible - so that the changes are reflected when the variable changes (via JS, for example)
     @Test
     void testUnderstandTheDifferenceBetweenLiteralsAndObjects() {
         Document document = inject(HTML_DIFF_BETWEEN_LITERAL_AND_OBJECT,
@@ -133,7 +134,7 @@ class ClickTagTest extends AbstractTest {
         String onClick = document.getElementsByTag("button").last().attr("onclick");
 
         Assertions.assertFalse(html.contains("m:click"), "m:click should be replaced with an onclick");
-        Assertions.assertEquals("_M.sendEvent(this, 'person(1, \\'person A\\', \\'person\\', 2, \\'person (B)\\', \\'person2\\', 3, \\'person - C\\', \\'person3\\', 4, \\'D\\\\'s person\\', \\'person4\\')')", onClick);
+        Assertions.assertEquals("_M.sendEvent(this, 'person(1, person.name, \\'person\\', 2, person2, \\'person2\\', 3, person3.name, \\'person3\\', 4, person4, \\'person4\\')')", onClick);
     }
 
 

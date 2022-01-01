@@ -75,7 +75,7 @@ class ChangeTagTest extends AbstractTest {
         System.out.println(html);
 
         Assertions.assertFalse(html.contains("m:change"), "m:change should be replaced with an onclick");
-        Assertions.assertTrue(html.contains("oninput=\"_M.sendEvent(this, 'addName(\\'안녕하세요 세계\\')')\""));
+        Assertions.assertTrue(html.contains("oninput=\"_M.sendEvent(this, 'addName(person.name)')\""));
     }
 
     @Test
@@ -85,7 +85,7 @@ class ChangeTagTest extends AbstractTest {
         System.out.println(html);
 
         Assertions.assertFalse(html.contains("m:change"), "m:change should be replaced with an onclick");
-        Assertions.assertTrue(html.contains("oninput=\"_M.sendEvent(this, 'addName(1, \\'안녕하세요 세계\\', 1)')\""));
+        Assertions.assertTrue(html.contains("oninput=\"_M.sendEvent(this, 'addName(1, person.name, 1)')\""));
     }
 
     @Test
@@ -109,7 +109,7 @@ class ChangeTagTest extends AbstractTest {
         System.out.println(html);
 
         Assertions.assertFalse(html.contains("m:change"), "m:change should be replaced with an onclick");
-        Assertions.assertTrue(html.contains("oninput=\"_M.sendEvent(this, 'addName(\\'안녕하세요 세계\\', 1)"));
+        Assertions.assertTrue(html.contains("oninput=\"_M.sendEvent(this, 'addName(person.name, 1)"));
     }
 
 }

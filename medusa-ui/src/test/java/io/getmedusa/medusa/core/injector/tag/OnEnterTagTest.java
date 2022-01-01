@@ -75,7 +75,7 @@ class OnEnterTagTest extends AbstractTest {
         System.out.println(html);
 
         Assertions.assertFalse(html.contains("m:onenter"), "m:onenter should be replaced with an onkeyup");
-        Assertions.assertTrue(html.contains("onkeyup=\"_M.onEnter(this, 'addName(\\'안녕하세요 세계\\')'"));
+        Assertions.assertTrue(html.contains("onkeyup=\"_M.onEnter(this, 'addName(person.name)'"));
     }
 
     @Test
@@ -85,7 +85,7 @@ class OnEnterTagTest extends AbstractTest {
         System.out.println(html);
 
         Assertions.assertFalse(html.contains("m:onenter"), "m:onenter should be replaced with an onkeyup");
-        Assertions.assertTrue(html.contains("onkeyup=\"_M.onEnter(this, 'addName(1, \\'안녕하세요 세계\\', 1)'"));
+        Assertions.assertTrue(html.contains("onkeyup=\"_M.onEnter(this, 'addName(1, person.name, 1)'"));
     }
 
     @Test
@@ -109,7 +109,7 @@ class OnEnterTagTest extends AbstractTest {
         System.out.println(html);
 
         Assertions.assertFalse(html.contains("m:onenter"), "m:onenter should be replaced with an onkeyup");
-        Assertions.assertTrue(html.contains("onkeyup=\"_M.onEnter(this, 'addName(\\'안녕하세요 세계\\', 1)"));
+        Assertions.assertTrue(html.contains("onkeyup=\"_M.onEnter(this, 'addName(person.name, 1)"));
     }
 
 }

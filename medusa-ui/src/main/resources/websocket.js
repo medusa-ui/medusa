@@ -142,13 +142,61 @@ _M.handleHydraMenuItemChange = function (k) {
 };
 
 _M.injectVariablesIntoExpression = function(expression) {
-    for(const key of Object.keys(_M.variables)) {
-        if(expression.indexOf(key) !== -1) {
-            expression = expression.replaceAll(key, _M.variables[key]);
+    //interpret this as an actual expression, so we can differentiate between literals, numbers, booleans and to replace variables
+    const startIndexOfParameters = expression.indexOf("(");
+    const methodName = expression.substring(0, startIndexOfParameters);
+    const parametersAsOneString = expression.substring(startIndexOfParameters + 1, expression.lastIndexOf(')'));
+    const roughParameters = parametersAsOneString.split(",");
+
+    let parameters = [];
+    for(const roughParameter of roughParameters) {
+        let parameter = roughParameter.trim();
+        if(parameter.length === 0) {
+            continue;
         }
+        if(!(_M.isQuoted(parameter) || _M.isNumeric(parameter) || _M.isBoolean(parameter))) {
+            parameter = _M.lookupVariable(parameter);
+        }
+
+        parameters.push(parameter);
     }
-    return expression;
+
+    return _M.buildMethod(methodName, parameters);
 };
+
+_M.lookupVariable = function(parameter) {
+    let baseParameter = parameter;
+    if(parameter.indexOf(".") !== -1) {
+        baseParameter = parameter.substring(0, parameter.indexOf("."));
+    }
+    const deeperObjectPath = _M.determineDeeperObjectPath(parameter);
+    return _M.findThroughObjectPath(_M.variables[baseParameter], deeperObjectPath);
+};
+
+_M.buildMethod = function(methodName, parameters) {
+    let builder = methodName + "(";
+    let comma = "";
+    for(const parameter of parameters) {
+        builder += comma;
+        builder += parameter;
+        comma = ", ";
+    }
+    builder += ")";
+    return builder;
+};
+
+_M.isQuoted = function(itemToEval) {
+    return (itemToEval.startsWith("'") && itemToEval.endsWith("'")) || (itemToEval.startsWith("\"") && itemToEval.endsWith("\""));
+};
+
+_M.isBoolean = function(itemToEval) {
+    return "true" === itemToEval || "false" === itemToEval;
+};
+
+_M.isNumeric = function(str) {
+    if (typeof str != "string") return false;
+    return !isNaN(str) && !isNaN(parseFloat(str));
+}
 
 _M.injectVariablesIntoText = function(text) {
     for(const key of Object.keys(_M.variables)) {

@@ -1,25 +1,15 @@
 package io.getmedusa.medusa.core.injector.tag;
 
 import io.getmedusa.medusa.core.injector.tag.meta.InjectionResult;
-import io.getmedusa.medusa.core.util.ElementUtils;
-import io.getmedusa.medusa.core.util.ExpressionEval;
 import org.jsoup.nodes.Element;
 import org.jsoup.nodes.Node;
 import org.jsoup.parser.Tag;
 import org.jsoup.select.Elements;
 import org.springframework.web.reactive.function.server.ServerRequest;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 public class ValueTag extends AbstractTag {
-
-    protected static final List<String> M_ATTR_TO_REPLACE = List.of(
-        TagConstants.M_CLICK,
-        TagConstants.M_CHANGE,
-        TagConstants.M_ONENTER
-    );
 
     @Override
     public InjectionResult inject(InjectionResult result, Map<String, Object> variables, ServerRequest request) {
@@ -28,70 +18,7 @@ public class ValueTag extends AbstractTag {
         handleMValueAttribute(result, variables, request);
         handleMIfCondition(result, request);
 
-        for(String tagAttr : M_ATTR_TO_REPLACE) {
-            handleMAttr(result, variables, request, tagAttr);
-        }
-
         return result;
-    }
-
-    private void handleMAttr(InjectionResult result, Map<String, Object> variables, ServerRequest request, String attr) {
-        Elements mClickTags = result.getDocument().getElementsByAttribute(attr);
-
-        for (Element mClickTag : mClickTags) {
-            if(ElementUtils.hasTemplateAsParent(mClickTag)) continue;
-            String item = mClickTag.attr(attr).trim();
-
-            final int startIndexOfParameters = item.indexOf('(');
-            String methodName = item.substring(0, startIndexOfParameters);
-            String parametersAsOneString = item.substring(startIndexOfParameters + 1, item.lastIndexOf(')'));
-            String[] roughParameters = parametersAsOneString.split(",");
-            List<String> parameters = new ArrayList<>();
-            for(String parameterRough : roughParameters) {
-                final String parameter = parameterRough.trim();
-
-                if(ExpressionEval.isQuoted(parameter) || ExpressionEval.isNumber(parameter) || ExpressionEval.isBoolean(parameter)) {
-                    parameters.add(parameter);
-                    continue;
-                }
-
-                Object variableValue = getPossibleEachValue(mClickTag, parameter, request);
-                if(null == variableValue) variableValue = variableToString(parameter, variables);
-                if(null == variableValue) variableValue = parameter;
-
-                final String replacementValue = variableValue.toString().trim();
-                if(!replacementValue.equals(parameter.trim())) {
-                    parameters.add(wrap(escape(replacementValue)));
-                }
-            }
-            mClickTag.attr(attr, toMethod(methodName, parameters));
-        }
-    }
-
-    private String toMethod(String methodName, List<String> parameters) {
-        StringBuilder builder = new StringBuilder(methodName);
-        builder.append("(");
-        String comma = "";
-        for(String parameter : parameters) {
-            builder.append(comma);
-            builder.append(parameter);
-            comma = ", ";
-        }
-        builder.append(")");
-        return builder.toString();
-    }
-
-    private String escape(String valueToEscape) {
-        return valueToEscape.replace("'", "\\'");
-    }
-
-    private String wrap(String valueToWrap) {
-        return "'" + valueToWrap + "'";
-    }
-
-    private String[] splitParameterString(String item) {
-        String parametersAsOneString = item.substring(item.indexOf('(') + 1, item.indexOf(')'));
-        return parametersAsOneString.split(",");
     }
 
     private void handleMIfCondition(InjectionResult result, ServerRequest request) {
