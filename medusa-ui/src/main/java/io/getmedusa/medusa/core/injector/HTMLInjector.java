@@ -161,10 +161,10 @@ public enum HTMLInjector {
     private String addStyling(String injectedHTML) {
         if(styling != null) {
             injectedHTML = injectedHTML.replace("</head>", styling + "\n</head>");
-            if(injectedHTML.contains("m-loading-style=\"top\"")) {
+            if(injectedHTML.contains("m:loading-style=\"top\"")) {
                 injectedHTML = injectedHTML.replace("<body>", "<body>\n<div id=\"m-top-load-bar\" class=\"progress-line\" style=\"display:none;\"></div>");
             }
-            if(injectedHTML.contains("m-loading-style=\"full\"")) {
+            if(injectedHTML.contains("m:loading-style=\"full\"")) {
                 injectedHTML = injectedHTML.replace("<body>", "<body>\n<div id=\"m-full-loader\" style=\"display:none;\">Loading ...</div>");
             }
         }

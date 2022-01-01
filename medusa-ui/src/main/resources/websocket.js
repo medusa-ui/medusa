@@ -525,9 +525,9 @@ _M.parseSelfReference = function(raw, e, originElem) {
 _M.waitingForEnable = [];
 
 _M.sendEvent = function(originElem, e) {
-    const disableOnClick = originElem.attributes["m-disable-on-click-until"];
+    const disableOnClick = originElem.attributes["m:disable-on-click-until"];
     if(typeof disableOnClick !== "undefined") {
-        const loadingStyle = originElem.attributes["m-loading-style"];
+        const loadingStyle = originElem.attributes["m:loading-style"];
 
         _M.waitingForEnable.push({"elem": originElem, "expression": disableOnClick.value});
         originElem.disabled = true;

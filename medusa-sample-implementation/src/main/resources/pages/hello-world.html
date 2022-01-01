@@ -71,15 +71,17 @@
 <h5>Orders</h5>
 <button m:click='order()' type="button" m:hide="three-items">Order <m:text item="blue-sky" /></button>
 <m:foreach collection="orders" eachName="order">
-<div><p>Product: <m:text item="order.product.name"/> Number: <m:text item="product.number"/> <button m:click="cancelOrder(order.id)">Remove</button> </p></div>
+    <div>
+        <p>Product: <m:text item="order.product.name"/> Number: <m:text item="order.number"/> <button m:click="cancelOrder(order.id)">Remove</button> </p>
+    </div>
 </m:foreach>
 <br/>
 <a href="/page2">Detail page</a> <a href="/test/history">A brief history</a>
 
 <br><br>
 
-<button m:click="waitSeconds(4)" m:disable-on-click-until="$done-waiting" m:loading-style="full">This is a 4 seconds call with a full page loader</button>
-<button m:click="waitSeconds(5)" m:disable-on-click-until="$done-waiting" m:loading-style="top">This is a 5 seconds call with a top page loader</button>
+<button m:click="waitSeconds(4)" m:disable-on-click-until="done-waiting" m:loading-style="full">This is a 4 seconds call with a full page loader</button>
+<button m:click="waitSeconds(5)" m:disable-on-click-until="done-waiting" m:loading-style="top">This is a 5 seconds call with a top page loader</button>
 
 <m:if condition="done-waiting" eq="true">
     <p>Call completed!</p>
