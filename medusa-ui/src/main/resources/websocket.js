@@ -172,6 +172,9 @@ _M.injectVariablesIntoExpression = function(expression) {
             }
             if(!(_M.isQuoted(parameter) || _M.isNumeric(parameter) || _M.isBoolean(parameter))) {
                 parameter = _M.lookupVariable(parameter);
+                if(typeof parameter === "undefined") {
+                    parameter = roughParameter;
+                }
             }
 
             parameters.push(parameter);
