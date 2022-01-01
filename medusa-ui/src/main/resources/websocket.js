@@ -103,7 +103,7 @@ _M.eventHandler = function(e) {
 
 _M.handleMAttributeChange = function (k) {
     _M.debug(k);
-    const expressionEval = _M.evalCondition(_M.injectVariablesIntoExpression(k.c));
+    const expressionEval = _M.evalCondition(_M.injectVariablesIntoConditionalExpression(k.c));
     switch(k.f) {
         case "DISABLED":
             _M.handleMAttribute(k.v,(e) => { e.setAttribute("disabled", true); } ,(e) => { e.removeAttribute("disabled"); }, expressionEval);
@@ -141,23 +141,27 @@ _M.handleHydraMenuItemChange = function (k) {
     });
 };
 
-_M.injectVariablesIntoExpression = function(expression) {
+
+_M.injectVariablesIntoConditionalExpression = function(expression) {
+    const found = expression.match(new RegExp("[\\w-]+","g"));
+    if(found) {
+        for(const toReplace of found) {
+            const varValue = _M.variables[toReplace];
+            if(typeof varValue === "undefined") {
+                continue;
+            }
+            expression = expression.replaceAll(toReplace, varValue);
+        }
+    }
+    return expression;
+}
+
+_M.injectVariablesIntoMethodExpression = function(expression) {
     const startIndexOfParameters = expression.indexOf("(");
 
     //determine if this is a method call or a conditional
     if(startIndexOfParameters === -1) {
-        //conditional
-        const found = expression.match(new RegExp("[\\w-]+","g"));
-        if(found) {
-            for(const toReplace of found) {
-                const varValue = _M.variables[toReplace];
-                if(typeof varValue === "undefined") {
-                    continue;
-                }
-                expression = expression.replaceAll(toReplace, varValue);
-            }
-        }
-        return expression;
+        return _M.injectVariablesIntoConditionalExpression(expression);
     } else {
         //interpret this as an actual expression, so we can differentiate between literals, numbers, booleans and to replace variables
         const methodName = expression.substring(0, startIndexOfParameters);
@@ -255,7 +259,7 @@ _M.handleDefaultEvent = function(k) {
 _M.handleWaitingForEnabled = function() {
     for (let index = 0; index < _M.waitingForEnable.length; index++) {
         const objWaitingForEnable = _M.waitingForEnable[index];
-        if(_M.evalCondition(_M.injectVariablesIntoExpression(objWaitingForEnable.expression))) {
+        if(_M.evalCondition(_M.injectVariablesIntoConditionalExpression(objWaitingForEnable.expression))) {
             objWaitingForEnable.elem.disabled = false;
             _M.waitingForEnable.splice(index, 1);
         }
@@ -402,7 +406,7 @@ _M.findElementByMIF = function(key) {
 }
 
 _M.handleConditionCheckEvent = function(k) {
-    let conditionEval = _M.evalCondition(_M.injectVariablesIntoExpression(k.c));
+    let conditionEval = _M.evalCondition(_M.injectVariablesIntoConditionalExpression(k.c));
     let elems = _M.findElementByMIF(k.v);
     _M.handleVisibilityConditionals(elems, conditionEval);
 
@@ -539,7 +543,7 @@ _M.sendEvent = function(originElem, e) {
     }
 
     e = _M.parseReference(e, originElem);
-    _M.ws.send(_M.injectVariablesIntoExpression(e));
+    _M.ws.send(_M.injectVariablesIntoMethodExpression(e));
 };
 
 _M.onEnter = function(originElem, action, event) {
