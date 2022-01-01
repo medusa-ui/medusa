@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.sample.medusa</groupId>
 	<artifactId>medusa-sample-implementation</artifactId>
-	<version>0.3.0</version>
+	<version>0.3.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	<name>sample implementation of ui library</name>
 	<description>sample implementation of ui library, for testing and development purposes</description>
@@ -12,7 +12,7 @@
 	<parent>
 		<groupId>io.getmedusa</groupId>
 		<artifactId>medusa</artifactId>
-		<version>0.3.0</version>
+		<version>0.3.1-SNAPSHOT</version>
 	</parent>
 
 	<properties>
@@ -28,7 +28,7 @@
 		<dependency>
 			<groupId>io.getmedusa</groupId>
 			<artifactId>medusa-ui</artifactId>
-			<version>0.3.0</version>
+			<version>0.3.1-SNAPSHOT</version>
 		</dependency>
 
 
