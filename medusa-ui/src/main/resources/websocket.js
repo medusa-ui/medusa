@@ -156,7 +156,7 @@ _M.injectVariablesIntoConditionalExpression = function(expression) {
     return expression;
 }
 
-_M.injectVariablesIntoMethodExpression = function(expression) {
+_M.injectVariablesIntoMethodExpression = function(expression, element) {
     const startIndexOfParameters = expression.indexOf("(");
 
     //determine if this is a method call or a conditional
@@ -175,7 +175,7 @@ _M.injectVariablesIntoMethodExpression = function(expression) {
                 continue;
             }
             if(!(_M.isQuoted(parameter) || _M.isNumeric(parameter) || _M.isBoolean(parameter))) {
-                parameter = _M.lookupVariable(parameter);
+                parameter = _M.lookupVariable(parameter, element);
                 if(typeof parameter === "undefined") {
                     parameter = roughParameter;
                 }
@@ -188,13 +188,50 @@ _M.injectVariablesIntoMethodExpression = function(expression) {
     }
 };
 
-_M.lookupVariable = function(parameter) {
+_M.lookupVariable = function(parameter, element) {
     let baseParameter = parameter;
     if(parameter.indexOf(".") !== -1) {
         baseParameter = parameter.substring(0, parameter.indexOf("."));
     }
     const deeperObjectPath = _M.determineDeeperObjectPath(parameter);
-    return _M.findThroughObjectPath(_M.variables[baseParameter], deeperObjectPath);
+    const paramValue = _M.findPotentialEachValue(element, baseParameter);
+    return _M.considerVariableWrap(_M.findThroughObjectPath(paramValue, deeperObjectPath));
+};
+
+_M.considerVariableWrap = function (value) {
+    if(typeof value === "string") {
+        return "'" + value + "'";
+    } else {
+        return value;
+    }
+}
+
+_M.findPotentialEachValue = function (element, eachName) {
+    let paramValue = _M.variables[eachName];
+    if(null !== element && typeof element !== "undefined") {
+        const parentElement = _M.findParentWithEachElement(element, eachName);
+        if(null !== parentElement && typeof parentElement !== "undefined") {
+            const index = parentElement.getAttribute("index");
+            let relevantTemplateId = parentElement.getAttribute("template-id");
+            relevantTemplateId = relevantTemplateId.substring(relevantTemplateId.lastIndexOf("#") + 1);
+            const relevantVariableName = _M.conditionals[relevantTemplateId];
+            if(null !== relevantVariableName && typeof relevantVariableName !== "undefined") {
+                paramValue = _M.variables[relevantVariableName][index];
+            }
+        }
+    }
+    return paramValue;
+}
+
+_M.findParentWithEachElement = function (element, eachName) {
+    let currentElement = element;
+    while(currentElement !== null) {
+        if(eachName === currentElement.getAttribute("m-each")) {
+            return currentElement;
+        }
+        currentElement = currentElement.parentElement;
+    }
+    return null;
 };
 
 _M.buildMethod = function(methodName, parameters) {
@@ -543,7 +580,7 @@ _M.sendEvent = function(originElem, e) {
     }
 
     e = _M.parseReference(e, originElem);
-    _M.ws.send(_M.injectVariablesIntoMethodExpression(e));
+    _M.ws.send(_M.injectVariablesIntoMethodExpression(e, originElem));
 };
 
 _M.onEnter = function(originElem, action, event) {
