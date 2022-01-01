@@ -1,5 +1,8 @@
 package io.getmedusa.medusa.core.injector;
 
+import java.util.Collections;
+import java.util.Map;
+
 /**
  * Listing of generic m-attributes, which are generic replacement tags based on a true/false value.
  * These are attributes such as m-disabled. If the applied expression is true, the disabled flag is added in HTML, if it is false, it is removed.
@@ -7,31 +10,36 @@ package io.getmedusa.medusa.core.injector;
  */
 public enum GenericMAttribute {
 
-    DISABLED("disabled=\"true\""),
-    HIDE("style=\"display:none;\"");
+    DISABLED(Map.of("disabled", "true")),
+    HIDE(Map.of("style", "display:none;"));
 
-    private final String valueWhenTrue;
-    private final String valueWhenFalse;
+    private final Map<String, String> valueWhenTrue;
+    private final Map<String, String> valueWhenFalse;
 
-    GenericMAttribute(String valueWhenTrue) {
-        this.valueWhenFalse = "";
+    GenericMAttribute(Map<String, String> valueWhenTrue) {
+        this.valueWhenFalse = Collections.emptyMap();
         this.valueWhenTrue = valueWhenTrue;
     }
 
-    GenericMAttribute(String valueWhenTrue, String valueWhenFalse) {
+    GenericMAttribute(Map<String, String> valueWhenTrue, Map<String, String> valueWhenFalse) {
         this.valueWhenFalse = valueWhenFalse;
         this.valueWhenTrue = valueWhenTrue;
     }
 
-    public String getValueWhenTrue() {
+    public Map<String, String> getValueWhenTrue() {
         return valueWhenTrue;
     }
 
-    public String getValueWhenFalse() {
+    public Map<String, String> getValueWhenFalse() {
         return valueWhenFalse;
     }
 
-    public static GenericMAttribute findValueByTagName(String tagNameWithM) {
-        return GenericMAttribute.valueOf(tagNameWithM.substring(2).toUpperCase());
+    public Map<String, String> determineValue(Object variableValue) {
+        boolean val = Boolean.parseBoolean(variableValue.toString());
+        if(val) {
+            return getValueWhenTrue();
+        } else {
+            return getValueWhenFalse();
+        }
     }
 }

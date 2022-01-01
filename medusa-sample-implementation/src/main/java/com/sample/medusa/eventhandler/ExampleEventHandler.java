@@ -25,6 +25,7 @@ public class ExampleEventHandler {
         counters.put(uuid, 0);
 
         return new PageAttributes()
+                .with("title", "Medusa test page :: 0")
                 .with("uuid", uuid)
                 .with("increase", ++increase)
                 .with("counter-value", counter)
@@ -39,7 +40,8 @@ public class ExampleEventHandler {
                 .with("done-waiting", false)
                 .with("search-result", "")
 
-                .with("principal", securityContext.getUserDetails().getUsername())
+                .with("principal", "anonymous")
+                //.with("principal", securityContext.getUserDetails().getUsername())
 
                 // query param + conversion
                 .with("query-param-q", request.queryParam("q").orElse("nothing"), parameterValue -> "query parameter q: " + parameterValue)

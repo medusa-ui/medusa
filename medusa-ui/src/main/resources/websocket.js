@@ -3,7 +3,7 @@ var _M = _M || {};
 _M.ws = null;
 _M.timeoutTimer = 0;
 _M.retryAttempts = 0;
-_M.debugMode = false;
+_M.debugMode = true;
 _M.retryMode = false;
 _M.fatalMode = false;
 _M.parser = new DOMParser();
@@ -103,7 +103,7 @@ _M.eventHandler = function(e) {
 
 _M.handleMAttributeChange = function (k) {
     _M.debug(k);
-    const expressionEval = _M.evalCondition(_M.injectVariablesIntoExpression(k.c));
+    const expressionEval = _M.evalCondition(_M.injectVariablesIntoConditionalExpression(k.c));
     switch(k.f) {
         case "DISABLED":
             _M.handleMAttribute(k.v,(e) => { e.setAttribute("disabled", true); } ,(e) => { e.removeAttribute("disabled"); }, expressionEval);
@@ -141,21 +141,128 @@ _M.handleHydraMenuItemChange = function (k) {
     });
 };
 
-_M.injectVariablesIntoExpression = function(expression) {
-    const found = expression.match(new RegExp("\\$[\\w-]+","g"));
+
+_M.injectVariablesIntoConditionalExpression = function(expression) {
+    const found = expression.match(new RegExp("[\\w-]+","g"));
     if(found) {
         for(const toReplace of found) {
-            expression = expression.replaceAll(toReplace, _M.variables[toReplace.substring(1)]);
+            const varValue = _M.variables[toReplace];
+            if(typeof varValue === "undefined") {
+                continue;
+            }
+            expression = expression.replaceAll(toReplace, varValue);
         }
     }
     return expression;
+}
+
+_M.injectVariablesIntoMethodExpression = function(expression, element) {
+    const startIndexOfParameters = expression.indexOf("(");
+
+    //determine if this is a method call or a conditional
+    if(startIndexOfParameters === -1) {
+        return _M.injectVariablesIntoConditionalExpression(expression);
+    } else {
+        //interpret this as an actual expression, so we can differentiate between literals, numbers, booleans and to replace variables
+        const methodName = expression.substring(0, startIndexOfParameters);
+        const parametersAsOneString = expression.substring(startIndexOfParameters + 1, expression.lastIndexOf(")"));
+        const roughParameters = parametersAsOneString.split(",");
+
+        let parameters = [];
+        for(const roughParameter of roughParameters) {
+            let parameter = roughParameter.trim();
+            if(parameter.length === 0) {
+                continue;
+            }
+            if(!(_M.isQuoted(parameter) || _M.isNumeric(parameter) || _M.isBoolean(parameter))) {
+                parameter = _M.lookupVariable(parameter, element);
+                if(typeof parameter === "undefined") {
+                    parameter = roughParameter;
+                }
+            }
+
+            parameters.push(parameter);
+        }
+
+        return _M.buildMethod(methodName, parameters);
+    }
 };
 
+_M.lookupVariable = function(parameter, element) {
+    let baseParameter = parameter;
+    if(parameter.indexOf(".") !== -1) {
+        baseParameter = parameter.substring(0, parameter.indexOf("."));
+    }
+    const deeperObjectPath = _M.determineDeeperObjectPath(parameter);
+    const paramValue = _M.findPotentialEachValue(element, baseParameter);
+    return _M.considerVariableWrap(_M.findThroughObjectPath(paramValue, deeperObjectPath));
+};
+
+_M.considerVariableWrap = function (value) {
+    if(typeof value === "string") {
+        return "'" + value + "'";
+    } else {
+        return value;
+    }
+}
+
+_M.findPotentialEachValue = function (element, eachName) {
+    let paramValue = _M.variables[eachName];
+    if(null !== element && typeof element !== "undefined") {
+        const parentElement = _M.findParentWithEachElement(element, eachName);
+        if(null !== parentElement && typeof parentElement !== "undefined") {
+            const index = parentElement.getAttribute("index");
+            let relevantTemplateId = parentElement.getAttribute("template-id");
+            relevantTemplateId = relevantTemplateId.substring(relevantTemplateId.lastIndexOf("#") + 1);
+            const relevantVariableName = _M.conditionals[relevantTemplateId];
+            if(null !== relevantVariableName && typeof relevantVariableName !== "undefined") {
+                paramValue = _M.variables[relevantVariableName][index];
+            }
+        }
+    }
+    return paramValue;
+}
+
+_M.findParentWithEachElement = function (element, eachName) {
+    let currentElement = element;
+    while(currentElement !== null) {
+        if(eachName === currentElement.getAttribute("m-each")) {
+            return currentElement;
+        }
+        currentElement = currentElement.parentElement;
+    }
+    return null;
+};
+
+_M.buildMethod = function(methodName, parameters) {
+    let builder = methodName + "(";
+    let comma = "";
+    for(const parameter of parameters) {
+        builder += comma;
+        builder += parameter;
+        comma = ", ";
+    }
+    builder += ")";
+    return builder;
+};
+
+_M.isQuoted = function(itemToEval) {
+    return (itemToEval.startsWith("'") && itemToEval.endsWith("'")) || (itemToEval.startsWith("\"") && itemToEval.endsWith("\""));
+};
+
+_M.isBoolean = function(itemToEval) {
+    return "true" === itemToEval || "false" === itemToEval;
+};
+
+_M.isNumeric = function(str) {
+    if (typeof str != "string") { return false; }
+    return !isNaN(str) && !isNaN(parseFloat(str));
+}
+
 _M.injectVariablesIntoText = function(text) {
-    const found = text.match(new RegExp("\\[\\$(\\w-?)+?]","g"));
-    if(found) {
-        for(const toReplace of found) {
-            text = text.replaceAll(toReplace, _M.variables[toReplace.substring(2, toReplace.length-1)]);
+    for(const key of Object.keys(_M.variables)) {
+        if(text.indexOf(key) !== -1) {
+            text = text.replaceAll(key, _M.variables[key]);
         }
     }
     return text;
@@ -189,7 +296,7 @@ _M.handleDefaultEvent = function(k) {
 _M.handleWaitingForEnabled = function() {
     for (let index = 0; index < _M.waitingForEnable.length; index++) {
         const objWaitingForEnable = _M.waitingForEnable[index];
-        if(_M.evalCondition(_M.injectVariablesIntoExpression(objWaitingForEnable.expression))) {
+        if(_M.evalCondition(_M.injectVariablesIntoConditionalExpression(objWaitingForEnable.expression))) {
             objWaitingForEnable.elem.disabled = false;
             _M.waitingForEnable.splice(index, 1);
         }
@@ -205,41 +312,106 @@ _M.handleTitleChangeEvent = function(k) {
     document.title = _M.injectVariablesIntoText(k.v);
 };
 
-_M.handleIterationCheckEach = function(templateId, template, currentEachValue, parent) {
-    let newDiff = document.createElement("div");
-    newDiff.innerHTML = _M.resolveInnerTemplate(template.innerHTML, [currentEachValue]);
-    newDiff.innerHTML = _M.recursiveObjectUpdate(newDiff.innerHTML, currentEachValue, "$this.each");
-    newDiff.innerHTML = _M.recursiveObjectUpdate(newDiff.innerHTML, currentEachValue, "$each");
-    while (newDiff.firstChild) parent.appendChild(newDiff.firstChild);
-}
-
 _M.handleIterationCheck = function (k) {
     // clear old values
     document.querySelectorAll("[template-id="+k.f+"]").forEach(function(e) { e.remove(); });
 
     // set new values
-    document.querySelectorAll("[m-id="+k.f+"]").forEach(
-        function(template, index) {
-            const templateId = _M.resolveTemplateId(template);
-            const currentEachValues = _M.resolveTemplateCondition(templateId);
+    document.querySelectorAll("[m-id="+k.f+"]").forEach(function(template) {
+        const templateId = _M.resolveTemplateId(template);
+        const currentEachValues = _M.resolveTemplateCondition(templateId);
+        const divTemplate = template.content.children[0];
 
-            let parentWrapper = document.createElement("div");
-            parentWrapper.setAttribute("template-id", templateId);
-            parentWrapper.setAttribute("index", index.toString());
-
-            if(Array.isArray(currentEachValues)) {
-                for(const currentEachValue of currentEachValues) {
-                    _M.handleIterationCheckEach(templateId, template, currentEachValue, parentWrapper);
-                }
-            } else {
-                for (let i = 0; i < currentEachValues; i++) {
-                    _M.handleIterationCheckEach(templateId, template, i, parentWrapper);
-                }
+        let index = 0;
+        if(Array.isArray(currentEachValues)) {
+            for(const currentEachValue of currentEachValues) {
+                const block = _M.buildIterationBlock(currentEachValue, divTemplate, index++);
+                if(typeof _M.preRender !== "undefined") { _M.preRender(k, block); }
+                template.parentNode.insertBefore(block, template);
             }
-            if(typeof _M.preRender !== "undefined") { _M.preRender(k, parentWrapper); }
-            template.parentNode.insertBefore(parentWrapper, template);
-        });
+        } else {
+            for (let i = 0; i < currentEachValues; i++) {
+                const block = _M.buildIterationBlock(i, divTemplate, index++);
+                if(typeof _M.preRender !== "undefined") { _M.preRender(k, block); }
+                template.parentNode.insertBefore(block, template);
+            }
+        }
+    });
 };
+_M.buildIterationBlock = function (rootEachValue, templateDiv, index) {
+    const node = templateDiv.cloneNode(true);
+    node.querySelectorAll("template").forEach(function (templateNode) { templateNode.remove(); });
+    node.setAttribute("index", index.toString());
+
+    _M.buildIterationBlockMEachHandling(node);
+    node.querySelectorAll("[m-each]").forEach(function (divWithMEach) {
+        _M.buildIterationBlockMEachHandling(divWithMEach);
+    });
+
+    return node;
+}
+
+_M.buildIterationBlockMEachHandling = function (divWithMEach) {
+    const templateMap = _M.buildTemplateMap(divWithMEach);
+
+    for(const mapEntry of templateMap) {
+        const eachName = mapEntry["eachName"];
+        divWithMEach.querySelectorAll("[from-value^='"+eachName+"']").forEach(function (specificSpan) {
+            const deeperObjectPath = _M.determineDeeperObjectPath(specificSpan.getAttribute("from-value"));
+            const index = parseInt(mapEntry["index"], 10);
+            const conditional = _M.conditionals[mapEntry["templateId"]];
+            let foundObject = _M.variables[conditional][index];
+            foundObject = _M.findThroughObjectPath(foundObject, deeperObjectPath);
+            const via = specificSpan.getAttribute("via");
+            if(via === null) {
+                specificSpan.textContent = foundObject;
+            } else {
+                specificSpan.setAttribute(via, foundObject);
+            }
+        });
+    }
+}
+
+_M.findThroughObjectPath = function (object, path) {
+    if(path.length === 0) return object;
+
+    while (path.length > 0) {
+        object = object[path[0]];
+        path = path.slice(1);
+    }
+
+    return object;
+}
+
+_M.determineDeeperObjectPath = function (path) {
+    if(path.indexOf(".") === -1) {
+        return [];
+    } else {
+        return path.split(".").slice(1);
+    }
+}
+
+_M.buildTemplateMap = function (divWithMEach) {
+    const map = [];
+    let evalNode = divWithMEach;
+
+    while(evalNode !== null) {
+        if(evalNode.getAttribute("template-id") !== null) {
+            const currentEachName = evalNode.getAttribute("m-each");
+            if(null !== currentEachName) {
+                const currentTemplateId = evalNode.getAttribute("template-id");
+                let currentIndex = evalNode.getAttribute("index");
+                map.push({
+                    "templateId": currentTemplateId.substring(currentTemplateId.lastIndexOf("#") + 1),
+                    "index": currentIndex,
+                    "eachName": currentEachName
+                });
+            }
+        }
+        evalNode = evalNode.parentNode;
+    }
+    return map;
+}
 
 _M.resolveTemplateId = function (template) {
     return template.attributes["m-id"].nodeValue;
@@ -249,54 +421,6 @@ _M.resolveTemplateCondition = function (templateId) {
     const condition = _M.conditionals[templateId];
     return _M.variables[condition];
 }
-
-_M.resolveInnerTemplateEach = function (index, parents, currentEachValue, templateId, template, replacement) {
-    index = index++;
-    let localParent = [...parents]; //clone
-    localParent.unshift(currentEachValue);
-    let replacementInner = "<div index='" + index++ + "' template-id='" + templateId + "'>" + _M.resolveInnerTemplate(template.innerHTML, localParent) + "</div>";
-    replacementInner = _M.recursiveObjectUpdate(replacementInner, currentEachValue, "$this.each");
-    replacementInner = _M.recursiveObjectUpdate(replacementInner, currentEachValue, "$each");
-
-    let parentPath = "$parent";
-    for (let i = 1; i < localParent.length; i++) {
-        if (i > 1) {
-            parentPath += ".parent";
-        }
-        replacementInner = _M.recursiveObjectUpdate(replacementInner, localParent[i], parentPath + ".each");
-    }
-
-    replacement += replacementInner;
-    return replacement;
-}
-
-_M.resolveInnerTemplate = function (innerContent, parents) {
-    innerContent = innerContent.toString();
-
-    //if this contains template, then run the resolver one layer deeper;
-    if(innerContent.includes("<template m-id=")) {
-         let doc = _M.parser.parseFromString(innerContent, "text/html");
-         doc.querySelectorAll("template").forEach(function (template) {
-             const templateId = _M.resolveTemplateId(template);
-             const eachValues = _M.resolveTemplateCondition(templateId);
-             let index = 0;
-             let replacement = "";
-             if(Array.isArray(eachValues)) {
-                 for (const currentEachValue of eachValues) {
-                     replacement = _M.resolveInnerTemplateEach(index, parents, currentEachValue, templateId, template, replacement);
-                 }
-             } else {
-                 for (let i = 0; i < eachValues; i++) {
-                     replacement = _M.resolveInnerTemplateEach(index, parents, i, templateId, template, replacement);
-                 }
-             }
-
-             innerContent = innerContent.replaceAll("<template m-id=\""+ templateId +"\">" + template.innerHTML + "</template>", replacement);
-         });
-    }
-
-    return innerContent;
-};
 
 _M.unwrap = function (node){
     return node.replaceWith(...node.childNodes);
@@ -314,9 +438,13 @@ _M.recursiveObjectUpdate = function(html, obj, path) {
     return html;
 };
 
+_M.findElementByMIF = function(key) {
+    return document.querySelectorAll("[m-if='" + key + "']");
+}
+
 _M.handleConditionCheckEvent = function(k) {
-    let conditionEval = _M.evalCondition(_M.injectVariablesIntoExpression(k.c));
-    let elems = document.getElementsByClassName(k.v);
+    let conditionEval = _M.evalCondition(_M.injectVariablesIntoConditionalExpression(k.c));
+    let elems = _M.findElementByMIF(k.v);
     _M.handleVisibilityConditionals(elems, conditionEval);
 
     //update templates if needed
@@ -438,9 +566,9 @@ _M.parseSelfReference = function(raw, e, originElem) {
 _M.waitingForEnable = [];
 
 _M.sendEvent = function(originElem, e) {
-    const disableOnClick = originElem.attributes["m-disable-on-click-until"];
+    const disableOnClick = originElem.attributes["m:disable-on-click-until"];
     if(typeof disableOnClick !== "undefined") {
-        const loadingStyle = originElem.attributes["m-loading-style"];
+        const loadingStyle = originElem.attributes["m:loading-style"];
 
         _M.waitingForEnable.push({"elem": originElem, "expression": disableOnClick.value});
         originElem.disabled = true;
@@ -452,7 +580,7 @@ _M.sendEvent = function(originElem, e) {
     }
 
     e = _M.parseReference(e, originElem);
-    _M.ws.send(_M.injectVariablesIntoExpression(e));
+    _M.ws.send(_M.injectVariablesIntoMethodExpression(e, originElem));
 };
 
 _M.onEnter = function(originElem, action, event) {

@@ -1,5 +1,7 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en"
+      xmlns:m="https://medusa-ui.dev" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="https://medusa-ui.dev https://raw.githubusercontent.com/medusa-ui/medusa/poc/xml-parser/medusa-ui.xsd">
 <head>
     <meta charset="UTF-8">
     <title>Medusa demo :: Page 2</title>
@@ -13,11 +15,11 @@
 
 <a href="/">Back to overview</a>
 
-<p>[$example-value]</p>
+<p><m:text item="example-value" /></p>
 
-<button m-click="buy('coffee')">Buy some coffee</button>
-<button m-click="buy('tea', 'sugar', 3,'cookie')">Buy some tea and sugar</button>
-<button m-click="buy('coffee, sugar but no cream','cookies (2 pieces)')">Breaking stuff</button>
+<button m:click="buy('coffee')">Buy some coffee</button>
+<button m:click="buy('tea', 'sugar', 3,'cookie')">Buy some tea and sugar</button>
+<button m:click="buy('coffee, sugar but no cream','cookies (2 pieces)')">Breaking stuff</button>
 
 </body>
 </html>

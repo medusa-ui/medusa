@@ -1,102 +1,87 @@
 package io.getmedusa.medusa.core.injector.tag;
 
 import io.getmedusa.medusa.core.injector.tag.meta.InjectionResult;
-import io.getmedusa.medusa.core.util.ExpressionEval;
+import org.jsoup.nodes.Element;
+import org.jsoup.nodes.Node;
+import org.jsoup.parser.Tag;
+import org.jsoup.select.Elements;
+import org.springframework.web.reactive.function.server.ServerRequest;
 
-import java.util.HashMap;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-public class ValueTag {
+public class ValueTag extends AbstractTag {
 
-    private static final char DOUBLE_QUOTE = '\"';
-    protected final Pattern pattern = Pattern.compile("\\[\\$(?!(parent\\.){1,99}each|this\\.each|if|else|end).*?\\]", Pattern.CASE_INSENSITIVE);
+    @Override
+    public InjectionResult inject(InjectionResult result, Map<String, Object> variables, ServerRequest request) {
+        handleMTextTag(result, variables, request);
+        handleItemTag(result, variables);
+        handleMValueAttribute(result, variables, request);
+        handleMIfCondition(result, request);
 
-    public InjectionResult injectWithVariables(InjectionResult result, Map<String, Object> variables) {
-        String html = result.getHtml();
-        html = replaceTitle(html, variables);
-
-        Matcher matcher = pattern.matcher(html);
-        Map<String, String> replacements = new HashMap<>();
-
-        while (matcher.find()) {
-            Context context = determineContext(html, matcher);
-
-            final String match = matcher.group(0);
-            final String searchKey = toSearchKey(match);
-            final String value = ExpressionEval.eval(searchKey, variables);
-            final String variableKey = match.substring(2, match.length() - 1).trim();
-
-            if(context.equals(Context.AS_ATTRIBUTE)) {
-                final String replacement = value + DOUBLE_QUOTE + " from-value=\"" + variableKey + "\"";
-                replacements.put(match + DOUBLE_QUOTE, replacement);
-            } else if(context.equals(Context.AS_WRAPPED_IN_TAG)) {
-                final String replacement = " from-value=\"" + variableKey + "\">" + value;
-                replacements.put(">" + match, replacement);
-            } else {
-                replacements.put(match, "<span from-value=\"" + variableKey + "\">"+value+"</span>");
-            }
-        }
-
-        for(Map.Entry<String, String> replacement : replacements.entrySet()) {
-           while(html.contains(replacement.getKey()) && !replacement.getValue().contains(replacement.getKey())) {
-                html = html.replace(replacement.getKey(), replacement.getValue());
-            }
-        }
-
-        result.setHtml(html);
         return result;
     }
 
-    private String toSearchKey(String match) {
-        String key = match.substring(1, match.length() - 1).trim();
-        if(key.contains("$ ")) {
-            key = key.replace("$ ", "$");
+    private void handleMIfCondition(InjectionResult result, ServerRequest request) {
+        Elements mIfTags = result.getDocument().getElementsByTag(TagConstants.CONDITIONAL_TAG);
+        Elements mElseIfTags = result.getDocument().getElementsByTag(TagConstants.M_ELSEIF);
+        mIfTags.addAll(mElseIfTags);
+
+        for (Element mIfTag : mIfTags) {
+            final String item = mIfTag.attr(TagConstants.CONDITIONAL_TAG_CONDITION_ATTR).trim();
+            Object variableValue = getPossibleEachValue(mIfTag, item, request);
+            if(null != variableValue) mIfTag.attr(TagConstants.CONDITIONAL_TAG_CONDITION_ATTR, "'" + variableValue + "'");
         }
-        return key;
     }
 
-    private String replaceTitle(String html, Map<String, Object> variables) {
-        Pattern titlePattern = Pattern.compile("<title>.+</title>", Pattern.CASE_INSENSITIVE);
-        Matcher titleMatcher = titlePattern.matcher(html);
+    private void handleMTextTag(InjectionResult result, Map<String, Object> variables, ServerRequest request) {
+        //<m:text item="counter-value" /> w/ "counter-value" = 123
+        //becomes
+        //<span from-value="counter-value">123</span>
 
-        if (titleMatcher.find()) {
-            final String title = titleMatcher.group(0);
-            String titleCopy = title;
-
-            Matcher matcher = pattern.matcher(title);
-
-            while (matcher.find()) {
-                final String match = matcher.group(0);
-                final String variableKey = match.substring(1, match.length() - 1).trim();
-                final Object value = ExpressionEval.eval(variableKey, variables);
-                if(value == null) throw new IllegalStateException("Variable key '" + variableKey + "' should either exist or shows an error in internal parsing logic.");
-                final String valueAsString = value.toString();
-                titleCopy = titleCopy.replace(match, valueAsString);
-            }
-            html = html.replace(title, titleCopy);
+        Elements mTextTags = result.getDocument().getElementsByTag(TagConstants.TEXT_TAG);
+        for (Element mTextTag : mTextTags) {
+            final String item = mTextTag.attr(TagConstants.TEXT_TAG_ITEM_ATTR).trim();
+            Object variableValue = getPossibleEachValue(mTextTag, item, request);
+            if(null == variableValue) variableValue = variableToString(item, variables);
+            if(null == variableValue) variableValue = item;
+            mTextTag.replaceWith(createSpan(item, variableValue.toString()));
         }
-
-        return html;
     }
 
-    private Context determineContext(String html, Matcher matcher) {
-        char before = html.charAt(matcher.start(0) - 1);
-        char after = html.charAt(matcher.end(0));
+    private void handleMValueAttribute(InjectionResult result, Map<String, Object> variables, ServerRequest request) {
+        //<input type="text" m:value="counter-value" /> w/ "counter-value" = 123
+        //becomes
+        //<input type="text" from-value="counter-value" value="123" />
 
-        if(DOUBLE_QUOTE == before && DOUBLE_QUOTE == after) {
-            return Context.AS_ATTRIBUTE;
-        } else if('>' == before && '<' == after) {
-            return Context.AS_WRAPPED_IN_TAG;
+        Elements tagsWithMValue = result.getDocument().getElementsByAttribute(TagConstants.M_VALUE);
+        for (Element tagWithMValue : tagsWithMValue) {
+            final String item = tagWithMValue.attr(TagConstants.M_VALUE).trim();
+            Object variableValue = getPossibleEachValue(tagWithMValue, item, request);
+            if(null == variableValue) variableValue = variableToString(item, variables);
+            if(null == variableValue) variableValue = item;
+
+            tagWithMValue.removeAttr("m:value");
+            tagWithMValue.val(variableValue.toString());
+            tagWithMValue.attr(TagConstants.FROM_VALUE, item);
+            tagWithMValue.attr(TagConstants.VIA_ATTR, "value");
         }
-
-        return Context.AS_PLAIN_VALUE;
     }
 
-    private enum Context {
-        AS_ATTRIBUTE,
-        AS_WRAPPED_IN_TAG,
-        AS_PLAIN_VALUE
+    private void handleItemTag(InjectionResult result, Map<String, Object> variables) {
+        Elements items = result.getDocument().getElementsByAttribute(TagConstants.M_ITEM);
+        for(Element item : items) {
+            final String lookup = item.attr(TagConstants.M_ITEM);
+            item.removeAttr(TagConstants.M_ITEM);
+            Object variableValue = variableToString(lookup, variables);
+            if(null == variableValue) variableValue = item;
+            item.text(variableValue.toString());
+            item.attr(TagConstants.FROM_VALUE, lookup);
+        }
+    }
+
+    private Node createSpan(String item, String variableValue) {
+        return new Element(Tag.valueOf("span"), "")
+                .text(variableValue)
+                .attr(TagConstants.FROM_VALUE, item);
     }
 }

@@ -1,5 +1,7 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en"
+      xmlns:m="https://medusa-ui.dev" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="https://medusa-ui.dev https://raw.githubusercontent.com/medusa-ui/medusa/poc/xml-parser/medusa-ui.xsd">
 <head>
     <meta charset="UTF-8">
     <title>Medusa click event demo</title>
@@ -10,8 +12,8 @@
 <body>
 <h1>🦑 Hello click event</h1>
 
-<p>My Counter: [$my-counter]</p>
-<button id="my-counter-btn" m-click="increaseCounter(1)">Increase my counter by 1</button>
+<p>My Counter: <m:text item="my-counter" /></p>
+<button id="my-counter-btn" m:click="increaseCounter(1)">Increase my counter by 1</button>
 
 </body>
 </html>

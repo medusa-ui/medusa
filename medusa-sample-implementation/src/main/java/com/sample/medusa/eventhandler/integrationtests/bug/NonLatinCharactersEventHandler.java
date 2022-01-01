@@ -11,6 +11,7 @@ public class NonLatinCharactersEventHandler {
 
     public PageAttributes setupAttributes() {
         return new PageAttributes()
+                .with("title", "Medusa in other languages : 메두사")
                 .with("value1", "메두사")
                 .with("value2", "美杜莎")
                 .with("passed-value", "")
@@ -19,7 +20,8 @@ public class NonLatinCharactersEventHandler {
 
     public DOMChanges swapValues() {
         return of("value1", "美杜莎")
-               .and("value2", "메두사");
+               .and("value2", "메두사")
+               .and("title", "Medusa in other languages : 美杜莎");
     }
 
     public DOMChanges passValue(String value1) {

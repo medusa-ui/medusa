@@ -1,5 +1,8 @@
 package io.getmedusa.medusa.core.cache;
 
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -18,17 +21,23 @@ public class HTMLCache {
         return INSTANCE;
     }
 
-    private static final Map<String, String> CACHE = new HashMap<>();
+    //key / html value as JSoup Document
+    private static final Map<String, Document> CACHE = new HashMap<>();
 
-    public String getHTMLOrAdd(String filename, String html) {
+    public Document getHTMLOrAdd(String filename, String html) {
         return CACHE.computeIfAbsent(filename, k -> removeAllCommentsFromHTML(html));
     }
 
-    private String removeAllCommentsFromHTML(String html) {
-        return html.replaceAll("(?s)<!--.*?-->", "");
+    private Document removeAllCommentsFromHTML(String html) {
+        return Jsoup.parse(html.replaceAll("(?s)<!--.*?-->", ""));
     }
 
+    @Deprecated
     public String getHTML(String filename) {
-        return CACHE.get(filename);
+        return CACHE.get(filename).html();
+    }
+
+    public Document getDocument(String fileName) {
+        return CACHE.get(fileName).clone();
     }
 }

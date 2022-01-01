@@ -1,60 +1,66 @@
 package io.getmedusa.medusa.core.injector.tag;
 
-import io.getmedusa.medusa.core.injector.tag.meta.InjectionResult;
+import io.getmedusa.medusa.core.registry.EachValueRegistry;
+import io.getmedusa.medusa.core.util.ElementUtils;
+import io.getmedusa.medusa.core.util.ExpressionEval;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
+import org.springframework.web.reactive.function.server.ServerRequest;
 
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-public abstract class AbstractTag {
+public abstract class AbstractTag implements Tag {
 
-    abstract String tagValue();
-    abstract String pattern();
-    abstract String substitutionLogic(String fullMatch, String tagContent);
+    protected String variableToString(String variableKey, Map<String, Object> variables) {
+        keyValidation(variableKey);
 
-    protected final Pattern pattern = Pattern.compile(pattern(), Pattern.CASE_INSENSITIVE);
-
-    protected Matcher buildMatcher(String html) {
-        return pattern.matcher(html);
+        final Object value = ExpressionEval.evalItemAsString(variableKey, variables);
+        if(value == null) return null;
+        return value.toString();
     }
 
-    protected String standardPattern() {
-        return "("+tagValue() + "=\".+?\")|("+tagValue() + "='.+?')";
-    }
+    protected Object getPossibleEachValue(Element currentElem, String eachName, ServerRequest request) {
+        if(ElementUtils.hasTemplateAsParent(currentElem)) return eachName;
 
-
-    /**
-     * Replaces the m-tags in HTML with usable HTML tags on pageload
-     * @param result
-     * @return
-     */
-    public InjectionResult inject(InjectionResult result) {
-        Matcher matcher = buildMatcher(result.getHtml());
-
-        final Map<String, String> replacements = new HashMap<>();
-        while (matcher.find()) {
-            final String fullMatch = matcher.group(0);
-            replacements.put(fullMatch, substitutionLogic(fullMatch, fullMatchToTagContent(fullMatch)));
+        String nameToSearch = eachName;
+        String restOfValue = null;
+        boolean requiresObjectIntrospection = nameToSearch.contains(".");
+        if(requiresObjectIntrospection) {
+            final String[] split = nameToSearch.split("\\.", 2);
+            nameToSearch = split[0];
+            restOfValue = split[1];
         }
 
-        for(Map.Entry<String, String> entrySet : replacements.entrySet()) {
-            result = result.replace(entrySet.getKey(),  entrySet.getValue());
+        Element parentWithEachName = findParentWithEachName(currentElem.parents(), nameToSearch);
+        if(null != parentWithEachName) {
+            String indexAsString = parentWithEachName.attr(TagConstants.INDEX);
+            if(indexAsString.length() == 0) indexAsString = "0";
+            int index = Integer.parseInt(indexAsString);
+            Object valueToReturn = EachValueRegistry.getInstance().get(request, nameToSearch, index);
+            if(requiresObjectIntrospection) {
+                valueToReturn = ExpressionEval.evalObject(restOfValue, valueToReturn);
+            }
+            return valueToReturn;
         }
-        return result;
+        return null;
     }
 
-    public String fullMatchToTagContent(String fullMatch) {
-        String tagContent = fullMatch;
-        if(tagContent.contains("=")) tagContent = tagContent.replaceFirst(tagValue() + "=", "");
-        if(tagContent.startsWith("\"")) tagContent = tagContent.substring(1, tagContent.length() - 1);
-        if(tagContent.startsWith("[$")) tagContent = tagContent.substring(2, tagContent.length() - 1);
-        if(tagContent.startsWith("'")) tagContent = tagContent.substring(1, tagContent.length() - 1).replace("\"","'");
-        return tagContent.trim();
+    private Element findParentWithEachName(Elements parents, String eachName) {
+        for(Element parent : parents) {
+            if(parent.hasAttr(TagConstants.M_EACH) && parent.attr(TagConstants.M_EACH).equals(eachName)) return parent;
+        }
+        return null;
     }
 
-    public InjectionResult inject(String html) {
-        InjectionResult result = new InjectionResult(html);
-        return inject(result);
+    protected Object parseConditionWithVariables(String condition, Map<String, Object> variables) {
+        keyValidation(condition);
+        final Object variable = ExpressionEval.evalItemAsObj(condition, variables);
+        if(variable == null) return Collections.emptyList();
+        return variable;
+    }
+
+    private void keyValidation(String variableKey) {
+        if(variableKey == null) throw new IllegalStateException("Variable key '" + variableKey + "' should either exist or shows an error in internal parsing logic.");
     }
 }

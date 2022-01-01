@@ -1,5 +1,7 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en"
+      xmlns:m="https://medusa-ui.dev" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="https://medusa-ui.dev https://raw.githubusercontent.com/medusa-ui/medusa/poc/xml-parser/medusa-ui.xsd">
 <head>
     <meta charset="UTF-8">
     <title>Medusa page custom setup</title>
@@ -9,11 +11,11 @@
 </head>
 <body>
 <h1>🦑 Custom setup</h1>
-<p>Setup done via <code>[$setup]</code></p>
+<p>Setup done via <code><m:text item="setup" /></code></p>
 <div><a href="/test/setup/default?name=Hello%20World!">Default</a> <a href="/test/setup/empty">Empty</a>  <a href="/test/setup/request?name=Hello%20World!">Request</a> <a href="/test/setup/secure">Secured</a> </div>
-<p>Request parameter: [$name]</p>
+<p>Request parameter: <m:text item="name" /></p>
 <br/>
-<p>Counter: [$counter]</p>
-<button id="btn_count" m-click="increaseCounter(this.value, 1 )" value="[$counter]">Increase</button>
+<p>Counter: <m:text item="counter" /></p>
+<button id="btn_count" m:click="increaseCounter(this.value, 1 )" m:value="counter">Increase</button>
 </body>
 </html>

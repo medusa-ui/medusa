@@ -1,5 +1,7 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en"
+      xmlns:m="https://medusa-ui.dev" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="https://medusa-ui.dev https://raw.githubusercontent.com/medusa-ui/medusa/poc/xml-parser/medusa-ui.xsd">
 <head>
     <meta charset="UTF-8">
     <title>Medusa nested each</title>
@@ -61,22 +63,24 @@
 <body>
 <h1>🦑 Foreach within foreach</h1>
 
-[$foreach $outer]
-    <div class="outer-1">[$each]</div>
-    <div class="outer-2">[$this.each]</div>
-    [$foreach $mid]
-        <div class="mid-1">[$this.each]</div>
-        <div class="mid-1">[$each]</div>
-        <div class="mid-2">[$parent.each]</div>
-        [$foreach $inner]
-            <div class="inner-1">[$this.each]</div>
-            <div class="inner-2">[$parent.each]</div>
-            <div class="inner-3">[$parent.parent.each]</div>
-        [$end for]
-    [$end for]
-[$end for]
+<m:foreach collection="outer" eachName="outerEach">
+    <div class="outer-1"><m:text item="outerEach" /></div>
+    <div class="outer-2"><m:text item="outerEach" /></div>
 
-<button id="change-mid" m-click="change()">change mid</button>
+    <m:foreach collection="mid" eachName="midEach">
+        <div class="mid-1"><m:text item="midEach" /></div>
+        <div class="mid-1"><m:text item="midEach" /></div>
+        <div class="mid-2"><m:text item="outerEach" /></div>
+
+        <m:foreach collection="inner" eachName="innerEach">
+            <div class="inner-1"><m:text item="innerEach" /></div>
+            <div class="inner-2"><m:text item="midEach" /></div>
+            <div class="inner-3"><m:text item="outerEach" /></div>
+        </m:foreach>
+    </m:foreach>
+</m:foreach>
+
+<button id="change-mid" m:click="change()">change mid</button>
 
 </body>
 </html>

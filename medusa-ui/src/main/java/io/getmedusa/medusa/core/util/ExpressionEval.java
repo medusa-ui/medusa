@@ -1,9 +1,10 @@
 package io.getmedusa.medusa.core.util;
 
 import io.getmedusa.medusa.core.injector.DOMChanges;
-import io.getmedusa.medusa.core.injector.tag.meta.ForEachElement;
+import org.springframework.expression.spel.SpelEvaluationException;
 
 import java.io.UnsupportedEncodingException;
+import java.math.BigDecimal;
 import java.net.URLDecoder;
 import java.nio.charset.Charset;
 import java.util.Map;
@@ -23,7 +24,7 @@ public abstract class ExpressionEval {
     public static String eval(String expressionToInterpret, Map<String, Object> variables) {
         Matcher matcher = pattern.matcher(expressionToInterpret);
         while (matcher.find()) {
-            expressionToInterpret = expressionToInterpret.replace(matcher.group(), interpretValue(matcher.group(), variables));
+            expressionToInterpret = expressionToInterpret.replace(matcher.group(), evalItemAsString(matcher.group(), variables));
         }
         if (SpelExpressionParserHelper.isExpression(expressionToInterpret)) {
             return SpelExpressionParserHelper.getStringValue(expressionToInterpret);
@@ -32,15 +33,41 @@ public abstract class ExpressionEval {
         }
     }
 
-    private static String interpretValue(String value, Map<String, Object> variables) {
-        if (value.startsWith("$")) value = value.substring(1);
+    public static String evalItemAsString(String itemToEval, Map<String, Object> variables) {
+        try {
+            Object val = interpretValue(itemToEval, variables);
+            if (val == null) return null;
+            return val.toString();
+        } catch (SpelEvaluationException e) {
+            return null;
+        }
+    }
+
+    public static Object evalItemAsObj(String itemToEval, Map<String, Object> variables) {
+        if(isQuoted(itemToEval)) return unwrapQuotes(itemToEval);
+        return interpretValue(itemToEval, variables);
+    }
+
+    private static String unwrapQuotes(String itemToEval) {
+        try {
+            return itemToEval.substring(1, itemToEval.length() - 1);
+        } catch (Exception e) {
+            return itemToEval;
+        }
+    }
+
+    public static boolean isQuoted(String itemToEval) {
+        return (itemToEval.startsWith("'") && itemToEval.endsWith("'")) || (itemToEval.startsWith("\"") && itemToEval.endsWith("\""));
+    }
+
+    private static Object interpretValue(String value, Map<String, Object> variables) {
         if (!variables.containsKey(value)) {
             if (value.contains(".")) {
                 String[] variableKeySplit = value.split("\\.", 2);
                 Object objValue = variables.get(variableKeySplit[0]);
                 Object subValue = SpelExpressionParserHelper.getValue(variableKeySplit[1], objValue);
                 if (subValue.getClass().getPackage().getName().startsWith("java.")) {
-                    return subValue.toString();
+                    return subValue;
                 } else {
                     throw unableToRenderFullObjectException(value, subValue.getClass());
                 }
@@ -48,16 +75,16 @@ public abstract class ExpressionEval {
         } else {
             Object objValue = variables.get(value);
             if (objValue.getClass().getPackage().getName().startsWith("java.")) {
-                return objValue.toString();
+                return objValue;
             } else {
                 throw unableToRenderFullObjectException(value, objValue.getClass());
             }
         }
-        return value;
+        return null;
     }
 
     private static IllegalArgumentException unableToRenderFullObjectException(String value, Class<? extends Object> objValueClass) {
-        return new IllegalArgumentException("HTML was asked to visualize an entire object [$" + value + ", " + objValueClass.getSimpleName() + "] instead of an object's property. An object is only known on the serverside, and cannot be rendered directly in the HTML. Try rendering a property of this object instead. For example: If you are trying to render a Person object with [$person], instead render the person's name using [$person.name]");
+        return new IllegalArgumentException("HTML was asked to visualize an entire object [" + value + ", " + objValueClass.getSimpleName() + "] instead of an object's property. An object is only known on the serverside, and cannot be rendered directly in the HTML. Try rendering a property of this object instead. For example: If you are trying to render a Person object with [person], instead render the person's name using [person.name]");
     }
 
     public static String evalObject(String property, Object value) {
@@ -79,10 +106,16 @@ public abstract class ExpressionEval {
         }
     }
 
-    public static ForEachElement evalForEachElement(String path, ForEachElement element) {
-        final Object value = SpelExpressionParserHelper.getValue(escape(path), element);
-        if(value == null) return null;
-        if(!(value instanceof ForEachElement)) throw new IllegalArgumentException("The element [" + element + "] was not a proper for each element, but instead [" + value.getClass().getName() + "]");
-        return (ForEachElement) value;
+    public static boolean isNumber(String parameter) {
+        try {
+            new BigDecimal(parameter);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    public static boolean isBoolean(String parameter) {
+        return Boolean.TRUE.toString().equals(parameter) || Boolean.FALSE.toString().equals(parameter);
     }
 }

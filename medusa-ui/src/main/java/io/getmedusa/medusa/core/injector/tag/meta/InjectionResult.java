@@ -1,27 +1,36 @@
 package io.getmedusa.medusa.core.injector.tag.meta;
 
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class InjectionResult {
 
-    private String html;
+    private Document document;
     private List<String> scripts = new ArrayList<>();
 
     public InjectionResult(String html) {
-        this.html = html;
+        this.document = Jsoup.parse(html);
+    }
+
+    public InjectionResult(Document html) {
+        this.document = html;
     }
 
     public void addScript(String script) {
         this.scripts.add(script);
     }
 
-    public String getHtml() {
-        return html;
+    public String getHTML() {
+        return document.html();
     }
 
-    public void setHtml(String html) {
-        this.html = html;
+    public Document getDocument() { return document; }
+
+    public void setDocument(Document document) {
+        this.document = document;
     }
 
     public List<String> getScripts() {
@@ -32,11 +41,7 @@ public class InjectionResult {
         this.scripts = scripts;
     }
 
-    public InjectionResult replace(String key, String value) {
-        setHtml(getHtml().replace(key, value));
-        return this;
-    }
-
+/*
     public InjectionResult removeFromTitle(String regex) {
         String[] splitHTML = getHtml().split("</title>");
 
@@ -47,16 +52,8 @@ public class InjectionResult {
         return this;
     }
 
-    public String replaceFinal(String key, String value) {
-        setHtml(getHtml().replace(key, value));
-        for(String script : scripts) {
-            replace("<script id=\"m-variable-setup\"></script>", "<script id=\"m-variable-setup\">" + script + "</script>");
-        }
-        return this.getHtml();
-    }
-
     public InjectionResult replaceAll(String key, String value) {
         setHtml(getHtml().replaceAll(key, value));
         return this;
-    }
+    }*/
 }

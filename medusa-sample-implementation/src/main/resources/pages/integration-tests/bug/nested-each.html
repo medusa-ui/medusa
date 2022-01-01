@@ -1,5 +1,7 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en"
+      xmlns:m="https://medusa-ui.dev" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="https://medusa-ui.dev https://raw.githubusercontent.com/medusa-ui/medusa/poc/xml-parser/medusa-ui.xsd">
 <head>
     <meta charset="UTF-8">
     <title>Medusa nested each</title>
@@ -9,10 +11,10 @@
 </head>
 <body>
 <div>
-    <button m-click="refresh()">Refresh</button>
+    <button m:click="refresh()">Refresh</button>
 </div>
 <div>
-    <button m-click="add()">Add</button>  <button m-click="remove()">Remove</button>
+    <button m:click="add()">Add</button>  <button m:click="remove()">Remove</button>
 </div>
 <!--<p>Outer - Outer</p>-->
 <!--<div>-->
@@ -25,11 +27,11 @@
 
 <p>Outer - Inner</p>
 <div>
-    [$foreach $outer]
-        [$foreach $inner]
-             [$parent.each] - [$each]<br>
-        [$end for]
-    [$end for]
+    <m:foreach collection="outer" eachName="outerEach">
+        <m:foreach collection="inner" eachName="innerEach">
+            <m:text item="outerEach" /> - <m:text item="innerEach" /><br>
+        </m:foreach>
+    </m:foreach>
 </div>
 
 <!--<p>Inner - Inner</p>-->

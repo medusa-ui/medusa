@@ -9,17 +9,19 @@ import static io.getmedusa.medusa.core.injector.DOMChanges.of;
 @UIEventPage(path="/test/bug/welcome", file = "pages/integration-tests/bug/hello")
 public class WelcomeUIEventHandler {
 
+    int counter = 0;
+
     public PageAttributes setupAttributes() {
         return new PageAttributes()
+                .with("title", "Medusa in trouble " + counter)
                 .with("controller","WelcomeUIEventHandler")
                 .with("counter-value", counter)
                 .with("numberFromPath", 0);
     }
 
-    int counter = 0;
-
     public DOMChanges increaseCounter() {
         counter += 1;
-        return of("counter-value", counter);
+        return of("counter-value", counter)
+                .and("title", "Medusa in trouble " + counter);
     }
 }

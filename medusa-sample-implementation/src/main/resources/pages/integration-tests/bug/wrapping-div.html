@@ -1,5 +1,7 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en"
+      xmlns:m="https://medusa-ui.dev" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="https://medusa-ui.dev https://raw.githubusercontent.com/medusa-ui/medusa/poc/xml-parser/medusa-ui.xsd">
 <head>
     <meta charset="UTF-8">
     <title>Medusa without wrapping divs</title>
@@ -7,14 +9,22 @@
 <body>
 
 <section id="people">
-    [$foreach $people]
-    <div class="person">
-        <p>[$this.each.name]</p>
-    </div>
-    [$end for]
+    <m:foreach collection="people" eachName="person">
+        <div class="person">
+            <p><m:text item="person.name" /></p>
+        </div>
+    </m:foreach>
 </section>
 
-<button id="render" m-click="render()">Re-render</button>
+<section id="people2">
+    <m:foreach collection="people" eachName="person">
+        <div class="person">
+            <p><input type="text" m:value="person.name" /></p>
+        </div>
+    </m:foreach>
+</section>
+
+<button id="render" m:click="render()">Re-render</button>
 
 </body>
 </html>

@@ -25,7 +25,7 @@ class SpelExpressionTest {
     void evalCheck() {
         Map<String, Object> modelMap = new HashMap<>();
         modelMap.put("complex-object", new ComplexObject(new SubObject("x"), 5));
-        assertEquals("x", ExpressionEval.eval("$complex-object.product.name", modelMap));
+        assertEquals("x", ExpressionEval.evalItemAsString("complex-object.product.name", modelMap));
     }
 
     @Test

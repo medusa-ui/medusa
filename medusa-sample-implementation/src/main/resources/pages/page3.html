@@ -1,5 +1,7 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en"
+      xmlns:m="https://medusa-ui.dev" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="https://medusa-ui.dev https://raw.githubusercontent.com/medusa-ui/medusa/poc/xml-parser/medusa-ui.xsd">
 <head>
     <meta charset="UTF-8">
     <title>Medusa demo :: Page 2</title>
@@ -10,10 +12,10 @@
 <body>
 
 <h1>🦑 Hello Medusa :: Page without attributes for setup</h1>
-<div>[$doing]</div>
-<input m-onenter="printText(this.value)" type="text" autocomplete="off" placeholder="Any text" />
-<button m-click="dance()">Dance!</button>
-<button m-click="run()">Run</button>
+<div><m:text item="doing" /></div>
+<input m:onenter="printText(this.value)" type="text" autocomplete="off" placeholder="Any text" />
+<button m:click="dance()">Dance!</button>
+<button m:click="run()">Run</button>
 
 </body>
 </html>

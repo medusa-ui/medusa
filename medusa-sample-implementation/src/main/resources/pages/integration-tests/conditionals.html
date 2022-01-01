@@ -1,5 +1,7 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en"
+      xmlns:m="https://medusa-ui.dev" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="https://medusa-ui.dev https://raw.githubusercontent.com/medusa-ui/medusa/poc/xml-parser/medusa-ui.xsd">
 <head>
     <meta charset="UTF-8">
     <title>Medusa conditionals demo</title>
@@ -10,25 +12,29 @@
 <body>
 <h1>🦑 Hello conditionals</h1>
 
-<p>Global Counter: [$counter-value]</p>
-<button id="increase-counter-button" m-click="increaseCounter(1)">Increase counter</button>
+<p>Global Counter: <m:text item="counter-value" /></p>
+<button id="increase-counter-button" m:click="increaseCounter(1)">Increase counter</button>
 
-[$if($counter-value > 0)]
-        [$if($counter-value > 5)]
-            <p class="conditional-result">Counter is above 5</p>
-        [$else if($counter-value > 2)]
+<m:if condition="counter-value" gt="0">
+    <m:if condition="counter-value" gt="5">
+        <p class="conditional-result">Counter is above 5</p>
+
+        <m:elseif condition="counter-value" gt="2">
             <p class="conditional-result">Counter is above 2</p>
-        [$else]
+        </m:elseif>
+
+        <m:else>
             <p class="conditional-result">Counter is below 2 and 5</p>
-        [$end if]
-[$end if]
+        </m:else>
+    </m:if>
+</m:if>
 
-[$if(1 == 1)]
+<m:if condition="1" eq="1">
     <p id="always-true">Always true</p>
-[$end if]
+</m:if>
 
-[$if(false)]
+<m:if condition="true" eq="false">
     <p id="always-false">Always false</p>
-[$end if]
+</m:if>
 </body>
 </html>
