@@ -142,26 +142,43 @@ _M.handleHydraMenuItemChange = function (k) {
 };
 
 _M.injectVariablesIntoExpression = function(expression) {
-    //interpret this as an actual expression, so we can differentiate between literals, numbers, booleans and to replace variables
     const startIndexOfParameters = expression.indexOf("(");
-    const methodName = expression.substring(0, startIndexOfParameters);
-    const parametersAsOneString = expression.substring(startIndexOfParameters + 1, expression.lastIndexOf(')'));
-    const roughParameters = parametersAsOneString.split(",");
 
-    let parameters = [];
-    for(const roughParameter of roughParameters) {
-        let parameter = roughParameter.trim();
-        if(parameter.length === 0) {
-            continue;
+    //determine if this is a method call or a conditional
+    if(startIndexOfParameters === -1) {
+        //conditional
+        const found = expression.match(new RegExp("[\\w-]+","g"));
+        if(found) {
+            for(const toReplace of found) {
+                const varValue = _M.variables[toReplace];
+                if(typeof varValue === "undefined") {
+                    continue;
+                }
+                expression = expression.replaceAll(toReplace, varValue);
+            }
         }
-        if(!(_M.isQuoted(parameter) || _M.isNumeric(parameter) || _M.isBoolean(parameter))) {
-            parameter = _M.lookupVariable(parameter);
+        return expression;
+    } else {
+        //interpret this as an actual expression, so we can differentiate between literals, numbers, booleans and to replace variables
+        const methodName = expression.substring(0, startIndexOfParameters);
+        const parametersAsOneString = expression.substring(startIndexOfParameters + 1, expression.lastIndexOf(')'));
+        const roughParameters = parametersAsOneString.split(",");
+
+        let parameters = [];
+        for(const roughParameter of roughParameters) {
+            let parameter = roughParameter.trim();
+            if(parameter.length === 0) {
+                continue;
+            }
+            if(!(_M.isQuoted(parameter) || _M.isNumeric(parameter) || _M.isBoolean(parameter))) {
+                parameter = _M.lookupVariable(parameter);
+            }
+
+            parameters.push(parameter);
         }
 
-        parameters.push(parameter);
+        return _M.buildMethod(methodName, parameters);
     }
-
-    return _M.buildMethod(methodName, parameters);
 };
 
 _M.lookupVariable = function(parameter) {
