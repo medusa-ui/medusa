@@ -161,7 +161,7 @@ _M.injectVariablesIntoExpression = function(expression) {
     } else {
         //interpret this as an actual expression, so we can differentiate between literals, numbers, booleans and to replace variables
         const methodName = expression.substring(0, startIndexOfParameters);
-        const parametersAsOneString = expression.substring(startIndexOfParameters + 1, expression.lastIndexOf(')'));
+        const parametersAsOneString = expression.substring(startIndexOfParameters + 1, expression.lastIndexOf(")"));
         const roughParameters = parametersAsOneString.split(",");
 
         let parameters = [];
@@ -211,7 +211,7 @@ _M.isBoolean = function(itemToEval) {
 };
 
 _M.isNumeric = function(str) {
-    if (typeof str != "string") return false;
+    if (typeof str != "string") { return false; }
     return !isNaN(str) && !isNaN(parseFloat(str));
 }
 
