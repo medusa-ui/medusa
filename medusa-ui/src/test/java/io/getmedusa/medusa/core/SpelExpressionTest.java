@@ -29,6 +29,26 @@ class SpelExpressionTest {
     }
 
     @Test
+    void evalMapCheck() {
+        Map<String, Object> modelMap = new HashMap<>();
+        Map<String, String> aMap = new HashMap<>();
+        aMap.put("key23", "value42");
+        modelMap.put("a-map", aMap);
+        assertEquals("value42", ExpressionEval.evalItemAsString("a-map['key23']", modelMap));
+        assertEquals("value42", ExpressionEval.evalItemAsString("a-map[\"key23\"]", modelMap));
+    }
+
+    @Test
+    void evalMapIndirectCheck() {
+        Map<String, Object> modelMap = new HashMap<>();
+        Map<String, String> aMap = new HashMap<>();
+        aMap.put("key23", "value42");
+        modelMap.put("a-map", aMap);
+        modelMap.put("key-object", "key23");
+        assertEquals("value42", ExpressionEval.evalItemAsString("a-map[key-object]", modelMap));
+    }
+
+    @Test
     void ctrlSay() {
         // given
         String tag = "<button m:click='say(\"Hallo World\", 3)' /> ";
