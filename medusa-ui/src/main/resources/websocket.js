@@ -388,10 +388,22 @@ _M.findThroughObjectPath = function (object, path) {
 }
 
 _M.determineDeeperObjectPath = function (path) {
-    if(path.indexOf(".") === -1) {
+    if(!(path.indexOf(".") !== -1 || (path.indexOf("[") !== -1 && path.indexOf("]") !== -1))) {
         return [];
     } else {
-        return path.split(".").slice(1);
+        let paths = path.split(new RegExp("[\.\[]")).slice(1);
+        let index = 0;
+        for(const p of paths) {
+            if(p.endsWith("]")) {
+                let unBracketedPath = p.substring(0, p.length - 1);
+                if(_M.isQuoted(unBracketedPath)) {
+                    unBracketedPath = unBracketedPath.substring(1, unBracketedPath.length - 1);
+                }
+                paths[index] = unBracketedPath;
+            }
+            index++;
+        }
+        return paths;
     }
 }
 

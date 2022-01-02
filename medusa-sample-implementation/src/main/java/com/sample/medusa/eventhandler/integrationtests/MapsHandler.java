@@ -6,6 +6,7 @@ import io.getmedusa.medusa.core.injector.DOMChanges;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import static io.getmedusa.medusa.core.injector.DOMChanges.of;
 
@@ -29,6 +30,6 @@ public class MapsHandler {
     }
 
     public DOMChanges updatePerson() {
-        return of("person", new Person("", "Jane"));
+        return of("person", new Person("", UUID.randomUUID().toString()));
     }
 }

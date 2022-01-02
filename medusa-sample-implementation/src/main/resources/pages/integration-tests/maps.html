@@ -12,7 +12,14 @@
 <body>
 <p>Person object: <m:text item="person.name" /></p>
 <p>My map value: <m:text item="my-map['a']" /></p>
+<p>My map value: <m:text item='my-map["a"]' /></p>
 <p>My array value: <m:text item="my-array[0]" /></p>
+
+<!-- Alternative to consider? But then how does this work in a click event? -->
+<!-- p>My map value: <m:text item="my-map" itemKey="'a'" /></p-->
+<!-- p>My array value: <m:text item="my-array" itemKey="0" /></p-->
+
+<p>//TODO add iteration w/ each + click event w/ such element</p>
 
 <button m:click="updateMap()">Update the map</button>
 <br>

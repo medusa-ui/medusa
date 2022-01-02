@@ -62,10 +62,10 @@ public abstract class ExpressionEval {
 
     private static Object interpretValue(String value, Map<String, Object> variables) {
         if (!variables.containsKey(value)) {
-            if (value.contains(".")) {
-                String[] variableKeySplit = value.split("\\.", 2);
+            if(value.contains(".") || (value.contains("[") && value.contains("]"))) {
+                String[] variableKeySplit = value.split("[.\\[]", 2);
                 Object objValue = variables.get(variableKeySplit[0]);
-                Object subValue = SpelExpressionParserHelper.getValue(variableKeySplit[1], objValue);
+                Object subValue = SpelExpressionParserHelper.getValue(restOfKey(value, variableKeySplit[0]), objValue);
                 if (subValue.getClass().getPackage().getName().startsWith("java.")) {
                     return subValue;
                 } else {
@@ -81,6 +81,12 @@ public abstract class ExpressionEval {
             }
         }
         return null;
+    }
+
+    private static String restOfKey(String fullKey, String partOfKeyToIgnore) {
+        final String restOfKey = fullKey.substring(partOfKeyToIgnore.length());
+        if(restOfKey.startsWith(".")) return restOfKey.substring(1);
+        return restOfKey;
     }
 
     private static IllegalArgumentException unableToRenderFullObjectException(String value, Class<? extends Object> objValueClass) {
