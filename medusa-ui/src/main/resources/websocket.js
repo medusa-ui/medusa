@@ -281,12 +281,16 @@ _M.handleMAttribute = function (mId, trueFunc, falseFunc, evalValue) {
 
 _M.handleDefaultEvent = function(k) {
     _M.variables[k.f] = k.v;
-    document.querySelectorAll("[from-value="+k.f+"]").forEach(function(e) {
+    document.querySelectorAll("[from-value^="+k.f+"]").forEach(function(e) {
+        let valueToSet = k.v;
+        const deeperObjectPath = _M.determineDeeperObjectPath(e.getAttribute("from-value"));
+        valueToSet = _M.findThroughObjectPath(valueToSet, deeperObjectPath);
+
         if(e.hasAttribute("value")) {
-            e.setAttribute("value", k.v);
+            e.setAttribute("value", valueToSet);
             e.dispatchEvent(new Event('input'));
         } else {
-            e.innerText = k.v;
+            e.innerText = valueToSet;
         }
     });
 
