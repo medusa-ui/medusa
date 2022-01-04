@@ -22,7 +22,7 @@
 
     <!-- does not work as expected -->
     <!-- restrict choice of elements -->
-    <xs:group name="medusa" >
+     <xs:group name="medusa" >
         <xs:sequence>
             <xs:any/>
             <xs:element ref="m:text" />
@@ -83,7 +83,7 @@
                 Condition
             </xs:documentation>
         </xs:annotation>
-        <xs:complexType>
+        <xs:complexType mixed="true">
             <xs:choice>
                 <xs:group ref="m:medusa"/>
                 <xs:element ref="m:elseif"/>
