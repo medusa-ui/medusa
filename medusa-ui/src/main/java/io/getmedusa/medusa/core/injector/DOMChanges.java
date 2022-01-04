@@ -111,7 +111,7 @@ public class DOMChanges {
 
         public DOMChange(String field, Object value) {
             this.f = field;
-            this.v = value;
+            this.v = value == null ? "null" : value;
         }
 
         public DOMChange(String field, Object value, DOMChange.DOMChangeType type) {

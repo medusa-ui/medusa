@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:m="https://medusa-ui.dev" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="https://medusa-ui.dev https://raw.githubusercontent.com/medusa-ui/medusa/poc/xml-parser/medusa-ui.xsd">
+<head>
+    <meta charset="UTF-8">
+    <title m:item="title"></title>
+    <link href="/stylesheet.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter&family=Merriweather&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <h1>🦑 Hello <code>null</code>-condition</h1>
+
+    <div>
+        Is data null?
+        <m:if condition="null != null-condition" eq="true">
+            <p><b class="conditional-result">NO</b>, data is not null but set to <m:text item="null-condition"/></p>
+            <m:else>
+               <p><b class="conditional-result">YES</b></p>
+            </m:else>
+        </m:if>
+        <button id="set_btn" m:click="setData()">Set data</button>
+        <button id="reset_btn"  m:click="resetData()">Reset data</button>
+    </div>
+
+</body>
+</html>

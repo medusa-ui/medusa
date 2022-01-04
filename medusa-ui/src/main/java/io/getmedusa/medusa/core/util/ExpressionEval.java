@@ -84,14 +84,12 @@ public abstract class ExpressionEval {
     }
 
     private static boolean isCompatibleToRender(Object objValue) {
-        try {
-            if (objValue.getClass().getComponentType() != null) {
-                return objValue.getClass().getComponentType().getPackage().getName().startsWith("java.");
-            } else {
-                return objValue.getClass().getPackage().getName().startsWith("java.");
-            }
-        } catch (NullPointerException e) {
-            return false;
+        if (null == objValue) {
+            return true;
+        } else if (objValue.getClass().getComponentType() != null) {
+            return objValue.getClass().getComponentType().getPackage().getName().startsWith("java.");
+        } else {
+            return objValue.getClass().getPackage().getName().startsWith("java.");
         }
     }
 
