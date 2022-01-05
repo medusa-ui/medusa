@@ -87,7 +87,7 @@ public abstract class ExpressionEval {
         String rest = restOfKey(fullKey, partOfKeyToIgnore);
         if (rest.startsWith("[") && rest.endsWith("]")) {
             String key = rest.substring(1, rest.length() - 1);
-            if (key.startsWith("'") || key.startsWith("\"")) {
+            if (key.startsWith("'") || key.startsWith("\"") || key.matches("\\d+")) {
                 return rest;
             } else {
                 return "['" + interpretValue(key, variables) + "']";

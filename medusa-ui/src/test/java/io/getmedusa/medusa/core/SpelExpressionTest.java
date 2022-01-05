@@ -49,6 +49,23 @@ class SpelExpressionTest {
     }
 
     @Test
+    public void evalArrayCheck() {
+        Map<String, Object> modelMap = new HashMap<>();
+        int[] anArray = { 3, 4, 5 };
+        modelMap.put("an-array", anArray);
+        assertEquals("4", ExpressionEval.evalItemAsString("an-array[1]", modelMap));
+    }
+
+    @Test
+    public void evalArrayIndirectCheck() {
+        Map<String, Object> modelMap = new HashMap<>();
+        int[] anArray = { 3, 4, 5 };
+        modelMap.put("an-array", anArray);
+        modelMap.put("index", 1);
+        assertEquals("4", ExpressionEval.evalItemAsString("an-array[index]", modelMap));
+    }
+
+    @Test
     void ctrlSay() {
         // given
         String tag = "<button m:click='say(\"Hallo World\", 3)' /> ";
