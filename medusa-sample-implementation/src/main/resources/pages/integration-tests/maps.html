@@ -15,11 +15,15 @@
 <p>My map value: <m:text item='my-map["a"]' /></p>
 <p>My array value: <m:text item="my-array[0]" /></p>
 
-<!-- Alternative to consider? But then how does this work in a click event? -->
-<!-- p>My map value: <m:text item="my-map" itemKey="'a'" /></p-->
-<!-- p>My array value: <m:text item="my-array" itemKey="0" /></p-->
+<p>Map foreach:</p>
+<m:foreach collection="my-map" eachName="mapEntry">
+    <p><m:text item="mapEntry.key" /> - <m:text item="mapEntry.value" /></p>
+</m:foreach>
 
-<p>//TODO add iteration w/ each + click event w/ such element</p>
+<p>Array foreach:</p>
+<m:foreach collection="my-array" eachName="arrayEntry">
+    <p><m:text item="arrayEntry" /></p>
+</m:foreach>
 
 <button m:click="updateMap()">Update the map</button>
 <br>

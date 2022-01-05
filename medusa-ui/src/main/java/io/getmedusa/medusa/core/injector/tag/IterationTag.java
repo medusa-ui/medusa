@@ -55,9 +55,18 @@ public class IterationTag extends AbstractTag {
             foreachElement.appendChild(template);
 
             Object conditionParsed = parseConditionWithVariables(collection, variables);
-            if (conditionParsed instanceof Collection) {
-                //a true 'foreach', the 'each' becomes each element of the collection
-                Object[] arrayCondition = conditionAsArray(conditionParsed);
+            if (conditionParsed instanceof Collection || conditionParsed instanceof Map || conditionParsed.getClass().isArray()) {
+                final Object[] arrayCondition;
+                if(conditionParsed instanceof Collection) {
+                    //a true 'foreach', the 'each' becomes each element of the collection
+                    arrayCondition = conditionAsArray(conditionParsed);
+                } else if(conditionParsed instanceof Map) {
+                    //in a map, each 'each' becomes an entry of the map
+                    arrayCondition = conditionAsMapEntryArray(conditionParsed);
+                } else {
+                    arrayCondition = (Object[]) conditionParsed;
+                }
+
                 for (int i = 0; i < arrayCondition.length; i++) {
                     Object obj = arrayCondition[i];
                     handleIteration(foreachElement, template, i, obj, templateID, eachName, request);
@@ -149,6 +158,11 @@ public class IterationTag extends AbstractTag {
     @SuppressWarnings("unchecked")
     private Object[] conditionAsArray(Object conditionParsed) {
         return ((Collection<Object>) conditionParsed).toArray();
+    }
+
+    private Object[] conditionAsMapEntryArray(Object conditionParsed) {
+        Map<Object, Object> conditionMap = (Map<Object, Object>) conditionParsed;
+        return conditionMap.entrySet().toArray();
     }
 
 }

@@ -74,7 +74,7 @@ public abstract class ExpressionEval {
             }
         } else {
             Object objValue = variables.get(value);
-            if (objValue.getClass().getPackage().getName().startsWith("java.")) {
+            if (isCompatibleToRender(objValue)) {
                 return objValue;
             } else {
                 throw unableToRenderFullObjectException(value, objValue.getClass());
@@ -94,6 +94,18 @@ public abstract class ExpressionEval {
             }
         } else {
             return rest;
+        }
+    }
+
+    private static boolean isCompatibleToRender(Object objValue) {
+        try {
+            if (objValue.getClass().getComponentType() != null) {
+                return objValue.getClass().getComponentType().getPackage().getName().startsWith("java.");
+            } else {
+                return objValue.getClass().getPackage().getName().startsWith("java.");
+            }
+        } catch (NullPointerException e) {
+            return false;
         }
     }
 
