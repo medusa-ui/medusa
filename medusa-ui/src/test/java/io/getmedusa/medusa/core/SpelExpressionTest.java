@@ -49,7 +49,7 @@ class SpelExpressionTest {
     }
 
     @Test
-    public void evalArrayCheck() {
+    void evalArrayCheck() {
         Map<String, Object> modelMap = new HashMap<>();
         int[] anArray = { 3, 4, 5 };
         modelMap.put("an-array", anArray);
@@ -57,12 +57,21 @@ class SpelExpressionTest {
     }
 
     @Test
-    public void evalArrayIndirectCheck() {
+    void evalArrayIndirectCheck() {
         Map<String, Object> modelMap = new HashMap<>();
         int[] anArray = { 3, 4, 5 };
         modelMap.put("an-array", anArray);
         modelMap.put("index", 1);
         assertEquals("4", ExpressionEval.evalItemAsString("an-array[index]", modelMap));
+    }
+
+    @Test
+    void evalNestedMap() {
+        Map<String, Object> modelMap = new HashMap<>();
+        modelMap.put("map2", Map.of("y", "123"));
+        modelMap.put("map", Map.of("x", "y"));
+        modelMap.put("key", "x");
+        System.out.println(ExpressionEval.evalItemAsString("map2[map[key]]", modelMap));
     }
 
     @Test

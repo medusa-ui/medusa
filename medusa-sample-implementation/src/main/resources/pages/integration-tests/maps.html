@@ -16,24 +16,26 @@
 <p>My array value: <span class="array-0"><m:text item="my-array[0]" /></span></p>
 
 <p>Map foreach:</p>
-<div class="map-foreach">
 <m:foreach collection="my-map" eachName="mapEntry">
-    <p><m:text item="mapEntry.key" /> - <m:text item="mapEntry.value" /></p>
+    <p class="map-foreach"><m:text item="mapEntry.key" /> - <m:text item="mapEntry.value" /></p>
 </m:foreach>
-</div>
 
 <p>Array foreach:</p>
-<div class="array-foreach">
 <m:foreach collection="my-array" eachName="arrayEntry">
-    <p><m:text item="arrayEntry" /></p>
+    <p class="array-foreach"><m:text item="arrayEntry" /></p>
 </m:foreach>
-</div>
 
 <button id="change-map" m:click="updateMap()">Update the map</button>
 <br>
 <button id="change-array" m:click="updateArray()">Update the array</button>
 <br>
 <button id="change-person" m:click="updatePerson()">Update person</button>
+
+<hr/>
+
+<!-- m:foreach collection="my-map" eachName="mapEntry">
+    <p class="nestedEntryLookup"><m:text item="mapEntry.key" /> # <m:text item="mapEntry[mapEntry.key]" /></p>
+</m:foreach -->
 
 </body>
 </html>

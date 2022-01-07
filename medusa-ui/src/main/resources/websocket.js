@@ -195,7 +195,7 @@ _M.lookupVariable = function(parameter, element) {
     }
     const deeperObjectPath = _M.determineDeeperObjectPath(parameter);
     const paramValue = _M.findPotentialEachValue(element, baseParameter);
-    return _M.considerVariableWrap(_M.findThroughObjectPath(paramValue, deeperObjectPath));
+    return _M.considerVariableWrap(_M.findThroughObjectPath(paramValue, null, deeperObjectPath));
 };
 
 _M.considerVariableWrap = function (value) {
@@ -284,7 +284,7 @@ _M.handleDefaultEvent = function(k) {
     document.querySelectorAll("[from-value^="+k.f+"]").forEach(function(e) {
         let valueToSet = k.v;
         const deeperObjectPath = _M.determineDeeperObjectPath(e.getAttribute("from-value"));
-        valueToSet = _M.findThroughObjectPath(valueToSet, deeperObjectPath);
+        valueToSet = _M.findThroughObjectPath(valueToSet, null, deeperObjectPath);
 
         if(e.hasAttribute("value")) {
             e.setAttribute("value", valueToSet);
@@ -329,20 +329,20 @@ _M.handleIterationCheck = function (k) {
         let index = 0;
         if(Array.isArray(currentEachValues)) {
             for(const currentEachValue of currentEachValues) {
-                const block = _M.buildIterationBlock(currentEachValue, divTemplate, index++);
+                const block = _M.buildIterationBlock(divTemplate, index++);
                 if(typeof _M.preRender !== "undefined") { _M.preRender(k, block); }
                 template.parentNode.insertBefore(block, template);
             }
         } else {
             for (let i = 0; i < currentEachValues; i++) {
-                const block = _M.buildIterationBlock(i, divTemplate, index++);
+                const block = _M.buildIterationBlock(divTemplate, index++);
                 if(typeof _M.preRender !== "undefined") { _M.preRender(k, block); }
                 template.parentNode.insertBefore(block, template);
             }
         }
     });
 };
-_M.buildIterationBlock = function (rootEachValue, templateDiv, index) {
+_M.buildIterationBlock = function (templateDiv, index) {
     const node = templateDiv.cloneNode(true);
     node.querySelectorAll("template").forEach(function (templateNode) { templateNode.remove(); });
     node.setAttribute("index", index.toString());
@@ -364,8 +364,7 @@ _M.buildIterationBlockMEachHandling = function (divWithMEach) {
             const deeperObjectPath = _M.determineDeeperObjectPath(specificSpan.getAttribute("from-value"));
             const index = parseInt(mapEntry["index"], 10);
             const conditional = _M.conditionals[mapEntry["templateId"]];
-            let foundObject = _M.variables[conditional][index];
-            foundObject = _M.findThroughObjectPath(foundObject, deeperObjectPath);
+            let foundObject = _M.findThroughObjectPath(_M.variables[conditional], index, deeperObjectPath);
             const via = specificSpan.getAttribute("via");
             if(via === null) {
                 specificSpan.textContent = foundObject;
@@ -376,15 +375,36 @@ _M.buildIterationBlockMEachHandling = function (divWithMEach) {
     }
 }
 
-_M.findThroughObjectPath = function (object, path) {
-    if(path.length === 0) return object;
-
-    while (path.length > 0) {
-        object = object[path[0]];
-        path = path.slice(1);
+_M.findThroughObjectPath = function (variable, index, path) {
+    let object;
+    if(index == null) {
+        object = variable;
+    } else {
+        object = variable[index];
     }
 
-    return object;
+    if(typeof object === "string" || typeof object === "number") {
+        return object;
+    } else {
+        const possibleKeys = Object.keys(variable);
+        const possibleKey = possibleKeys[index];
+
+        if(path.length === 0) return object;
+
+        while (path.length > 0) {
+            const currentPath = path[0];
+            if("key" === currentPath) {
+                return possibleKey;
+            } else if ("value" === currentPath) {
+                return variable[possibleKey];
+            } else {
+                object = object[currentPath];
+                path = path.slice(1);
+            }
+        }
+
+        return object;
+    }
 }
 
 _M.determineDeeperObjectPath = function (path) {
@@ -435,7 +455,7 @@ _M.resolveTemplateId = function (template) {
 
 _M.resolveTemplateCondition = function (templateId) {
     const condition = _M.conditionals[templateId];
-    return _M.variables[condition];
+    return Object.keys(_M.variables[condition]);
 }
 
 _M.unwrap = function (node){

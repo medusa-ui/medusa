@@ -1,18 +1,20 @@
 package com.sample.medusa;
 
 import com.sample.medusa.meta.AbstractSeleniumTest;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.util.Collections;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class MapsIntegrationTest extends AbstractSeleniumTest {
+class MapsIntegrationTest extends AbstractSeleniumTest {
 
     @Test
-    public void testRendering() {
+    void testRendering() {
         goTo("/maps");
 
         assertEquals("Medusa using HashMaps and Arrays", driver.getTitle());
@@ -21,14 +23,17 @@ public class MapsIntegrationTest extends AbstractSeleniumTest {
         assertEquals(List.of("1"), getTextByCss(".map-doubleq-a"));
         assertEquals(List.of("a1"), getTextByCss(".array-0"));
 
-        List<String> actual = getTextByCss(".map-foreach");
-        assertTrue(actual.contains("a - 1\nb - 2") || actual.contains("b - 2\na - 1"));
+        List<String> mapForeach = getTextByCss(".map-foreach");
+        Collections.sort(mapForeach);
+        Assertions.assertEquals("[a - 1, b - 2]", mapForeach.toString());
 
-        assertEquals(List.of("a1\nb2"), getTextByCss(".array-foreach"));
+        final List<String> arrayElements = getTextByCss(".array-foreach");
+        Collections.sort(arrayElements);
+        assertEquals("[a1, b2]", arrayElements.toString());
     }
 
     @Test
-    public void testUpdated() {
+    void testUpdated() {
         goTo("/maps");
 
         assertEquals("Medusa using HashMaps and Arrays", driver.getTitle());
@@ -40,15 +45,15 @@ public class MapsIntegrationTest extends AbstractSeleniumTest {
         assertEquals(List.of("5"), getTextByCss(".map-singleq-a"));
         assertEquals(List.of("5"), getTextByCss(".map-doubleq-a"));
 
-        // TODO: address: foreach loops iterating over a map don't seem to update
-        /*
-        List<String> actual = getTextByCss(".map-foreach");
-        assertTrue(actual.contains("a - 5\nb - 6") || actual.contains("b - 6\na - 5"));
-        */
+        List<String> mapForeach = getTextByCss(".map-foreach");
+        Collections.sort(mapForeach);
+        Assertions.assertEquals("[a - 5, b - 6]", mapForeach.toString());
 
         clickById("change-array");
         assertEquals(List.of("a5"), getTextByCss(".array-0"));
-        assertEquals(List.of("a5\nb6"), getTextByCss(".array-foreach"));
+        final List<String> arrayElements = getTextByCss(".array-foreach");
+        Collections.sort(arrayElements);
+        assertEquals("[a5, b6]", arrayElements.toString());
     }
 
 }
