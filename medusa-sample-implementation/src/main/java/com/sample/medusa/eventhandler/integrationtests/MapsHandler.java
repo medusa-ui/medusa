@@ -10,7 +10,7 @@ import java.util.UUID;
 
 import static io.getmedusa.medusa.core.injector.DOMChanges.of;
 
-@UIEventPage(path = "/test/maps", file = "pages/integration-tests/maps.html")
+@UIEventPage(path = "/maps", file = "pages/integration-tests/maps.html")
 public class MapsHandler {
 
     public PageAttributes setupAttributes() {
@@ -30,6 +30,6 @@ public class MapsHandler {
     }
 
     public DOMChanges updatePerson() {
-        return of("person", new Person("", UUID.randomUUID().toString()));
+        return of("person", new Person("", "Paul"));
     }
 }

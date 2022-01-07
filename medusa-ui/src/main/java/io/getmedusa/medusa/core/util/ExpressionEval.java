@@ -65,7 +65,7 @@ public abstract class ExpressionEval {
             if(value.contains(".") || (value.contains("[") && value.contains("]"))) {
                 String[] variableKeySplit = value.split("[.\\[]", 2);
                 Object objValue = variables.get(variableKeySplit[0]);
-                Object subValue = SpelExpressionParserHelper.getValue(restOfKey(value, variableKeySplit[0]), objValue);
+                Object subValue = SpelExpressionParserHelper.getValue(maybeResolveRestOfKey(value, variableKeySplit[0], variables), objValue);
                 if (subValue.getClass().getPackage().getName().startsWith("java.")) {
                     return subValue;
                 } else {
@@ -81,6 +81,20 @@ public abstract class ExpressionEval {
             }
         }
         return null;
+    }
+
+    private static String maybeResolveRestOfKey(String fullKey, String partOfKeyToIgnore, Map<String, Object> variables) {
+        String rest = restOfKey(fullKey, partOfKeyToIgnore);
+        if (rest.startsWith("[") && rest.endsWith("]")) {
+            String key = rest.substring(1, rest.length() - 1);
+            if (key.startsWith("'") || key.startsWith("\"") || key.matches("\\d+")) {
+                return rest;
+            } else {
+                return "['" + interpretValue(key, variables) + "']";
+            }
+        } else {
+            return rest;
+        }
     }
 
     private static boolean isCompatibleToRender(Object objValue) {
