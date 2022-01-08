@@ -84,6 +84,8 @@ public abstract class ExpressionEval {
         return value;
     }
 
+
+
     public static String resolveRestOfKey(String path, Map<String, Object> variables) {
         if(path.endsWith("]")) {
             path = "[" + path;
@@ -92,6 +94,20 @@ public abstract class ExpressionEval {
                     pathPart = pathPart.replace("]", "");
                     final String interpretValue = interpretValue(pathPart, variables).toString();
                     path = path.replaceAll("\\["+pathPart+"]", "[" + interpretValue + "]");
+                }
+            }
+        }
+
+        final int length = path.length() - 1;
+        if(1 < length) {
+            final String subPath = path.substring(1, length);
+            if (subPath.contains("[")) {
+                String[] variableKeySplit = subPath.split("[.\\[]", 2);
+                Object objValue = variables.get(variableKeySplit[0]);
+                if(objValue != null) {
+                    String restOfKey = resolveRestOfKey(variableKeySplit[1], variables);
+                    Object subValue = SpelExpressionParserHelper.getValue(restOfKey, objValue);
+                    return "[" + subValue.toString() + "]";
                 }
             }
         }
@@ -109,12 +125,6 @@ public abstract class ExpressionEval {
         } catch (NullPointerException e) {
             return false;
         }
-    }
-
-    private static String restOfKey(String fullKey, String partOfKeyToIgnore) {
-        final String restOfKey = fullKey.substring(partOfKeyToIgnore.length());
-        if(restOfKey.startsWith(".")) return restOfKey.substring(1);
-        return restOfKey;
     }
 
     private static IllegalArgumentException unableToRenderFullObjectException(String value, Class<? extends Object> objValueClass) {
