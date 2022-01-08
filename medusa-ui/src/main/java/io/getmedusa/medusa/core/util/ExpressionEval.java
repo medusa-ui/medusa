@@ -65,7 +65,8 @@ public abstract class ExpressionEval {
             if(value.contains(".") || (value.contains("[") && value.contains("]"))) {
                 String[] variableKeySplit = value.split("[.\\[]", 2);
                 Object objValue = variables.get(variableKeySplit[0]);
-                Object subValue = SpelExpressionParserHelper.getValue(maybeResolveRestOfKey(value, variableKeySplit[0], variables), objValue);
+                String restOfKey = resolveRestOfKey(variableKeySplit[1], variables);
+                Object subValue = SpelExpressionParserHelper.getValue(restOfKey, objValue);
                 if (subValue.getClass().getPackage().getName().startsWith("java.")) {
                     return subValue;
                 } else {
@@ -74,27 +75,28 @@ public abstract class ExpressionEval {
             }
         } else {
             Object objValue = variables.get(value);
-            if (isCompatibleToRender(objValue)) {
+            if (objValue.getClass().getPackage().getName().startsWith("java.")) {
                 return objValue;
             } else {
                 throw unableToRenderFullObjectException(value, objValue.getClass());
             }
         }
-        return null;
+        return value;
     }
 
-    private static String maybeResolveRestOfKey(String fullKey, String partOfKeyToIgnore, Map<String, Object> variables) {
-        String rest = restOfKey(fullKey, partOfKeyToIgnore);
-        if (rest.startsWith("[") && rest.endsWith("]")) {
-            String key = rest.substring(1, rest.length() - 1);
-            if (key.startsWith("'") || key.startsWith("\"") || key.matches("\\d+")) {
-                return rest;
-            } else {
-                return "['" + interpretValue(key, variables) + "']";
+    public static String resolveRestOfKey(String path, Map<String, Object> variables) {
+        if(path.endsWith("]")) {
+            path = "[" + path;
+            for(String pathPart : path.split("\\[")) {
+                if(!pathPart.isEmpty()) {
+                    pathPart = pathPart.replace("]", "");
+                    final String interpretValue = interpretValue(pathPart, variables).toString();
+                    path = path.replaceAll("\\["+pathPart+"]", "[" + interpretValue + "]");
+                }
             }
-        } else {
-            return rest;
         }
+
+        return path;
     }
 
     private static boolean isCompatibleToRender(Object objValue) {

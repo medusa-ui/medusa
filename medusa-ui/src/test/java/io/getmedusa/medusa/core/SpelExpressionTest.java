@@ -72,6 +72,17 @@ class SpelExpressionTest {
         modelMap.put("map", Map.of("x", "y"));
         modelMap.put("key", "x");
         System.out.println(ExpressionEval.evalItemAsString("map2[map[key]]", modelMap));
+        assertEquals("123", ExpressionEval.evalItemAsString("map2[map[key]]", modelMap));
+    }
+
+    @Test
+    void evalManyMaps() {
+        Map<String, Object> modelMap = new HashMap<>();
+        modelMap.put("person", new SubObject("y"));
+        modelMap.put("bigmap", Map.of("x", Map.of("y", "123")));
+        modelMap.put("key", "x");
+        System.out.println(ExpressionEval.evalItemAsString("bigmap[key][person.name]", modelMap));
+        assertEquals("123", ExpressionEval.evalItemAsString("bigmap[key][person.name]", modelMap));
     }
 
     @Test
