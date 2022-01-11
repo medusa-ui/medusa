@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:m="https://medusa-ui.dev" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="https://medusa-ui.dev https://raw.githubusercontent.com/medusa-ui/medusa/poc/xml-parser/medusa-ui.xsd">
+<head>
+    <meta charset="UTF-8">
+    <title>Medusa conditional bug?</title>
+    <link href="/stylesheet.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter&family=Merriweather&display=swap" rel="stylesheet">
+</head>
+<body>
+<h1>🦑 Yet another counter</h1>
+
+<p>Counter value: <span id="counter-value"><m:text item="counter.value" /></span></p>
+
+<m:if condition="counter.value" gt="0">
+    <m:if condition="counter.value" gt="5">
+        <p class="conditional-result">Counter is above 5</p>
+
+        <m:elseif condition="counter.value" gte="2">
+            <p class="conditional-result">Counter is 2 or above</p>
+        </m:elseif>
+
+        <m:else>
+            <p class="conditional-result">Counter is below 2 and 5</p>
+        </m:else>
+    </m:if>
+</m:if>
+
+<button id="interact" m:click="increment()">increment counter</button>
+
+</body>
+</html>
