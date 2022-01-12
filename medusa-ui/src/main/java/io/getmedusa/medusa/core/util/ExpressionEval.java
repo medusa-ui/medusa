@@ -36,7 +36,6 @@ public abstract class ExpressionEval {
     public static String evalItemAsString(String itemToEval, Map<String, Object> variables) {
         try {
             Object val = interpretValue(itemToEval, variables);
-            if (val == null) return null;
             return val.toString();
         } catch (SpelEvaluationException e) {
             return null;
@@ -67,24 +66,32 @@ public abstract class ExpressionEval {
                 Object objValue = variables.get(variableKeySplit[0]);
                 String restOfKey = resolveRestOfKey(variableKeySplit[1], variables);
                 Object subValue = SpelExpressionParserHelper.getValue(restOfKey, objValue);
-                if (subValue.getClass().getPackage().getName().startsWith("java.")) {
-                    return subValue;
-                } else {
-                    throw unableToRenderFullObjectException(value, subValue.getClass());
-                }
+                return validateCompatibleValue(subValue);
             }
         } else {
-            Object objValue = variables.get(value);
-            if (objValue.getClass().getPackage().getName().startsWith("java.")) {
-                return objValue;
-            } else {
-                throw unableToRenderFullObjectException(value, objValue.getClass());
-            }
+            return validateCompatibleValue(variables.get(value));
         }
         return value;
     }
 
+    private static Object validateCompatibleValue(Object objValue) {
+        try {
+            boolean isValid;
+            if (objValue.getClass().getComponentType() != null) {
+                isValid = objValue.getClass().getComponentType().getPackage().getName().startsWith("java.");
+            } else {
+                isValid = objValue.getClass().getPackage().getName().startsWith("java.");
+            }
 
+            if(isValid) {
+                return objValue;
+            } else {
+                throw unableToRenderFullObjectException(objValue.toString(), objValue.getClass());
+            }
+        } catch (NullPointerException e) {
+            return false;
+        }
+    }
 
     public static String resolveRestOfKey(String path, Map<String, Object> variables) {
         if(path.endsWith("]")) {
