@@ -195,7 +195,7 @@ _M.lookupVariable = function(parameter, element) {
     }
     const deeperObjectPath = _M.determineDeeperObjectPath(parameter);
     const paramValue = _M.findPotentialEachValue(element, baseParameter);
-    return _M.considerVariableWrap(_M.findThroughObjectPath(paramValue, null, deeperObjectPath));
+    return _M.considerVariableWrap(_M.findThroughObjectPath(paramValue, null, deeperObjectPath, null));
 };
 
 _M.considerVariableWrap = function (value) {
@@ -284,7 +284,7 @@ _M.handleDefaultEvent = function(k) {
     document.querySelectorAll("[from-value^="+k.f+"]").forEach(function(e) {
         let valueToSet = k.v;
         const deeperObjectPath = _M.determineDeeperObjectPath(e.getAttribute("from-value"));
-        valueToSet = _M.findThroughObjectPath(valueToSet, null, deeperObjectPath);
+        valueToSet = _M.findThroughObjectPath(valueToSet, null, deeperObjectPath, null);
 
         if(e.hasAttribute("value")) {
             e.setAttribute("value", valueToSet);
@@ -323,48 +323,55 @@ _M.handleIterationCheck = function (k) {
     // set new values
     document.querySelectorAll("[m-id="+k.f+"]").forEach(function(template) {
         const templateId = _M.resolveTemplateId(template);
-        const currentEachValues = _M.resolveTemplateCondition(templateId);
+        const eachObject = _M.resolveTemplateCondition(templateId);
+        const currentEachValues = Object.keys(eachObject);
         const divTemplate = template.content.children[0];
 
         let index = 0;
         if(Array.isArray(currentEachValues)) {
             for(const currentEachValue of currentEachValues) {
-                const block = _M.buildIterationBlock(divTemplate, index++);
+                const block = _M.buildIterationBlock(divTemplate, index++, eachObject);
                 if(typeof _M.preRender !== "undefined") { _M.preRender(k, block); }
                 template.parentNode.insertBefore(block, template);
             }
         } else {
             for (let i = 0; i < currentEachValues; i++) {
-                const block = _M.buildIterationBlock(divTemplate, index++);
+                const block = _M.buildIterationBlock(divTemplate, index++, eachObject);
                 if(typeof _M.preRender !== "undefined") { _M.preRender(k, block); }
                 template.parentNode.insertBefore(block, template);
             }
         }
     });
 };
-_M.buildIterationBlock = function (templateDiv, index) {
+_M.buildIterationBlock = function (templateDiv, index, eachObject) {
     const node = templateDiv.cloneNode(true);
     node.querySelectorAll("template").forEach(function (templateNode) { templateNode.remove(); });
     node.setAttribute("index", index.toString());
 
-    _M.buildIterationBlockMEachHandling(node);
+    _M.buildIterationBlockMEachHandling(node, eachObject);
     node.querySelectorAll("[m-each]").forEach(function (divWithMEach) {
-        _M.buildIterationBlockMEachHandling(divWithMEach);
+        _M.buildIterationBlockMEachHandling(divWithMEach, eachObject);
     });
 
     return node;
 }
 
-_M.buildIterationBlockMEachHandling = function (divWithMEach) {
+_M.buildIterationBlockMEachHandling = function (divWithMEach, eachObject) {
     const templateMap = _M.buildTemplateMap(divWithMEach);
 
     for(const mapEntry of templateMap) {
         const eachName = mapEntry["eachName"];
+        const keyRefWhichIsValueReferential = eachName + "[" + eachName + ".key]";
+        const valueReferential = eachName + ".value";
         divWithMEach.querySelectorAll("[from-value^='"+eachName+"']").forEach(function (specificSpan) {
-            const deeperObjectPath = _M.determineDeeperObjectPath(specificSpan.getAttribute("from-value"));
+            let path = specificSpan.getAttribute("from-value");
+            if(keyRefWhichIsValueReferential === path) {
+                path = valueReferential;
+            }
+            const deeperObjectPath = _M.determineDeeperObjectPath(path);
             const index = parseInt(mapEntry["index"], 10);
             const conditional = _M.conditionals[mapEntry["templateId"]];
-            let foundObject = _M.findThroughObjectPath(_M.variables[conditional], index, deeperObjectPath);
+            let foundObject = _M.findThroughObjectPath(_M.variables[conditional], index, deeperObjectPath, eachObject);
             const via = specificSpan.getAttribute("via");
             if(via === null) {
                 specificSpan.textContent = foundObject;
@@ -375,7 +382,7 @@ _M.buildIterationBlockMEachHandling = function (divWithMEach) {
     }
 }
 
-_M.findThroughObjectPath = function (variable, index, path) {
+_M.findThroughObjectPath = function (variable, index, path, eachObject) {
     let object;
     if(index == null) {
         object = variable;
@@ -398,7 +405,11 @@ _M.findThroughObjectPath = function (variable, index, path) {
             } else if ("value" === currentPath) {
                 return variable[possibleKey];
             } else {
-                object = object[currentPath];
+                if(eachObject !== null && object === undefined) {
+                    object = eachObject;
+                } else {
+                    object = object[currentPath];
+                }
                 path = path.slice(1);
             }
         }
@@ -455,7 +466,7 @@ _M.resolveTemplateId = function (template) {
 
 _M.resolveTemplateCondition = function (templateId) {
     const condition = _M.conditionals[templateId];
-    return Object.keys(_M.variables[condition]);
+    return _M.variables[condition];
 }
 
 _M.unwrap = function (node){
