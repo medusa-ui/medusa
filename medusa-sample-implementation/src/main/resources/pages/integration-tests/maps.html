@@ -39,27 +39,32 @@
 
 <hr/>
 
-<m:if condition="my-map['a']" eq="5">
-    <p>My map equals 5</p>
+<div id="conditional-map-lookup">
+    <m:if condition="my-map['a']" eq="5">
+        <p>My map equals 5</p>
 
-    <m:else>
-        <p>My map does not equals 5</p>
-    </m:else>
-</m:if>
+        <m:else>
+            <p>My map does not equals 5</p>
+        </m:else>
+    </m:if>
+</div>
 
 <hr/>
 
-<m:foreach collection="my-map" eachName="mapEntry">
-    <m:if condition="mapEntry.value" eq="5">
-        <p class="equals-5">My map entry equals 5 (<m:text item="mapEntry.value" />)</p>
+<div id="conditional-map-entry-lookup">
+    <m:foreach collection="my-map" eachName="mapEntry">
+        <m:if condition="mapEntry.value" eq="5">
+            <p class="equals-5">My map entry equals 5 (<m:text item="mapEntry.value" />)</p>
 
-        <m:else>
-            <p class="not-equals-5">My map entry does not equals 5 (<m:text item="mapEntry.value" />)</p>
-        </m:else>
-    </m:if>
-
-</m:foreach>
-
+            <m:elseif condition="mapEntry.value" eq="3">
+                <p class="equals-3">My map entry equals 3 (<m:text item="mapEntry.value" />)</p>
+            </m:elseif>
+            <m:else>
+                <p class="not-equals-5">My map entry does not equals 5 (<m:text item="mapEntry.value" />)</p>
+            </m:else>
+        </m:if>
+    </m:foreach>
+</div>
 
 </body>
 </html>

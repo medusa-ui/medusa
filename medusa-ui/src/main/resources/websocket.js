@@ -141,7 +141,7 @@ _M.handleHydraMenuItemChange = function (k) {
     });
 };
 
-_M.injectVariablesIntoConditionalExpression = function(expression) {
+_M.injectVariablesIntoConditionalExpression = function(expression, elem) {
     const found = expression.match(new RegExp("[\\w-]+","g"));
     if(found) {
         for(const toReplace of found) {
@@ -155,7 +155,38 @@ _M.injectVariablesIntoConditionalExpression = function(expression) {
             }
         }
     }
+
+    if(elem !== null && elem !== undefined) {
+        //replace {}[$index#eachName].value with Object.values() w/ index of eachName
+        if(expression.indexOf("[$index#") !== -1) {
+            const eachNameForIndex = _M.parseEachNameFromConditionalExpression(expression);
+            const parentElement = _M.findParentWithEachElement(elem, eachNameForIndex);
+            if(null !== parentElement && typeof parentElement !== "undefined") {
+                const index = parentElement.getAttribute("index");
+                const objectToWrap = _M.parseObjectFromConditionalExpression(expression);
+                const valueReplacement = objectToWrap + "[$index#" + eachNameForIndex + "].value";
+                const keyReplacement = objectToWrap + "[$index#" + eachNameForIndex + "].key";
+                expression = expression.replaceAll(valueReplacement, _M.evalCondition("Object.values(" + objectToWrap + ")[" + index + "]"));
+                expression = expression.replaceAll(keyReplacement, _M.evalCondition("Object.keys(" + objectToWrap + ")[" + index + "]"));
+            }
+        }
+    }
+
     return expression;
+}
+
+_M.parseObjectFromConditionalExpression = function(expression) {
+    const endIndex = expression.indexOf("[$index#");
+    const subExpression = expression.substring(0, endIndex);
+    const beginIndex = subExpression.indexOf("{");
+    return subExpression.substring(beginIndex, endIndex);
+}
+
+_M.parseEachNameFromConditionalExpression = function(expression) {
+    const startIndex = expression.indexOf("[$index#") + 8;
+    const subExpression = expression.substring(startIndex);
+    const endIndex = subExpression.indexOf("]");
+    return subExpression.substring(0, endIndex);
 }
 
 _M.injectVariablesIntoMethodExpression = function(expression, element) {
@@ -492,21 +523,42 @@ _M.findElementByMIF = function(key) {
 }
 
 _M.handleConditionCheckEvent = function(k) {
-    let conditionEval = _M.evalCondition(_M.injectVariablesIntoConditionalExpression(k.c));
     let elems = _M.findElementByMIF(k.v);
-    _M.handleVisibilityConditionals(elems, conditionEval);
+    _M.handleVisibilityConditionals(elems, k.c);
 
     //update templates if needed
     let templates = document.getElementsByTagName("template");
     if(null !== templates && templates.length !== 0) {
         for(const template of templates) {
             const templateElems = template.content.querySelectorAll("." + k.v);
-            _M.handleVisibilityConditionals(templateElems, conditionEval);
+            _M.handleVisibilityConditionals(templateElems, k.c);
         }
     }
 };
 
-_M.handleVisibilityConditionals = function (elems, isVisible) {
+_M.handleVisibilityConditionals = function (elemsToIterateOver, expression) {
+    if(null !== elemsToIterateOver && elemsToIterateOver.length !== 0) {
+        for(let elem of elemsToIterateOver) {
+            if(elem != null) {
+                _M.setVisibilityOnElement(elem, expression);
+            }
+        }
+    }
+}
+
+_M.setVisibilityOnElement = function (elem, expression) {
+    const parsedCondition = _M.injectVariablesIntoConditionalExpression(expression, elem);
+    let isVisible = _M.evalCondition(parsedCondition);
+
+    if(isVisible) {
+        elem.style.display = null;
+    } else {
+        elem.style.display = "none";
+    }
+    console.log(elem, parsedCondition + " :: " + isVisible);
+};
+
+_M.handleVisibilityConditionals_deprecated = function (elems, isVisible) {
     if(null !== elems && elems.length !== 0) {
         if(isVisible) {
             for(let elem of elems) {
