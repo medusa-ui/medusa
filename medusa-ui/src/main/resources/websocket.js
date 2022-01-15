@@ -455,7 +455,7 @@ _M.determineDeeperObjectPath = function (path) {
     if(!(path.indexOf(".") !== -1 || (path.indexOf("[") !== -1 && path.indexOf("]") !== -1))) {
         return [];
     } else {
-        let paths = path.split(new RegExp("[\.\[]")).slice(1);
+        let paths = path.split(new RegExp("[.[]")).slice(1);
         let index = 0;
         for(const p of paths) {
             if(p.endsWith("]")) {
