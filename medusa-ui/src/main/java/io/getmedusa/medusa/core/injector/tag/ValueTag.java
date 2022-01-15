@@ -16,22 +16,7 @@ public class ValueTag extends AbstractTag {
         handleMTextTag(result, variables, request);
         handleItemTag(result, variables);
         handleMValueAttribute(result, variables, request);
-        //TODO does this have use? handleMIfCondition(result, variables, request); it overrides what is being saved as a condition in the registry ...
-
         return result;
-    }
-
-    @Deprecated
-    private void handleMIfCondition(InjectionResult result, Map<String, Object> variables, ServerRequest request) {
-        Elements mIfTags = result.getDocument().getElementsByTag(TagConstants.CONDITIONAL_TAG);
-        Elements mElseIfTags = result.getDocument().getElementsByTag(TagConstants.M_ELSEIF);
-        mIfTags.addAll(mElseIfTags);
-
-        for (Element mIfTag : mIfTags) {
-            final String item = mIfTag.attr(TagConstants.CONDITIONAL_TAG_CONDITION_ATTR).trim();
-            Object variableValue = getPossibleEachValue(mIfTag, item, request, variables);
-            if(null != variableValue) mIfTag.attr(TagConstants.CONDITIONAL_TAG_CONDITION_ATTR, variableValue.toString());
-        }
     }
 
     private void handleMTextTag(InjectionResult result, Map<String, Object> variables, ServerRequest request) {

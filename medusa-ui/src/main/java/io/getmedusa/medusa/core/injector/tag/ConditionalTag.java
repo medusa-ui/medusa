@@ -22,21 +22,21 @@ public class ConditionalTag extends AbstractTag {
         Elements conditionalElements = result.getDocument().getElementsByTag(TagConstants.CONDITIONAL_TAG);
         conditionalElements.sort(Comparator.comparingInt(o -> o.getElementsByTag(TagConstants.CONDITIONAL_TAG).size()));
         for(Element conditionalElement : conditionalElements) {
-            handleIfElement(variables, conditionalElement);
+            handleIfElement(variables, conditionalElement, request);
         }
 
         return result;
     }
 
-    private void handleIfElement(Map<String, Object> variables, Element conditionalElement) {
-        final ConditionResult mainCondition = VisibilityDetermination.getInstance().determine(variables, conditionalElement);
+    private void handleIfElement(Map<String, Object> variables, Element conditionalElement, ServerRequest request) {
+        final ConditionResult mainCondition = VisibilityDetermination.getInstance().determine(variables, conditionalElement, request);
 
         List<String> conditions = new ArrayList<>();
         conditions.add(mainCondition.condition());
 
         //find elements
         final Element elseElement = getElseElement(conditionalElement);
-        final List<ElseIfElement> elseIfElements = getElseIfElements(conditionalElement, variables); //pre-wrapped
+        final List<ElseIfElement> elseIfElements = getElseIfElements(conditionalElement, variables, request); //pre-wrapped
         final Elements mainElements = filterMainElements(conditionalElement, elseElement, elseIfElements);
 
         for(ElseIfElement elseIfElement : elseIfElements) {
@@ -52,6 +52,7 @@ public class ConditionalTag extends AbstractTag {
 
         //visibility
         final ElseIfElement activeElseIf;
+
         if(!mainCondition.visible()) {
             activeElseIf = determineActiveElseIf(elseIfElements); //determine which elseIf is relevant, if any
         } else {
@@ -98,10 +99,10 @@ public class ConditionalTag extends AbstractTag {
         return null;
     }
 
-    private List<ElseIfElement> getElseIfElements(Element conditionalElement, Map<String, Object> variables) {
+    private List<ElseIfElement> getElseIfElements(Element conditionalElement, Map<String, Object> variables, ServerRequest request) {
         final Elements elements = conditionalElement.getElementsByTag(TagConstants.M_ELSEIF);
         if(elements.isEmpty()) return Collections.emptyList();
-        return elements.stream().map(e -> new ElseIfElement(e, variables)).toList();
+        return elements.stream().map(e -> new ElseIfElement(e, variables, request)).toList();
     }
 
     private Element wrapMainElement(Elements mainElements, String condition) {

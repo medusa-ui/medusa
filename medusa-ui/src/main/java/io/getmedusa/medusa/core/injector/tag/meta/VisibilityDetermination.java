@@ -1,23 +1,25 @@
 package io.getmedusa.medusa.core.injector.tag.meta;
 
+import io.getmedusa.medusa.core.injector.tag.AbstractTag;
 import io.getmedusa.medusa.core.util.ExpressionEval;
 import org.jsoup.nodes.Element;
 import org.springframework.expression.spel.SpelEvaluationException;
+import org.springframework.web.reactive.function.server.ServerRequest;
 
 import java.math.BigDecimal;
 import java.util.Map;
 
 import static io.getmedusa.medusa.core.injector.tag.TagConstants.*;
 
-public class VisibilityDetermination {
+public class VisibilityDetermination extends AbstractTag {
 
     private static final VisibilityDetermination INSTANCE = new VisibilityDetermination();
     public static VisibilityDetermination getInstance() {
         return INSTANCE;
     }
 
-    public ConditionResult determine(Map<String, Object> vars, Element element) {
-        final Object conditionItem = getConditionItemValue(vars, element);
+    public ConditionResult determine(Map<String, Object> vars, Element element, ServerRequest request) {
+        final Object conditionItem = getConditionItemValue(vars, element, request);
         StringBuilder condition = new StringBuilder(element.attr(CONDITIONAL_TAG_CONDITION_ATTR));
 
         Boolean visible = null;
@@ -105,18 +107,27 @@ public class VisibilityDetermination {
         return comparisonItemValue;
     }
 
-    private Object getConditionItemValue(Map<String, Object> variables, Element conditionalElement) {
+    private Object getConditionItemValue(Map<String, Object> variables, Element conditionalElement, ServerRequest request) {
         final String conditionItem = conditionalElement.attr(CONDITIONAL_TAG_CONDITION_ATTR);
         try {
             Object conditionItemValue = ExpressionEval.evalItemAsObj(conditionItem, variables);
             if(null == conditionItemValue) conditionItemValue = conditionItem;
+            Object variableValue = getPossibleEachValue(conditionalElement, conditionItem, request, variables);
+            if(null != variableValue) conditionItemValue = variableValue;
             return conditionItemValue;
         } catch (SpelEvaluationException e) {
+            Object variableValue = getPossibleEachValue(conditionalElement, conditionItem, request, variables);
+            if(null != variableValue) return variableValue;
             return conditionItem;
         }
     }
 
     private VisibilityDetermination() {}
+
+    @Override
+    public InjectionResult inject(InjectionResult result, Map<String, Object> variables, ServerRequest request) {
+        return null;
+    }
 
     public record ConditionResult(boolean visible, String condition) {
 
