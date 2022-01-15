@@ -30,6 +30,17 @@ class MapsIntegrationTest extends AbstractSeleniumTest {
         final List<String> arrayElements = getTextByCss(".array-foreach");
         Collections.sort(arrayElements);
         assertEquals("[a1, b2]", arrayElements.toString());
+
+        final List<String> nestedEntryLookup = getTextByCss(".nestedEntryLookup");
+        Collections.sort(nestedEntryLookup);
+        assertEquals("[a # 1 # 1, b # 2 # 2]", nestedEntryLookup.toString());
+
+        final String conditionalText = getTextById("conditional-map-lookup");
+        assertEquals("My map does not equals 5", conditionalText);
+
+        final List<String> iterationWithMapEntryLookup = getTextByCss("#conditional-map-entry-lookup p");
+        Collections.sort(iterationWithMapEntryLookup);
+        assertEquals("[My map entry does not equals 5 (1), My map entry does not equals 5 (2)]", iterationWithMapEntryLookup.toString());
     }
 
     @Test
@@ -54,6 +65,17 @@ class MapsIntegrationTest extends AbstractSeleniumTest {
         final List<String> arrayElements = getTextByCss(".array-foreach");
         Collections.sort(arrayElements);
         assertEquals("[a5, b6]", arrayElements.toString());
+
+        final List<String> nestedEntryLookup = getTextByCss(".nestedEntryLookup");
+        Collections.sort(nestedEntryLookup);
+        assertEquals("[a # 5 # 5, b # 6 # 6]", nestedEntryLookup.toString());
+
+        final String conditionalText = getTextById("conditional-map-lookup");
+        assertEquals("My map equals 5", conditionalText);
+
+        final List<String> iterationWithMapEntryLookup = getTextByCss("#conditional-map-entry-lookup p");
+        Collections.sort(iterationWithMapEntryLookup);
+        assertEquals("[My map entry does not equals 5 (6), My map entry equals 5 (5)]", iterationWithMapEntryLookup.toString());
     }
 
 }
