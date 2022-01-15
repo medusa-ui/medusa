@@ -37,5 +37,29 @@
     <p class="nestedEntryLookup"><m:text item="mapEntry.key" /> # <m:text item="mapEntry[mapEntry.key]" /> # <m:text item="mapEntry.value" /></p>
 </m:foreach>
 
+<hr/>
+
+<m:if condition="my-map['a']" eq="5">
+    <p>My map equals 5</p>
+
+    <m:else>
+        <p>My map does not equals 5</p>
+    </m:else>
+</m:if>
+
+<hr/>
+
+<m:foreach collection="my-map" eachName="mapEntry">
+    <m:if condition="mapEntry.value" eq="5">
+        <p class="equals-5">My map entry equals 5 (<m:text item="mapEntry.value" />)</p>
+
+        <m:else>
+            <p class="not-equals-5">My map entry does not equals 5 (<m:text item="mapEntry.value" />)</p>
+        </m:else>
+    </m:if>
+
+</m:foreach>
+
+
 </body>
 </html>

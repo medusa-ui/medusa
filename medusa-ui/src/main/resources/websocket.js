@@ -141,16 +141,18 @@ _M.handleHydraMenuItemChange = function (k) {
     });
 };
 
-
 _M.injectVariablesIntoConditionalExpression = function(expression) {
     const found = expression.match(new RegExp("[\\w-]+","g"));
     if(found) {
         for(const toReplace of found) {
             const varValue = _M.variables[toReplace];
             if(typeof varValue === "undefined") {
-                continue;
+                //no action
+            } else if(typeof varValue === "object") {
+                expression = expression.replaceAll(toReplace, JSON.stringify(varValue));
+            } else {
+                expression = expression.replaceAll(toReplace, varValue);
             }
-            expression = expression.replaceAll(toReplace, varValue);
         }
     }
     return expression;
