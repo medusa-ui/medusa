@@ -156,7 +156,7 @@ _M.injectVariablesIntoConditionalExpression = function(expression, elem) {
         }
     }
 
-    if(elem !== null && elem !== undefined) {
+    if(elem !== null && typeof elem !== "undefined") {
         //replace {}[$index#eachName].value with Object.values() w/ index of eachName
         if(expression.indexOf("[$index#") !== -1) {
             const eachNameForIndex = _M.parseEachNameFromConditionalExpression(expression);
@@ -438,7 +438,7 @@ _M.findThroughObjectPath = function (variable, index, path, eachObject) {
             } else if ("value" === currentPath) {
                 return variable[possibleKey];
             } else {
-                if(eachObject !== null && object === undefined) {
+                if(eachObject !== null && typeof object === "undefined") {
                     object = eachObject;
                 } else {
                     object = object[currentPath];
@@ -554,21 +554,6 @@ _M.setVisibilityOnElement = function (elem, expression) {
         elem.style.display = null;
     } else {
         elem.style.display = "none";
-    }
-    console.log(elem, parsedCondition + " :: " + isVisible);
-};
-
-_M.handleVisibilityConditionals_deprecated = function (elems, isVisible) {
-    if(null !== elems && elems.length !== 0) {
-        if(isVisible) {
-            for(let elem of elems) {
-                if(elem != null) elem.style.display = null;
-            }
-        } else {
-            for(let elem of elems) {
-                if(elem != null) elem.style.display = "none";
-            }
-        }
     }
 };
 

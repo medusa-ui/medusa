@@ -66,15 +66,15 @@ public abstract class ExpressionEval {
                 Object objValue = variables.get(variableKeySplit[0]);
                 String restOfKey = resolveRestOfKey(variableKeySplit[1], variables);
                 Object subValue = SpelExpressionParserHelper.getValue(restOfKey, objValue);
-                return validateCompatibleValue(subValue);
+                return validateCompatibleValue(subValue, value);
             }
         } else {
-            return validateCompatibleValue(variables.get(value));
+            return validateCompatibleValue(variables.get(value), value);
         }
         return value;
     }
 
-    private static Object validateCompatibleValue(Object objValue) {
+    private static Object validateCompatibleValue(Object objValue, String originalLookupValue) {
         try {
             boolean isValid;
             if (objValue.getClass().getComponentType() != null) {
@@ -86,7 +86,7 @@ public abstract class ExpressionEval {
             if(isValid) {
                 return objValue;
             } else {
-                throw unableToRenderFullObjectException(objValue.toString(), objValue.getClass());
+                throw unableToRenderFullObjectException(originalLookupValue, objValue.getClass());
             }
         } catch (NullPointerException e) {
             return false;
@@ -120,18 +120,6 @@ public abstract class ExpressionEval {
         }
 
         return path;
-    }
-
-    private static boolean isCompatibleToRender(Object objValue) {
-        try {
-            if (objValue.getClass().getComponentType() != null) {
-                return objValue.getClass().getComponentType().getPackage().getName().startsWith("java.");
-            } else {
-                return objValue.getClass().getPackage().getName().startsWith("java.");
-            }
-        } catch (NullPointerException e) {
-            return false;
-        }
     }
 
     private static IllegalArgumentException unableToRenderFullObjectException(String value, Class<? extends Object> objValueClass) {
