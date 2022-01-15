@@ -36,7 +36,6 @@ public abstract class ExpressionEval {
     public static String evalItemAsString(String itemToEval, Map<String, Object> variables) {
         try {
             Object val = interpretValue(itemToEval, variables);
-            if (val == null) return null;
             return val.toString();
         } catch (SpelEvaluationException e) {
             return null;
@@ -65,22 +64,62 @@ public abstract class ExpressionEval {
             if(value.contains(".") || (value.contains("[") && value.contains("]"))) {
                 String[] variableKeySplit = value.split("[.\\[]", 2);
                 Object objValue = variables.get(variableKeySplit[0]);
-                Object subValue = SpelExpressionParserHelper.getValue(restOfKey(value, variableKeySplit[0]), objValue);
-                if (subValue.getClass().getPackage().getName().startsWith("java.")) {
-                    return subValue;
-                } else {
-                    throw unableToRenderFullObjectException(value, subValue.getClass());
-                }
+                String restOfKey = resolveRestOfKey(variableKeySplit[1], variables);
+                Object subValue = SpelExpressionParserHelper.getValue(restOfKey, objValue);
+                return validateCompatibleValue(subValue);
             }
         } else {
-            Object objValue = variables.get(value);
-            if (isCompatibleToRender(objValue)) {
+            return validateCompatibleValue(variables.get(value));
+        }
+        return value;
+    }
+
+    private static Object validateCompatibleValue(Object objValue) {
+        try {
+            boolean isValid;
+            if (objValue.getClass().getComponentType() != null) {
+                isValid = objValue.getClass().getComponentType().getPackage().getName().startsWith("java.");
+            } else {
+                isValid = objValue.getClass().getPackage().getName().startsWith("java.");
+            }
+
+            if(isValid) {
                 return objValue;
             } else {
-                throw unableToRenderFullObjectException(value, objValue.getClass());
+                throw unableToRenderFullObjectException(objValue.toString(), objValue.getClass());
+            }
+        } catch (NullPointerException e) {
+            return false;
+        }
+    }
+
+    public static String resolveRestOfKey(String path, Map<String, Object> variables) {
+        if(path.endsWith("]")) {
+            path = "[" + path;
+            for(String pathPart : path.split("\\[")) {
+                if(!pathPart.isEmpty()) {
+                    pathPart = pathPart.replace("]", "");
+                    final String interpretValue = interpretValue(pathPart, variables).toString();
+                    path = path.replaceAll("\\["+pathPart+"]", "[" + interpretValue + "]");
+                }
             }
         }
-        return null;
+
+        final int length = path.length() - 1;
+        if(1 < length) {
+            final String subPath = path.substring(1, length);
+            if (subPath.contains("[")) {
+                String[] variableKeySplit = subPath.split("[.\\[]", 2);
+                Object objValue = variables.get(variableKeySplit[0]);
+                if(objValue != null) {
+                    String restOfKey = resolveRestOfKey(variableKeySplit[1], variables);
+                    Object subValue = SpelExpressionParserHelper.getValue(restOfKey, objValue);
+                    return "[" + subValue.toString() + "]";
+                }
+            }
+        }
+
+        return path;
     }
 
     private static boolean isCompatibleToRender(Object objValue) {
@@ -93,12 +132,6 @@ public abstract class ExpressionEval {
         } catch (NullPointerException e) {
             return false;
         }
-    }
-
-    private static String restOfKey(String fullKey, String partOfKeyToIgnore) {
-        final String restOfKey = fullKey.substring(partOfKeyToIgnore.length());
-        if(restOfKey.startsWith(".")) return restOfKey.substring(1);
-        return restOfKey;
     }
 
     private static IllegalArgumentException unableToRenderFullObjectException(String value, Class<? extends Object> objValueClass) {

@@ -8,6 +8,7 @@ import org.jsoup.select.Elements;
 import org.springframework.web.reactive.function.server.ServerRequest;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
 public abstract class AbstractTag implements Tag {
@@ -20,16 +21,19 @@ public abstract class AbstractTag implements Tag {
         return value.toString();
     }
 
-    protected Object getPossibleEachValue(Element currentElem, String eachName, ServerRequest request) {
+    protected Object getPossibleEachValue(Element currentElem, String eachName, ServerRequest request, Map<String, Object> variables) {
         if(ElementUtils.hasTemplateAsParent(currentElem)) return eachName;
+
+        Map<String, Object> variablesCopy = new HashMap<>(variables);
 
         String nameToSearch = eachName;
         String restOfValue = null;
-        boolean requiresObjectIntrospection = nameToSearch.contains(".");
+        boolean requiresObjectIntrospection = nameToSearch.contains(".") || nameToSearch.contains("[");
         if(requiresObjectIntrospection) {
-            final String[] split = nameToSearch.split("\\.", 2);
+            final String[] split = nameToSearch.split("[.\\[]", 2);
             nameToSearch = split[0];
             restOfValue = split[1];
+            if(restOfValue.endsWith("]")) restOfValue = "[" + restOfValue;
         }
 
         Element parentWithEachName = findParentWithEachName(currentElem.parents(), nameToSearch);
@@ -38,8 +42,12 @@ public abstract class AbstractTag implements Tag {
             if(indexAsString.length() == 0) indexAsString = "0";
             int index = Integer.parseInt(indexAsString);
             Object valueToReturn = EachValueRegistry.getInstance().get(request, nameToSearch, index);
+
             if(requiresObjectIntrospection) {
-                valueToReturn = ExpressionEval.evalObject(restOfValue, valueToReturn);
+                String expression = eachName;
+                expression = expression.replace(nameToSearch + "[" + nameToSearch + ".key]", nameToSearch + ".value");
+                variablesCopy.put(nameToSearch, valueToReturn);
+                valueToReturn = ExpressionEval.evalItemAsObj(expression, variablesCopy);
             }
             return valueToReturn;
         }

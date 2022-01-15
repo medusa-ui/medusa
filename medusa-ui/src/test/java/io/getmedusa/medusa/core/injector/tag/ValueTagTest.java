@@ -15,6 +15,10 @@ class ValueTagTest extends AbstractTest {
     public static final String HTML_WITH_SPACES = "<p>Counter: <m:text item=\" counter-value   \" /></p>";
     public static final String HTML_WITH_COMPLEX_OBJECT = "<p>Counter: <m:text item=\"obj.exampleValue\" /></p>";
 
+    //public static final String HTML_ARRAY = "<p>Counter: <m:text item=\"array[0]\" /></p>";
+    //public static final String HTML_MAP = "<p>Counter: <m:text item=\"map['x']\" /></p>";
+    //public static final String HTML_MAP_W_ITEM = "<p>Counter: <m:text item=\"map[obj.exampleValue]\" /></p>";
+
     @Test
     void testWithValueStandard() {
         Map<String, Object> variables = new HashMap<>();
