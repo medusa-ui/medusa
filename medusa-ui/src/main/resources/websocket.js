@@ -438,9 +438,9 @@ _M.findThroughObjectPath = function (variable, index, path, eachObject) {
 
         while (path.length > 0) {
             const currentPath = path[0];
-            if("key" === currentPath) {
+            if("key" === currentPath && _M.currentPathUnreachable(object, currentPath)) {
                 return possibleKey;
-            } else if ("value" === currentPath) {
+            } else if ("value" === currentPath && _M.currentPathUnreachable(object, currentPath)) {
                 return variable[possibleKey];
             } else {
                 if(eachObject !== null && typeof object === "undefined") {
@@ -454,6 +454,10 @@ _M.findThroughObjectPath = function (variable, index, path, eachObject) {
 
         return object;
     }
+}
+
+_M.currentPathUnreachable = function (object, currentPath) {
+    return typeof object === "undefined" || null === object[currentPath];
 }
 
 _M.determineDeeperObjectPath = function (path) {
