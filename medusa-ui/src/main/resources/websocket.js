@@ -440,7 +440,7 @@ _M.findThroughObjectPath = function (variable, index, path, eachObject) {
             const currentPath = path[0];
             if("key" === currentPath) {
                 return possibleKey;
-            } else if ("value" === currentPath) {
+            } else if ("value" === currentPath && (typeof object === "undefined" || null === object[currentPath])) {
                 return variable[possibleKey];
             } else {
                 if(eachObject !== null && typeof object === "undefined") {

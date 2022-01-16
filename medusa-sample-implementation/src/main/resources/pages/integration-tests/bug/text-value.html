@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:m="https://medusa-ui.dev" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="https://medusa-ui.dev https://raw.githubusercontent.com/medusa-ui/medusa/poc/xml-parser/medusa-ui.xsd">
+<head>
+    <meta charset="UTF-8">
+    <title>Item value problem</title>
+    <link href="/stylesheet.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter&family=Merriweather&display=swap" rel="stylesheet">
+</head>
+<body>
+<h1>🦑 Medusa in trouble</h1>
+<div>
+    <p>Counter value: <m:text item="counter.value" /></p>
+    <p>Counter count: <m:text item="counter.count" /></p>
+</div>
+<div>
+    <button id="increment" m:click="increment()">Increase counter</button>
+    <button id="reset" m:click="reset()">Reset counter</button>
+</div>
+
+</body>
+</html>
