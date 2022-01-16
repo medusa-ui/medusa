@@ -14,11 +14,11 @@
 
 <p>Counter value: <span id="counter-value"><m:text item="counter.value" /></span></p>
 
-<m:if condition="counter.value" gt="0">
-    <m:if condition="counter.value" gt="5">
+<m:if item="counter.value" gt="0">
+    <m:if item="counter.value" gt="5">
         <p class="conditional-result">Counter is above 5</p>
 
-        <m:elseif condition="counter.value" gte="2">
+        <m:elseif item="counter.value" gte="2">
             <p class="conditional-result">Counter is 2 or above</p>
         </m:elseif>
 
