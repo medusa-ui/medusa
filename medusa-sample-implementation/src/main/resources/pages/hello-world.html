@@ -19,12 +19,12 @@
 <p>Global Counter: <m:text item="counter-value" /></p>
 
 <button m:click="increaseCounter(1)">Increase counter</button>
-<m:if condition="counter-value" gt="0">
+<m:if item="counter-value" gt="0">
     <m:foreach collection="items-bought" eachName="item">
-        <m:if condition="counter-value" gt="5">
+        <m:if item="counter-value" gt="5">
             <p>Counter is above 5</p>
 
-            <m:elseif condition="counter-value" gt="2">
+            <m:elseif item="counter-value" gt="2">
                 <p>Counter is above 2</p>
             </m:elseif>
             <m:else>
@@ -42,16 +42,16 @@
 <button m:click='buy("coffee, sugar but no cream","cookies (3 pieces)")' type="button">Breaking stuff 3</button>
 <button m:click="clear()" m:disabled="$items-bought-size == 0">Clear</button>
 
-<m:if condition="items-bought-size" eq="0">
+<m:if item="items-bought-size" eq="0">
     <p>Looks like you need a Coffee!</p>
 
-    <m:elseif condition="items-bought-size" eq="1">
+    <m:elseif item="items-bought-size" eq="1">
         <p>Thanks for buying a Coffee</p>
     </m:elseif>
-    <m:elseif condition="items-bought-size" gt="1" lt="4">
+    <m:elseif item="items-bought-size" gt="1" lt="4">
         <p>You really like Coffee, don't you?</p>
     </m:elseif>
-    <m:elseif condition="items-bought-size" gt="3">
+    <m:elseif item="items-bought-size" gt="3">
         <p>You are a Coffee addict!</p>
     </m:elseif>
 </m:if>
@@ -83,7 +83,7 @@
 <button m:click="waitSeconds(4)" m:disable-on-click-until="done-waiting" m:loading-style="full">This is a 4 seconds call with a full page loader</button>
 <button m:click="waitSeconds(5)" m:disable-on-click-until="done-waiting" m:loading-style="top">This is a 5 seconds call with a top page loader</button>
 
-<m:if condition="done-waiting" eq="true">
+<m:if item="done-waiting" eq="true">
     <p>Call completed!</p>
 </m:if>
 <br><br>

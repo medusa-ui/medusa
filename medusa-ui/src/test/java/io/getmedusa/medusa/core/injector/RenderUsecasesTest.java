@@ -26,7 +26,7 @@ class RenderUsecasesTest extends AbstractTest {
         EventHandlerRegistry.getInstance().add(htmlFileName, new HandlerImpl(Collections.singletonMap("counter-value", 3)));
         String nestedIf =
                 """
-               <m:if condition="counter-value" gt="5">
+               <m:if item="counter-value" gt="5">
                    <p>Counter is above 5</p>
                 </m:if>
                 """;
@@ -43,7 +43,7 @@ class RenderUsecasesTest extends AbstractTest {
         final String result = HTMLInjector.INSTANCE.htmlStringInject(new TestRequest(), securityContext, """
                 <body>
                 <h1>Hello Medusa</h1>
-                <m:if condition="3" gt="5">
+                <m:if item="3" gt="5">
                     <p>Counter is above 5</p>
                 </m:if>
                 <p>Counter: <span></span></p>
@@ -60,8 +60,8 @@ class RenderUsecasesTest extends AbstractTest {
         final String htmlFileName = path();
         EventHandlerRegistry.getInstance().add(htmlFileName, new HandlerImpl(Collections.singletonMap("counter-value", 3)));
         String nestedIf = """
-                <m:if condition="counter-value" gt="2">
-                    <m:if condition="counter-value" gt="5">
+                <m:if item="counter-value" gt="2">
+                    <m:if item="counter-value" gt="5">
                         <p>Counter is above 5</p>
                     </m:if>
                 </m:if>""";
@@ -92,7 +92,7 @@ class RenderUsecasesTest extends AbstractTest {
         final String htmlFileName = path();
         EventHandlerRegistry.getInstance().add(htmlFileName, new HandlerImpl(Collections.singletonMap("counter-value", 2)));
         String nestedIf = """
-                <m:if condition="counter-value" gt="2">
+                <m:if item="counter-value" gt="2">
                     <m:foreach collection="counter-value">
                         <p>Hello, Medusa</p>
                     </m:foreach>
@@ -115,7 +115,7 @@ class RenderUsecasesTest extends AbstractTest {
         String nestedIf =
                 """
                         <m:foreach collection="counter-value">
-                            <m:if condition="counter-value" gt="2">
+                            <m:if item="counter-value" gt="2">
                                 <p>Hello, Medusa</p>
                             </m:if>
                         </m:foreach>""";
@@ -196,7 +196,7 @@ class RenderUsecasesTest extends AbstractTest {
         EventHandlerRegistry.getInstance().add(htmlFileName, new HandlerImpl(Collections.singletonMap("obj-value", new ExampleClass(987))));
         String nestedIf =
                 """     
-                        <m:if condition="obj-value.number" gt="5">
+                        <m:if item="obj-value.number" gt="5">
                            <p>Counter is above 5</p>
                         </m:if>""";
 
