@@ -47,7 +47,7 @@
 <hr/>
 
 <div id="conditional-map-lookup">
-    <m:if condition="my-map['a']" eq="5">
+    <m:if item="my-map['a']" eq="5">
         <p>My map equals 5</p>
 
         <m:else>
@@ -60,7 +60,7 @@
 
 <div id="conditional-map-entry-lookup">
     <m:foreach collection="my-map" eachName="mapEntry">
-        <m:if condition="mapEntry.value" eq="5">
+        <m:if item="mapEntry.value" eq="5">
             <p class="equals-5">My map entry equals 5 (<m:text item="mapEntry.value" />)</p>
 
             <m:elseif condition="mapEntry.value" eq="3">
