@@ -7,8 +7,8 @@ import io.getmedusa.medusa.core.injector.DOMChanges;
 import static io.getmedusa.medusa.core.injector.DOMChanges.of;
 
 @UIEventPage(path="/test/bug/counter", file = "pages/integration-tests/bug/counter")
-public class CounterEventHandler {
-    Counter counter = new Counter();
+public class ConditionalCounterEventHandler {
+    ConditionalCounter counter = new ConditionalCounter();
 
     public PageAttributes setupAttributes() {
         return new PageAttributes().with("counter", counter);
@@ -20,11 +20,11 @@ public class CounterEventHandler {
     }
 }
 
-class Counter {
+class ConditionalCounter {
 
     private Integer count;
 
-    public Counter() {
+    public ConditionalCounter() {
         count = 0;
     }
 
