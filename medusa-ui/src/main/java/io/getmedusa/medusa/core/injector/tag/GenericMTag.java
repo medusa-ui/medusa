@@ -18,7 +18,7 @@ public class GenericMTag extends AbstractTag {
             Elements elementsWithAttribute = result.getDocument().getElementsByAttribute(attribute);
             for(Element elementWithAttribute : elementsWithAttribute) {
                 final String attributeValue = elementWithAttribute.attr(attribute);
-                Object variableValue = getPossibleEachValue(elementWithAttribute, attributeValue, request);
+                Object variableValue = getPossibleEachValue(elementWithAttribute, attributeValue, request, variables);
                 if(null == variableValue) variableValue = variableToString(attributeValue, variables);
                 if(null == variableValue) variableValue = attributeValue;
 

@@ -3,6 +3,7 @@ package io.getmedusa.medusa.core.injector.tag.meta;
 import io.getmedusa.medusa.core.injector.tag.meta.VisibilityDetermination.ConditionResult;
 import io.getmedusa.medusa.core.util.WrapperUtils;
 import org.jsoup.nodes.Element;
+import org.springframework.web.reactive.function.server.ServerRequest;
 
 import java.util.Map;
 
@@ -12,8 +13,8 @@ public class ElseIfElement {
     private final String condition;
     private final boolean valid;
 
-    public ElseIfElement(Element element, Map<String, Object> variables) {
-        final ConditionResult conditionResult = VisibilityDetermination.getInstance().determine(variables, element);
+    public ElseIfElement(Element element, Map<String, Object> variables, ServerRequest request) {
+        final ConditionResult conditionResult = VisibilityDetermination.getInstance().determine(variables, element, request);
         this.condition = conditionResult.condition();
         this.valid = conditionResult.visible();
         this.element = WrapperUtils.wrapAndReplace(element, "m-if-else");

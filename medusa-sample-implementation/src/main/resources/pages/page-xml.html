@@ -26,11 +26,11 @@
                 <p>Outer loop: <m:text item="outerItem" /></p>
                 <p>Inner loop: <m:text item="innerItem" /></p>
 
-                <m:if condition="innerItem" eq="'a'">
+                <m:if item="innerItem" eq="'a'">
                     <p>A</p>
                     <button m:click="buy('coffee')">Buy some coffee</button>
 
-                    <m:elseif condition="innerItem" eq="'b'">
+                    <m:elseif item="innerItem" eq="'b'">
                         <p>B</p>
                         <button m:click="buy('tea', 'sugar', 3,'cookie')">Buy some tea and sugar</button>
                     </m:elseif>
@@ -42,6 +42,7 @@
                 </m:if>
             </m:foreach>
         </m:foreach>
+
     </div>
 
 </body>

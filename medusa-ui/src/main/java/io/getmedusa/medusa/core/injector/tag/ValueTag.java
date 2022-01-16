@@ -16,21 +16,7 @@ public class ValueTag extends AbstractTag {
         handleMTextTag(result, variables, request);
         handleItemTag(result, variables);
         handleMValueAttribute(result, variables, request);
-        handleMIfCondition(result, request);
-
         return result;
-    }
-
-    private void handleMIfCondition(InjectionResult result, ServerRequest request) {
-        Elements mIfTags = result.getDocument().getElementsByTag(TagConstants.CONDITIONAL_TAG);
-        Elements mElseIfTags = result.getDocument().getElementsByTag(TagConstants.M_ELSEIF);
-        mIfTags.addAll(mElseIfTags);
-
-        for (Element mIfTag : mIfTags) {
-            final String item = mIfTag.attr(TagConstants.CONDITIONAL_TAG_CONDITION_ATTR).trim();
-            Object variableValue = getPossibleEachValue(mIfTag, item, request);
-            if(null != variableValue) mIfTag.attr(TagConstants.CONDITIONAL_TAG_CONDITION_ATTR, "'" + variableValue + "'");
-        }
     }
 
     private void handleMTextTag(InjectionResult result, Map<String, Object> variables, ServerRequest request) {
@@ -41,7 +27,7 @@ public class ValueTag extends AbstractTag {
         Elements mTextTags = result.getDocument().getElementsByTag(TagConstants.TEXT_TAG);
         for (Element mTextTag : mTextTags) {
             final String item = mTextTag.attr(TagConstants.TEXT_TAG_ITEM_ATTR).trim();
-            Object variableValue = getPossibleEachValue(mTextTag, item, request);
+            Object variableValue = getPossibleEachValue(mTextTag, item, request, variables);
             if(null == variableValue) variableValue = variableToString(item, variables);
             if(null == variableValue) variableValue = item;
             mTextTag.replaceWith(createSpan(item, variableValue.toString()));
@@ -56,7 +42,7 @@ public class ValueTag extends AbstractTag {
         Elements tagsWithMValue = result.getDocument().getElementsByAttribute(TagConstants.M_VALUE);
         for (Element tagWithMValue : tagsWithMValue) {
             final String item = tagWithMValue.attr(TagConstants.M_VALUE).trim();
-            Object variableValue = getPossibleEachValue(tagWithMValue, item, request);
+            Object variableValue = getPossibleEachValue(tagWithMValue, item, request, variables);
             if(null == variableValue) variableValue = variableToString(item, variables);
             if(null == variableValue) variableValue = item;
 

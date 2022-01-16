@@ -93,7 +93,7 @@ public class AbstractSeleniumTest {
 
     protected List<String> getTextByCss(String cssSelector) {
         waitUntilElementsPresent(cssSelector);
-        return driver.findElements(By.cssSelector(cssSelector)).stream().map(WebElement::getText).collect(Collectors.toList());
+        return driver.findElements(By.cssSelector(cssSelector)).stream().map(WebElement::getText).filter(e -> !e.isEmpty()).collect(Collectors.toList());
     }
 
     private void waitUntilElementsPresent(String cssSelector) {

@@ -36,6 +36,17 @@ public class IterationRegistry {
         return result;
     }
 
+    public String findByTemplateId(String templateId) {
+        for(Map.Entry<String, Set<String>> entry : registry.entrySet()) {
+            for(String entrySubset : entry.getValue()) {
+                if(entrySubset.equals(templateId)) {
+                    return entry.getKey();
+                }
+            }
+        }
+        return null;
+    }
+
     public Map<String, String> listConditions() {
         Map<String, String> map = new HashMap<>();
         for(Map.Entry<String, Set<String>> entry : registry.entrySet()) {

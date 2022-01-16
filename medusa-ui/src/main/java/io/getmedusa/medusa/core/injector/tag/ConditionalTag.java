@@ -5,6 +5,7 @@ import io.getmedusa.medusa.core.injector.tag.meta.InjectionResult;
 import io.getmedusa.medusa.core.injector.tag.meta.VisibilityDetermination;
 import io.getmedusa.medusa.core.injector.tag.meta.VisibilityDetermination.ConditionResult;
 import io.getmedusa.medusa.core.registry.ConditionalRegistry;
+import io.getmedusa.medusa.core.registry.IterationRegistry;
 import io.getmedusa.medusa.core.util.IdentifierGenerator;
 import io.getmedusa.medusa.core.util.WrapperUtils;
 import org.jsoup.nodes.Element;
@@ -21,21 +22,21 @@ public class ConditionalTag extends AbstractTag {
         Elements conditionalElements = result.getDocument().getElementsByTag(TagConstants.CONDITIONAL_TAG);
         conditionalElements.sort(Comparator.comparingInt(o -> o.getElementsByTag(TagConstants.CONDITIONAL_TAG).size()));
         for(Element conditionalElement : conditionalElements) {
-            handleIfElement(variables, conditionalElement);
+            handleIfElement(variables, conditionalElement, request);
         }
 
         return result;
     }
 
-    private void handleIfElement(Map<String, Object> variables, Element conditionalElement) {
-        final ConditionResult mainCondition = VisibilityDetermination.getInstance().determine(variables, conditionalElement);
+    private void handleIfElement(Map<String, Object> variables, Element conditionalElement, ServerRequest request) {
+        final ConditionResult mainCondition = VisibilityDetermination.getInstance().determine(variables, conditionalElement, request);
 
         List<String> conditions = new ArrayList<>();
         conditions.add(mainCondition.condition());
 
         //find elements
         final Element elseElement = getElseElement(conditionalElement);
-        final List<ElseIfElement> elseIfElements = getElseIfElements(conditionalElement, variables); //pre-wrapped
+        final List<ElseIfElement> elseIfElements = getElseIfElements(conditionalElement, variables, request); //pre-wrapped
         final Elements mainElements = filterMainElements(conditionalElement, elseElement, elseIfElements);
 
         for(ElseIfElement elseIfElement : elseIfElements) {
@@ -51,6 +52,7 @@ public class ConditionalTag extends AbstractTag {
 
         //visibility
         final ElseIfElement activeElseIf;
+
         if(!mainCondition.visible()) {
             activeElseIf = determineActiveElseIf(elseIfElements); //determine which elseIf is relevant, if any
         } else {
@@ -97,10 +99,10 @@ public class ConditionalTag extends AbstractTag {
         return null;
     }
 
-    private List<ElseIfElement> getElseIfElements(Element conditionalElement, Map<String, Object> variables) {
+    private List<ElseIfElement> getElseIfElements(Element conditionalElement, Map<String, Object> variables, ServerRequest request) {
         final Elements elements = conditionalElement.getElementsByTag(TagConstants.M_ELSEIF);
         if(elements.isEmpty()) return Collections.emptyList();
-        return elements.stream().map(e -> new ElseIfElement(e, variables)).toList();
+        return elements.stream().map(e -> new ElseIfElement(e, variables, request)).toList();
     }
 
     private Element wrapMainElement(Elements mainElements, String condition) {
@@ -137,8 +139,36 @@ public class ConditionalTag extends AbstractTag {
 
     private String generateIfID(Element element, String condition) {
         final String ifID = IdentifierGenerator.generateIfID(element.html());
+
+        //check if the condition here contains a reference to any of the wrapping each values
+        Map<String, String> wrappingEachValues = findWrappingEachValues(element.parents());
+        condition = replaceConditionValues(condition, wrappingEachValues);
+
         CONDITIONAL_REGISTRY.add(ifID, condition);
         return ifID;
+    }
+
+    private String replaceConditionValues(String condition, Map<String, String> wrappingEachValues) {
+        if(wrappingEachValues.isEmpty()) return condition;
+        for(Map.Entry<String, String> eachEntry : wrappingEachValues.entrySet()) {
+            condition = condition.replace(eachEntry.getKey(), eachEntry.getValue());
+        }
+        return condition;
+    }
+
+    private Map<String, String> findWrappingEachValues(Elements parents) {
+        Map<String, String> wrappingValues = new HashMap<>();
+
+        for(Element parent : parents) {
+            if(parent.hasAttr(TagConstants.M_EACH)) {
+                final String eachName = parent.attr(TagConstants.M_EACH);
+                final String templateId = parent.attr(TagConstants.TEMPLATE_ID);
+                final String iterationItem = IterationRegistry.getInstance().findByTemplateId(templateId);
+                wrappingValues.put(eachName, iterationItem + "[$index#" + eachName + "]");
+            }
+        }
+
+        return wrappingValues;
     }
 
     private void hide(Element elementToHide) {

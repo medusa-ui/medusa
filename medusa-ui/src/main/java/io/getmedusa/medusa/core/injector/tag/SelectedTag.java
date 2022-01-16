@@ -15,7 +15,7 @@ public class SelectedTag extends AbstractTag {
         for(Element mSelected : mSelectedList) {
             final String selectedItem = mSelected.attr(TagConstants.M_SELECTED);
 
-            Object variableValue = getPossibleEachValue(mSelected, selectedItem, request);
+            Object variableValue = getPossibleEachValue(mSelected, selectedItem, request, variables);
             if(null == variableValue) variableValue = variableToString(selectedItem, variables);
             if(null == variableValue) variableValue = selectedItem;
 

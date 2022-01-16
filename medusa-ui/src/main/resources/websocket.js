@@ -141,19 +141,52 @@ _M.handleHydraMenuItemChange = function (k) {
     });
 };
 
-
-_M.injectVariablesIntoConditionalExpression = function(expression) {
+_M.injectVariablesIntoConditionalExpression = function(expression, elem) {
     const found = expression.match(new RegExp("[\\w-]+","g"));
     if(found) {
         for(const toReplace of found) {
             const varValue = _M.variables[toReplace];
             if(typeof varValue === "undefined") {
-                continue;
+                //no action
+            } else if(typeof varValue === "object") {
+                expression = expression.replaceAll(toReplace, JSON.stringify(varValue));
+            } else {
+                expression = expression.replaceAll(toReplace, varValue);
             }
-            expression = expression.replaceAll(toReplace, varValue);
         }
     }
+
+    if(elem !== null && typeof elem !== "undefined") {
+        //replace {}[$index#eachName].value with Object.values() w/ index of eachName
+        if(expression.indexOf("[$index#") !== -1) {
+            const eachNameForIndex = _M.parseEachNameFromConditionalExpression(expression);
+            const parentElement = _M.findParentWithEachElement(elem, eachNameForIndex);
+            if(null !== parentElement && typeof parentElement !== "undefined") {
+                const index = parentElement.getAttribute("index");
+                const objectToWrap = _M.parseObjectFromConditionalExpression(expression);
+                const valueReplacement = objectToWrap + "[$index#" + eachNameForIndex + "].value";
+                const keyReplacement = objectToWrap + "[$index#" + eachNameForIndex + "].key";
+                expression = expression.replaceAll(valueReplacement, _M.evalCondition("Object.values(" + objectToWrap + ")[" + index + "]"));
+                expression = expression.replaceAll(keyReplacement, _M.evalCondition("Object.keys(" + objectToWrap + ")[" + index + "]"));
+            }
+        }
+    }
+
     return expression;
+}
+
+_M.parseObjectFromConditionalExpression = function(expression) {
+    const endIndex = expression.indexOf("[$index#");
+    const subExpression = expression.substring(0, endIndex);
+    const beginIndex = subExpression.indexOf("{");
+    return subExpression.substring(beginIndex, endIndex);
+}
+
+_M.parseEachNameFromConditionalExpression = function(expression) {
+    const startIndex = expression.indexOf("[$index#") + 8;
+    const subExpression = expression.substring(startIndex);
+    const endIndex = subExpression.indexOf("]");
+    return subExpression.substring(0, endIndex);
 }
 
 _M.injectVariablesIntoMethodExpression = function(expression, element) {
@@ -193,9 +226,14 @@ _M.lookupVariable = function(parameter, element) {
     if(parameter.indexOf(".") !== -1) {
         baseParameter = parameter.substring(0, parameter.indexOf("."));
     }
+
+    if (-1 !== baseParameter.indexOf("[")) {
+        baseParameter = baseParameter.split(new RegExp("[.[]"))[0];
+    }
+
     const deeperObjectPath = _M.determineDeeperObjectPath(parameter);
     const paramValue = _M.findPotentialEachValue(element, baseParameter);
-    return _M.considerVariableWrap(_M.findThroughObjectPath(paramValue, deeperObjectPath));
+    return _M.considerVariableWrap(_M.findThroughObjectPath(paramValue, null, deeperObjectPath, null));
 };
 
 _M.considerVariableWrap = function (value) {
@@ -281,12 +319,16 @@ _M.handleMAttribute = function (mId, trueFunc, falseFunc, evalValue) {
 
 _M.handleDefaultEvent = function(k) {
     _M.variables[k.f] = k.v;
-    document.querySelectorAll("[from-value="+k.f+"]").forEach(function(e) {
+    document.querySelectorAll("[from-value^="+k.f+"]").forEach(function(e) {
+        let valueToSet = k.v;
+        const deeperObjectPath = _M.determineDeeperObjectPath(e.getAttribute("from-value"));
+        valueToSet = _M.findThroughObjectPath(valueToSet, null, deeperObjectPath, null);
+
         if(e.hasAttribute("value")) {
-            e.setAttribute("value", k.v);
+            e.setAttribute("value", valueToSet);
             e.dispatchEvent(new Event('input'));
         } else {
-            e.innerText = k.v;
+            e.innerText = valueToSet;
         }
     });
 
@@ -319,49 +361,55 @@ _M.handleIterationCheck = function (k) {
     // set new values
     document.querySelectorAll("[m-id="+k.f+"]").forEach(function(template) {
         const templateId = _M.resolveTemplateId(template);
-        const currentEachValues = _M.resolveTemplateCondition(templateId);
+        const eachObject = _M.resolveTemplateCondition(templateId);
+        const currentEachValues = Object.keys(eachObject);
         const divTemplate = template.content.children[0];
 
         let index = 0;
         if(Array.isArray(currentEachValues)) {
             for(const currentEachValue of currentEachValues) {
-                const block = _M.buildIterationBlock(currentEachValue, divTemplate, index++);
+                const block = _M.buildIterationBlock(divTemplate, index++, eachObject);
                 if(typeof _M.preRender !== "undefined") { _M.preRender(k, block); }
                 template.parentNode.insertBefore(block, template);
             }
         } else {
             for (let i = 0; i < currentEachValues; i++) {
-                const block = _M.buildIterationBlock(i, divTemplate, index++);
+                const block = _M.buildIterationBlock(divTemplate, index++, eachObject);
                 if(typeof _M.preRender !== "undefined") { _M.preRender(k, block); }
                 template.parentNode.insertBefore(block, template);
             }
         }
     });
 };
-_M.buildIterationBlock = function (rootEachValue, templateDiv, index) {
+_M.buildIterationBlock = function (templateDiv, index, eachObject) {
     const node = templateDiv.cloneNode(true);
     node.querySelectorAll("template").forEach(function (templateNode) { templateNode.remove(); });
     node.setAttribute("index", index.toString());
 
-    _M.buildIterationBlockMEachHandling(node);
+    _M.buildIterationBlockMEachHandling(node, eachObject);
     node.querySelectorAll("[m-each]").forEach(function (divWithMEach) {
-        _M.buildIterationBlockMEachHandling(divWithMEach);
+        _M.buildIterationBlockMEachHandling(divWithMEach, eachObject);
     });
 
     return node;
 }
 
-_M.buildIterationBlockMEachHandling = function (divWithMEach) {
+_M.buildIterationBlockMEachHandling = function (divWithMEach, eachObject) {
     const templateMap = _M.buildTemplateMap(divWithMEach);
 
     for(const mapEntry of templateMap) {
         const eachName = mapEntry["eachName"];
+        const keyRefWhichIsValueReferential = eachName + "[" + eachName + ".key]";
+        const valueReferential = eachName + ".value";
         divWithMEach.querySelectorAll("[from-value^='"+eachName+"']").forEach(function (specificSpan) {
-            const deeperObjectPath = _M.determineDeeperObjectPath(specificSpan.getAttribute("from-value"));
+            let path = specificSpan.getAttribute("from-value");
+            if(keyRefWhichIsValueReferential === path) {
+                path = valueReferential;
+            }
+            const deeperObjectPath = _M.determineDeeperObjectPath(path);
             const index = parseInt(mapEntry["index"], 10);
             const conditional = _M.conditionals[mapEntry["templateId"]];
-            let foundObject = _M.variables[conditional][index];
-            foundObject = _M.findThroughObjectPath(foundObject, deeperObjectPath);
+            let foundObject = _M.findThroughObjectPath(_M.variables[conditional], index, deeperObjectPath, eachObject);
             const via = specificSpan.getAttribute("via");
             if(via === null) {
                 specificSpan.textContent = foundObject;
@@ -372,22 +420,63 @@ _M.buildIterationBlockMEachHandling = function (divWithMEach) {
     }
 }
 
-_M.findThroughObjectPath = function (object, path) {
-    if(path.length === 0) return object;
-
-    while (path.length > 0) {
-        object = object[path[0]];
-        path = path.slice(1);
+_M.findThroughObjectPath = function (variable, index, path, eachObject) {
+    let object;
+    if(index == null) {
+        object = variable;
+    } else {
+        object = variable[index];
     }
 
-    return object;
+    if(typeof object === "string" || typeof object === "number") {
+        return object;
+    } else {
+        const possibleKeys = Object.keys(variable);
+        const possibleKey = possibleKeys[index];
+
+        if(path.length === 0) return object;
+
+        while (path.length > 0) {
+            const currentPath = path[0];
+            if("key" === currentPath && _M.currentPathUnreachable(object, currentPath)) {
+                return possibleKey;
+            } else if ("value" === currentPath && _M.currentPathUnreachable(object, currentPath)) {
+                return variable[possibleKey];
+            } else {
+                if(eachObject !== null && typeof object === "undefined") {
+                    object = eachObject;
+                } else {
+                    object = object[currentPath];
+                }
+                path = path.slice(1);
+            }
+        }
+
+        return object;
+    }
+}
+
+_M.currentPathUnreachable = function (object, currentPath) {
+    return typeof object === "undefined" || null === object[currentPath];
 }
 
 _M.determineDeeperObjectPath = function (path) {
-    if(path.indexOf(".") === -1) {
+    if(!(path.indexOf(".") !== -1 || (path.indexOf("[") !== -1 && path.indexOf("]") !== -1))) {
         return [];
     } else {
-        return path.split(".").slice(1);
+        let paths = path.split(new RegExp("[.[]")).slice(1);
+        let index = 0;
+        for(const p of paths) {
+            if(p.endsWith("]")) {
+                let unBracketedPath = p.substring(0, p.length - 1);
+                if(_M.isQuoted(unBracketedPath)) {
+                    unBracketedPath = unBracketedPath.substring(1, unBracketedPath.length - 1);
+                }
+                paths[index] = unBracketedPath;
+            }
+            index++;
+        }
+        return paths;
     }
 }
 
@@ -443,31 +532,37 @@ _M.findElementByMIF = function(key) {
 }
 
 _M.handleConditionCheckEvent = function(k) {
-    let conditionEval = _M.evalCondition(_M.injectVariablesIntoConditionalExpression(k.c));
     let elems = _M.findElementByMIF(k.v);
-    _M.handleVisibilityConditionals(elems, conditionEval);
+    _M.handleVisibilityConditionals(elems, k.c);
 
     //update templates if needed
     let templates = document.getElementsByTagName("template");
     if(null !== templates && templates.length !== 0) {
         for(const template of templates) {
             const templateElems = template.content.querySelectorAll("." + k.v);
-            _M.handleVisibilityConditionals(templateElems, conditionEval);
+            _M.handleVisibilityConditionals(templateElems, k.c);
         }
     }
 };
 
-_M.handleVisibilityConditionals = function (elems, isVisible) {
-    if(null !== elems && elems.length !== 0) {
-        if(isVisible) {
-            for(let elem of elems) {
-                if(elem != null) elem.style.display = null;
-            }
-        } else {
-            for(let elem of elems) {
-                if(elem != null) elem.style.display = "none";
+_M.handleVisibilityConditionals = function (elemsToIterateOver, expression) {
+    if(null !== elemsToIterateOver && elemsToIterateOver.length !== 0) {
+        for(let elem of elemsToIterateOver) {
+            if(elem != null) {
+                _M.setVisibilityOnElement(elem, expression);
             }
         }
+    }
+}
+
+_M.setVisibilityOnElement = function (elem, expression) {
+    const parsedCondition = _M.injectVariablesIntoConditionalExpression(expression, elem);
+    let isVisible = _M.evalCondition(parsedCondition);
+
+    if(isVisible) {
+        elem.style.display = null;
+    } else {
+        elem.style.display = "none";
     }
 };
 

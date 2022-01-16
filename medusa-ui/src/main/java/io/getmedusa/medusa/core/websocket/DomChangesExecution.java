@@ -14,9 +14,9 @@ public class DomChangesExecution {
 
     public List<DOMChange> process(WebSocketSession session, List<DOMChange> domChanges) {
         evaluateTitleChange(session, domChanges);
+        evaluateIterationChange(domChanges);
         evaluateConditionalChange(domChanges);
         evaluateConditionalClassChange(domChanges);
-        evaluateIterationChange(domChanges);
         evaluateGenericMAttributesChanged(domChanges);
         return domChanges;
     }

@@ -10,13 +10,13 @@ import java.util.Map;
 class ConditionalTagTest extends AbstractTest {
 
     private static final String HTML_EQ_SIMPLE = """
-                    <m:if condition="some-variable" eq="'a'">
+                    <m:if item="some-variable" eq="'a'">
                         <p>A</p>
                     </m:if>
             """;
 
     private static final String HTML_EQ_ELSE = """
-                    <m:if condition="some-variable" eq="'a'">
+                    <m:if item="some-variable" eq="'a'">
                         <p>A</p>
                         
                         <m:else>
@@ -26,9 +26,9 @@ class ConditionalTagTest extends AbstractTest {
             """;
 
     private static final String HTML_EQ_ELSE_IF = """
-                    <m:if condition="some-variable" eq="'a'">
+                    <m:if item="some-variable" eq="'a'">
                         <p>A</p>
-                        <m:elseif condition="some-other-variable" eq="1">
+                        <m:elseif item="some-other-variable" eq="1">
                             <p>B</p>
                         </m:elseif>
                         <m:else>
@@ -38,29 +38,29 @@ class ConditionalTagTest extends AbstractTest {
             """;
 
     private static final String HTML_EQ_VARIABLE = """
-                    <m:if condition="some-variable.name" eq="a.name">
+                    <m:if item="some-variable.name" eq="a.name">
                         <p>A</p>
                     </m:if>
             """;
 
     private static final String HTML_EQ_BOOL = """
-                    <m:if condition="some-variable" eq="true">
+                    <m:if item="some-variable" eq="true">
                         <p>A</p>
                     </m:if>
             """;
 
     private static final String HTML_EQ_ELSE_IF_NESTED = """
-                    <m:if condition="some-variable" eq="'a'">
-                        <m:if condition="another-variable" eq="'a'">
+                    <m:if item="some-variable" eq="'a'">
+                        <m:if item="another-variable" eq="'a'">
                             <p>A</p>
-                            <m:elseif condition="some-other-variable" eq="1">
+                            <m:elseif item="some-other-variable" eq="1">
                                 <p>B</p>
                             </m:elseif>
                             <m:else>
                                 <p>C</p>
                             </m:else>
                         </m:if>
-                        <m:elseif condition="some-other-variable" eq="1">
+                        <m:elseif item="some-other-variable" eq="1">
                             <p>B</p>
                         </m:elseif>
                         <m:else>
@@ -71,7 +71,7 @@ class ConditionalTagTest extends AbstractTest {
 
     private static final String HTML_EQ_SIMPLE_ITERATION = """
                     <m:foreach collection="list-of-values">
-                        <m:if condition="some-variable" eq="1">
+                        <m:if item="some-variable" eq="1">
                             <p>A</p>
                         </m:if>
                     </m:foreach>
@@ -79,7 +79,7 @@ class ConditionalTagTest extends AbstractTest {
 
     private static final String HTML_EQ_EACH_ITERATION = """
                     <m:foreach collection="list-of-values" eachName="myItem">
-                        <m:if condition="myItem" eq="1">
+                        <m:if item="myItem" eq="1">
                             <p>A</p>
                         </m:if>
                     </m:foreach>
@@ -87,50 +87,50 @@ class ConditionalTagTest extends AbstractTest {
 
     private static final String HTML_EQ_EACH_ITERATION_W_OBJECT = """
                     <m:foreach collection="people" eachName="person">
-                        <m:if condition="person.name" eq="'John'">
+                        <m:if item="person.name" eq="'John'">
                             <p>This is John</p>
                         </m:if>
                     </m:foreach>
             """;
 
     private static final String HTML_GT_SIMPLE = """
-                    <m:if condition="some-variable" gt="1">
+                    <m:if item="some-variable" gt="1">
                         <p>A</p>
                     </m:if>
             """;
 
     private static final String HTML_LT_SIMPLE = """
-                    <m:if condition="some-variable" lt="10">
+                    <m:if item="some-variable" lt="10">
                         <p>A</p>
                     </m:if>
             """;
 
     private static final String HTML_GTE_SIMPLE = """
-                    <m:if condition="some-variable" gte="5">
+                    <m:if item="some-variable" gte="5">
                         <p>A</p>
                     </m:if>
             """;
 
     private static final String HTML_LTE_SIMPLE = """
-                    <m:if condition="some-variable" lte="5">
+                    <m:if item="some-variable" lte="5">
                         <p>A</p>
                     </m:if>
             """;
 
     private static final String HTML_NOT_SIMPLE = """
-                    <m:if condition="some-variable" not="5">
+                    <m:if item="some-variable" not="5">
                         <p>A</p>
                     </m:if>
             """;
 
     private static final String HTML_RANGE_SIMPLE = """
-                    <m:if condition="some-variable" lte="50" gt="0">
+                    <m:if item="some-variable" lte="50" gt="0">
                         <p>A</p>
                     </m:if>
             """;
 
     private static final String HTML_RANGE_SWAPPED = """
-                    <m:if condition="some-variable" gt="1" lte="50">
+                    <m:if item="some-variable" gt="1" lte="50">
                         <p>A</p>
                     </m:if>
             """;

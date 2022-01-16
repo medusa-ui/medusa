@@ -29,6 +29,63 @@ class SpelExpressionTest {
     }
 
     @Test
+    void evalMapCheck() {
+        Map<String, Object> modelMap = new HashMap<>();
+        Map<String, String> aMap = new HashMap<>();
+        aMap.put("key23", "value42");
+        modelMap.put("a-map", aMap);
+        assertEquals("value42", ExpressionEval.evalItemAsString("a-map['key23']", modelMap));
+        assertEquals("value42", ExpressionEval.evalItemAsString("a-map[\"key23\"]", modelMap));
+    }
+
+    @Test
+    void evalMapIndirectCheck() {
+        Map<String, Object> modelMap = new HashMap<>();
+        Map<String, String> aMap = new HashMap<>();
+        aMap.put("key23", "value42");
+        modelMap.put("a-map", aMap);
+        modelMap.put("key-object", "key23");
+        assertEquals("value42", ExpressionEval.evalItemAsString("a-map[key-object]", modelMap));
+    }
+
+    @Test
+    void evalArrayCheck() {
+        Map<String, Object> modelMap = new HashMap<>();
+        int[] anArray = { 3, 4, 5 };
+        modelMap.put("an-array", anArray);
+        assertEquals("4", ExpressionEval.evalItemAsString("an-array[1]", modelMap));
+    }
+
+    @Test
+    void evalArrayIndirectCheck() {
+        Map<String, Object> modelMap = new HashMap<>();
+        int[] anArray = { 3, 4, 5 };
+        modelMap.put("an-array", anArray);
+        modelMap.put("index", 1);
+        assertEquals("4", ExpressionEval.evalItemAsString("an-array[index]", modelMap));
+    }
+
+    @Test
+    void evalNestedMap() {
+        Map<String, Object> modelMap = new HashMap<>();
+        modelMap.put("map2", Map.of("y", "123"));
+        modelMap.put("map", Map.of("x", "y"));
+        modelMap.put("key", "x");
+        System.out.println(ExpressionEval.evalItemAsString("map2[map[key]]", modelMap));
+        assertEquals("123", ExpressionEval.evalItemAsString("map2[map[key]]", modelMap));
+    }
+
+    @Test
+    void evalManyMaps() {
+        Map<String, Object> modelMap = new HashMap<>();
+        modelMap.put("person", new SubObject("y"));
+        modelMap.put("bigmap", Map.of("x", Map.of("y", "123")));
+        modelMap.put("key", "x");
+        System.out.println(ExpressionEval.evalItemAsString("bigmap[key][person.name]", modelMap));
+        assertEquals("123", ExpressionEval.evalItemAsString("bigmap[key][person.name]", modelMap));
+    }
+
+    @Test
     void ctrlSay() {
         // given
         String tag = "<button m:click='say(\"Hallo World\", 3)' /> ";
