@@ -15,11 +15,11 @@
 <p>Global Counter: <m:text item="counter-value" /></p>
 <button id="increase-counter-button" m:click="increaseCounter(1)">Increase counter</button>
 
-<m:if condition="counter-value" gt="0">
-    <m:if condition="counter-value" gt="5">
+<m:if item="counter-value" gt="0">
+    <m:if item="counter-value" gt="5">
         <p class="conditional-result">Counter is above 5</p>
 
-        <m:elseif condition="counter-value" gt="2">
+        <m:elseif item="counter-value" gt="2">
             <p class="conditional-result">Counter is above 2</p>
         </m:elseif>
 
@@ -29,11 +29,11 @@
     </m:if>
 </m:if>
 
-<m:if condition="1" eq="1">
+<m:if item="1" eq="1">
     <p id="always-true">Always true</p>
 </m:if>
 
-<m:if condition="true" eq="false">
+<m:if item="true" eq="false">
     <p id="always-false">Always false</p>
 </m:if>
 </body>
