@@ -52,6 +52,7 @@ public class IterationTag extends AbstractTag {
 
             Node template = createTemplate(templateID, clone, eachName);
             foreachElement.children().remove();
+            foreachElement.text("");
             foreachElement.appendChild(template);
 
             Object conditionParsed = parseConditionWithVariables(collection, variables);
@@ -121,7 +122,7 @@ public class IterationTag extends AbstractTag {
         if(eachName != null) divWrapper.attr("m-each", eachName);
         divWrapper.attr(TEMPLATE_ID, templateID);
 
-        divWrapper.appendChildren(foreachElement.children());
+        divWrapper.appendChildren(foreachElement.childNodesCopy());
         node.appendChild(divWrapper);
 
         return node;
