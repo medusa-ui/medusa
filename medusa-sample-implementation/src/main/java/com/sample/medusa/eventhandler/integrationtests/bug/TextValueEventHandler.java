@@ -24,14 +24,17 @@ public class TextValueEventHandler {
 
 class Counter {
     private int value = 0;
+    private char key = 'a';
 
     public Counter increment() {
         value++;
+        key = (char)(97+value);
         return this;
     }
 
     public Counter reset(){
         value = 0;
+        key = 'a';
         return this;
     }
 
@@ -41,5 +44,9 @@ class Counter {
 
     public int getCount() {
         return value;
+    }
+
+    public char getKey() {
+        return key;
     }
 }
