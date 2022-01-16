@@ -226,6 +226,11 @@ _M.lookupVariable = function(parameter, element) {
     if(parameter.indexOf(".") !== -1) {
         baseParameter = parameter.substring(0, parameter.indexOf("."));
     }
+
+    if (-1 !== baseParameter.indexOf("[")) {
+        baseParameter = baseParameter.split(new RegExp("[.[]"))[0];
+    }
+
     const deeperObjectPath = _M.determineDeeperObjectPath(parameter);
     const paramValue = _M.findPotentialEachValue(element, baseParameter);
     return _M.considerVariableWrap(_M.findThroughObjectPath(paramValue, null, deeperObjectPath, null));

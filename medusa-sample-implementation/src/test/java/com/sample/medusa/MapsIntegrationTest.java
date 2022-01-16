@@ -41,6 +41,9 @@ class MapsIntegrationTest extends AbstractSeleniumTest {
         final List<String> iterationWithMapEntryLookup = getTextByCss("#conditional-map-entry-lookup p");
         Collections.sort(iterationWithMapEntryLookup);
         assertEquals("[My map entry does not equals 5 (1), My map entry does not equals 5 (2)]", iterationWithMapEntryLookup.toString());
+
+        assertEquals("% Not yet clicked %", getTextById("via-click-map"));
+        assertEquals("% Not yet clicked %", getTextById("via-click-array"));
     }
 
     @Test
@@ -48,6 +51,12 @@ class MapsIntegrationTest extends AbstractSeleniumTest {
         goTo("/maps");
 
         assertEquals("Medusa using HashMaps and Arrays", driver.getTitle());
+
+        clickById("map-click-event");
+        clickById("array-click-event");
+
+        assertEquals("2", getTextById("via-click-map"));
+        assertEquals("a1", getTextById("via-click-array"));
 
         clickById("change-person");
         assertEquals(List.of("Paul"), getTextByCss(".person-name"));
@@ -76,6 +85,12 @@ class MapsIntegrationTest extends AbstractSeleniumTest {
         final List<String> iterationWithMapEntryLookup = getTextByCss("#conditional-map-entry-lookup p");
         Collections.sort(iterationWithMapEntryLookup);
         assertEquals("[My map entry does not equals 5 (6), My map entry equals 5 (5)]", iterationWithMapEntryLookup.toString());
+
+        clickById("map-click-event");
+        clickById("array-click-event");
+
+        assertEquals("6", getTextById("via-click-map"));
+        assertEquals("a5", getTextById("via-click-array"));
     }
 
 }

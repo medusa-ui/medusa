@@ -6,7 +6,6 @@ import io.getmedusa.medusa.core.injector.DOMChanges;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 import static io.getmedusa.medusa.core.injector.DOMChanges.of;
 
@@ -18,6 +17,8 @@ public class MapsHandler {
         modelMap.put("person", new Person("", "John"));
         modelMap.put("my-map", Map.of("a", 1, "b", 2));
         modelMap.put("my-array", new String[] { "a1", "b2" });
+        modelMap.put("mapClickValue", "% Not yet clicked %");
+        modelMap.put("arrayClickValue", "% Not yet clicked %");
         return new PageAttributes(modelMap);
     }
 
@@ -31,5 +32,14 @@ public class MapsHandler {
 
     public DOMChanges updatePerson() {
         return of("person", new Person("", "Paul"));
+    }
+
+    public DOMChanges sampleClick(String passedValue, String type) {
+        if("array".equals(type)) {
+            return of("arrayClickValue", passedValue);
+        } else {
+            return of("mapClickValue", passedValue);
+        }
+
     }
 }

@@ -14,6 +14,8 @@
 <p>My map value: <span class="map-singleq-a"><m:text item="my-map['a']" /></span></p>
 <p>My map value: <span class="map-doubleq-a"><m:text item='my-map["a"]' /></span></p>
 <p>My array value: <span class="array-0"><m:text item="my-array[0]" /></span></p>
+<p>Map value passed via click event: <span id="via-click-map"><m:text item="mapClickValue" /></span></p>
+<p>Array value passed via click event: <span id="via-click-array"><m:text item="arrayClickValue" /></span></p>
 
 <p>Map foreach:</p>
 <m:foreach collection="my-map" eachName="mapEntry">
@@ -30,6 +32,10 @@
 <button id="change-array" m:click="updateArray()">Update the array</button>
 <br>
 <button id="change-person" m:click="updatePerson()">Update person</button>
+<br>
+<button id="map-click-event" m:click="sampleClick(my-map['b'], 'map')">Click event with map</button>
+<br>
+<button id="array-click-event" m:click="sampleClick(my-array[0], 'array')">Click event with array</button>
 
 <hr/>
 
@@ -66,6 +72,8 @@
         </m:if>
     </m:foreach>
 </div>
+
+
 
 </body>
 </html>
