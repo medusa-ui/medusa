@@ -15,7 +15,7 @@ public class ClassAppendTag extends AbstractTag {
         for(Element classAppendAttribute : classAppendAttributes) {
             final String newClass = classAppendAttribute.attr(TagConstants.M_CLASS_APPEND);
 
-            Object variableValue = getPossibleEachValue(classAppendAttribute, newClass, request);
+            Object variableValue = getPossibleEachValue(classAppendAttribute, newClass, request, variables);
             if(null == variableValue) variableValue = variableToString(newClass, variables);
             if(null == variableValue) variableValue = newClass;
 

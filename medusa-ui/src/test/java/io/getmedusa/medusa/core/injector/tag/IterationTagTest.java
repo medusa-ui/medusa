@@ -19,6 +19,14 @@ class IterationTagTest extends AbstractTest {
             <m:foreach collection="list-of-values"><p>Medusa</p></m:foreach>
             </html>""";
 
+    public static final String HTML_NO_CHILD_NODE =
+            """
+            <!DOCTYPE html>
+            <html lang="en">
+            <body>
+            <m:foreach collection="list-of-values">Medusa <span>Hello</span> Medusa</m:foreach>
+            </html>""";
+
     public static final String MULTIPLE_HTML =
             """
             <!DOCTYPE html>
@@ -129,6 +137,18 @@ class IterationTagTest extends AbstractTest {
         Assertions.assertFalse(html.contains("m:foreach"));
         Assertions.assertTrue(html.contains("<template") && html.contains("</template>"));
         Assertions.assertEquals(6, countOccurrences(html));
+    }
+
+    @Test
+    void testNoChildNodes() {
+        Map<String, Object> variables = new HashMap<>();
+        variables.put("list-of-values", Arrays.asList(1,2));
+        String html = inject(HTML_NO_CHILD_NODE, variables).html();
+        System.out.println(html);
+        Assertions.assertFalse(html.contains("m:foreach"));
+        Assertions.assertTrue(html.contains("<template") && html.contains("</template>"));
+        Assertions.assertEquals(3, countOccurrences(html, "Medusa <span>Hello</span> Medusa"));
+        Assertions.assertEquals(6, countOccurrences(html, "Medusa"));
     }
 
     @Test
@@ -413,7 +433,11 @@ class IterationTagTest extends AbstractTest {
     }
 
     long countOccurrences(String block) {
-        return Arrays.stream(block.split("<p>Medusa</p>")).count()-1;
+        return countOccurrences(block, "<p>Medusa</p>");
+    }
+
+    long countOccurrences(String block, String specificElement) {
+        return Arrays.stream(block.split(specificElement)).count()-1;
     }
 
 }

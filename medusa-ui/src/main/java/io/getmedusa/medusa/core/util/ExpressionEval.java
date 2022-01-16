@@ -36,7 +36,6 @@ public abstract class ExpressionEval {
     public static String evalItemAsString(String itemToEval, Map<String, Object> variables) {
         try {
             Object val = interpretValue(itemToEval, variables);
-            if (val == null) return null;
             return val.toString();
         } catch (SpelEvaluationException e) {
             return null;
@@ -62,25 +61,65 @@ public abstract class ExpressionEval {
 
     private static Object interpretValue(String value, Map<String, Object> variables) {
         if (!variables.containsKey(value)) {
-            if (value.contains(".")) {
-                String[] variableKeySplit = value.split("\\.", 2);
+            if(value.contains(".") || (value.contains("[") && value.contains("]"))) {
+                String[] variableKeySplit = value.split("[.\\[]", 2);
                 Object objValue = variables.get(variableKeySplit[0]);
-                Object subValue = SpelExpressionParserHelper.getValue(variableKeySplit[1], objValue);
-                if (subValue.getClass().getPackage().getName().startsWith("java.")) {
-                    return subValue;
-                } else {
-                    throw unableToRenderFullObjectException(value, subValue.getClass());
-                }
+                String restOfKey = resolveRestOfKey(variableKeySplit[1], variables);
+                Object subValue = SpelExpressionParserHelper.getValue(restOfKey, objValue);
+                return validateCompatibleValue(subValue, value);
             }
         } else {
-            Object objValue = variables.get(value);
-            if (objValue.getClass().getPackage().getName().startsWith("java.")) {
+            return validateCompatibleValue(variables.get(value), value);
+        }
+        return value;
+    }
+
+    private static Object validateCompatibleValue(Object objValue, String originalLookupValue) {
+        try {
+            boolean isValid;
+            if (objValue.getClass().getComponentType() != null) {
+                isValid = objValue.getClass().getComponentType().getPackage().getName().startsWith("java.");
+            } else {
+                isValid = objValue.getClass().getPackage().getName().startsWith("java.");
+            }
+
+            if(isValid) {
                 return objValue;
             } else {
-                throw unableToRenderFullObjectException(value, objValue.getClass());
+                throw unableToRenderFullObjectException(originalLookupValue, objValue.getClass());
+            }
+        } catch (NullPointerException e) {
+            return false;
+        }
+    }
+
+    public static String resolveRestOfKey(String path, Map<String, Object> variables) {
+        if(path.endsWith("]")) {
+            path = "[" + path;
+            for(String pathPart : path.split("\\[")) {
+                if(!pathPart.isEmpty()) {
+                    pathPart = pathPart.replace("]", "");
+                    final String interpretValue = interpretValue(pathPart, variables).toString();
+                    path = path.replaceAll("\\["+pathPart+"]", "[" + interpretValue + "]");
+                }
             }
         }
-        return null;
+
+        final int length = path.length() - 1;
+        if(1 < length) {
+            final String subPath = path.substring(1, length);
+            if (subPath.contains("[")) {
+                String[] variableKeySplit = subPath.split("[.\\[]", 2);
+                Object objValue = variables.get(variableKeySplit[0]);
+                if(objValue != null) {
+                    String restOfKey = resolveRestOfKey(variableKeySplit[1], variables);
+                    Object subValue = SpelExpressionParserHelper.getValue(restOfKey, objValue);
+                    return "[" + subValue.toString() + "]";
+                }
+            }
+        }
+
+        return path;
     }
 
     private static IllegalArgumentException unableToRenderFullObjectException(String value, Class<? extends Object> objValueClass) {

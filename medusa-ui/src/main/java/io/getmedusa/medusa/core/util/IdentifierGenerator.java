@@ -1,5 +1,10 @@
 package io.getmedusa.medusa.core.util;
 
+import io.getmedusa.medusa.core.injector.tag.TagConstants;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+
 public class IdentifierGenerator {
 
     private IdentifierGenerator() {}
@@ -8,7 +13,11 @@ public class IdentifierGenerator {
     //Hash is not guaranteed unique, especially based on content (same content = same id)
 
     public static String generateIfID(String value) {
-        return "if-" + Math.abs(value.hashCode());
+        final Document document = Jsoup.parse(value);
+        for(Element textSpans : document.getElementsByAttribute(TagConstants.FROM_VALUE)) {
+            textSpans.text("");
+        }
+        return "if-" + Math.abs(document.body().html().hashCode());
     }
 
     public static String generateClassConditionalID(String value) {
