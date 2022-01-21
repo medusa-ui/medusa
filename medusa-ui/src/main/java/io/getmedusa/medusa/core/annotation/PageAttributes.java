@@ -23,13 +23,13 @@ public class PageAttributes {
     }
 
     /**
-     * Appends a value to the initial variables with a specific key
-     * <p><i>Example</i>:
+     * Appends a value to the initial variables with a specific key<br>
+     * <i>Example</i>:
      * <pre>{@code
      *      new PageAttributes()
      *                 .with("path-to-upper", request.pathVariable("up"), String::toUpperCase)
      *                 .with("query-person", request.queryParam("number").orElse("1"), service::findById)
-     * }</pre></p>
+     * }</pre>
      * @param key   a key to identify the variable in HTML with
      * @param value the {@link String} value of the variable, which will be processed by the converter before being added
      * @param converter {@link Converter} function that will execute with the value as parameter first before storing it
@@ -41,13 +41,13 @@ public class PageAttributes {
     }
 
     /**
-     * Appends a value to the initial variables with a specific key
-     * <p><i>Example</i>:
+     * Appends a value to the initial variables with a specific key<br>
+     * <i>Example</i>:
      * <pre>{@code
      *      new PageAttributes()
      *                 .with("example", "value-1")
      *                 .with("example-2", "value-2")
-     * }</pre></p>
+     * }</pre>
      * @param key   a key to identify the variable in HTML with
      * @param value the actual object value of the variable
      * @return PageAttributes with appended value

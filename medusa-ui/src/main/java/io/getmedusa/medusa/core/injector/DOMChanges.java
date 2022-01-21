@@ -4,13 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * DOMChanges are variables used in HTML that have changed. It allows you to specify specifically what has changed and let the HTML DOM react to it. <br/>
+ * DOMChanges are variables used in HTML that have changed. It allows you to specify specifically what has changed and let the HTML DOM react to it. <br/><br/>
  * This class is a wrapper for a list of {@link DOMChange} elements. It provides convenience functions to easily add key value pairs to said list.
  * <pre>{@code
  *      DOMChanges.of("variable-1", var1)
  *                .and("variable-2", var2)
  *                .and("variable-3", var3)
- * }</pre></p>
+ * }</pre>
  * The keys are expected to match the variable names used in HTML and in initial attribute setup.
  *
  */

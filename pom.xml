@@ -16,6 +16,13 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 
+	<distributionManagement>
+		<snapshotRepository>
+			<id>ossrh</id>
+			<url>https://s01.oss.sonatype.org/content/repositories/snapshots</url>
+		</snapshotRepository>
+	</distributionManagement>
+
 	<modules>
 		<module>medusa-ui</module>
 		<module>medusa-sample-implementation</module>
