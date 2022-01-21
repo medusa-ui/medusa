@@ -28,7 +28,7 @@
 		<dependency>
 			<groupId>io.getmedusa</groupId>
 			<artifactId>medusa-ui</artifactId>
-			<version>0.3.1</version>
+			<version>0.3.2-SNAPSHOT</version>
 		</dependency>
 
 
