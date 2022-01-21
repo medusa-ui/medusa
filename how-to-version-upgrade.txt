@@ -3,6 +3,11 @@ git add .
 git commit -m "Release 0.3.1"
 git tag 0.3.1
 git push --tags
+
+cd medusa-ui
+mvn clean deploy -DskipTests=true
+cd ..
+
 mvn versions:set -DnewVersion="0.3.2-SNAPSHOT"
 git add .
 git commit -m "Release 0.3.1 - Version update from 0.3.1 to 0.3.2-SNAPSHOT"
