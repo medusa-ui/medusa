@@ -1,22 +1,17 @@
 package io.getmedusa.medusa.core.injector;
 
-import io.getmedusa.medusa.core.injector.tag.AbstractTag;
-import io.getmedusa.medusa.core.injector.tag.meta.InjectionResult;
 import org.springframework.web.reactive.function.server.ServerRequest;
 
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
-public class HydraURLReplacer extends AbstractTag {
+public class HydraURLReplacer {
 
     public static Set<String> STATIC_RESOURCES = new HashSet<>();
 
-    @Override
-    public InjectionResult inject(InjectionResult result, Map<String, Object> variables, ServerRequest request) {
-        final String html = result.getHTML();
-        return new InjectionResult(replaceUrls(html, request.headers()));
+    public String inject(String html, ServerRequest request) {
+        return replaceUrls(html, request.headers());
     }
 
     public String replaceUrls(String html, ServerRequest.Headers headers) {

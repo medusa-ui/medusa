@@ -1,8 +1,8 @@
 <xs:schema xmlns="http://www.w3.org/2001/XMLSchema"
            xmlns:xs="http://www.w3.org/2001/XMLSchema"
-           xmlns:m="https://medusa-ui.dev"
+           xmlns:m="https://getmedusa.io"
            xmlns:xhtml="http://www.w3.org/1999/xhtml"
-           targetNamespace="https://medusa-ui.dev"
+           targetNamespace="https://getmedusa.io"
            elementFormDefault="qualified"
            attributeFormDefault="unqualified">
 

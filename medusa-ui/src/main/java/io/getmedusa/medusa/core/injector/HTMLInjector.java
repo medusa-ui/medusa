@@ -45,10 +45,11 @@ public enum HTMLInjector {
                 new ClassAppendTag(),
                 new SelectedTag(),
                 new GenericMTag(),
-                new HydraMenuTag(),
-                new HydraURLReplacer()
+                new HydraMenuTag()
         );
     }
+
+    private static final HydraURLReplacer HYDRA_URL_REPLACER = new HydraURLReplacer();
 
     /**
      * On page load, inject cached unparsed HTML with parsed values
@@ -104,7 +105,7 @@ public enum HTMLInjector {
             }
             injectVariablesInScript(result, variables);
 
-            return injectScript(matchedPath, result, securityContext.getUniqueId(), csrfToken);
+            return injectScript(matchedPath, result, securityContext.getUniqueId(), csrfToken, request);
         } finally {
             EachValueRegistry.getInstance().clear(request);
         }
@@ -140,7 +141,7 @@ public enum HTMLInjector {
         }
     }
 
-    private String injectScript(String path, InjectionResult html, String uniqueId, String csrfToken) {
+    private String injectScript(String path, InjectionResult html, String uniqueId, String csrfToken, ServerRequest request) {
         String injectedHTML = html.getHTML();
         if(script != null) {
             final String bodyEndTagReplacement = "<script id=\"m-websocket-setup\">\n" +
@@ -155,7 +156,7 @@ public enum HTMLInjector {
         }
         injectedHTML = addStyling(injectedHTML);
         if(csrfToken != null) injectedHTML = injectedHTML.replace("{{_csrf}}", csrfToken);
-        return injectedHTML;
+        return HYDRA_URL_REPLACER.inject(injectedHTML, request);
     }
 
     private String addStyling(String injectedHTML) {
