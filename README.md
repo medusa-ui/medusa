@@ -19,6 +19,11 @@ Pages are simply written in HTML and enhanced with Medusa expressions to allow f
 </dependency>
 ```
 
+## Compile
+```xml
+mvn clean install --no-transfer-progress -D"gpg.skip" -DskipTests=false
+```
+
 ## Demo
 
 [![Medusa UI Demo](https://yt-embed.herokuapp.com/embed?v=bbZO1FgLSUY)](https://www.youtube.com/watch?v=bbZO1FgLSUY)
