@@ -1,6 +1,7 @@
 package io.getmedusa.medusa.core.websocket.hydra;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.getmedusa.medusa.core.filters.JWTTokenInterpreter;
 import io.getmedusa.medusa.core.injector.HydraURLReplacer;
 import io.getmedusa.medusa.core.registry.HydraRegistry;
 import io.getmedusa.medusa.core.registry.RouteRegistry;
@@ -122,6 +123,7 @@ public class HydraConnection implements ApplicationListener<ApplicationEvent> {
         X509EncodedKeySpec spec = new X509EncodedKeySpec(decodedKey);
         KeyFactory kf = KeyFactory.getInstance("RSA");
         publicKey = (RSAPublicKey) kf.generatePublic(spec);
+        JWTTokenInterpreter.clearCache();
     }
 
     private Set<String> determineListOfStaticResources() throws IOException {

@@ -28,6 +28,10 @@ public class JWTTokenInterpreter extends AuthenticationWebFilter {
             .maximumSize(250)
             .build();
 
+    public static void clearCache() {
+        cache.invalidateAll();
+    }
+
     public JWTTokenInterpreter() {
         super(new KnownAuthenticationManager());
 

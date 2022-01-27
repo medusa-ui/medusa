@@ -105,7 +105,7 @@ public class ReactiveWebSocketHandler implements WebSocketHandler {
 
     private void closeSession(WebSocketSession session) {
         final UIEventController eventController = EventHandlerRegistry.getInstance().get(session);
-        eventController.exit(session);
+        if(eventController != null) eventController.exit(session);
         ActiveSessionRegistry.getInstance().remove(session);
     }
 }
