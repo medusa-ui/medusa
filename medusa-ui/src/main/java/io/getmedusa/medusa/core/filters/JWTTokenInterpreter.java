@@ -16,6 +16,7 @@ import org.springframework.security.web.server.authentication.AuthenticationWebF
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
+import java.security.SecureRandom;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
@@ -40,9 +41,7 @@ public class JWTTokenInterpreter extends AuthenticationWebFilter {
             if (!cookies.isEmpty()) {
                 String token = cookies.get(0).getValue();
                 Authentication auth = cache.get(token, t -> {
-                    final String tokenPayload = verifyToken(token);
-                    if (null == tokenPayload) return null;
-                    return new PreAuthenticatedAuthenticationToken("user", "password", List.of(new SimpleGrantedAuthority("USER")));
+                    return verifyToken(token);
                 });
                 if (auth == null) return reject(exchange);
                 return Mono.just(auth);
@@ -57,16 +56,29 @@ public class JWTTokenInterpreter extends AuthenticationWebFilter {
         return Mono.empty();
     }
 
-    private String verifyToken(String token) {
+    private PreAuthenticatedAuthenticationToken verifyToken(String token) {
         try {
             JWTVerifier verifier = JWT.require(Algorithm.RSA256(HydraConnection.publicKey, null))
                     .withIssuer("hydra")
                     .build();
             DecodedJWT jwt = verifier.verify(token);
             if (jwt == null) return null;
-            return jwt.getClaim("username").asString();
+
+            final String username = jwt.getClaim("username").asString();
+            final String[] roles = jwt.getClaim("roles").asArray(String.class);
+            List<SimpleGrantedAuthority> authorities = buildAuthorities(roles);
+            return new PreAuthenticatedAuthenticationToken(username, new SecureRandom(), authorities);
         } catch (Exception exception) {
             return null;
         }
+    }
+
+    private List<SimpleGrantedAuthority> buildAuthorities(String[] roles) {
+        List<SimpleGrantedAuthority> authorities = new ArrayList<>();
+        if(roles.length == 0) return authorities;
+        for(String role : roles) {
+            authorities.add(new SimpleGrantedAuthority(role.toUpperCase()));
+        }
+        return authorities;
     }
 }
