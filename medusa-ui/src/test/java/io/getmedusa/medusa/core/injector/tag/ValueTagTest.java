@@ -1,6 +1,7 @@
 package io.getmedusa.medusa.core.injector.tag;
 
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
@@ -86,7 +87,7 @@ class ValueTagTest extends AbstractTest {
         Assertions.assertTrue(html.contains("<span"));
     }
 
-    @Test
+    @Test @Disabled("in favor of conditionals with null values")
     void testObjectRenderingCausesError() {
         Map<String, Object> variables = new HashMap<>();
         variables.put("counter-value", new ComplexObject("xyz"));

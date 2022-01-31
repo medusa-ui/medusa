@@ -1,5 +1,7 @@
 package io.getmedusa.medusa.core.annotation;
 
+import io.getmedusa.medusa.core.util.NullValueUtils;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -53,7 +55,7 @@ public class PageAttributes {
      * @return PageAttributes with appended value
      */
     public PageAttributes with(String key, Object value) {
-        pageVariables.put(key, value);
+        pageVariables.put(key,  NullValueUtils.defaultIfNull(value));
         return this;
     }
 

@@ -1,6 +1,7 @@
 package io.getmedusa.medusa.core.injector.tag;
 
 import io.getmedusa.medusa.core.injector.tag.meta.InjectionResult;
+import io.getmedusa.medusa.core.util.NullValueUtils;
 import org.jsoup.nodes.Element;
 import org.jsoup.nodes.Node;
 import org.jsoup.parser.Tag;
@@ -29,7 +30,7 @@ public class ValueTag extends AbstractTag {
             final String item = mTextTag.attr(TagConstants.TEXT_TAG_ITEM_ATTR).trim();
             Object variableValue = getPossibleEachValue(mTextTag, item, request, variables);
             if(null == variableValue) variableValue = variableToString(item, variables);
-            if(null == variableValue) variableValue = item;
+            if(null == variableValue) variableValue = NullValueUtils.defaultIfNull(item);
             mTextTag.replaceWith(createSpan(item, variableValue.toString()));
         }
     }

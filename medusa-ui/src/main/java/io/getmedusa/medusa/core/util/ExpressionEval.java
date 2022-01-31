@@ -36,7 +36,7 @@ public abstract class ExpressionEval {
     public static String evalItemAsString(String itemToEval, Map<String, Object> variables) {
         try {
             Object val = interpretValue(itemToEval, variables);
-            return val.toString();
+            return null == val ? NullValueUtils.SIMPLE_NULL_REPRESENTATION : val.toString();
         } catch (SpelEvaluationException e) {
             return null;
         }
@@ -75,22 +75,23 @@ public abstract class ExpressionEval {
     }
 
     private static Object validateCompatibleValue(Object objValue, String originalLookupValue) {
-        try {
-            boolean isValid;
-            if (objValue.getClass().getComponentType() != null) {
-                isValid = objValue.getClass().getComponentType().getPackage().getName().startsWith("java.");
-            } else {
-                isValid = objValue.getClass().getPackage().getName().startsWith("java.");
-            }
-
-            if(isValid) {
-                return objValue;
-            } else {
-                throw unableToRenderFullObjectException(originalLookupValue, objValue.getClass());
-            }
-        } catch (NullPointerException e) {
-            return false;
-        }
+        return null == objValue ? NullValueUtils.SIMPLE_NULL_REPRESENTATION : objValue ;
+//        try {
+//            boolean isValid ;
+//            if (objValue.getClass().getComponentType() != null) {
+//                isValid = objValue.getClass().getComponentType().getPackage().getName().startsWith("java.");
+//            } else {
+//                isValid = true; //objValue.getClass().getPackage().getName().startsWith("java.");
+//            }
+//
+//            if(isValid) {
+//                return objValue;
+//            } else {
+//                throw unableToRenderFullObjectException(originalLookupValue, objValue.getClass());
+//            }
+//        } catch (NullPointerException e) {
+//            return false;
+//        }
     }
 
     public static String resolveRestOfKey(String path, Map<String, Object> variables) {

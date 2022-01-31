@@ -1,5 +1,7 @@
 package io.getmedusa.medusa.core.injector;
 
+import io.getmedusa.medusa.core.util.NullValueUtils;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -111,12 +113,11 @@ public class DOMChanges {
 
         public DOMChange(String field, Object value) {
             this.f = field;
-            this.v = value;
+            this.v =  NullValueUtils.defaultIfNull(value);
         }
 
         public DOMChange(String field, Object value, DOMChange.DOMChangeType type) {
-            this.f = field;
-            this.v = value;
+            this(field, value);
             this.t = type.ordinal();
         }
 
