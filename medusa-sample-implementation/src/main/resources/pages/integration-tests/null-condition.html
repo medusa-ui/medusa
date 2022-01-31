@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:m="https://medusa-ui.dev" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="https://medusa-ui.dev https://raw.githubusercontent.com/medusa-ui/medusa/poc/xml-parser/medusa-ui.xsd">
+<head>
+    <meta charset="UTF-8">
+    <title>Medusa conditionals with nulls</title>
+    <link href="/stylesheet.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter&family=Merriweather&display=swap" rel="stylesheet">
+</head>
+<body>
+<h1>🦑 Conditions with <code>nulls</code></h1>
+    <div>
+        <h2>Is person null?</h2>
+        <m:if item="person" not="undefined">
+            <m:if item="person.name" not="undefined">
+                <p class="null_person">Person with name: <m:text item="person.name"/>.</p>
+                <m:else>
+                    <p class="null_person">The person's name is unknown.</p>
+                </m:else>
+            </m:if>
+            <m:else>
+                <p class="null_person">Person is null.</p>
+            </m:else>
+        </m:if>
+    </div>
+
+    <br/>
+<!-- In trouble when checking -->
+<!--    <div>-->
+<!--        <h2>Is person.name null?</h2>-->
+<!--        <m:if item="person.name" not="null">-->
+<!--            <p class="null_person_name">Person with name: <m:text item="person.name"/>.</p>-->
+<!--            <m:else>-->
+<!--                <p class="null_person_name">Person is null.</p>-->
+<!--            </m:else>-->
+<!--        </m:if>-->
+<!--    </div>-->
+    <div>
+        <button id="no-one" m:click="noOne()">person = null</button>
+        <button id="some-one" m:click="someOne()">person = Person("Jhon Doe")</button>
+        <button id="some-null-name" m:click="someNullName()">person = Person(null)</button>
+    </div>
+</body>
+</html>
