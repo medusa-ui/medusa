@@ -3,48 +3,55 @@ package com.sample.medusa.eventhandler.integrationtests;
 import io.getmedusa.medusa.core.annotation.PageAttributes;
 import io.getmedusa.medusa.core.annotation.UIEventPage;
 import io.getmedusa.medusa.core.injector.DOMChanges;
+import io.getmedusa.medusa.core.registry.ActiveSessionRegistry;
 import io.getmedusa.medusa.core.util.SecurityContext;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.reactive.function.server.ServerRequest;
 
+import java.security.SecureRandom;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
-@UIEventPage(file = "pages/integration-tests/each.html", path = "/each")
+@UIEventPage(file = "pages/integration-tests/each-bidirectional.html", path = "/each-bidirectional")
 public class EachEventHandler {
-    private static final Logger logger = LoggerFactory.getLogger(EachEventHandler.class);
-    List<String> first = new ArrayList<>(Arrays.asList("f1", "f2", "f3"));
-    List<String> second = new ArrayList<>(Arrays.asList("s1", "s2", "s3", "s4"));
-    List<String> third = new ArrayList<>(Arrays.asList("t1", "t2"));
+    public List<String> loop = new ArrayList<>();
+    public boolean running = false;
 
     public PageAttributes setupAttributes(ServerRequest request, SecurityContext securityContext) {
         return new PageAttributes()
-                .with("first", first)
-                .with("second", second)
-                .with("third",third);
+                .with("loop", loop)
+                .with("running", running);
     }
 
-    public DOMChanges first(){
-        int next = first.size() + 1;
-        first.add("f" + next);
-        logger.debug("next:{}, first:{}", next, first);
-        return DOMChanges.of("first", first);
+    public DOMChanges start() {
+        running = true;
+        return DOMChanges.of("running", running);
     }
 
-    public DOMChanges second(){
-        int next = second.size() + 1;
-        second.add("s" + next);
-        logger.debug("next:{}, second:{}", next, second);
-        return DOMChanges.of("second", second);
+    public DOMChanges stop() {
+        running = false;
+        return DOMChanges.of("running", running);
     }
 
-    public DOMChanges third(){
-        int next = third.size() + 1;
-        third.add("t" + next);
-        logger.debug("next:{}, third:{}", next, third);
-        return DOMChanges.of("third", third);
+    public DOMChanges clear() {
+        loop.clear();
+        return DOMChanges.of("loop", loop);
     }
 
+    @Scheduled(fixedRate = 1000)
+    public void runUpdate() {
+        if(running) {
+            loop.add(UUID.randomUUID().toString());
+            ActiveSessionRegistry.getInstance().sendToAll(DOMChanges.of("loop", loop));
+        }
+    }
+
+    @Scheduled(fixedRate = 1000, initialDelay = 500)
+    public void runUpdate2() {
+        if(running) {
+            loop.add(Integer.toString(new SecureRandom().nextInt()));
+            ActiveSessionRegistry.getInstance().sendToAll(DOMChanges.of("loop", loop).build());
+        }
+    }
 }

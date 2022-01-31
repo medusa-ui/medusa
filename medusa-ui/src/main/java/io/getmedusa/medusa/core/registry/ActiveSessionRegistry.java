@@ -12,6 +12,7 @@ import reactor.core.publisher.Flux;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -50,9 +51,8 @@ public class ActiveSessionRegistry {
     }
 
     public void sendToAll(Object objToSend) {
-        Flux<WebSocketMessage> data = objToFlux(objToSend);
         for (WebSocketSession session : getAllSessions()) {
-            session.send(data).subscribe();
+            sendToSession(objToSend, session.getId());
         }
     }
 
@@ -62,11 +62,19 @@ public class ActiveSessionRegistry {
 
     public void sendToSession(Object objToSend, String sessionId) {
         final WebSocketSession webSocketSession = registry.get(sessionId);
-        if(objToSend instanceof DOMChanges domChanges) {
+        final Flux<WebSocketMessage> data = objToFlux(applyDOMExecutionIfApplicable(objToSend, webSocketSession));
+        if (null != webSocketSession) webSocketSession.send(data).subscribe();
+    }
+
+    private Object applyDOMExecutionIfApplicable(Object objToSend, WebSocketSession webSocketSession) {
+        if(objToSend instanceof List<?> list) {
+            if(!list.isEmpty() && list.get(0) instanceof DOMChanges.DOMChange) {
+                objToSend = DOM_CHANGES_EXECUTION.process(webSocketSession, (List<DOMChanges.DOMChange>) list);
+            }
+        } else if(objToSend instanceof DOMChanges domChanges) {
             objToSend = DOM_CHANGES_EXECUTION.process(webSocketSession, domChanges.build());
         }
-        Flux<WebSocketMessage> data = objToFlux(objToSend);
-        if (null != webSocketSession) webSocketSession.send(data).subscribe();
+        return objToSend;
     }
 
     public WebSocketSession getWebsocketByID(String id) {

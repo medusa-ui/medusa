@@ -2,14 +2,15 @@ package com.sample.medusa;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import reactor.blockhound.BlockHound;
 import reactor.blockhound.integration.BlockHoundIntegration;
-import reactor.core.publisher.Hooks;
 
 import java.util.ServiceLoader;
 import java.util.stream.StreamSupport;
 
 @SpringBootApplication
+@EnableScheduling
 public class MedusaApplication {
 
 	public static void main(String[] args) {
