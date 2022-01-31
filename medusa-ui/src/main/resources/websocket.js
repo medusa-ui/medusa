@@ -328,7 +328,9 @@ _M.handleDefaultEvent = function(k) {
             e.setAttribute("value", valueToSet);
             e.dispatchEvent(new Event('input'));
         } else {
-            e.innerText = valueToSet;
+//        e.innerText = valueToSet;
+            // TODO: return undefined if value is not found?
+            e.innerText = typeof valueToSet === "undefined" ? "undefined" : valueToSet;;
         }
     });
 
