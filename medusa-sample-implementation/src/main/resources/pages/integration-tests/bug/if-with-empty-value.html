@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:m="https://getmedusa.io" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="https://getmedusa.io https://raw.githubusercontent.com/medusa-ui/medusa/main/medusa-ui.xsd">
+<head>
+    <meta charset="UTF-8">
+    <title>Medusa conditional bug?</title>
+    <link href="/stylesheet.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter&family=Merriweather&display=swap" rel="stylesheet">
+</head>
+<body>
+    <h1>🦑 Evaluate empty values</h1>
+
+    <p>The message is: <m:text item="text" />.</p>
+
+    <m:if item="text" eq="hello">
+        <p>Hello!</p>
+        <m:else><p>Text is not 'hello'</p></m:else>
+    </m:if>
+
+    <code><pre>&lt;m:if item="text" eq=""&gt;</pre></code>
+    <m:if item="text" eq="">
+        <p>Text is empty.</p>
+        <m:else><p>Text is not empty.</p></m:else>
+    </m:if>
+
+    <code><pre>&lt;m:if item="text" not=""&gt;</pre></code>
+    <m:if item="text" not="">
+        <p>Text is not empty.</p>
+        <m:else><p>Text is empty.</p></m:else>
+    </m:if>
+
+    <div>
+        <input type="text" id="input_txt" m:onenter="concat(this.value)"/>
+        <button id="btn_hello" m:click="hello()">say hello</button>
+    </div>
+</body>
+</html>

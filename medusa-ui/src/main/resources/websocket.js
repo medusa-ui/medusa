@@ -584,8 +584,13 @@ _M.handleConditionalClass = function(k) {
     relevantElem.className = fullClasses.trim();
 };
 
-_M.evalCondition = function(condition){
-    return Function('"use strict";return (' + condition + ')')();
+_M.evalCondition = function(condition) {
+    try {
+        return Function('"use strict";return (' + condition + ')')();
+    } catch(e) {
+        _M.debug("Error evaluating condition: " , condition);
+        return Function('"use strict";return (' + false + ')')();
+    }
 };
 
 _M.debug = function(textToLog, fullObject) {
