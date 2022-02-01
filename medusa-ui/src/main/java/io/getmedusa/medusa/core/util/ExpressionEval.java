@@ -43,17 +43,19 @@ public abstract class ExpressionEval {
     }
 
     public static Object evalItemAsObj(String itemToEval, Map<String, Object> variables) {
-        if(isQuoted(itemToEval)) return unwrapQuotes(itemToEval);
+        if(isQuoted(itemToEval)) {
+            return itemToEval; //unwrapQuotes(itemToEval);
+        }
         return interpretValue(itemToEval, variables);
     }
 
-    private static String unwrapQuotes(String itemToEval) {
-        try {
-            return itemToEval.substring(1, itemToEval.length() - 1);
-        } catch (Exception e) {
-            return itemToEval;
-        }
-    }
+//    private static String unwrapQuotes(String itemToEval) {
+//        try {
+//            return itemToEval.substring(1, itemToEval.length() - 1);
+//        } catch (Exception e) {
+//            return itemToEval;
+//        }
+//    }
 
     public static boolean isQuoted(String itemToEval) {
         return (itemToEval.startsWith("'") && itemToEval.endsWith("'")) || (itemToEval.startsWith("\"") && itemToEval.endsWith("\""));

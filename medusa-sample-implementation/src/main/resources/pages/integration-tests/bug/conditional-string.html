@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:m="https://getmedusa.io" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="https://getmedusa.io https://raw.githubusercontent.com/medusa-ui/medusa/main/medusa-ui.xsd">
+<head>
+    <meta charset="UTF-8">
+    <title>Hello World</title>
+    <link href="/stylesheet.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter&family=Merriweather&display=swap" rel="stylesheet">
+</head>
+<body>
+<h1>🦑 Medusa in trouble with "<m:text item="word"/>"</h1>
+    <m:if item="word" not="''">
+        <p>
+            word is <m:text item="word"/>.
+        </p>
+        <m:else>
+            <p>
+                word is empty.
+            </p>
+        </m:else>
+    </m:if>
+
+    <m:if item="word" eq="'Hello'">
+        <p class="hello-result">"<m:text item="word"/>" == "Hello"</p>
+        <m:else>
+            <p class="hello-result">"<m:text item="word"/>" != "Hello"</p>
+        </m:else>
+    </m:if>
+    <m:if item="word" eq='"World"'>
+        <p class="world-result">"<m:text item="word"/>" == "World"</p>
+        <m:else>
+            <p class="world-result">"<m:text item="word"/>" != "World"</p>
+        </m:else>
+    </m:if>
+    <button id="world_btn" m:click="world()">World</button>
+    <button id="hello_btn" m:click="hello()">Hello</button>
+    <button id="empty_btn" m:click="empty()">Empty</button>
+</body>
+</html>

@@ -150,6 +150,8 @@ _M.injectVariablesIntoConditionalExpression = function(expression, elem) {
                 //no action
             } else if(typeof varValue === "object") {
                 expression = expression.replaceAll(toReplace, JSON.stringify(varValue));
+            } else if(typeof varValue === "string") {
+                expression = expression.replaceAll( toReplace , "'" + varValue + "'");
             } else {
                 expression = expression.replaceAll(toReplace, varValue);
             }
@@ -585,6 +587,7 @@ _M.handleConditionalClass = function(k) {
 };
 
 _M.evalCondition = function(condition){
+    _M.debug("Evaluating condition: " , condition);
     return Function('"use strict";return (' + condition + ')')();
 };
 

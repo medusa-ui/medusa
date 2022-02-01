@@ -81,7 +81,9 @@ public class VisibilityDetermination extends AbstractTag {
 
     private String wrapped(Object item) {
         if(null == item) return "''";
-        if(!item.toString().startsWith("'")) return "'" + item + "'";
+        if(!item.toString().startsWith("'")) {
+            return "'" + item + "'";
+        }
         return item.toString();
     }
 
