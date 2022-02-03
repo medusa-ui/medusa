@@ -30,6 +30,7 @@ public class TagConstants {
     public static final String CONDITIONAL_TAG_GREATER_THAN_OR_EQ = "gte";
     public static final String CONDITIONAL_TAG_LESS_THAN = "lt";
     public static final String CONDITIONAL_TAG_LESS_THAN_OR_EQ = "lte";
+    public static final String CONDITIONAL_TAG_EMPTY = "empty";
 
     //conditional - attributes
     public static final String M_IF = "m-if";

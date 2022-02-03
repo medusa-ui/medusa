@@ -7,6 +7,7 @@ import org.springframework.expression.spel.SpelEvaluationException;
 import org.springframework.web.reactive.function.server.ServerRequest;
 
 import java.math.BigDecimal;
+import java.util.Collection;
 import java.util.Map;
 
 import static io.getmedusa.medusa.core.injector.tag.TagConstants.*;
@@ -20,7 +21,9 @@ public class VisibilityDetermination extends AbstractTag {
 
     public ConditionResult determine(Map<String, Object> vars, Element element, ServerRequest request) {
         final Object conditionItem = getConditionItemValue(vars, element, request);
-        StringBuilder condition = new StringBuilder(element.attr(CONDITIONAL_TAG_CONDITION_ATTR));
+        String item = element.attr(CONDITIONAL_TAG_CONDITION_ATTR);
+        StringBuilder condition = new StringBuilder(item);
+        Object value= vars.get(item);
 
         Boolean visible = null;
         if(element.hasAttr(CONDITIONAL_TAG_EQUALS)) {
@@ -61,7 +64,35 @@ public class VisibilityDetermination extends AbstractTag {
             addComparisonToCondition(condition, comparisonItem, "<=");
         }
 
+        if(element.hasAttr(CONDITIONAL_TAG_EMPTY)) {
+            Object comparisonItem = getComparisonItemValue(vars, element, CONDITIONAL_TAG_EMPTY);
+            visible = logicalAnd(visible, isEmpty(value, conditionItem, comparisonItem, condition, item));
+        }
+
         return new ConditionResult(Boolean.TRUE.equals(visible), condition.toString());
+    }
+
+    private boolean isEmpty(Object value, Object conditionItem, Object comparisonItem, StringBuilder condition, String item) {
+        Boolean empty = comparisonItem == null ? Boolean.FALSE : Boolean.valueOf(comparisonItem.toString());
+        String comparisonToken = empty ? " === " : " !== ";
+        if (null == value) {
+            condition.append(comparisonToken)
+                    .append("undefined");
+        } else if (value instanceof String) {
+            condition.append(".length ")
+                    .append(comparisonToken)
+                    .append(0);
+            empty = empty && (((String) value).length() == 0);
+        } else if (value instanceof Collection) {
+            condition.append(".length ")
+                    .append(comparisonToken)
+                    .append(0);
+            empty = empty && (((Collection) value).size() == 0);
+        } else if ( value instanceof Map ){
+            condition.replace(condition.length()-item.length(), condition.length(), "Object.keys(" + item + ").length === 0");
+            empty = empty && (((Map) value).size() == 0);
+        }
+        return empty;
     }
 
     private void addComparisonToCondition(StringBuilder condition, Object comparisonItem, String comparisonToken) {
