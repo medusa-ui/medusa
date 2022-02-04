@@ -8,7 +8,7 @@ import org.springframework.web.reactive.function.server.ServerRequest;
 
 import java.util.*;
 
-@UIEventPage(file = "pages/integration-tests/empty.html", path = "/conditional-empty")
+@UIEventPage(file = "pages/integration-tests/empty.html", path = "/test/conditional-empty")
 public class EmptyConditionalEventHandler {
 
     // empty
@@ -33,7 +33,7 @@ public class EmptyConditionalEventHandler {
 
     public DOMChanges values(){
         text = "some text";
-        list.add("a list item " + (list.size() + 1));
+        list.add("a list item");
         set.add("a set item");
         map.put("a key","a map value");
         person = new Person("jd","Jhon Doe");

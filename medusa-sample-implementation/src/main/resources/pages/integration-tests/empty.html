@@ -22,12 +22,12 @@
     <m:if item="list" empty="true">
         <p class="list-result">List is empty.</p>
         <m:else>
-            <p class="list-result">List is <m:text item="list"/>.</p>
+            <p class="list-result">List is <m:text item="list[0]"/>.</p>
         </m:else>
     </m:if>
 
     <m:if item="set" empty="false">
-        <p class="set-result">Set is <m:text item="set"/>.</p>
+        <p class="set-result">Set is <m:text item="set[0]"/>.</p>
         <m:else>
             <p class="set-result">Set is empty.</p>
         </m:else>
@@ -43,8 +43,8 @@
 <!--        <p>Person is null</p>-->
 <!--        <m:else><p>Person is <m:text item="person.name"/></p></m:else>-->
 <!--    </m:if>-->
-    <button m:click="values()">Set values</button>
-    <button m:click="clear()">Clear values</button>
+    <button id="values_btn" m:click="values()">Set values</button>
+    <button id="clear_btn"  m:click="clear()">Clear values</button>
 
 </body>
 </html>

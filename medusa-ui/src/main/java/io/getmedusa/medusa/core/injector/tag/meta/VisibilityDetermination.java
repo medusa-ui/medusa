@@ -82,15 +82,15 @@ public class VisibilityDetermination extends AbstractTag {
             condition.append(".length ")
                     .append(comparisonToken)
                     .append(0);
-            empty = empty && (((String) value).length() == 0);
+            empty = empty.equals(((String) value).length() == 0);
         } else if (value instanceof Collection) {
             condition.append(".length ")
                     .append(comparisonToken)
                     .append(0);
-            empty = empty && (((Collection) value).size() == 0);
+            empty = empty.equals(((Collection) value).size() == 0);
         } else if ( value instanceof Map ){
             condition.replace(condition.length()-item.length(), condition.length(), "Object.keys(" + item + ").length === 0");
-            empty = empty && (((Map) value).size() == 0);
+            empty = empty.equals((((Map) value).size()) == 0);
         }
         return empty;
     }
