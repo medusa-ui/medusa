@@ -17,15 +17,9 @@ public class EmptyConditionalEventHandler {
     Map<String,String> map = new HashMap<>();
     String text = "";
 
-    // null values
-    Person person;
-    Number number;
-
     public PageAttributes setupAttributes(ServerRequest request, SecurityContext securityContext) {
         return new PageAttributes()
                 .with("text",text)
-                .with("number", number)
-                .with("person", person)
                 .with("list", list)
                 .with("set", set)
                 .with("map", map);
@@ -36,14 +30,10 @@ public class EmptyConditionalEventHandler {
         list.add("a list item");
         set.add("a set item");
         map.put("a key","a map value");
-        person = new Person("jd","Jhon Doe");
-        number = 1;
         return DOMChanges.of("text",text)
                 .and("list", list)
                 .and("set", set)
-                .and("map", map)
-                .and("person",person)
-                .and("number", number);
+                .and("map", map);
     }
 
     public DOMChanges clear(){
@@ -51,14 +41,10 @@ public class EmptyConditionalEventHandler {
         list.clear();
         set.clear();
         map.clear();
-        person = null;
-        number = null;
         return DOMChanges.of("text",text)
                 .and("list", list)
                 .and("set", set)
-                .and("map", map)
-                .and("person", person)
-                .and("number", number);
+                .and("map", map);
     }
 
 }

@@ -66,19 +66,16 @@ public class VisibilityDetermination extends AbstractTag {
 
         if(element.hasAttr(CONDITIONAL_TAG_EMPTY)) {
             Object comparisonItem = getComparisonItemValue(vars, element, CONDITIONAL_TAG_EMPTY);
-            visible = logicalAnd(visible, isEmpty(value, conditionItem, comparisonItem, condition, item));
+            visible = logicalAnd(visible, isEmpty(value, comparisonItem, condition, item));
         }
 
         return new ConditionResult(Boolean.TRUE.equals(visible), condition.toString());
     }
 
-    private boolean isEmpty(Object value, Object conditionItem, Object comparisonItem, StringBuilder condition, String item) {
+    private boolean isEmpty(Object value, Object comparisonItem, StringBuilder condition, String item) {
         Boolean empty = comparisonItem == null ? Boolean.FALSE : Boolean.valueOf(comparisonItem.toString());
         String comparisonToken = empty ? " === " : " !== ";
-        if (null == value) {
-            condition.append(comparisonToken)
-                    .append("undefined");
-        } else if (value instanceof String) {
+        if (value instanceof String) {
             condition.append(".length ")
                     .append(comparisonToken)
                     .append(0);
