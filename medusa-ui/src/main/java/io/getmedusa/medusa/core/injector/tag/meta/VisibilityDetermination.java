@@ -22,7 +22,9 @@ public class VisibilityDetermination extends AbstractTag {
     public ConditionResult determine(Map<String, Object> vars, Element element, ServerRequest request) {
         final Object conditionItem = getConditionItemValue(vars, element, request);
         String item = element.attr(CONDITIONAL_TAG_CONDITION_ATTR);
-        StringBuilder condition = new StringBuilder(item);
+        StringBuilder condition = new StringBuilder("$#$");
+        condition.append(item);
+        condition.append("$#$");
         Object value= vars.get(item);
 
         Boolean visible = null;
@@ -67,9 +69,42 @@ public class VisibilityDetermination extends AbstractTag {
         if(element.hasAttr(CONDITIONAL_TAG_EMPTY)) {
             Object comparisonItem = getComparisonItemValue(vars, element, CONDITIONAL_TAG_EMPTY);
             visible = logicalAnd(visible, isEmpty(value, comparisonItem, condition, item));
+
+            String comparisonToken = "===";
+            String combinationToken = "||";
+            if (Boolean.FALSE.toString().equals(comparisonItem)) {
+                comparisonToken = "!==";
+                combinationToken = "&&";
+            }
+            addConditionNullCheck(condition, comparisonToken, combinationToken);
         }
 
         return new ConditionResult(Boolean.TRUE.equals(visible), condition.toString());
+    }
+
+    private void addConditionNullCheck(StringBuilder condition, String comparisonToken, String combinationToken) {
+        String conditionToString = condition.toString();
+        condition.append(" ");
+        condition.append(comparisonToken);
+        condition.append(" null ");
+        condition.append(combinationToken);
+        condition.append(" typeof ");
+        condition.append(conditionToString);
+        condition.append(" ");
+        condition.append(comparisonToken);
+        condition.append(" \"undefined\" ");
+        condition.append(combinationToken);
+        condition.append(" Object.keys(");
+        condition.append(conditionToString);
+        condition.append(").length ");
+        condition.append(comparisonToken);
+        condition.append(" 0 ");
+        condition.append(combinationToken);
+        condition.append(" ");
+        condition.append(conditionToString);
+        condition.append(" ");
+        condition.append(comparisonToken);
+        condition.append(" ''");
     }
 
     private boolean isEmpty(Object value, Object comparisonItem, StringBuilder condition, String item) {
