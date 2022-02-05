@@ -83,7 +83,7 @@ _M.eventHandler = function(e) {
     
     //e = full event, k = individual event per key, k.f = field, k.v = value or relevant id, k.t = type, k.c = condition
     e.forEach(k => {
-        if(typeof k.t === "undefined") { //the default event, a value change, contains the least amount of data, so it has no 'type'
+        if(typeof k.t === "undefined" || k.t === null) { //the default event, a value change, contains the least amount of data, so it has no 'type'
             _M.handleDefaultEvent(k);
         } else if (k.t === 0) { //DOCUMENT TITLE CHANGE
             _M.handleTitleChangeEvent(k);
@@ -320,6 +320,9 @@ _M.handleMAttribute = function (mId, trueFunc, falseFunc, evalValue) {
 };
 
 _M.handleDefaultEvent = function(k) {
+    if(typeof k.v === "undefined" || k.v === null) {
+        k.v = "";
+    }
     _M.variables[k.f] = k.v;
     document.querySelectorAll("[from-value^="+k.f+"]").forEach(function(e) {
         let valueToSet = k.v;
@@ -430,7 +433,9 @@ _M.findThroughObjectPath = function (variable, index, path, eachObject) {
         object = variable[index];
     }
 
-    if(typeof object === "string" || typeof object === "number") {
+    if(typeof object === "undefined") {
+        return null;
+    } else if(typeof object === "string" || typeof object === "number") {
         return object;
     } else {
         const possibleKeys = Object.keys(variable);

@@ -74,20 +74,20 @@ public class VisibilityDetermination extends AbstractTag {
 
     private boolean isEmpty(Object value, Object comparisonItem, StringBuilder condition, String item) {
         Boolean empty = comparisonItem == null ? Boolean.FALSE : Boolean.valueOf(comparisonItem.toString());
-        String comparisonToken = empty ? " === " : " !== ";
-        if (value instanceof String) {
+        String comparisonToken = Boolean.TRUE.equals(empty) ? " === " : " !== ";
+        if (value instanceof String string) {
             condition.append(".length ")
                     .append(comparisonToken)
                     .append(0);
-            empty = empty.equals(((String) value).length() == 0);
-        } else if (value instanceof Collection) {
+            empty = empty.equals((string).length() == 0);
+        } else if (value instanceof Collection<?> collection) {
             condition.append(".length ")
                     .append(comparisonToken)
                     .append(0);
-            empty = empty.equals(((Collection) value).size() == 0);
-        } else if ( value instanceof Map ){
+            empty = empty.equals((collection).isEmpty());
+        } else if ( value instanceof Map<?, ?> map){
             condition.replace(condition.length()-item.length(), condition.length(), "Object.keys(" + item + ").length === 0");
-            empty = empty.equals((((Map) value).size()) == 0);
+            empty = empty.equals(map.size() == 0);
         }
         return empty;
     }
