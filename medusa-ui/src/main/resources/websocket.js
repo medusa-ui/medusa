@@ -142,7 +142,7 @@ _M.handleHydraMenuItemChange = function (k) {
 };
 
 _M.injectVariablesIntoConditionalExpression = function(expression, elem) {
-    let found = expression.match(new RegExp("\\$#\\$[\\w-]+\\$#\\$","g"));
+    let found = expression.match(new RegExp("\\$#\\$[\\w.\\[\\]#$-]+\\$#\\$","g"));
     if(found) {
         found = [...new Set(found)];
         for(const toReplaceRaw of found) {
