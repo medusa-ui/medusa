@@ -8,7 +8,7 @@ import org.springframework.web.reactive.function.server.ServerRequest;
 
 import java.util.*;
 
-@UIEventPage(file = "pages/integration-tests/empty.html", path = "/test/conditional-empty")
+@UIEventPage(file = "pages/integration-tests/empty.html", path = "/test/conditional-empty/{defaultState}")
 public class EmptyConditionalEventHandler {
 
     // empty
@@ -18,11 +18,13 @@ public class EmptyConditionalEventHandler {
     String text = "";
 
     public PageAttributes setupAttributes(ServerRequest request, SecurityContext securityContext) {
-
-        text = null;
-        list = null;
-        set = null;
-        map = null;
+        int defaultState = Integer.parseInt(request.pathVariable("defaultState"));
+        //0 = empty, not null, 1=null, 2=values
+        switch (defaultState) {
+            case 1 -> setToNull();
+            case 2 -> values();
+            default -> clear();
+        }
 
         return new PageAttributes()
                 .with("text",text)

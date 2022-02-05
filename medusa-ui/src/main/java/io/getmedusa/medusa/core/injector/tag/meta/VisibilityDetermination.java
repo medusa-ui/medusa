@@ -68,13 +68,15 @@ public class VisibilityDetermination extends AbstractTag {
 
         if(element.hasAttr(CONDITIONAL_TAG_EMPTY)) {
             Object comparisonItem = getComparisonItemValue(vars, element, CONDITIONAL_TAG_EMPTY);
-            visible = logicalAnd(visible, isEmpty(value, comparisonItem, condition, item));
 
             String comparisonToken = "===";
             String combinationToken = "||";
             if (Boolean.FALSE.toString().equals(comparisonItem)) {
                 comparisonToken = "!==";
                 combinationToken = "&&";
+                visible = logicalAnd(visible, !isEmpty(value));
+            } else {
+                visible = logicalAnd(visible, isEmpty(value));
             }
             addConditionNullCheck(condition, comparisonToken, combinationToken);
         }
@@ -107,22 +109,14 @@ public class VisibilityDetermination extends AbstractTag {
         condition.append(" ''");
     }
 
-    private boolean isEmpty(Object value, Object comparisonItem, StringBuilder condition, String item) {
-        Boolean empty = comparisonItem == null ? Boolean.FALSE : Boolean.valueOf(comparisonItem.toString());
-        String comparisonToken = Boolean.TRUE.equals(empty) ? " === " : " !== ";
+    private boolean isEmpty(Object value) {
+        boolean empty = value == null;
         if (value instanceof String string) {
-            condition.append(".length ")
-                    .append(comparisonToken)
-                    .append(0);
-            empty = empty.equals((string).length() == 0);
+            empty = string.isBlank();
         } else if (value instanceof Collection<?> collection) {
-            condition.append(".length ")
-                    .append(comparisonToken)
-                    .append(0);
-            empty = empty.equals((collection).isEmpty());
+            empty = collection.isEmpty();
         } else if ( value instanceof Map<?, ?> map){
-            condition.replace(condition.length()-item.length(), condition.length(), "Object.keys(" + item + ").length === 0");
-            empty = empty.equals(map.size() == 0);
+            empty = map.isEmpty();
         }
         return empty;
     }
