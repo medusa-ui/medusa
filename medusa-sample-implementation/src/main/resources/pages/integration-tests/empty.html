@@ -40,10 +40,17 @@
         </m:else>
     </m:if>
 
-    <m:if item="person.name" empty="true">
+    <m:if item="person" empty="true">
         <p class="person-result">Person is null.</p>
         <m:else>
             <p class="person-result">Person is <m:text item="person.name"/>.</p>
+        </m:else>
+    </m:if>
+
+    <m:if item="person.name" empty="true">
+        <p class="person-name-result">Person is null.</p>
+        <m:else>
+            <p class="person-name-result">Person is <m:text item="person.name"/>.</p>
         </m:else>
     </m:if>
 

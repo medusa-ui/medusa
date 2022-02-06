@@ -88,6 +88,7 @@ class ConditionalEmptyIntegrationTest extends AbstractSeleniumTest {
         Assertions.assertEquals("Set is empty.",getTextByClass("set-result"));
         Assertions.assertEquals("Map is empty.",getTextByClass("map-result"));
         Assertions.assertEquals("Person is null.",getTextByClass("person-result"));
+        Assertions.assertEquals("Person is null.",getTextByClass("person-name-result"));
 
         // set values
         clickById("values_btn");
@@ -102,6 +103,7 @@ class ConditionalEmptyIntegrationTest extends AbstractSeleniumTest {
         Assertions.assertEquals("Set is a set item.",getTextByClass("set-result"));
         Assertions.assertEquals("Map is a map value.",getTextByClass("map-result"));
         Assertions.assertEquals("Person is John Doe.",getTextByClass("person-result"));
+        Assertions.assertEquals("Person is John Doe.",getTextByClass("person-name-result"));
 
         // clear values
         clickById("clear_btn");
@@ -110,6 +112,7 @@ class ConditionalEmptyIntegrationTest extends AbstractSeleniumTest {
         Assertions.assertEquals("Set is empty.",getTextByClass("set-result"));
         Assertions.assertEquals("Map is empty.",getTextByClass("map-result"));
         Assertions.assertEquals("Person is null.",getTextByClass("person-result"));
+        Assertions.assertEquals("Person is null.",getTextByClass("person-name-result"));
 
         // nullify values
         clickById("null_btn");
@@ -118,6 +121,7 @@ class ConditionalEmptyIntegrationTest extends AbstractSeleniumTest {
         Assertions.assertEquals("Set is empty.",getTextByClass("set-result"));
         Assertions.assertEquals("Map is empty.",getTextByClass("map-result"));
         Assertions.assertEquals("Person is null.",getTextByClass("person-result"));
+        Assertions.assertEquals("Person is null.",getTextByClass("person-name-result"));
 
         // set values
         clickById("values_btn");
@@ -126,6 +130,7 @@ class ConditionalEmptyIntegrationTest extends AbstractSeleniumTest {
         Assertions.assertEquals("Set is a set item.",getTextByClass("set-result"));
         Assertions.assertEquals("Map is a map value.",getTextByClass("map-result"));
         Assertions.assertEquals("Person is John Doe.",getTextByClass("person-result"));
+        Assertions.assertEquals("Person is John Doe.",getTextByClass("person-name-result"));
 
         // clear values
         clickById("clear_btn");
@@ -134,5 +139,6 @@ class ConditionalEmptyIntegrationTest extends AbstractSeleniumTest {
         Assertions.assertEquals("Set is empty.",getTextByClass("set-result"));
         Assertions.assertEquals("Map is empty.",getTextByClass("map-result"));
         Assertions.assertEquals("Person is null.",getTextByClass("person-result"));
+        Assertions.assertEquals("Person is null.",getTextByClass("person-name-result"));
     }
 }

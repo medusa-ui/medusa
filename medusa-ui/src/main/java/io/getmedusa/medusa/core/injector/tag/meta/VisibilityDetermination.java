@@ -158,7 +158,7 @@ public class VisibilityDetermination extends AbstractTag {
 
     private Object getComparisonItemValue(Map<String, Object> variables, Element conditionalElement, String tag) {
         final String comparisonItem = conditionalElement.attr(tag);
-        Object comparisonItemValue = ExpressionEval.evalItemAsObj(comparisonItem, variables);
+        Object comparisonItemValue = ExpressionEval.evalItemAsObjForConditional(comparisonItem, variables);
         if(null == comparisonItemValue) comparisonItemValue = comparisonItem;
         return comparisonItemValue;
     }
@@ -166,7 +166,7 @@ public class VisibilityDetermination extends AbstractTag {
     private Object getConditionItemValue(Map<String, Object> variables, Element conditionalElement, ServerRequest request) {
         final String conditionItem = conditionalElement.attr(CONDITIONAL_TAG_CONDITION_ATTR);
         try {
-            Object conditionItemValue = ExpressionEval.evalItemAsObj(conditionItem, variables);
+            Object conditionItemValue = ExpressionEval.evalItemAsObjForConditional(conditionItem, variables);
             if(null == conditionItemValue) conditionItemValue = conditionItem;
             Object variableValue = getPossibleEachValue(conditionalElement, conditionItem, request, variables);
             if(null != variableValue) conditionItemValue = variableValue;
