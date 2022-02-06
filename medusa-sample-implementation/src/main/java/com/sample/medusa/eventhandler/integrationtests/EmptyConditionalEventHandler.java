@@ -8,7 +8,7 @@ import org.springframework.web.reactive.function.server.ServerRequest;
 
 import java.util.*;
 
-@UIEventPage(file = "pages/integration-tests/empty.html", path = "/test/conditional-empty")
+@UIEventPage(file = "pages/integration-tests/empty.html", path = "/test/conditional-empty/{defaultState}")
 public class EmptyConditionalEventHandler {
 
     // empty
@@ -18,6 +18,15 @@ public class EmptyConditionalEventHandler {
     String text = "";
 
     public PageAttributes setupAttributes(ServerRequest request, SecurityContext securityContext) {
+
+        int defaultState = Integer.parseInt(request.pathVariable("defaultState"));
+        //0 = empty, not null, 1=null, 2=values
+        switch (defaultState) {
+            case 1 -> setToNull();
+            case 2 -> values();
+            default -> clear();
+        }
+
         return new PageAttributes()
                 .with("text",text)
                 .with("list", list)
@@ -27,9 +36,15 @@ public class EmptyConditionalEventHandler {
 
     public DOMChanges values(){
         text = "some text";
+        if(list == null) list = new ArrayList<>();
         list.add("a list item");
+
+        if(set == null) set = new HashSet<>();
         set.add("a set item");
+
+        if(map == null) map = new HashMap<>();
         map.put("a key","a map value");
+
         return DOMChanges.of("text",text)
                 .and("list", list)
                 .and("set", set)
@@ -38,13 +53,31 @@ public class EmptyConditionalEventHandler {
 
     public DOMChanges clear(){
         text = "";
+
+        if(list == null) list = new ArrayList<>();
         list.clear();
+
+        if(set == null) set = new HashSet<>();
         set.clear();
+
+        if(map == null) map = new HashMap<>();
         map.clear();
+
         return DOMChanges.of("text",text)
                 .and("list", list)
                 .and("set", set)
                 .and("map", map);
     }
 
+    public DOMChanges setToNull() {
+        text = null;
+        list = null;
+        set = null;
+        map = null;
+
+        return DOMChanges.of("text",text)
+                .and("list", list)
+                .and("set", set)
+                .and("map", map);
+    }
 }
