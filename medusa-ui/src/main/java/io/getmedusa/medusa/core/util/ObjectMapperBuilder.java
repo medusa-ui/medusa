@@ -10,7 +10,7 @@ public class ObjectMapperBuilder {
      */
     public static ObjectMapper setupObjectMapper() {
         ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+        objectMapper.setSerializationInclusion(JsonInclude.Include.USE_DEFAULTS);
         return objectMapper;
     }
 
