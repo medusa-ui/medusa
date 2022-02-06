@@ -83,7 +83,7 @@ _M.eventHandler = function(e) {
     
     //e = full event, k = individual event per key, k.f = field, k.v = value or relevant id, k.t = type, k.c = condition
     e.forEach(k => {
-        if(typeof k.t === "undefined") { //the default event, a value change, contains the least amount of data, so it has no 'type'
+        if(typeof k.t === "undefined" || k.t === null) { //the default event, a value change, contains the least amount of data, so it has no 'type'
             _M.handleDefaultEvent(k);
         } else if (k.t === 0) { //DOCUMENT TITLE CHANGE
             _M.handleTitleChangeEvent(k);
@@ -142,8 +142,9 @@ _M.handleHydraMenuItemChange = function (k) {
 };
 
 _M.injectVariablesIntoConditionalExpression = function(expression, elem) {
-    const found = expression.match(new RegExp("[\\w-]+","g"));
+    let found = expression.match(new RegExp("[\\w-]+","g"));
     if(found) {
+        found = [...new Set(found)];
         for(const toReplace of found) {
             const varValue = _M.variables[toReplace];
             if(typeof varValue === "undefined") {
@@ -320,6 +321,9 @@ _M.handleMAttribute = function (mId, trueFunc, falseFunc, evalValue) {
 };
 
 _M.handleDefaultEvent = function(k) {
+    if(typeof k.v === "undefined" || k.v === null) {
+        k.v = "";
+    }
     _M.variables[k.f] = k.v;
     document.querySelectorAll("[from-value^="+k.f+"]").forEach(function(e) {
         let valueToSet = k.v;
@@ -571,6 +575,7 @@ _M.setVisibilityOnElement = function (elem, expression) {
 _M.handleConditionalClass = function(k) {
     let condition = k.c;
     const found = condition.match(new RegExp("\\$\\w+(-?\\w*)*"));
+
     for(const toReplace of found) {
         condition = condition.replaceAll(toReplace, _M.variables[toReplace.substring(1)]);
     }
