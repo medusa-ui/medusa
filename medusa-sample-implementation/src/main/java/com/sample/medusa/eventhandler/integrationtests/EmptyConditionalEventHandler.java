@@ -16,6 +16,7 @@ public class EmptyConditionalEventHandler {
     Set<String> set = new HashSet<>();
     Map<String,String> map = new HashMap<>();
     String text = "";
+    Person person;
 
     public PageAttributes setupAttributes(ServerRequest request, SecurityContext securityContext) {
 
@@ -31,7 +32,8 @@ public class EmptyConditionalEventHandler {
                 .with("text",text)
                 .with("list", list)
                 .with("set", set)
-                .with("map", map);
+                .with("map", map)
+                .with("person",person);
     }
 
     public DOMChanges values(){
@@ -45,10 +47,13 @@ public class EmptyConditionalEventHandler {
         if(map == null) map = new HashMap<>();
         map.put("a key","a map value");
 
+        person = new Person("jd","John Doe");
+
         return DOMChanges.of("text",text)
                 .and("list", list)
                 .and("set", set)
-                .and("map", map);
+                .and("map", map)
+                .and("person", person);
     }
 
     public DOMChanges clear(){
@@ -63,10 +68,13 @@ public class EmptyConditionalEventHandler {
         if(map == null) map = new HashMap<>();
         map.clear();
 
+        person = new Person("jd",null);
+
         return DOMChanges.of("text",text)
                 .and("list", list)
                 .and("set", set)
-                .and("map", map);
+                .and("map", map)
+                .and("person", person);
     }
 
     public DOMChanges setToNull() {
@@ -74,10 +82,12 @@ public class EmptyConditionalEventHandler {
         list = null;
         set = null;
         map = null;
+        person = null;
 
         return DOMChanges.of("text",text)
                 .and("list", list)
                 .and("set", set)
-                .and("map", map);
+                .and("map", map)
+                .and("person", person);
     }
 }

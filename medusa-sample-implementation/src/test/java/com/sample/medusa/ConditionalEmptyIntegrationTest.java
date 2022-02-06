@@ -87,6 +87,7 @@ class ConditionalEmptyIntegrationTest extends AbstractSeleniumTest {
         Assertions.assertEquals("List is empty.",getTextByClass("list-result"));
         Assertions.assertEquals("Set is empty.",getTextByClass("set-result"));
         Assertions.assertEquals("Map is empty.",getTextByClass("map-result"));
+        Assertions.assertEquals("Person is null.",getTextByClass("person-result"));
 
         // set values
         clickById("values_btn");
@@ -94,11 +95,13 @@ class ConditionalEmptyIntegrationTest extends AbstractSeleniumTest {
         Assertions.assertEquals("List is a list item.",getTextByClass("list-result"));
         Assertions.assertEquals("Set is a set item.",getTextByClass("set-result"));
         Assertions.assertEquals("Map is a map value.",getTextByClass("map-result"));
+        Assertions.assertEquals("Person is John Doe.",getTextByClass("person-result"));
         goTo("/test/conditional-empty/2");
         Assertions.assertEquals("Text is some text.",getTextByClass("text-result"));
         Assertions.assertEquals("List is a list item.",getTextByClass("list-result"));
         Assertions.assertEquals("Set is a set item.",getTextByClass("set-result"));
         Assertions.assertEquals("Map is a map value.",getTextByClass("map-result"));
+        Assertions.assertEquals("Person is John Doe.",getTextByClass("person-result"));
 
         // clear values
         clickById("clear_btn");
@@ -106,18 +109,7 @@ class ConditionalEmptyIntegrationTest extends AbstractSeleniumTest {
         Assertions.assertEquals("List is empty.",getTextByClass("list-result"));
         Assertions.assertEquals("Set is empty.",getTextByClass("set-result"));
         Assertions.assertEquals("Map is empty.",getTextByClass("map-result"));
-
-        // set values
-        clickById("values_btn");
-        Assertions.assertEquals("Text is some text.",getTextByClass("text-result"));
-        Assertions.assertEquals("List is a list item.",getTextByClass("list-result"));
-        Assertions.assertEquals("Set is a set item.",getTextByClass("set-result"));
-        Assertions.assertEquals("Map is a map value.",getTextByClass("map-result"));
-        goTo("/test/conditional-empty/2");
-        Assertions.assertEquals("Text is some text.",getTextByClass("text-result"));
-        Assertions.assertEquals("List is a list item.",getTextByClass("list-result"));
-        Assertions.assertEquals("Set is a set item.",getTextByClass("set-result"));
-        Assertions.assertEquals("Map is a map value.",getTextByClass("map-result"));
+        Assertions.assertEquals("Person is null.",getTextByClass("person-result"));
 
         // nullify values
         clickById("null_btn");
@@ -125,6 +117,7 @@ class ConditionalEmptyIntegrationTest extends AbstractSeleniumTest {
         Assertions.assertEquals("List is empty.",getTextByClass("list-result"));
         Assertions.assertEquals("Set is empty.",getTextByClass("set-result"));
         Assertions.assertEquals("Map is empty.",getTextByClass("map-result"));
+        Assertions.assertEquals("Person is null.",getTextByClass("person-result"));
 
         // set values
         clickById("values_btn");
@@ -132,6 +125,7 @@ class ConditionalEmptyIntegrationTest extends AbstractSeleniumTest {
         Assertions.assertEquals("List is a list item.",getTextByClass("list-result"));
         Assertions.assertEquals("Set is a set item.",getTextByClass("set-result"));
         Assertions.assertEquals("Map is a map value.",getTextByClass("map-result"));
+        Assertions.assertEquals("Person is John Doe.",getTextByClass("person-result"));
 
         // clear values
         clickById("clear_btn");
@@ -139,5 +133,6 @@ class ConditionalEmptyIntegrationTest extends AbstractSeleniumTest {
         Assertions.assertEquals("List is empty.",getTextByClass("list-result"));
         Assertions.assertEquals("Set is empty.",getTextByClass("set-result"));
         Assertions.assertEquals("Map is empty.",getTextByClass("map-result"));
+        Assertions.assertEquals("Person is null.",getTextByClass("person-result"));
     }
 }

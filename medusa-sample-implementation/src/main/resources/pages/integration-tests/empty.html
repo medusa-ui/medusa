@@ -40,6 +40,13 @@
         </m:else>
     </m:if>
 
+    <m:if item="person.name" empty="true">
+        <p class="person-result">Person is null.</p>
+        <m:else>
+            <p class="person-result">Person is <m:text item="person.name"/>.</p>
+        </m:else>
+    </m:if>
+
     <button id="values_btn" m:click="values()">Set values</button>
     <button id="clear_btn" m:click="clear()">Clear values</button>
     <button id="null_btn" m:click="setToNull()">Set to null values</button>
