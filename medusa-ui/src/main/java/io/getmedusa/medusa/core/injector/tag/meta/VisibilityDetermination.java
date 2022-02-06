@@ -66,28 +66,54 @@ public class VisibilityDetermination extends AbstractTag {
 
         if(element.hasAttr(CONDITIONAL_TAG_EMPTY)) {
             Object comparisonItem = getComparisonItemValue(vars, element, CONDITIONAL_TAG_EMPTY);
-            visible = logicalAnd(visible, isEmpty(value, comparisonItem, condition, item));
+            String comparisonToken = "===";
+            String combinationToken = "||";
+            if (Boolean.FALSE.toString().equals(comparisonItem)) {
+                comparisonToken = "!==";
+                combinationToken = "&&";
+                visible = logicalAnd(visible, !isEmpty(value));
+            } else {
+                visible = logicalAnd(visible, isEmpty(value));
+            }
+            addConditionNullCheck(condition, comparisonToken, combinationToken);
         }
 
         return new ConditionResult(Boolean.TRUE.equals(visible), condition.toString());
     }
 
-    private boolean isEmpty(Object value, Object comparisonItem, StringBuilder condition, String item) {
-        Boolean empty = comparisonItem == null ? Boolean.FALSE : Boolean.valueOf(comparisonItem.toString());
-        String comparisonToken = empty ? " === " : " !== ";
-        if (value instanceof String) {
-            condition.append(".length ")
-                    .append(comparisonToken)
-                    .append(0);
-            empty = empty.equals(((String) value).length() == 0);
-        } else if (value instanceof Collection) {
-            condition.append(".length ")
-                    .append(comparisonToken)
-                    .append(0);
-            empty = empty.equals(((Collection) value).size() == 0);
-        } else if ( value instanceof Map ){
-            condition.replace(condition.length()-item.length(), condition.length(), "Object.keys(" + item + ").length === 0");
-            empty = empty.equals((((Map) value).size()) == 0);
+    private void addConditionNullCheck(StringBuilder condition, String comparisonToken, String combinationToken) {
+        String conditionToString = condition.toString();
+        condition.append(" ");
+        condition.append(comparisonToken);
+        condition.append(" null ");
+        condition.append(combinationToken);
+        condition.append(" typeof ");
+        condition.append(conditionToString);
+        condition.append(" ");
+        condition.append(comparisonToken);
+        condition.append(" \"undefined\" ");
+        condition.append(combinationToken);
+        condition.append(" Object.keys(");
+        condition.append(conditionToString);
+        condition.append(").length ");
+        condition.append(comparisonToken);
+        condition.append(" 0 ");
+        condition.append(combinationToken);
+        condition.append(" ");
+        condition.append(conditionToString);
+        condition.append(" ");
+        condition.append(comparisonToken);
+        condition.append(" ''");
+    }
+
+    private boolean isEmpty(Object value) {
+        boolean empty = value == null;
+        if (value instanceof String string) {
+            empty = string.isBlank();
+        } else if (value instanceof Collection<?> collection) {
+            empty = collection.isEmpty();
+        } else if ( value instanceof Map<?, ?> map){
+            empty = map.isEmpty();
         }
         return empty;
     }
