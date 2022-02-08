@@ -36,7 +36,7 @@ public class ConditionalTag extends AbstractTag {
 
         //find elements
         final Element elseElement = getElseElement(conditionalElement);
-        final List<ElseIfElement> elseIfElements = getElseIfElements(conditionalElement, variables, request); //pre-wrapped
+        final List<ElseIfElement> elseIfElements = getElseIfElements(conditionalElement, variables, request, mainCondition.condition()); //pre-wrapped
         final Elements mainElements = filterMainElements(conditionalElement, elseElement, elseIfElements);
 
         for(ElseIfElement elseIfElement : elseIfElements) {
@@ -99,10 +99,10 @@ public class ConditionalTag extends AbstractTag {
         return null;
     }
 
-    private List<ElseIfElement> getElseIfElements(Element conditionalElement, Map<String, Object> variables, ServerRequest request) {
+    private List<ElseIfElement> getElseIfElements(Element conditionalElement, Map<String, Object> variables, ServerRequest request, String mainCondition) {
         final Elements elements = conditionalElement.getElementsByTag(TagConstants.M_ELSEIF);
         if(elements.isEmpty()) return Collections.emptyList();
-        return elements.stream().map(e -> new ElseIfElement(e, variables, request)).toList();
+        return elements.stream().map(e -> new ElseIfElement(e, variables, request, mainCondition)).toList();
     }
 
     private Element wrapMainElement(Elements mainElements, String condition) {
