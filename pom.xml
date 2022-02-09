@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>io.getmedusa</groupId>
 	<artifactId>medusa</artifactId>
-	<version>0.3.2-SNAPSHOT</version>
+	<version>0.3.3-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>medusa parent pom</name>
 	<description>Serverside rendering framework</description>
