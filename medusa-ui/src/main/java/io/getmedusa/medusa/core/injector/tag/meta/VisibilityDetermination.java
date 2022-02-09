@@ -23,7 +23,7 @@ public class VisibilityDetermination extends AbstractTag {
         final Object conditionItem = getConditionItemValue(vars, element, request);
         String item = element.attr(CONDITIONAL_TAG_CONDITION_ATTR);
         StringBuilder condition = new StringBuilder(item);
-        Object value= vars.get(item);
+        Object value = ExpressionEval.evalItemAsObjForConditional(item,vars);
 
         Boolean visible = null;
         if(element.hasAttr(CONDITIONAL_TAG_EQUALS)) {
@@ -78,7 +78,7 @@ public class VisibilityDetermination extends AbstractTag {
             addConditionNullCheck(condition, comparisonToken, combinationToken);
         }
 
-        return new ConditionResult(Boolean.TRUE.equals(visible), condition.toString());
+        return new ConditionResult(Boolean.valueOf(visible), condition.toString());
     }
 
     private void addConditionNullCheck(StringBuilder condition, String comparisonToken, String combinationToken) {
