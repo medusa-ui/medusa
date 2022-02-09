@@ -172,7 +172,13 @@
                 </xs:documentation>
             </xs:annotation>
         </xs:attribute>
-
+        <xs:attribute name="empty" type="xs:boolean">
+            <xs:annotation>
+                <xs:documentation>
+                    Empty (String, Collection, Map) or null (Objects)
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>   
         <xs:anyAttribute/>
     </xs:attributeGroup>
 </xs:schema>
