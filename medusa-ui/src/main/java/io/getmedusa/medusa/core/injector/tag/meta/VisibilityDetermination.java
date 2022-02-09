@@ -7,6 +7,7 @@ import org.springframework.expression.spel.SpelEvaluationException;
 import org.springframework.web.reactive.function.server.ServerRequest;
 
 import java.math.BigDecimal;
+import java.util.Collection;
 import java.util.Map;
 
 import static io.getmedusa.medusa.core.injector.tag.TagConstants.*;
@@ -20,7 +21,9 @@ public class VisibilityDetermination extends AbstractTag {
 
     public ConditionResult determine(Map<String, Object> vars, Element element, ServerRequest request) {
         final Object conditionItem = getConditionItemValue(vars, element, request);
-        StringBuilder condition = new StringBuilder(element.attr(CONDITIONAL_TAG_CONDITION_ATTR));
+        String item = element.attr(CONDITIONAL_TAG_CONDITION_ATTR);
+        StringBuilder condition = new StringBuilder(item);
+        Object value = ExpressionEval.evalItemAsObjForConditional(item,vars);
 
         Boolean visible = null;
         if(element.hasAttr(CONDITIONAL_TAG_EQUALS)) {
@@ -61,7 +64,58 @@ public class VisibilityDetermination extends AbstractTag {
             addComparisonToCondition(condition, comparisonItem, "<=");
         }
 
-        return new ConditionResult(Boolean.TRUE.equals(visible), condition.toString());
+        if(element.hasAttr(CONDITIONAL_TAG_EMPTY)) {
+            Object comparisonItem = getComparisonItemValue(vars, element, CONDITIONAL_TAG_EMPTY);
+            String comparisonToken = "===";
+            String combinationToken = "||";
+            if (Boolean.FALSE.toString().equals(comparisonItem)) {
+                comparisonToken = "!==";
+                combinationToken = "&&";
+                visible = logicalAnd(visible, !isEmpty(value));
+            } else {
+                visible = logicalAnd(visible, isEmpty(value));
+            }
+            addConditionNullCheck(condition, comparisonToken, combinationToken);
+        }
+
+        return new ConditionResult(Boolean.valueOf(visible), condition.toString());
+    }
+
+    private void addConditionNullCheck(StringBuilder condition, String comparisonToken, String combinationToken) {
+        String conditionToString = condition.toString();
+        condition.append(" ");
+        condition.append(comparisonToken);
+        condition.append(" null ");
+        condition.append(combinationToken);
+        condition.append(" typeof ");
+        condition.append(conditionToString);
+        condition.append(" ");
+        condition.append(comparisonToken);
+        condition.append(" \"undefined\" ");
+        condition.append(combinationToken);
+        condition.append(" Object.keys(");
+        condition.append(conditionToString);
+        condition.append(").length ");
+        condition.append(comparisonToken);
+        condition.append(" 0 ");
+        condition.append(combinationToken);
+        condition.append(" ");
+        condition.append(conditionToString);
+        condition.append(" ");
+        condition.append(comparisonToken);
+        condition.append(" ''");
+    }
+
+    private boolean isEmpty(Object value) {
+        boolean empty = value == null;
+        if (value instanceof String string) {
+            empty = string.isBlank();
+        } else if (value instanceof Collection<?> collection) {
+            empty = collection.isEmpty();
+        } else if ( value instanceof Map<?, ?> map){
+            empty = map.isEmpty();
+        }
+        return empty;
     }
 
     private void addComparisonToCondition(StringBuilder condition, Object comparisonItem, String comparisonToken) {
@@ -104,7 +158,7 @@ public class VisibilityDetermination extends AbstractTag {
 
     private Object getComparisonItemValue(Map<String, Object> variables, Element conditionalElement, String tag) {
         final String comparisonItem = conditionalElement.attr(tag);
-        Object comparisonItemValue = ExpressionEval.evalItemAsObj(comparisonItem, variables);
+        Object comparisonItemValue = ExpressionEval.evalItemAsObjForConditional(comparisonItem, variables);
         if(null == comparisonItemValue) comparisonItemValue = comparisonItem;
         return comparisonItemValue;
     }
@@ -112,7 +166,7 @@ public class VisibilityDetermination extends AbstractTag {
     private Object getConditionItemValue(Map<String, Object> variables, Element conditionalElement, ServerRequest request) {
         final String conditionItem = conditionalElement.attr(CONDITIONAL_TAG_CONDITION_ATTR);
         try {
-            Object conditionItemValue = ExpressionEval.evalItemAsObj(conditionItem, variables);
+            Object conditionItemValue = ExpressionEval.evalItemAsObjForConditional(conditionItem, variables);
             if(null == conditionItemValue) conditionItemValue = conditionItem;
             Object variableValue = getPossibleEachValue(conditionalElement, conditionItem, request, variables);
             if(null != variableValue) conditionItemValue = variableValue;

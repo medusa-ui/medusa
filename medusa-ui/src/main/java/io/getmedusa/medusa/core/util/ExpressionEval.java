@@ -35,7 +35,7 @@ public abstract class ExpressionEval {
 
     public static String evalItemAsString(String itemToEval, Map<String, Object> variables) {
         try {
-            Object val = interpretValue(itemToEval, variables);
+            Object val = interpretValue(itemToEval, variables, true);
             return val.toString();
         } catch (SpelEvaluationException e) {
             return null;
@@ -46,24 +46,39 @@ public abstract class ExpressionEval {
         if(isQuoted(itemToEval)) {
             return itemToEval;
         }
-        return interpretValue(itemToEval, variables);
+        return interpretValue(itemToEval, variables, true);
+    }
+
+    public static Object evalItemAsObjForConditional(String itemToEval, Map<String, Object> variables) {
+        if(isQuoted(itemToEval)) {
+            return itemToEval;
+        }
+        return interpretValue(itemToEval, variables, false);
     }
 
     public static boolean isQuoted(String itemToEval) {
         return (itemToEval.startsWith("'") && itemToEval.endsWith("'")) || (itemToEval.startsWith("\"") && itemToEval.endsWith("\""));
     }
 
-    private static Object interpretValue(String value, Map<String, Object> variables) {
+    private static Object interpretValue(String value, Map<String, Object> variables, boolean exceptionOnFullObject) {
         if (!variables.containsKey(value)) {
             if(value.contains(".") || (value.contains("[") && value.contains("]"))) {
                 String[] variableKeySplit = value.split("[.\\[]", 2);
                 Object objValue = variables.get(variableKeySplit[0]);
                 String restOfKey = resolveRestOfKey(variableKeySplit[1], variables);
                 Object subValue = SpelExpressionParserHelper.getValue(restOfKey, objValue);
-                return validateCompatibleValue(subValue, value);
+                if(exceptionOnFullObject) {
+                    return validateCompatibleValue(subValue, value);
+                } else {
+                    return subValue;
+                }
             }
         } else {
-            return validateCompatibleValue(variables.get(value), value);
+            if(exceptionOnFullObject) {
+                return validateCompatibleValue(variables.get(value), value);
+            } else {
+                return variables.get(value);
+            }
         }
         return value;
     }
@@ -93,7 +108,7 @@ public abstract class ExpressionEval {
             for(String pathPart : path.split("\\[")) {
                 if(!pathPart.isEmpty()) {
                     pathPart = pathPart.replace("]", "");
-                    final String interpretValue = interpretValue(pathPart, variables).toString();
+                    final String interpretValue = interpretValue(pathPart, variables, true).toString();
                     path = path.replaceAll("\\["+pathPart+"]", "[" + interpretValue + "]");
                 }
             }

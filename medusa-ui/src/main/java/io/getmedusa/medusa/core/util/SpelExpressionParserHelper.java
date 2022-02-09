@@ -20,6 +20,7 @@ abstract class SpelExpressionParserHelper {
      * @return parsed value
      */
     public static <T> T getValue(String expression, Object object) {
+        if( null == object) return null;
         return (T) SPEL_EXPRESSION_PARSER.parseExpression(expression).getValue(object);
     }
 
