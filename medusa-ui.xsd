@@ -172,7 +172,7 @@
                 </xs:documentation>
             </xs:annotation>
         </xs:attribute>
-        <xs:attribute name="empty" type="xs:string">
+        <xs:attribute name="empty" type="xs:boolean">
             <xs:annotation>
                 <xs:documentation>
                     Empty (String, List, Set, Map) or null (Objects)
