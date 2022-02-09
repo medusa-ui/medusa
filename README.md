@@ -11,7 +11,7 @@ Pages are simply written in HTML and enhanced with Medusa expressions to allow f
 <dependency>
     <groupId>io.getmedusa</groupId>
     <artifactId>medusa-ui</artifactId>
-    <version>0.3.2</version>
+    <version>0.3.3</version>
 </dependency>
 
 <dependency>
