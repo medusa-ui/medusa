@@ -132,6 +132,11 @@ public class AbstractSeleniumTest {
         return optionalMatch.map(WebElement::getText).orElse(null);
     }
 
+    protected List<String> getAllTextByClass(String clazz) {
+        final List<WebElement> elements = driver.findElements(By.className(clazz));
+        return elements.stream().filter(e -> !e.getText().isEmpty()).map(WebElement::getText).toList();
+    }
+
     protected void fillFieldById(String id, String keys) {
         final WebElement element = driver.findElement(By.id(id));
         element.clear();

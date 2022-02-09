@@ -13,9 +13,15 @@ public class ElseIfElement {
     private final String condition;
     private final boolean valid;
 
-    public ElseIfElement(Element element, Map<String, Object> variables, ServerRequest request) {
+    public ElseIfElement(Element element, Map<String, Object> variables, ServerRequest request, String ifCondition) {
         final ConditionResult conditionResult = VisibilityDetermination.getInstance().determine(variables, element, request);
-        this.condition = conditionResult.condition();
+        this.condition =
+                new StringBuilder("!( ")
+                        .append(ifCondition)
+                        .append(" ) && (")
+                        .append(conditionResult.condition())
+                        .append(")")
+                        .toString();
         this.valid = conditionResult.visible();
         this.element = WrapperUtils.wrapAndReplace(element, "m-if-else");
     }
