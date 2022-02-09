@@ -1,16 +1,18 @@
-mvn versions:set -DnewVersion="0.3.1"
+git pull
+mvn clean install
+mvn versions:set -DnewVersion="0.3.3"
 git add .
-git commit -m "Release 0.3.1"
-git tag 0.3.1
+git commit -m "Release 0.3.3"
+git tag 0.3.3
 git push --tags
 
 cd medusa-ui
 mvn clean deploy -DskipTests=true
 cd ..
 
-mvn versions:set -DnewVersion="0.3.2-SNAPSHOT"
+mvn versions:set -DnewVersion="0.3.4-SNAPSHOT"
 git add .
-git commit -m "Release 0.3.1 - Version update from 0.3.1 to 0.3.2-SNAPSHOT"
+git commit -m "Release 0.3.3 - Version update from 0.3.3 to 0.3.4-SNAPSHOT"
 git push
 
 See https://central.sonatype.org/publish/requirements/ for publishing requirements

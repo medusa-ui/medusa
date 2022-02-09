@@ -3,14 +3,14 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>medusa-ui</artifactId>
-	<version>0.3.2-SNAPSHOT</version>
+	<version>0.3.4-SNAPSHOT</version>
 	<name>medusa ui library</name>
 	<description>Serverside rendering framework</description>
 
 	<parent>
 		<groupId>io.getmedusa</groupId>
 		<artifactId>medusa</artifactId>
-		<version>0.3.2-SNAPSHOT</version>
+		<version>0.3.4-SNAPSHOT</version>
 	</parent>
 
 	<properties>
@@ -144,7 +144,7 @@
 					<dependency>
 						<groupId>com.thoughtworks.xstream</groupId>
 						<artifactId>xstream</artifactId>
-						<version>1.4.19</version> <!-- apparently this needs to be exactly this version -->
+						<version>1.4.15</version> <!-- apparently this needs to be exactly 1.4.15 -->
 					</dependency>
 				</dependencies>
 			</plugin>
