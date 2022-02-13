@@ -18,6 +18,6 @@ jobs:
         with:
           java-version: 17
       - name: Build UI jar
-        run: mvn -f .\medusa-ui\ clean install --no-transfer-progress -D"spring.profiles.active"=dev -Dgpg.skip
+        run: mvn -f medusa-ui clean install --no-transfer-progress -D"spring.profiles.active"=dev -DskipTests=true -D"gpg.skip"
       - name: Build sample impl
-        run: mvn clean install --no-transfer-progress -D"spring.profiles.active"=dev -Dgpg.skip
+        run: mvn clean install --no-transfer-progress -D"spring.profiles.active"=dev -D"gpg.skip"
