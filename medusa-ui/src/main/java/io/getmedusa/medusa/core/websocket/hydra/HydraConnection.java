@@ -1,14 +1,15 @@
 package io.getmedusa.medusa.core.websocket.hydra;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.getmedusa.medusa.core.config.HydraConfig;
 import io.getmedusa.medusa.core.filters.JWTTokenInterpreter;
 import io.getmedusa.medusa.core.injector.HydraURLReplacer;
 import io.getmedusa.medusa.core.registry.HydraRegistry;
 import io.getmedusa.medusa.core.registry.RouteRegistry;
 import io.getmedusa.medusa.core.util.ObjectMapperBuilder;
 import io.getmedusa.medusa.core.websocket.hydra.meta.HydraStatus;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.info.BuildProperties;
 import org.springframework.boot.web.context.WebServerInitializedEvent;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
@@ -47,14 +48,20 @@ public class HydraConnection implements ApplicationListener<ApplicationEvent> {
 
     public static RSAPublicKey publicKey = null;
 
-    public HydraConnection(@Value("${hydra.name}") String name,
-                           @Value("${hydra.url}") String hydraEndpoint,
-                           @Value("${hydra.secret}") String secret,
-                           ResourcePatternResolver resourceResolver) {
-        if(secret.length() < 32) throw new SecurityException("Hydra secret must at least be 32 characters long");
-        this.hydraHealthRegistration = new HydraHealthRegistration(name, secret);
+    public HydraConnection(HydraConfig hydraConfig,
+                           ResourcePatternResolver resourceResolver,
+                           BuildProperties buildProperties) {
+        if(hydraConfig.getSecret().length() < 32) throw new SecurityException("Hydra secret must at least be 32 characters long");
+        this.hydraHealthRegistration = new HydraHealthRegistration(buildProperties.getName(),
+                                                                    hydraConfig.getSecret(),
+                                                                    buildVersion(buildProperties),
+                                                                    hydraConfig.getAwakeningType());
         this.resourceResolver = resourceResolver;
-        this.hydraHealthWsUri = "ws://URI/services/health".replace("URI", hydraEndpoint);
+        this.hydraHealthWsUri = "ws://URI/services/health".replace("URI", hydraConfig.getUrl());
+    }
+
+    private long buildVersion(BuildProperties buildProperties) {
+        return buildProperties.getTime().getEpochSecond();
     }
 
     @Override
