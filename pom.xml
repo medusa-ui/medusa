@@ -79,7 +79,7 @@
 					<dependency>
 						<groupId>com.thoughtworks.xstream</groupId>
 						<artifactId>xstream</artifactId>
-						<version>1.4.15</version> <!-- apparently this needs to be exactly 1.4.15 -->
+						<version>1.4.19</version> <!-- apparently this needs to be exactly 1.4.19 -->
 					</dependency>
 				</dependencies>
 			</plugin>
