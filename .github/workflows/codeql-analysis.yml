@@ -57,8 +57,6 @@ jobs:
       uses: actions/setup-java@v1
       with:
         java-version: 17
-    - name: Build UI jar
-      run: mvn -f medusa-ui clean install --no-transfer-progress -D"spring.profiles.active"=dev -DskipTests=true -D"gpg.skip"
     - name: Autobuild
       uses: github/codeql-action/autobuild@v1
 
