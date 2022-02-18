@@ -18,7 +18,7 @@
 
 	<properties>
 		<java.version>17</java.version>
-		<medusa.version>0.3.5-SNAPSHOT</medusa.version>
+		<medusa.version>0.3.4</medusa.version>
 	</properties>
 
 	<dependencies>
