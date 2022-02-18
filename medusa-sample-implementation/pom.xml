@@ -10,13 +10,15 @@
 	<description>sample implementation of ui library, for testing and development purposes</description>
 
 	<parent>
-		<groupId>io.getmedusa</groupId>
-		<artifactId>medusa</artifactId>
-		<version>0.3.5-SNAPSHOT</version>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>2.6.3</version>
+		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 
 	<properties>
 		<java.version>17</java.version>
+		<medusa.version>0.3.5-SNAPSHOT</medusa.version>
 	</properties>
 
 	<dependencies>
@@ -28,7 +30,7 @@
 		<dependency>
 			<groupId>io.getmedusa</groupId>
 			<artifactId>medusa-ui</artifactId>
-			<version>0.3.5-SNAPSHOT</version>
+			<version>${medusa.version}</version>
 		</dependency>
 
 
