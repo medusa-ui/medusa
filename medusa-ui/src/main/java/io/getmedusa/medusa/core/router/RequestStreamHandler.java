@@ -26,4 +26,9 @@ class RequestStreamHandler implements IRequestStreamHandler {
         return request ->ok().contentType(MediaType.TEXT_HTML).bodyValue(INSTANCE.inject(request, securityContext, fileName, script, styling));
     }
 
+    @Override
+    public boolean hasSecurity() {
+        return false;
+    }
+
 }

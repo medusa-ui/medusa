@@ -6,6 +6,7 @@ import io.getmedusa.medusa.core.filters.JWTTokenInterpreter;
 import io.getmedusa.medusa.core.injector.HydraURLReplacer;
 import io.getmedusa.medusa.core.registry.HydraRegistry;
 import io.getmedusa.medusa.core.registry.RouteRegistry;
+import io.getmedusa.medusa.core.router.IRequestStreamHandler;
 import io.getmedusa.medusa.core.util.ObjectMapperBuilder;
 import io.getmedusa.medusa.core.websocket.hydra.meta.HydraStatus;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -48,9 +49,12 @@ public class HydraConnection implements ApplicationListener<ApplicationEvent> {
 
     public static RSAPublicKey publicKey = null;
 
+    private static boolean hasSecurity = false;
+
     public HydraConnection(HydraConfig hydraConfig,
                            ResourcePatternResolver resourceResolver,
-                           BuildProperties buildProperties) {
+                           BuildProperties buildProperties,
+                           IRequestStreamHandler streamHandler) {
         if(hydraConfig.getSecret().length() < 32) throw new SecurityException("Hydra secret must at least be 32 characters long");
         this.hydraHealthRegistration = new HydraHealthRegistration(buildProperties.getName(),
                                                                     hydraConfig.getSecret(),
@@ -58,6 +62,7 @@ public class HydraConnection implements ApplicationListener<ApplicationEvent> {
                                                                     hydraConfig.getAwakeningType());
         this.resourceResolver = resourceResolver;
         this.hydraHealthWsUri = "ws://URI/services/health".replace("URI", hydraConfig.getUrl());
+        hasSecurity = streamHandler.hasSecurity();
     }
 
     private long buildVersion(BuildProperties buildProperties) {
@@ -130,7 +135,9 @@ public class HydraConnection implements ApplicationListener<ApplicationEvent> {
         X509EncodedKeySpec spec = new X509EncodedKeySpec(decodedKey);
         KeyFactory kf = KeyFactory.getInstance("RSA");
         publicKey = (RSAPublicKey) kf.generatePublic(spec);
-        JWTTokenInterpreter.clearCache();
+        if(hasSecurity) {
+            JWTTokenInterpreter.clearCache();
+        }
     }
 
     private Set<String> determineListOfStaticResources() throws IOException {

@@ -51,6 +51,11 @@ class RequestStreamHandlerWithSecurity implements IRequestStreamHandler {
         };
     }
 
+    @Override
+    public boolean hasSecurity() {
+        return true;
+    }
+
     private class EmptySecurityContext implements org.springframework.security.core.context.SecurityContext {
 
         @Override

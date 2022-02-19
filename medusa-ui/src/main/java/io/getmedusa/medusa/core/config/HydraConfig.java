@@ -1,26 +1,20 @@
 package io.getmedusa.medusa.core.config;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.ConstructorBinding;
+import org.springframework.stereotype.Component;
+
+import java.util.Objects;
 
 @ConfigurationProperties(prefix = "hydra")
-@ConstructorBinding
+@ConditionalOnProperty(value="hydra.enabled", havingValue = "true")
+@Component
 public class HydraConfig {
 
     private boolean enabled;
     private String url;
     private String secret;
     private HydraAwakeningType awakeningType;
-
-    public HydraConfig(boolean enabled, String url, String secret, HydraAwakeningType awakeningType) {
-        this.enabled = enabled;
-        this.url = url;
-        this.awakeningType = awakeningType;
-
-        if(this.awakeningType == null) {
-            this.awakeningType = HydraAwakeningType.NEWEST_VERSION_WINS;
-        }
-    }
 
     public boolean isEnabled() {
         return enabled;
@@ -35,6 +29,22 @@ public class HydraConfig {
     }
 
     public HydraAwakeningType getAwakeningType() {
-        return awakeningType;
+        return Objects.requireNonNullElse(awakeningType, HydraAwakeningType.NEWEST_VERSION_WINS);
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    public void setSecret(String secret) {
+        this.secret = secret;
+    }
+
+    public void setAwakeningType(HydraAwakeningType awakeningType) {
+        this.awakeningType = awakeningType;
     }
 }
