@@ -3,20 +3,18 @@ git pull
 #verify all works
 cd medusa-ui
 mvn clean install
-cd ..
-cd medusa-sample-implementation
+cd ../medusa-sample-implementation
 mvn clean install
-cd ..
 
 #release
-cd medusa-ui
+cd ../medusa-ui
 mvn versions:set -DnewVersion="0.3.5"
 git add .
 git commit -m "Release 0.3.5"
 git tag 0.3.5
 git push --tags
 
-mvn clean deploy -DskipTests=true
+mvn clean deploy -DskipTests=true -Pnexus-staging
 
 #post-release versioning fix
 mvn versions:set -DnewVersion="0.3.6-SNAPSHOT"
