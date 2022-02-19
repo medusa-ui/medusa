@@ -17,9 +17,10 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: 17
+          cache: maven
       - name: Build medusa-ui with tests
         working-directory: ./medusa-ui
         run: mvn clean install --no-transfer-progress -D"spring.profiles.active"=dev
       - name: Build medusa-sample with tests
         working-directory: ./medusa-sample-implementation
-        run: mvn -U clean install --no-transfer-progress -D"spring.profiles.active"=dev
+        run: mvn clean install --no-transfer-progress -D"spring.profiles.active"=dev

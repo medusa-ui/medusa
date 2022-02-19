@@ -57,6 +57,7 @@ jobs:
       uses: actions/setup-java@v1
       with:
         java-version: 17
+        cache: maven
     - name: Autobuild medusa-ui
       working-directory: ./medusa-ui
       uses: github/codeql-action/autobuild@v1
