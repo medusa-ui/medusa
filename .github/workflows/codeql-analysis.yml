@@ -57,7 +57,12 @@ jobs:
       uses: actions/setup-java@v1
       with:
         java-version: 17
-    - name: Autobuild
+        cache: maven
+    - name: Autobuild medusa-ui
+      working-directory: ./medusa-ui
+      uses: github/codeql-action/autobuild@v1
+    - name: Autobuild medusa-sample
+      working-directory: ./medusa-sample-implementation
       uses: github/codeql-action/autobuild@v1
 
     # ℹ️ Command-line programs to run using the OS shell.
@@ -71,5 +76,9 @@ jobs:
     #   make bootstrap
     #   make release
 
-    - name: Perform CodeQL Analysis
+    - name: Perform CodeQL Analysis medusa-ui
+      working-directory: ./medusa-ui
+      uses: github/codeql-action/analyze@v1
+    - name: Perform CodeQL Analysis medusa-sample
+      working-directory: ./medusa-sample-implementation
       uses: github/codeql-action/analyze@v1
