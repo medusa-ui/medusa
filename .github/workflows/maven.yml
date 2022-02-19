@@ -23,4 +23,4 @@ jobs:
         run: mvn clean install --no-transfer-progress -D"spring.profiles.active"=dev
       - name: Build medusa-sample with tests
         working-directory: ./medusa-sample-implementation
-        run: mvn clean install --no-transfer-progress -D"spring.profiles.active"=dev
+        run: mvn -U clean install --no-transfer-progress -D"spring.profiles.active"=dev
