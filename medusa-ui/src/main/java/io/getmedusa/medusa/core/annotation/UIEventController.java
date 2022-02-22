@@ -118,6 +118,7 @@ public class UIEventController implements UIEventWithAttributes {
     private Method determineSetupMethod(Object uiEventPageObject, UIEventPage uiEventPage) {
         String setupMethodName = uiEventPage.setup();
         for(Method method :  uiEventPageObject.getClass().getMethods()) {
+            method.setAccessible(true);
             if (method.getName().equals(setupMethodName)) {
                 if (!returningPageAttributes(method)) {
                     throw new RuntimeException(uiEventPageObject.getClass().getName() + "." + method.getName() + " should return PageAttributes but was " + method.getReturnType());

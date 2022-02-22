@@ -41,8 +41,8 @@ public class IterationTag extends AbstractTag {
         //     <p>Product: Darkwoods Number: 3</p>
         //</div>
 
-        Elements foreachElements = injectionResult.getDocument().getElementsByTag(ITERATION_TAG);
-        foreachElements.sort(Comparator.comparingInt(o -> o.getElementsByTag(ITERATION_TAG).size()));
+        Elements foreachElements = injectionResult.getDocument().select(ITERATION_TAG);
+        foreachElements.sort(Comparator.comparingInt(o -> o.select(ITERATION_TAG).size()));
         for (Element foreachElement : foreachElements) {
             Element clone = foreachElement.clone();
             final String collection = foreachElement.attr(ITERATION_TAG_COLLECTION_ATTR);
