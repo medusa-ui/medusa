@@ -8,12 +8,12 @@ import java.util.Map;
 
 class ValueTagTest extends AbstractTest {
 
-    public static final String HTML = "<p>Counter: <m:text item=\"counter-value\" /></p>";
+    public static final String HTML = "<p>Counter: <med:text item=\"counter-value\" /></p>";
     public static final String HTML_VALUE_AS_ATTRIBUTE = "<input type=\"text\" m:value=\"counter-value\" />";
     public static final String HTML_VALUE_AS_COMPLEX_ATTRIBUTE = "<input type=\"text\" m:value=\"obj.exampleValue\" />";
     public static final String HTML_WRAPPED_IN_TAG = "<p><m:text item=\"counter-value\" /></p>";
     public static final String HTML_WITH_SPACES = "<p>Counter: <m:text item=\" counter-value   \" /></p>";
-    public static final String HTML_WITH_COMPLEX_OBJECT = "<p>Counter: <m:text item=\"obj.exampleValue\" /></p>";
+    public static final String HTML_WITH_COMPLEX_OBJECT = "<p>Counter: <medusa:text item=\"obj.exampleValue\" /></p>";
 
     //public static final String HTML_ARRAY = "<p>Counter: <m:text item=\"array[0]\" /></p>";
     //public static final String HTML_MAP = "<p>Counter: <m:text item=\"map['x']\" /></p>";
