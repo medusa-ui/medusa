@@ -10,9 +10,9 @@ import java.util.Map;
 class ConditionalTagTest extends AbstractTest {
 
     private static final String HTML_EQ_SIMPLE = """
-                    <m:if item="some-variable" eq="'a'">
+                    <med:if item="some-variable" eq="'a'">
                         <p>A</p>
-                    </m:if>
+                    </med:if>
             """;
 
     private static final String HTML_EQ_ELSE = """
@@ -26,15 +26,15 @@ class ConditionalTagTest extends AbstractTest {
             """;
 
     private static final String HTML_EQ_ELSE_IF = """
-                    <m:if item="some-variable" eq="'a'">
+                    <med:if item="some-variable" eq="'a'">
                         <p>A</p>
-                        <m:elseif item="some-other-variable" eq="1">
+                        <med:elseif item="some-other-variable" eq="1">
                             <p>B</p>
-                        </m:elseif>
-                        <m:else>
+                        </med:elseif>
+                        <med:else>
                             <p>C</p>
-                        </m:else>
-                    </m:if>
+                        </med:else>
+                    </med:if>
             """;
 
     private static final String HTML_EQ_VARIABLE = """

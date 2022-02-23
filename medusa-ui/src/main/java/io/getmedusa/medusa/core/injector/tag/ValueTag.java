@@ -24,7 +24,7 @@ public class ValueTag extends AbstractTag {
         //becomes
         //<span from-value="counter-value">123</span>
 
-        Elements mTextTags = result.getDocument().getElementsByTag(TagConstants.TEXT_TAG);
+        Elements mTextTags = result.getDocument().select(TagConstants.TEXT_TAG);
         for (Element mTextTag : mTextTags) {
             final String item = mTextTag.attr(TagConstants.TEXT_TAG_ITEM_ATTR).trim();
             Object variableValue = getPossibleEachValue(mTextTag, item, request, variables);

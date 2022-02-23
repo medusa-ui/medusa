@@ -16,7 +16,7 @@ class IterationTagTest extends AbstractTest {
             <!DOCTYPE html>
             <html lang="en">
             <body>
-            <m:foreach collection="list-of-values"><p>Medusa</p></m:foreach>
+            <med:foreach collection="list-of-values"><p>Medusa</p></med:foreach>
             </html>""";
 
     public static final String HTML_NO_CHILD_NODE =
@@ -33,7 +33,7 @@ class IterationTagTest extends AbstractTest {
             <html lang="en">
             <body>
             <m:foreach collection="list-of-values"><p>Medusa</p></m:foreach>
-            <m:foreach collection="other-list-of-values"><p>Medusa</p></m:foreach>
+            <medusa:foreach collection="other-list-of-values"><p>Medusa</p></medusa:foreach>
             </html>""";
 
     public static final String HTML_NESTED =
@@ -43,9 +43,9 @@ class IterationTagTest extends AbstractTest {
             <body>
             <m:foreach collection="outer-list">
                 <p>outerSTART</p>
-                <m:foreach collection="inner-list">
+                <medusa:foreach collection="inner-list">
                     <p>Inner</p>
-                </m:foreach>
+                </medusa:foreach>
                 <p>outerEND</p>
             </m:foreach>
             </html>""";

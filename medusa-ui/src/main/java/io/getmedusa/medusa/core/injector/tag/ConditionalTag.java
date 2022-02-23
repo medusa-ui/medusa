@@ -19,8 +19,8 @@ public class ConditionalTag extends AbstractTag {
 
     @Override
     public InjectionResult inject(InjectionResult result, Map<String, Object> variables, ServerRequest request) {
-        Elements conditionalElements = result.getDocument().getElementsByTag(TagConstants.CONDITIONAL_TAG);
-        conditionalElements.sort(Comparator.comparingInt(o -> o.getElementsByTag(TagConstants.CONDITIONAL_TAG).size()));
+        Elements conditionalElements = result.getDocument().select(TagConstants.CONDITIONAL_TAG);
+        conditionalElements.sort(Comparator.comparingInt(o -> o.select(TagConstants.CONDITIONAL_TAG).size()));
         for(Element conditionalElement : conditionalElements) {
             handleIfElement(variables, conditionalElement, request);
         }
@@ -100,7 +100,7 @@ public class ConditionalTag extends AbstractTag {
     }
 
     private List<ElseIfElement> getElseIfElements(Element conditionalElement, Map<String, Object> variables, ServerRequest request, String mainCondition) {
-        final Elements elements = conditionalElement.getElementsByTag(TagConstants.M_ELSEIF);
+        final Elements elements = conditionalElement.select(TagConstants.M_ELSEIF);
         if(elements.isEmpty()) return Collections.emptyList();
         return elements.stream().map(e -> new ElseIfElement(e, variables, request, mainCondition)).toList();
     }
@@ -131,7 +131,7 @@ public class ConditionalTag extends AbstractTag {
     }
 
     private Element getElseElement(Element conditionalElement) {
-        final Elements elements = conditionalElement.getElementsByTag(TagConstants.M_ELSE);
+        final Elements elements = conditionalElement.select(TagConstants.M_ELSE);
         if(elements.isEmpty()) return null;
         if(elements.size() > 1) throw new IllegalStateException("m:if condition can only have one m:else condition. Use m:else if for multiple conditions.");
         return elements.get(0);

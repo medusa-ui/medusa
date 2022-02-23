@@ -3,7 +3,7 @@ package io.getmedusa.medusa.core.injector.tag;
 public class TagConstants {
 
     //iteration - tags
-    public static final String ITERATION_TAG = "m:foreach"; //each on div
+    public static final String ITERATION_TAG = "*|foreach"; //each on div
     public static final String ITERATION_TAG_COLLECTION_ATTR = "collection";
     public static final String ITERATION_TAG_EACH_ATTR = "eachName";
 
@@ -15,14 +15,14 @@ public class TagConstants {
     public static final String TEMPLATE_TAG = "template";
 
     //text - tags
-    public static final String TEXT_TAG = "m:text";
+    public static final String TEXT_TAG = "*|text";
     public static final String TEXT_TAG_ITEM_ATTR = "item";
     public static final String M_VALUE = "m:value";
     public static final String FROM_VALUE = "from-value";
     public static final String M_ITEM = "m:item";
 
     //conditional - tags
-    public static final String CONDITIONAL_TAG = "m:if"; //each on div
+    public static final String CONDITIONAL_TAG = "*|if"; //each on div
     public static final String CONDITIONAL_TAG_CONDITION_ATTR = "item";
     public static final String CONDITIONAL_TAG_EQUALS = "eq";
     public static final String CONDITIONAL_TAG_NOT = "not";
@@ -34,8 +34,8 @@ public class TagConstants {
 
     //conditional - attributes
     public static final String M_IF = "m-if";
-    public static final String M_ELSE = "m:else";
-    public static final String M_ELSEIF = "m:elseif";
+    public static final String M_ELSE = "*|else";
+    public static final String M_ELSEIF = "*|elseif";
 
     //mclick - attributes
     public static final String M_CLICK = "m:click";
