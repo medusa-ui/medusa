@@ -17,6 +17,7 @@ public class TableIterationEventHandler {
     List<Item> items = new ArrayList<>();
 
     public PageAttributes setupAttributes(ServerRequest request) {
+        items.clear();
         if(Boolean.valueOf(request.queryParam("load").orElse("false"))) {
             setData();
         }
