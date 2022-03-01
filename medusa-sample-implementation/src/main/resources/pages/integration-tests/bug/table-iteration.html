@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:m="https://getmedusa.io" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="https://getmedusa.io https://raw.githubusercontent.com/medusa-ui/medusa/main/medusa-ui.xsd">
+<head>
+    <meta charset="UTF-8">
+    <title>Iteration problem with tables</title>
+    <link href="/stylesheet.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter&family=Merriweather&display=swap" rel="stylesheet">
+    <style>
+        table, th, td {
+            border: 1px solid whitesmoke;
+            border-collapse: collapse;
+            padding: .25rem 1.25rem;
+        }
+    </style>
+</head>
+<body>
+<h1>🦑 Medusa in trouble</h1>
+<div>
+    <div>
+        <h3>Items plain</h3>
+        <ul>
+            <m:foreach collection="items" eachName="number">
+                <li>
+                    <span>
+                        <m:text item="number.name" />
+                    </span>
+                    =
+                    <span>
+                        <m:text item="number.value" />
+                    </span>
+                </li>
+            </m:foreach>
+        </ul>
+    </div>
+    <br>
+    <div>
+        <h3>Items in a table</h3>
+        <table>
+            <thead>
+              <tr><th>English</th><th>Dutch</th></tr>
+            </thead>
+            <tbody>
+                <m:foreach collection="items" eachName="nmb">
+                    <tr>
+                        <td><m:text item="nmb.name"/></td>
+                        <td><m:text item="nmb.value"/></td>
+                    </tr>
+                </m:foreach>
+            </tbody>
+        </table>
+    </div>
+</div>
+<br>
+<div>
+    <button id="clear_btn" m:click="clear()">Empty</button>
+    <button id="load_btn" m:click="load()">Load</button>
+    <button id="add_btn" m:click="add()">Add</button>
+</div>
+
+</body>
+</html>

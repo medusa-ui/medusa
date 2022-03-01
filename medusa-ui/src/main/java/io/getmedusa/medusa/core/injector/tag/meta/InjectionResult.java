@@ -2,6 +2,7 @@ package io.getmedusa.medusa.core.injector.tag.meta;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.parser.Parser;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,7 +13,7 @@ public class InjectionResult {
     private List<String> scripts = new ArrayList<>();
 
     public InjectionResult(String html) {
-        this.document = Jsoup.parse(html);
+        this.document = Jsoup.parse(html,Parser.xmlParser());
     }
 
     public InjectionResult(Document html) {
@@ -41,7 +42,14 @@ public class InjectionResult {
         this.scripts = scripts;
     }
 
-/*
+    @Override
+    public String toString() {
+        return "InjectionResult{" +
+                "document=" + document +
+                '}';
+    }
+
+    /*
     public InjectionResult removeFromTitle(String regex) {
         String[] splitHTML = getHtml().split("</title>");
 
