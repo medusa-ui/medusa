@@ -3,6 +3,8 @@ package io.getmedusa.medusa.core.injector.tag;
 import io.getmedusa.medusa.core.injector.tag.meta.InjectionResult;
 import io.getmedusa.medusa.core.registry.EachValueRegistry;
 import io.getmedusa.medusa.core.registry.IterationRegistry;
+import io.getmedusa.medusa.core.util.ElementUtils;
+import io.getmedusa.medusa.core.util.WrapperUtils;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.nodes.Node;
@@ -42,6 +44,19 @@ public class IterationTag extends AbstractTag {
         //</div>
 
         Elements foreachElements = injectionResult.getDocument().select(ITERATION_TAG);
+        String parentTagName = getParentTagName(foreachElements);
+        if(parentTagName.equals("tbody") && !foreachElements.parents().isEmpty()) {
+            //remove tbody as wrapper
+            Element newParent = foreachElements.parents().get(1);
+            Element oldParent = foreachElements.parents().get(0);
+
+            while (!oldParent.childNodes().isEmpty()) {
+                newParent.appendChild(oldParent.childNodes().get(0));
+            }
+            oldParent.remove();
+
+            parentTagName = "table";
+        }
         foreachElements.sort(Comparator.comparingInt(o -> o.select(ITERATION_TAG).size()));
         for (Element foreachElement : foreachElements) {
             Element clone = foreachElement.clone();
@@ -50,7 +65,7 @@ public class IterationTag extends AbstractTag {
             final String templateID = generateTemplateID(foreachElement, collection);
             final String eachName = conditionalAttribute(foreachElement, ITERATION_TAG_EACH_ATTR);
 
-            Node template = createTemplate(templateID, clone, eachName);
+            Node template = createTemplate(templateID, clone, eachName, parentTagName);
             foreachElement.children().remove();
             foreachElement.text("");
             foreachElement.appendChild(template);
@@ -87,6 +102,14 @@ public class IterationTag extends AbstractTag {
         return injectionResult;
     }
 
+    private String getParentTagName(Elements foreachElements) {
+        if(null != foreachElements && !foreachElements.parents().isEmpty()) {
+            return foreachElements.parents().get(0).tagName();
+        }
+        return "";
+
+    }
+
     private void labelNestedTemplates(Document document) {
         Elements templates = document.getElementsByTag(TEMPLATE_TAG);
         templates.sort((o1, o2) -> o2.getElementsByTag(TEMPLATE_TAG).size() - o1.getElementsByTag(TEMPLATE_TAG).size());
@@ -114,11 +137,16 @@ public class IterationTag extends AbstractTag {
         return null;
     }
 
-    private Node createTemplate(String templateID, Element foreachElement, String eachName) {
+    private Node createTemplate(String templateID, Element foreachElement, String eachName, String parentTagName) {
         Element node = new Element(Tag.valueOf(TEMPLATE_TAG), "")
                 .attr(M_ID, templateID);
 
+        //TODO this should not be a div if its part of a table
         Element divWrapper = new Element("div");
+        if("table".equals(parentTagName)) {
+            divWrapper = new Element("tbody");
+        }
+
         if(eachName != null) divWrapper.attr("m-each", eachName);
         divWrapper.attr(TEMPLATE_ID, templateID);
 

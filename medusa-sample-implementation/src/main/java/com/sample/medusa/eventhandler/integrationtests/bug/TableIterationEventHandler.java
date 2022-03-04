@@ -8,6 +8,7 @@ import org.springframework.web.reactive.function.server.ServerRequest;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import static io.getmedusa.medusa.core.injector.DOMChanges.of;
 
@@ -36,7 +37,14 @@ public class TableIterationEventHandler {
     }
 
     public DOMChanges add() {
-        items.add(new Item("four","vier"));
+        switch(items.size()) {
+            case 0: items.add(new Item("zero","nul")); break;
+            case 1: items.add(new Item("one","één")); break;
+            case 2: items.add(new Item("two","twee")); break;
+            case 3: items.add(new Item("three","drie")); break;
+            case 4: items.add(new Item("four","vier")); break;
+            default: items.add(new Item(UUID.randomUUID().toString(),UUID.randomUUID().toString())); break;
+        }
         return of("items", items);
     }
 
