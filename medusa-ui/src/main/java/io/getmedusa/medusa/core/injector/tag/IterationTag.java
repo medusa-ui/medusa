@@ -44,21 +44,21 @@ public class IterationTag extends AbstractTag {
         //</div>
 
         Elements foreachElements = injectionResult.getDocument().select(ITERATION_TAG);
-        String parentTagName = getParentTagName(foreachElements);
-        if(parentTagName.equals("tbody") && !foreachElements.parents().isEmpty()) {
-            //remove tbody as wrapper
-            Element newParent = foreachElements.parents().get(1);
-            Element oldParent = foreachElements.parents().get(0);
-
-            while (!oldParent.childNodes().isEmpty()) {
-                newParent.appendChild(oldParent.childNodes().get(0));
-            }
-            oldParent.remove();
-
-            parentTagName = "table";
-        }
         foreachElements.sort(Comparator.comparingInt(o -> o.select(ITERATION_TAG).size()));
         for (Element foreachElement : foreachElements) {
+            String parentTagName = getParentTagName(foreachElements);
+            if(parentTagName.equals("tbody") && !foreachElements.parents().isEmpty()) {
+                //remove tbody as wrapper
+                Element newParent = foreachElements.parents().get(1);
+                Element oldParent = foreachElements.parents().get(0);
+
+                while (!oldParent.childNodes().isEmpty()) {
+                    newParent.appendChild(oldParent.childNodes().get(0));
+                }
+                oldParent.remove();
+
+                parentTagName = "table";
+            }
             Element clone = foreachElement.clone();
             final String collection = foreachElement.attr(ITERATION_TAG_COLLECTION_ATTR);
 
