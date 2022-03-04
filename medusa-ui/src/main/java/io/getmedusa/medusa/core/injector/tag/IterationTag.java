@@ -3,8 +3,6 @@ package io.getmedusa.medusa.core.injector.tag;
 import io.getmedusa.medusa.core.injector.tag.meta.InjectionResult;
 import io.getmedusa.medusa.core.registry.EachValueRegistry;
 import io.getmedusa.medusa.core.registry.IterationRegistry;
-import io.getmedusa.medusa.core.util.ElementUtils;
-import io.getmedusa.medusa.core.util.WrapperUtils;
 import org.jsoup.nodes.Attributes;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -12,7 +10,6 @@ import org.jsoup.nodes.Node;
 import org.jsoup.parser.Tag;
 import org.jsoup.select.Elements;
 import org.springframework.web.reactive.function.server.ServerRequest;
-import org.w3c.dom.Attr;
 
 import java.util.Collection;
 import java.util.Comparator;
