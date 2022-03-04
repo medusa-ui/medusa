@@ -45,21 +45,15 @@ public class IterationTag extends AbstractTag {
 
         Elements foreachElements = injectionResult.getDocument().select(ITERATION_TAG);
         foreachElements.sort(Comparator.comparingInt(o -> o.select(ITERATION_TAG).size()));
-        for (Element foreachElement : foreachElements) {
-            String parentTagName = getParentTagName(foreachElements);
-            if(parentTagName.equals("tbody") && !foreachElements.parents().isEmpty()) {
-                //remove tbody as wrapper
-                Element oldParent = foreachElements.parents().get(0);
-                Element newParent = foreachElements.parents().get(1);
-                oldParent.attributes().forEach(a -> newParent.attr(a.getKey(), a.getValue()));
+        for (final Element foreachElement : foreachElements) {
+            if(foreachElement == null) continue;
 
-                while (!oldParent.childNodes().isEmpty()) {
-                    newParent.appendChild(oldParent.childNodes().get(0));
-                }
-                oldParent.remove();
-
+            String parentTagName = getParentTagName(foreachElement);
+            if(isParentIsTBody(foreachElement, parentTagName)) {
+                removeTBodyAsWrapperIfPresent(foreachElement);
                 parentTagName = "table";
             }
+
             Element clone = foreachElement.clone();
             final String collection = foreachElement.attr(ITERATION_TAG_COLLECTION_ATTR);
 
@@ -103,9 +97,26 @@ public class IterationTag extends AbstractTag {
         return injectionResult;
     }
 
-    private String getParentTagName(Elements foreachElements) {
-        if(null != foreachElements && !foreachElements.parents().isEmpty()) {
-            return foreachElements.parents().get(0).tagName();
+    private boolean isParentIsTBody(Element foreachElement, String parentTagName) {
+        return parentTagName.equals("tbody") && foreachElement.hasParent();
+    }
+
+    private void removeTBodyAsWrapperIfPresent(Element foreachElement) {
+        Element oldParent = foreachElement.parent();
+        if(oldParent != null && oldParent.hasParent()) {
+            Element newParent = oldParent.parent();
+            oldParent.attributes().forEach(a -> newParent.attr(a.getKey(), a.getValue()));
+
+            while (!oldParent.childNodes().isEmpty()) {
+                newParent.appendChild(oldParent.childNodes().get(0));
+            }
+            oldParent.remove();
+        }
+    }
+
+    private String getParentTagName(Element foreachElement) {
+        if(null != foreachElement && null != foreachElement.parent()) {
+            return foreachElement.parent().tagName();
         }
         return "";
 
@@ -142,7 +153,6 @@ public class IterationTag extends AbstractTag {
         Element node = new Element(Tag.valueOf(TEMPLATE_TAG), "")
                 .attr(M_ID, templateID);
 
-        //TODO this should not be a div if its part of a table
         Element divWrapper = new Element("div");
         if("table".equals(parentTagName)) {
             divWrapper = new Element("tbody");

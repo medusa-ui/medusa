@@ -30,8 +30,7 @@ public class HTMLCache {
     }
 
     private Document removeAllCommentsFromHTML(String html) {
-        return Jsoup.parse(html.replaceAll("(?s)<!--.*?-->", ""),Parser.xmlParser());
-//        return Jsoup.parse(html.replaceAll("(?s)<!--.*?-->", ""));
+        return Jsoup.parse(html.replaceAll("(?s)<!--.*?-->", ""), Parser.xmlParser());
     }
 
     @Deprecated
