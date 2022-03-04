@@ -5,12 +5,14 @@ import io.getmedusa.medusa.core.registry.EachValueRegistry;
 import io.getmedusa.medusa.core.registry.IterationRegistry;
 import io.getmedusa.medusa.core.util.ElementUtils;
 import io.getmedusa.medusa.core.util.WrapperUtils;
+import org.jsoup.nodes.Attributes;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.nodes.Node;
 import org.jsoup.parser.Tag;
 import org.jsoup.select.Elements;
 import org.springframework.web.reactive.function.server.ServerRequest;
+import org.w3c.dom.Attr;
 
 import java.util.Collection;
 import java.util.Comparator;
@@ -49,8 +51,9 @@ public class IterationTag extends AbstractTag {
             if(foreachElement == null) continue;
 
             String parentTagName = getParentTagName(foreachElement);
+            Attributes wrapperAttributes = new Attributes();
             if(isParentIsTBody(foreachElement, parentTagName)) {
-                removeTBodyAsWrapperIfPresent(foreachElement);
+                wrapperAttributes = removeTBodyAsWrapperIfPresent(foreachElement);
                 parentTagName = "table";
             }
 
@@ -60,7 +63,7 @@ public class IterationTag extends AbstractTag {
             final String templateID = generateTemplateID(foreachElement, collection);
             final String eachName = conditionalAttribute(foreachElement, ITERATION_TAG_EACH_ATTR);
 
-            Node template = createTemplate(templateID, clone, eachName, parentTagName);
+            Node template = createTemplate(templateID, clone, eachName, parentTagName, wrapperAttributes);
             foreachElement.children().remove();
             foreachElement.text("");
             foreachElement.appendChild(template);
@@ -101,17 +104,18 @@ public class IterationTag extends AbstractTag {
         return parentTagName.equals("tbody") && foreachElement.hasParent();
     }
 
-    private void removeTBodyAsWrapperIfPresent(Element foreachElement) {
+    private Attributes removeTBodyAsWrapperIfPresent(Element foreachElement) {
+        Attributes attributes = new Attributes();
         Element oldParent = foreachElement.parent();
         if(oldParent != null && oldParent.hasParent()) {
             Element newParent = oldParent.parent();
-            oldParent.attributes().forEach(a -> newParent.attr(a.getKey(), a.getValue()));
-
+            attributes = oldParent.attributes();
             while (!oldParent.childNodes().isEmpty()) {
                 newParent.appendChild(oldParent.childNodes().get(0));
             }
             oldParent.remove();
         }
+        return attributes;
     }
 
     private String getParentTagName(Element foreachElement) {
@@ -149,7 +153,7 @@ public class IterationTag extends AbstractTag {
         return null;
     }
 
-    private Node createTemplate(String templateID, Element foreachElement, String eachName, String parentTagName) {
+    private Node createTemplate(String templateID, Element foreachElement, String eachName, String parentTagName, Attributes wrapperAttributes) {
         Element node = new Element(Tag.valueOf(TEMPLATE_TAG), "")
                 .attr(M_ID, templateID);
 
@@ -157,6 +161,7 @@ public class IterationTag extends AbstractTag {
         if("table".equals(parentTagName)) {
             divWrapper = new Element("tbody");
         }
+        divWrapper.attributes().addAll(wrapperAttributes);
 
         if(eachName != null) divWrapper.attr("m-each", eachName);
         divWrapper.attr(TEMPLATE_ID, templateID);
