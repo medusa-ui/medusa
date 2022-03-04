@@ -14,6 +14,9 @@
             border-collapse: collapse;
             padding: .25rem 1.25rem;
         }
+        .blue {
+            background-color: #040050;
+        }
     </style>
 </head>
 <body>
@@ -42,7 +45,7 @@
             <thead>
               <tr><th>English</th><th>Dutch</th></tr>
             </thead>
-            <tbody>
+            <tbody class="blue">
                 <m:foreach collection="items" eachName="nmb">
                     <tr>
                         <td class="table-item-name"><m:text item="nmb.name"/></td>

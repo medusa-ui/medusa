@@ -49,8 +49,9 @@ public class IterationTag extends AbstractTag {
             String parentTagName = getParentTagName(foreachElements);
             if(parentTagName.equals("tbody") && !foreachElements.parents().isEmpty()) {
                 //remove tbody as wrapper
-                Element newParent = foreachElements.parents().get(1);
                 Element oldParent = foreachElements.parents().get(0);
+                Element newParent = foreachElements.parents().get(1);
+                oldParent.attributes().forEach(a -> newParent.attr(a.getKey(), a.getValue()));
 
                 while (!oldParent.childNodes().isEmpty()) {
                     newParent.appendChild(oldParent.childNodes().get(0));
