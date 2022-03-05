@@ -107,12 +107,21 @@ public class IterationTag extends AbstractTag {
         if(oldParent != null && oldParent.hasParent()) {
             Element newParent = oldParent.parent();
             attributes = oldParent.attributes();
+            throwErrorInCaseOfIDAttribute(foreachElement, attributes, oldParent);
             while (!oldParent.childNodes().isEmpty()) {
                 newParent.appendChild(oldParent.childNodes().get(0));
             }
             oldParent.remove();
         }
         return attributes;
+    }
+
+    private void throwErrorInCaseOfIDAttribute(Element foreachElement, Attributes attributes, Element oldParent) {
+        if(attributes.hasKeyIgnoreCase("id")) {
+            String nameOfElement = foreachElement.tag().toString() + foreachElement.attributes();
+            String nameOfWrapper = oldParent.tag().toString() + oldParent.attributes();
+            throw new IllegalStateException("Element '"+nameOfElement+"' is wrapped by a '"+nameOfWrapper+"', which would be duplicated by the foreach but contains a non-duplicatable attribute 'id'. Turn into a class or move to a parent element.");
+        }
     }
 
     private String getParentTagName(Element foreachElement) {

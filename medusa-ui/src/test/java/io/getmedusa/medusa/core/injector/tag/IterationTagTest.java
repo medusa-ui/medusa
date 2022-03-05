@@ -139,7 +139,27 @@ class IterationTagTest extends AbstractTest {
                 <thead>
                     <tr><th>Sample</th></tr>
                 </thead>
-                <tbody>
+                <tbody class="red blue">
+                    <m:foreach collection="list-of-values" eachName="myItem">
+                        <tr>
+                            <td>Each value: <m:text item="myItem" /></td>
+                        </tr>
+                    </m:foreach>
+                </tbody>
+                </table>
+            </body>
+            </html>
+            """;
+
+    public static final String HTML_W_TABLE_W_TBODY_ID_EXPECT_EXCEPTION = """
+            <!DOCTYPE html>
+            <html lang="en">
+            <body>
+                <table>
+                <thead>
+                    <tr><th>Sample</th></tr>
+                </thead>
+                <tbody id="123">
                     <m:foreach collection="list-of-values" eachName="myItem">
                         <tr>
                             <td>Each value: <m:text item="myItem" /></td>
@@ -171,6 +191,15 @@ class IterationTagTest extends AbstractTest {
         Assertions.assertFalse(html.contains("m:foreach"));
         Assertions.assertTrue(html.contains("<template") && html.contains("</template>"));
         Assertions.assertEquals(12, countOccurrences(html, "tbody"));
+    }
+
+    @Test
+    void testTableListWithTBodyAndID() {
+        Assertions.assertThrows(IllegalStateException.class, () -> {
+            Map<String, Object> variables = new HashMap<>();
+            variables.put("list-of-values", Arrays.asList(1,2,3,4,5));
+            inject(HTML_W_TABLE_W_TBODY_ID_EXPECT_EXCEPTION, variables).html();
+        });
     }
 
     @Test
