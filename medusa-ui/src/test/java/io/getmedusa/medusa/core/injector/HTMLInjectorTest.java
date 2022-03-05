@@ -1,6 +1,5 @@
 package io.getmedusa.medusa.core.injector;
 
-import io.getmedusa.medusa.core.util.TestRequest;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 

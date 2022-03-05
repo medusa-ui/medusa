@@ -116,6 +116,92 @@ class IterationTagTest extends AbstractTest {
             </html>
             """;
 
+    public static final String HTML_W_TABLE = """
+            <!DOCTYPE html>
+            <html lang="en">
+            <body>
+                <table>
+                <m:foreach collection="list-of-values" eachName="myItem">
+                    <tr>
+                        <td>Each value: <m:text item="myItem" /></td>
+                    </tr>
+                </m:foreach>
+                </table>
+            </body>
+            </html>
+            """;
+
+    public static final String HTML_W_TABLE_W_TBODY = """
+            <!DOCTYPE html>
+            <html lang="en">
+            <body>
+                <table>
+                <thead>
+                    <tr><th>Sample</th></tr>
+                </thead>
+                <tbody class="red blue">
+                    <m:foreach collection="list-of-values" eachName="myItem">
+                        <tr>
+                            <td>Each value: <m:text item="myItem" /></td>
+                        </tr>
+                    </m:foreach>
+                </tbody>
+                </table>
+            </body>
+            </html>
+            """;
+
+    public static final String HTML_W_TABLE_W_TBODY_ID_EXPECT_EXCEPTION = """
+            <!DOCTYPE html>
+            <html lang="en">
+            <body>
+                <table>
+                <thead>
+                    <tr><th>Sample</th></tr>
+                </thead>
+                <tbody id="123">
+                    <m:foreach collection="list-of-values" eachName="myItem">
+                        <tr>
+                            <td>Each value: <m:text item="myItem" /></td>
+                        </tr>
+                    </m:foreach>
+                </tbody>
+                </table>
+            </body>
+            </html>
+            """;
+
+    @Test
+    void testTableList() {
+        Map<String, Object> variables = new HashMap<>();
+        variables.put("list-of-values", Arrays.asList(1,2,3,4,5));
+        String html = inject(HTML_W_TABLE, variables).html();
+        System.out.println(html);
+        Assertions.assertFalse(html.contains("m:foreach"));
+        Assertions.assertTrue(html.contains("<template") && html.contains("</template>"));
+        Assertions.assertEquals(12, countOccurrences(html, "tbody"));
+    }
+
+    @Test
+    void testTableListWithTBody() {
+        Map<String, Object> variables = new HashMap<>();
+        variables.put("list-of-values", Arrays.asList(1,2,3,4,5));
+        String html = inject(HTML_W_TABLE_W_TBODY, variables).html();
+        System.out.println(html);
+        Assertions.assertFalse(html.contains("m:foreach"));
+        Assertions.assertTrue(html.contains("<template") && html.contains("</template>"));
+        Assertions.assertEquals(12, countOccurrences(html, "tbody"));
+    }
+
+    @Test
+    void testTableListWithTBodyAndID() {
+        Assertions.assertThrows(IllegalStateException.class, () -> {
+            Map<String, Object> variables = new HashMap<>();
+            variables.put("list-of-values", Arrays.asList(1,2,3,4,5));
+            inject(HTML_W_TABLE_W_TBODY_ID_EXPECT_EXCEPTION, variables).html();
+        });
+    }
+
     @Test
     void testSingleElementList() {
         System.out.println(HTML);

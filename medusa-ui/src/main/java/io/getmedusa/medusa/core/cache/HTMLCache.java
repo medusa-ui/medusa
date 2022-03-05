@@ -2,6 +2,7 @@ package io.getmedusa.medusa.core.cache;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.parser.Parser;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -29,7 +30,7 @@ public class HTMLCache {
     }
 
     private Document removeAllCommentsFromHTML(String html) {
-        return Jsoup.parse(html.replaceAll("(?s)<!--.*?-->", ""));
+        return Jsoup.parse(html.replaceAll("(?s)<!--.*?-->", ""), Parser.xmlParser());
     }
 
     @Deprecated

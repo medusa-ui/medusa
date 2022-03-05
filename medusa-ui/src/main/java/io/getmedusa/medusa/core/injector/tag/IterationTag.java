@@ -3,6 +3,7 @@ package io.getmedusa.medusa.core.injector.tag;
 import io.getmedusa.medusa.core.injector.tag.meta.InjectionResult;
 import io.getmedusa.medusa.core.registry.EachValueRegistry;
 import io.getmedusa.medusa.core.registry.IterationRegistry;
+import org.jsoup.nodes.Attributes;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.nodes.Node;
@@ -43,14 +44,23 @@ public class IterationTag extends AbstractTag {
 
         Elements foreachElements = injectionResult.getDocument().select(ITERATION_TAG);
         foreachElements.sort(Comparator.comparingInt(o -> o.select(ITERATION_TAG).size()));
-        for (Element foreachElement : foreachElements) {
+        for (final Element foreachElement : foreachElements) {
+            if(foreachElement == null) continue;
+
+            String parentTagName = getParentTagName(foreachElement);
+            Attributes wrapperAttributes = new Attributes();
+            if(isParentIsTBody(foreachElement, parentTagName)) {
+                wrapperAttributes = removeTBodyAsWrapperIfPresent(foreachElement);
+                parentTagName = "table";
+            }
+
             Element clone = foreachElement.clone();
             final String collection = foreachElement.attr(ITERATION_TAG_COLLECTION_ATTR);
 
             final String templateID = generateTemplateID(foreachElement, collection);
             final String eachName = conditionalAttribute(foreachElement, ITERATION_TAG_EACH_ATTR);
 
-            Node template = createTemplate(templateID, clone, eachName);
+            Node template = createTemplate(templateID, clone, eachName, parentTagName, wrapperAttributes);
             foreachElement.children().remove();
             foreachElement.text("");
             foreachElement.appendChild(template);
@@ -87,6 +97,41 @@ public class IterationTag extends AbstractTag {
         return injectionResult;
     }
 
+    private boolean isParentIsTBody(Element foreachElement, String parentTagName) {
+        return parentTagName.equals("tbody") && foreachElement.hasParent();
+    }
+
+    private Attributes removeTBodyAsWrapperIfPresent(Element foreachElement) {
+        Attributes attributes = new Attributes();
+        Element oldParent = foreachElement.parent();
+        if(oldParent != null && oldParent.hasParent()) {
+            Element newParent = oldParent.parent();
+            attributes = oldParent.attributes();
+            throwErrorInCaseOfIDAttribute(foreachElement, attributes, oldParent);
+            while (!oldParent.childNodes().isEmpty()) {
+                newParent.appendChild(oldParent.childNodes().get(0));
+            }
+            oldParent.remove();
+        }
+        return attributes;
+    }
+
+    private void throwErrorInCaseOfIDAttribute(Element foreachElement, Attributes attributes, Element oldParent) {
+        if(attributes.hasKeyIgnoreCase("id")) {
+            String nameOfElement = foreachElement.tag().toString() + foreachElement.attributes();
+            String nameOfWrapper = oldParent.tag().toString() + oldParent.attributes();
+            throw new IllegalStateException("Element '"+nameOfElement+"' is wrapped by a '"+nameOfWrapper+"', which would be duplicated by the foreach but contains a non-duplicatable attribute 'id'. Turn into a class or move to a parent element.");
+        }
+    }
+
+    private String getParentTagName(Element foreachElement) {
+        if(null != foreachElement && null != foreachElement.parent()) {
+            return foreachElement.parent().tagName();
+        }
+        return "";
+
+    }
+
     private void labelNestedTemplates(Document document) {
         Elements templates = document.getElementsByTag(TEMPLATE_TAG);
         templates.sort((o1, o2) -> o2.getElementsByTag(TEMPLATE_TAG).size() - o1.getElementsByTag(TEMPLATE_TAG).size());
@@ -114,11 +159,16 @@ public class IterationTag extends AbstractTag {
         return null;
     }
 
-    private Node createTemplate(String templateID, Element foreachElement, String eachName) {
+    private Node createTemplate(String templateID, Element foreachElement, String eachName, String parentTagName, Attributes wrapperAttributes) {
         Element node = new Element(Tag.valueOf(TEMPLATE_TAG), "")
                 .attr(M_ID, templateID);
 
         Element divWrapper = new Element("div");
+        if("table".equals(parentTagName)) {
+            divWrapper = new Element("tbody");
+        }
+        divWrapper.attributes().addAll(wrapperAttributes);
+
         if(eachName != null) divWrapper.attr("m-each", eachName);
         divWrapper.attr(TEMPLATE_ID, templateID);
 

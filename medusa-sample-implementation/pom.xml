@@ -29,7 +29,7 @@
 		<dependency>
 			<groupId>io.getmedusa</groupId>
 			<artifactId>medusa-ui</artifactId>
-			<version>${version}</version>
+			<version>${project.version}</version>
 		</dependency>
 
 
