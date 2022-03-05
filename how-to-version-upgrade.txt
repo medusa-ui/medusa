@@ -23,6 +23,7 @@ mvn versions:set -DnewVersion="0.3.6-SNAPSHOT"
 cd ..
 
 git add .
+git status
 git commit -m "Release 0.3.5 - Version update from 0.3.5 to 0.3.6-SNAPSHOT"
 git push
 
