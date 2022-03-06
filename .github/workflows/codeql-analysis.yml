@@ -60,10 +60,10 @@ jobs:
         cache: maven
     - name: Autobuild medusa-ui
       working-directory: ./medusa-ui
-      uses: github/codeql-action/autobuild@v1
+      run: mvn clean install --no-transfer-progress -D"spring.profiles.active"=dev -DskipTests=true
     - name: Autobuild medusa-sample
       working-directory: ./medusa-sample-implementation
-      uses: github/codeql-action/autobuild@v1
+      run: mvn clean install --no-transfer-progress -D"spring.profiles.active"=dev -DskipTests=true
 
     # ℹ️ Command-line programs to run using the OS shell.
     # 📚 https://git.io/JvXDl
@@ -77,8 +77,4 @@ jobs:
     #   make release
 
     - name: Perform CodeQL Analysis medusa-ui
-      working-directory: ./medusa-ui
-      uses: github/codeql-action/analyze@v1
-    - name: Perform CodeQL Analysis medusa-sample
-      working-directory: ./medusa-sample-implementation
       uses: github/codeql-action/analyze@v1
