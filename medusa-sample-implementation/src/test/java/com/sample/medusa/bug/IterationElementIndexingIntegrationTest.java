@@ -12,6 +12,7 @@ import java.util.List;
 class IterationElementIndexingIntegrationTest extends AbstractSeleniumTest {
 
     static final List<String> RESULTS = List.of("one", "two", "three");
+    static final List<String> RESULTS_AFTER_DOM_CHANGES = List.of("one", "two", "three", "four");
 
     @Test
     @DisplayName("Sanity check for plain old direct indexing")
@@ -33,7 +34,7 @@ class IterationElementIndexingIntegrationTest extends AbstractSeleniumTest {
         goTo("/test/bug/iteration-indexing");
 
         List<String> strs = getAllTextByClass("indirect-strings");
-        Assertions.assertEquals(strs, RESULTS);
+        Assertions.assertEquals( RESULTS, strs);
     }
 
     @Test
@@ -42,7 +43,21 @@ class IterationElementIndexingIntegrationTest extends AbstractSeleniumTest {
         goTo("/test/bug/iteration-indexing");
 
         List<String> objs = getAllTextByClass("indirect-names");
-        Assertions.assertEquals(objs, RESULTS);
+        Assertions.assertEquals( RESULTS, objs);
+    }
+
+    @Test
+    @DisplayName("Check for indexing after DOMChanges")
+    void indexAfterDOMChanges() {
+        goTo("/test/bug/iteration-indexing");
+
+        clickById("btn_changes");
+
+        List<String> strs = getAllTextByClass("indirect-strings");
+        Assertions.assertEquals( RESULTS_AFTER_DOM_CHANGES, strs);
+
+        List<String> objs = getAllTextByClass("indirect-names");
+        Assertions.assertEquals( RESULTS_AFTER_DOM_CHANGES, objs);
     }
 
 }

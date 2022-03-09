@@ -2,6 +2,7 @@ package com.sample.medusa.eventhandler.integrationtests.bug;
 
 import io.getmedusa.medusa.core.annotation.PageAttributes;
 import io.getmedusa.medusa.core.annotation.UIEventPage;
+import io.getmedusa.medusa.core.injector.DOMChanges;
 import org.springframework.web.reactive.function.server.ServerRequest;
 
 import java.util.List;
@@ -20,6 +21,12 @@ public class IterationElementIndexingHandler {
                 .with("list-of-strings", listOfString)
                 .with("list-of-objects", listOfObjects)
                 .with("map", map);
+    }
+
+    public DOMChanges changes(){
+        return DOMChanges.of("list-of-strings", List.of("A", "B", "C", "D"))
+                .and("list-of-objects", List.of(new ObjectWithName("A"), new ObjectWithName("B"), new ObjectWithName("C"), new ObjectWithName("D")))
+                .and("map",  Map.of("A", "one", "B", "two", "C", "three","D", "four"));
     }
 
 }
