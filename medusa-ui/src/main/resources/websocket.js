@@ -428,7 +428,7 @@ _M.buildIterationBlockMEachHandling = function (divWithMEach, eachObject) {
         //we don't support very complex expressions, but one layer deep is acceptable
         divWithMEach.querySelectorAll("[from-value*='"+eachName+"']").forEach(function (specificSpan) {
             let path = specificSpan.getAttribute("from-value");
-            if(path.startsWith(eachName)) return;
+            if(path.startsWith(eachName)) { return; }
 
             const deeperObjectPath = _M.determineDeeperObjectPath(path);
             const index = parseInt(mapEntry["index"], 10);
@@ -470,7 +470,7 @@ _M.mergeIntoOnePath = function (path) {
 }
 
 _M.resolveVariableLookup = function (variable, path) {
-    if(typeof path === "undefined") return variable;
+    if(typeof path === "undefined") { return variable; }
     if(!(path.indexOf(".") !== -1 || (path.indexOf("[") !== -1 && path.indexOf("]") !== -1))) {
         return _M.variables[path];
     } else {
@@ -519,9 +519,9 @@ _M.findThroughObjectPath = function (variable, index, path, eachObject, eachName
                 } else if (currentPath === eachName && index !== null) {
                     object = eachObject[index];
                 } else {
-                    if(object === undefined) return null;
+                    if(typeof object === "undefined") { return null; }
                     object = object[currentPath];
-                    if(object === undefined) return null;
+                    if(typeof object === "undefined") { return null; }
                 }
                 path = path.slice(1);
             }
