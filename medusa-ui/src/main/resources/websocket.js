@@ -236,7 +236,7 @@ _M.lookupVariable = function(parameter, element) {
 
     const deeperObjectPath = _M.determineDeeperObjectPath(parameter);
     const paramValue = _M.findPotentialEachValue(element, baseParameter);
-    return _M.considerVariableWrap(_M.findThroughObjectPath(paramValue, null, deeperObjectPath, null));
+    return _M.considerVariableWrap(_M.findThroughObjectPath(paramValue, null, deeperObjectPath, null, null));
 };
 
 _M.considerVariableWrap = function (value) {
@@ -328,7 +328,7 @@ _M.handleDefaultEvent = function(k) {
     document.querySelectorAll("[from-value^="+k.f+"]").forEach(function(e) {
         let valueToSet = k.v;
         const deeperObjectPath = _M.determineDeeperObjectPath(e.getAttribute("from-value"));
-        valueToSet = _M.findThroughObjectPath(valueToSet, null, deeperObjectPath, null);
+        valueToSet = _M.findThroughObjectPath(valueToSet, null, deeperObjectPath, null, null);
 
         if(e.hasAttribute("value")) {
             e.setAttribute("value", valueToSet);
@@ -415,7 +415,7 @@ _M.buildIterationBlockMEachHandling = function (divWithMEach, eachObject) {
             const deeperObjectPath = _M.determineDeeperObjectPath(path);
             const index = parseInt(mapEntry["index"], 10);
             const conditional = _M.conditionals[mapEntry["templateId"]];
-            let foundObject = _M.findThroughObjectPath(_M.variables[conditional], index, deeperObjectPath, eachObject);
+            let foundObject = _M.findThroughObjectPath(_M.variables[conditional], index, deeperObjectPath, eachObject, eachName);
             const via = specificSpan.getAttribute("via");
             if(via === null) {
                 specificSpan.textContent = foundObject;
@@ -423,10 +423,75 @@ _M.buildIterationBlockMEachHandling = function (divWithMEach, eachObject) {
                 specificSpan.setAttribute(via, foundObject);
             }
         });
+
+        //if the 'each' is part of an expression, it's more difficult and we need to parse the each side first and then re-run the default event
+        //we don't support very complex expressions, but one layer deep is acceptable
+        divWithMEach.querySelectorAll("[from-value*='"+eachName+"']").forEach(function (specificSpan) {
+            let path = specificSpan.getAttribute("from-value");
+            if(path.startsWith(eachName)) return;
+
+            const deeperObjectPath = _M.determineDeeperObjectPath(path);
+            const index = parseInt(mapEntry["index"], 10);
+            const conditional = _M.conditionals[mapEntry["templateId"]];
+            let foundObject = _M.findThroughObjectPath(_M.variables[conditional], index, deeperObjectPath, eachObject, eachName);
+            if(foundObject !== null && typeof foundObject !== "undefined") {
+                const via = specificSpan.getAttribute("via");
+
+                let mergedPath = _M.mergeIntoOnePath(deeperObjectPath);
+                let finalValue = foundObject;
+
+                if(mergedPath.indexOf(eachName) !== -1) {
+                    if(typeof foundObject === "string") {
+                        foundObject = "'" + foundObject + "'";
+                    }
+                    let finalPath = path.replaceAll(mergedPath, foundObject);
+                    finalValue = _M.resolveVariableLookup(_M.variables, finalPath);
+                }
+
+                if(via === null) {
+                    specificSpan.textContent = finalValue;
+                } else {
+                    specificSpan.setAttribute(via, finalValue);
+                }
+            }
+        });
     }
 }
 
-_M.findThroughObjectPath = function (variable, index, path, eachObject) {
+_M.mergeIntoOnePath = function (path) {
+    let final = "";
+    let concat = "";
+    for(let pathVal of path) {
+        final += concat;
+        final += pathVal;
+        concat = ".";
+    }
+    return final;
+}
+
+_M.resolveVariableLookup = function (variable, path) {
+    if(typeof path === "undefined") return variable;
+    if(!(path.indexOf(".") !== -1 || (path.indexOf("[") !== -1 && path.indexOf("]") !== -1))) {
+        return _M.variables[path];
+    } else {
+        let paths = path.split(new RegExp("[.[]"));
+        let index = 1;
+        let max = paths.length;
+        let object = _M.variables[paths[0]];
+
+        while (index !== max) {
+            const p = paths[index++];
+            let unBracketedPath = p.substring(0, p.length - 1);
+            if(_M.isQuoted(unBracketedPath)) {
+                unBracketedPath = unBracketedPath.substring(1, unBracketedPath.length - 1);
+            }
+            object = object[unBracketedPath];
+        }
+        return object;
+    }
+}
+
+_M.findThroughObjectPath = function (variable, index, path, eachObject, eachName) {
     let object;
     if(index == null) {
         object = variable;
@@ -449,10 +514,14 @@ _M.findThroughObjectPath = function (variable, index, path, eachObject) {
             } else if ("value" === currentPath && _M.currentPathUnreachable(object, currentPath)) {
                 return variable[possibleKey];
             } else {
-                if(eachObject !== null && typeof object === "undefined") {
+                if((eachObject !== null && typeof object === "undefined") || (currentPath === eachName && index === null)) {
                     object = eachObject;
+                } else if (currentPath === eachName && index !== null) {
+                    object = eachObject[index];
                 } else {
+                    if(object === undefined) return null;
                     object = object[currentPath];
+                    if(object === undefined) return null;
                 }
                 path = path.slice(1);
             }
