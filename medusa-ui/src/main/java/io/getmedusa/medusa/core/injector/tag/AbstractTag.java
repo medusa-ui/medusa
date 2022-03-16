@@ -36,8 +36,10 @@ public abstract class AbstractTag implements Tag {
             if(restOfValue.endsWith("]")) restOfValue = "[" + restOfValue;
         }
 
+        //given variableA[variableB]
         Element parentWithEachName = findParentWithEachName(currentElem.parents(), nameToSearch);
         if(null != parentWithEachName) {
+            //the following resolves variableA as an each value
             String indexAsString = parentWithEachName.attr(TagConstants.INDEX);
             if(indexAsString.length() == 0) indexAsString = "0";
             int index = Integer.parseInt(indexAsString);
@@ -50,7 +52,17 @@ public abstract class AbstractTag implements Tag {
                 valueToReturn = ExpressionEval.evalItemAsObj(expression, variablesCopy);
             }
             return valueToReturn;
+        } else if(restOfValue != null) {
+            //the following checks if [variableB] could be an each value
+            if(restOfValue.startsWith("[") && restOfValue.endsWith("]")) {
+                String restOfValueWithoutBrackets = restOfValue.substring(1, restOfValue.length() - 1);
+                Object bracketValue = getPossibleEachValue(currentElem, restOfValueWithoutBrackets, request, variables);
+                if(null == bracketValue) return null;
+                String expression = eachName.replace(restOfValueWithoutBrackets, "'" + bracketValue + "'");
+                return ExpressionEval.evalItemAsObj(expression, variablesCopy);
+            }
         }
+
         return null;
     }
 

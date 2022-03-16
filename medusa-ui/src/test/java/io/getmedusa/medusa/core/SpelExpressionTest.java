@@ -86,6 +86,14 @@ class SpelExpressionTest {
     }
 
     @Test
+    void evalMapIndirect() {
+        Map<String, Object> modelMap = new HashMap<>();
+        modelMap.put("beep", new SubObject("key"));
+        modelMap.put("map", Map.of("key", "boop"));
+        assertEquals("boop", ExpressionEval.evalItemAsString("map[beep.name]", modelMap));
+    }
+
+    @Test
     void ctrlSay() {
         // given
         String tag = "<button m:click='say(\"Hallo World\", 3)' /> ";
