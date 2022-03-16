@@ -34,7 +34,7 @@ class IterationElementIndexingIntegrationTest extends AbstractSeleniumTest {
         goTo("/test/bug/iteration-indexing");
 
         List<String> strs = getAllTextByClass("indirect-strings");
-        Assertions.assertEquals( RESULTS, strs);
+        Assertions.assertEquals(RESULTS, strs);
     }
 
     @Test
@@ -43,7 +43,7 @@ class IterationElementIndexingIntegrationTest extends AbstractSeleniumTest {
         goTo("/test/bug/iteration-indexing");
 
         List<String> objs = getAllTextByClass("indirect-names");
-        Assertions.assertEquals( RESULTS, objs);
+        Assertions.assertEquals(RESULTS, objs);
     }
 
     @Test

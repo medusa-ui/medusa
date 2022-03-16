@@ -39,4 +39,5 @@ class ObjectWithName {
     public String getName() {
         return name;
     }
+
 }
