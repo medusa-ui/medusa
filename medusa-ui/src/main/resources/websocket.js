@@ -77,7 +77,7 @@ _M.log = function(responseEvent) {
 _M.eventHandler = function(e) {
     _M.debug(e);
 
-    if(!(Array.isArray(e) && (typeof e[0]['f'] !== "undefined" || typeof e[0]['t'] !== "undefined"))) {
+    if(!(Array.isArray(e) && e.length > 0 && (typeof e[0]['f'] !== "undefined" || typeof e[0]['t'] !== "undefined"))) {
         return;
     }
     
