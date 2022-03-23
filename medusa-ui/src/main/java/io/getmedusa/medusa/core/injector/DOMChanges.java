@@ -74,6 +74,30 @@ public class DOMChanges {
     }
 
     /**
+     * Adds a key/value pair to an existing DOMChanges object, with a predicate.
+     * @param field key, matching with variable name used in HTML and setupAttributes()
+     * @param value value of said variable
+     * @param applicable function that determines if the DOMChanges should be applied.
+     * @return The appended DOMChanges object
+     */
+    public DOMChanges and(String field, Object value, Applicable applicable) {
+        domChanges.add(new DOMChange(field, value, applicable));
+        return this;
+    }
+
+    /**
+     * Adds a key/value pair to an existing DOMChanges object, with a predicate.
+     * @param field key, matching with variable name used in HTML and setupAttributes()
+     * @param value value of said variable
+     * @param applicable function that determines if the DOMChanges should be applied.
+     * @return The appended DOMChanges object
+     */
+    public static DOMChanges of(String field, Object value, Applicable applicable) {
+        DOMChanges changes = new DOMChanges();
+        return changes.and(field, value, applicable);
+    }
+
+    /**
      * Preferred way of creating a new chain of key/value pairs.
      * @param field key, matching with variable name used in HTML and setupAttributes()
      * @param value value of said variable
@@ -103,11 +127,11 @@ public class DOMChanges {
     }
 
     public static class DOMChange {
-
         private String f; //field
         private Object v; //value (value or relevant id)
         private Integer t; //type
         private String c; //condition
+        private Applicable applicable;
 
         public DOMChange(String field, Object value) {
             this.f = field;
@@ -115,9 +139,25 @@ public class DOMChanges {
         }
 
         public DOMChange(String field, Object value, DOMChange.DOMChangeType type) {
-            this.f = field;
-            this.v = value;
+            this(field, value);
             this.t = type.ordinal();
+        }
+
+        public DOMChange(String field, Object value, Applicable applicable) {
+            this(field, value);
+            this.applicable = applicable;
+        }
+
+        public boolean isApplicable(){
+            return applicable != null && applicable.apply();
+        }
+
+        public Applicable getApplicable() {
+            return applicable;
+        }
+
+        public void setApplicable(Applicable applicable) {
+            this.applicable = applicable;
         }
 
         public String getF() {
