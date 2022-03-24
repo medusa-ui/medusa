@@ -142,7 +142,7 @@ _M.handleHydraMenuItemChange = function (k) {
 };
 
 _M.injectVariablesIntoConditionalExpression = function(expression, elem) {
-    if(typeof expression === 'boolean') return expression;
+    if(typeof expression === "boolean") { return expression; }
 
     let found = expression.match(new RegExp("[\\w-]+","g"));
     if(found) {
@@ -195,7 +195,7 @@ _M.parseEachNameFromConditionalExpression = function(expression) {
 }
 
 _M.injectVariablesIntoMethodExpression = function(expression, element) {
-    if(typeof expression === 'boolean') return expression;
+    if(typeof expression === "boolean") { return expression; }
 
     const startIndexOfParameters = expression.indexOf("(");
 
@@ -219,7 +219,7 @@ _M.injectVariablesIntoMethodExpression = function(expression, element) {
                 for (let j = 0; j < deeperSplit.length; j++) {
                     const currentSplitValue = deeperSplit[j];
                     const nextSplitValue = deeperSplit[j + 1];
-                    if(typeof nextSplitValue === 'undefined') {
+                    if(typeof nextSplitValue === "undefined") {
                         splitParameters.push(currentSplitValue.trim());
                     } else {
                         if (currentSplitValue.trim().startsWith("'") && !currentSplitValue.trim().endsWith("'") &&
@@ -292,7 +292,7 @@ _M.findPotentialEachValue = function (element, eachName) {
             }
         }
     }
-    if(typeof paramValue === 'undefined') {
+    if(typeof paramValue === "undefined") {
         return eachName;
     }
     return paramValue;
