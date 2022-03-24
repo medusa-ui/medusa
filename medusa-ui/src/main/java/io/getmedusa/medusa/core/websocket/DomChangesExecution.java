@@ -18,11 +18,11 @@ public class DomChangesExecution {
         evaluateConditionalChange(domChanges);
         evaluateConditionalClassChange(domChanges);
         evaluateGenericMAttributesChanged(domChanges);
-        processApplicableDOMChanges(session, domChanges);
+        processApplicableDOMChanges(domChanges);
         return domChanges;
     }
 
-    private void processApplicableDOMChanges(WebSocketSession session, List<DOMChange> domChanges) {
+    private void processApplicableDOMChanges(List<DOMChange> domChanges) {
         List<DOMChange> changesWithScopeAll = domChanges
                 .stream()
                 .filter(DOMChange::isApplicable)
