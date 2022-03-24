@@ -142,6 +142,8 @@ _M.handleHydraMenuItemChange = function (k) {
 };
 
 _M.injectVariablesIntoConditionalExpression = function(expression, elem) {
+    if(typeof expression === 'boolean') return expression;
+
     let found = expression.match(new RegExp("[\\w-]+","g"));
     if(found) {
         found = [...new Set(found)];
@@ -193,6 +195,8 @@ _M.parseEachNameFromConditionalExpression = function(expression) {
 }
 
 _M.injectVariablesIntoMethodExpression = function(expression, element) {
+    if(typeof expression === 'boolean') return expression;
+
     const startIndexOfParameters = expression.indexOf("(");
 
     //determine if this is a method call or a conditional
@@ -202,10 +206,37 @@ _M.injectVariablesIntoMethodExpression = function(expression, element) {
         //interpret this as an actual expression, so we can differentiate between literals, numbers, booleans and to replace variables
         const methodName = expression.substring(0, startIndexOfParameters);
         const parametersAsOneString = expression.substring(startIndexOfParameters + 1, expression.lastIndexOf(")"));
-        const roughParameters = parametersAsOneString.split(",");
+
+        let roughParameters = parametersAsOneString.split("(?<=')\\s{0,1},\\s{0,1}(?=')");
+
+        let splitParameters = [];
+        for(let parameter of roughParameters) {
+            let roughParameter = parameter.trim();
+            if (roughParameter.indexOf(",") === -1) {
+                splitParameters.push(roughParameter);
+            } else {
+                let deeperSplit = roughParameter.split(",");
+                for (let j = 0; j < deeperSplit.length; j++) {
+                    const currentSplitValue = deeperSplit[j];
+                    const nextSplitValue = deeperSplit[j + 1];
+                    if(typeof nextSplitValue === 'undefined') {
+                        splitParameters.push(currentSplitValue.trim());
+                    } else {
+                        if (currentSplitValue.trim().startsWith("'") && !currentSplitValue.trim().endsWith("'") &&
+                            !nextSplitValue.trim().startsWith("'") && nextSplitValue.trim().endsWith("'")) {
+                            let combinedValue = currentSplitValue + "," + nextSplitValue;
+                            splitParameters.push(combinedValue.trim());
+                            j++;
+                        } else {
+                            splitParameters.push(currentSplitValue.trim());
+                        }
+                    }
+                }
+            }
+        }
 
         let parameters = [];
-        for(const roughParameter of roughParameters) {
+        for(const roughParameter of splitParameters) {
             let parameter = roughParameter.trim();
             if(parameter.length === 0) {
                 continue;
@@ -260,6 +291,9 @@ _M.findPotentialEachValue = function (element, eachName) {
                 paramValue = _M.variables[relevantVariableName][index];
             }
         }
+    }
+    if(typeof paramValue === 'undefined') {
+        return eachName;
     }
     return paramValue;
 }
