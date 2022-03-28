@@ -18,7 +18,7 @@ class SimpleIntegrationTest extends AbstractSeleniumTest {
 
     @Test
     @DisplayName("open a second tab")
-    void testOpenTab() throws Exception{
+    void testOpenTab() {
         String original = goTo("/");
         Assertions.assertTrue(driver.getPageSource().contains("Hello Medusa"));
 
@@ -35,7 +35,7 @@ class SimpleIntegrationTest extends AbstractSeleniumTest {
 
     @Test
     @DisplayName("open a second window")
-    void testOpenWindow() throws Exception{
+    void testOpenWindow() {
         String original = goTo("/");
         Assertions.assertTrue(driver.getPageSource().contains("Hello Medusa"));
 
