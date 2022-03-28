@@ -62,6 +62,18 @@ class IterationTagTest extends AbstractTest {
             </html>
             """;
 
+    public static final String HTML_W_ELEMENT_DEFAULT_EACH =
+            """
+            <!DOCTYPE html>
+            <html lang="en">
+            <body>
+                <m:foreach collection="list-of-values">
+                    <p>Each value: <m:text item="each" /></p>
+                </m:foreach>
+            </body>
+            </html>
+            """;
+
     public static final String HTML_W_ELEMENT_NESTED =
             """
             <!DOCTYPE html>
@@ -324,6 +336,28 @@ class IterationTagTest extends AbstractTest {
         Assertions.assertEquals(5, divs.size());
         for(Element div : divs) {
             Assertions.assertFalse(div.text().contains("myItem"), "myItem should be replaced");
+            final String eachValAsString = div.text().replace("Each value:", "").trim();
+            final Integer eachVal = Integer.parseInt(eachValAsString);
+            Assertions.assertTrue(loopValues.contains(eachVal));
+        }
+    }
+
+    @Test
+    void testDefaultEach() {
+        Map<String, Object> variables = new HashMap<>();
+        final List<Integer> loopValues = Arrays.asList(1, 2, 3, 4, 5);
+        variables.put("list-of-values", loopValues);
+        String html = inject(HTML_W_ELEMENT_DEFAULT_EACH, variables).html();
+
+        System.out.println(html);
+        Assertions.assertFalse(html.contains("m:foreach"));
+        Assertions.assertTrue(html.contains("<template") && html.contains("</template>"));
+        Map<String, List<Element>> templateElements = findDivsWithTemplate(Jsoup.parse(html));
+        List<Element> divs = templateElements.get(templateElements.keySet().stream().findFirst().get());
+
+        Assertions.assertEquals(5, divs.size());
+        for(Element div : divs) {
+            Assertions.assertFalse(div.text().contains("each"), "'each' should be replaced");
             final String eachValAsString = div.text().replace("Each value:", "").trim();
             final Integer eachVal = Integer.parseInt(eachValAsString);
             Assertions.assertTrue(loopValues.contains(eachVal));
