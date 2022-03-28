@@ -35,7 +35,7 @@ class SimpleIntegrationTest extends AbstractSeleniumTest {
 
     @Test
     @DisplayName("open a second window")
-    void TestOpenWindow() throws Exception{
+    void testOpenWindow() throws Exception{
         String original = goTo("/");
         Assertions.assertTrue(driver.getPageSource().contains("Hello Medusa"));
 
