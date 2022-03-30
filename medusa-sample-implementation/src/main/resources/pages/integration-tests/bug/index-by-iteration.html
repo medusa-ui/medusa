@@ -13,8 +13,8 @@
 <span id="direct-b"><m:text item="map['B']"/></span>
 <span id="direct-c"><m:text item="map['C']"/></span>
 <h3>Indirect access via list of strings</h3>
-<m:foreach collection="list-of-strings" eachName="str">
-    <span class="indirect-strings"><m:text item="map[str]"/></span>
+<m:foreach collection="list-of-strings" >
+    <span class="indirect-strings"><m:text item="map[each]"/></span>
 </m:foreach>
 <h3>Indirect access via list of objects with names</h3>
 <m:foreach collection="list-of-objects" eachName="obj">
