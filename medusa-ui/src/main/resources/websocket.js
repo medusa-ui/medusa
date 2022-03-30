@@ -241,7 +241,7 @@ _M.injectVariablesIntoMethodExpression = function(expression, element) {
             if(parameter.length === 0) {
                 continue;
             }
-            if(!(_M.isQuoted(parameter) || _M.isNumeric(parameter) || _M.isBoolean(parameter))) {
+            if(!(_M.isJavaNumber(parameter) ||_M.isQuoted(parameter) || _M.isNumeric(parameter) || _M.isBoolean(parameter) )) {
                 parameter = _M.lookupVariable(parameter, element);
                 if(typeof parameter === "undefined") {
                     parameter = roughParameter;
@@ -332,6 +332,18 @@ _M.isBoolean = function(itemToEval) {
 _M.isNumeric = function(str) {
     if (typeof str != "string") { return false; }
     return !isNaN(str) && !isNaN(parseFloat(str));
+}
+
+_M.isJavaNumber = function(str) {
+   return _M.isJavaLong(str) || _M.isJavaDoubleOrFloat(str);
+}
+
+_M.isJavaLong = function(str) {
+    return str.match(/^[0-9]+[lL]$/);
+}
+
+_M.isJavaDoubleOrFloat = function(str) {
+    return str.match(/^[0-9.]+[dDfF]$/);
 }
 
 _M.injectVariablesIntoText = function(text) {
@@ -772,6 +784,7 @@ _M.parseSelfReference = function(raw, e, originElem) {
 _M.waitingForEnable = [];
 
 _M.sendEvent = function(originElem, e) {
+    _M.debug("sendEvent: " + e );
     const disableOnClick = originElem.attributes["m:disable-on-click-until"];
     if(typeof disableOnClick !== "undefined") {
         const loadingStyle = originElem.attributes["m:loading-style"];
