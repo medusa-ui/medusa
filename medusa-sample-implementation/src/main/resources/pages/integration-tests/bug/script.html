@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:m="https://getmedusa.io" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="https://getmedusa.io https://raw.githubusercontent.com/medusa-ui/medusa/main/medusa-ui.xsd">
+<head>
+    <meta charset="UTF-8">
+    <title>Hello World Script</title>
+    <link href="/stylesheet.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter&family=Merriweather&display=swap" rel="stylesheet">
+    <script>
+        let hello = "Hello";
+        let world = "World!";
+    </script>
+</head>
+    <body>
+        <h3>You should see an 'Hallo World' message</h3>
+        <p id="message"></p>
+        <script>
+            function popup() {
+                if(hello && world) { // <-- && should be left as is, and not get encoded as &amp;&amp;
+                    document.getElementById("message").textContent = `${hello} ${world}`
+                }
+            }
+        </script>
+        <p></p>
+        <script>
+            popup();
+        </script>
+    </body>
+
+
+</html>
