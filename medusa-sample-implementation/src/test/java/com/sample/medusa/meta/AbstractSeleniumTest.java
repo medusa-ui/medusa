@@ -9,8 +9,10 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.server.LocalServerPort;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
@@ -22,11 +24,13 @@ public class AbstractSeleniumTest {
     private int port;
 
     protected WebDriver driver;
+    protected JavascriptExecutor javascriptExecutor;
     protected static String BASE;
     protected WebDriverWait wait;
+    private @Value("${headless:true}") Boolean headless;
 
     protected boolean isHeadless() {
-        return true;
+        return headless;
     }
 
     @BeforeAll
@@ -47,6 +51,7 @@ public class AbstractSeleniumTest {
         driver = new ChromeDriver(chromeOptions);
         driver.manage().timeouts().implicitlyWait(1, TimeUnit.SECONDS);
         wait = new WebDriverWait(driver,1);
+        javascriptExecutor = (JavascriptExecutor) driver;
         login();
     }
 
@@ -108,7 +113,7 @@ public class AbstractSeleniumTest {
         return driver.getTitle();
     }
 
-    protected void goTo(String url) {
+    protected String goTo(String url) {
         driver.get(BASE + url);
         waitUntilPageLoaded();
         if(driver.getCurrentUrl().endsWith("/login")) {
@@ -116,6 +121,7 @@ public class AbstractSeleniumTest {
             waitUntilPageLoaded();
             driver.get(BASE + url);
         }
+        return driver.getWindowHandle();
     }
 
     private void waitUntilPageLoaded() {
@@ -158,5 +164,36 @@ public class AbstractSeleniumTest {
     protected void refreshPage() {
         driver.navigate().refresh();
         waitUntilPageLoaded();
+    }
+
+    protected String openInNewTab(String url) {
+        driver.switchTo().newWindow(WindowType.TAB);
+        goTo(url);
+        return driver.getWindowHandle();
+    }
+
+    protected String openInNewWindow(String url) {
+        driver.switchTo().newWindow(WindowType.WINDOW);
+        goTo(url);
+        return driver.getWindowHandle();
+    }
+
+    protected void switchToWindowOrTab(String window) {
+        driver.switchTo().window(window);
+    }
+
+    @Deprecated /* use openInNewTab(url) */
+    protected int openNewTab(){
+        javascriptExecutor.executeScript("window.open();");
+        List<String> windowHandles = new ArrayList<>(driver.getWindowHandles());
+        int tab = windowHandles.size() - 1;
+        driver.switchTo().window(windowHandles.get(tab));
+        return tab;
+    }
+
+    @Deprecated
+    protected void switchToTab(int tab){
+        List<String> windowHandles = new ArrayList<>(driver.getWindowHandles());
+        driver.switchTo().window(windowHandles.get(tab));
     }
 }
