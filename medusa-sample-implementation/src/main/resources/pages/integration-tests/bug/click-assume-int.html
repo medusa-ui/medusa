@@ -10,11 +10,15 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter&family=Merriweather&display=swap" rel="stylesheet">
 </head>
 <body>
-    <h1>🦑 Medusa in trouble </h1>
+    <h1>🦑 Medusa in trouble?</h1>
     <p>Parameter of a click function should not assume int (vs long) </p>
     <span id="number-value"><m:text item="type"/>: <m:text item="value"/></span>
+    <br/>
+    <br/>
+    <button id="load-int" m:click="load(1648)">Load an int</button>
     <button id="load-long" m:click="load(16481396653467L)">Load a long</button>
     <button id="load-double" m:click="load(42.1223699988888d)">Load a double</button>
     <button id="load-float" m:click="load(42.12236999888888F)">Load a float</button>
+
 </body>
 </html>

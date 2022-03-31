@@ -11,19 +11,24 @@ public class ClickAssumeIntIntegrationTest extends AbstractSeleniumTest {
     @Test
     void sendJavaNumber(){
         goTo("/bug/click/42");
-        Assertions.assertEquals("Long: 42", getTextById("number-value"));
+        Assertions.assertEquals("Integer: 42", getTextById("number-value"));
 
         // load a number after an event
         clickById("load-long");
         Assertions.assertEquals("Long: 16481396653467", getTextById("number-value"));
+        clickById("load-int");
+        Assertions.assertEquals("Integer: 1648", getTextById("number-value"));
         clickById("load-double");
         Assertions.assertEquals("Double: 42.1223699988888", getTextById("number-value"));
         clickById("load-float");
         Assertions.assertEquals("Float: 42.12237", getTextById("number-value")); // rounded
 
         // load a long on load
-        goTo("/bug/click/16481396653467");
+        goTo("/bug/click/16481396653467L");
         Assertions.assertEquals("Long: 16481396653467", getTextById("number-value"));
+        // load a double on load
+        goTo("/bug/click/3.1415d");
+        Assertions.assertEquals("Double: 3.1415", getTextById("number-value"));
     }
 
 }

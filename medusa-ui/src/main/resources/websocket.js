@@ -339,11 +339,11 @@ _M.isJavaNumber = function(str) {
 }
 
 _M.isJavaLong = function(str) {
-    return str.match(/^[0-9]+[lL]$/);
+    return str.match(/^\d+[lL]$/);
 }
 
 _M.isJavaDoubleOrFloat = function(str) {
-    return str.match(/^[0-9.]+[dDfF]$/);
+    return str.match(/^\d*(\.\d+)?[dDfF]$/);
 }
 
 _M.injectVariablesIntoText = function(text) {
