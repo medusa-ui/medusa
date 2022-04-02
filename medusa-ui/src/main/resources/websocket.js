@@ -343,7 +343,7 @@ _M.isBoolean = function(itemToEval) {
 
 _M.isDecimal = function(x) {
     if(_M.isNumeric(x)) {
-        return x % 1 !== 0
+        return x % 1 !== 0;
     } else {
         return false;
     }
