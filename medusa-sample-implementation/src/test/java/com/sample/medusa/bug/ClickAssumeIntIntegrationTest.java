@@ -23,7 +23,7 @@ class ClickAssumeIntIntegrationTest extends AbstractSeleniumTest {
         clickById("load-double");
         Assertions.assertEquals("Double: 42.1223699988888", getTextById("number-value"));
         clickById("load-double2");
-        Assertions.assertEquals("Double: 42.1223699988889", getTextById("number-value"));
+        Assertions.assertEquals("Double: 16481396653468.5", getTextById("number-value"));
         clickById("load-float");
         Assertions.assertEquals("Float: 42.12237", getTextById("number-value")); // rounded
 

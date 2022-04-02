@@ -257,7 +257,9 @@ _M.injectVariablesIntoMethodExpression = function(expression, element) {
 };
 
 _M.javaNumberCompatibility = function(parameter) {
-    if(_M.isNumeric(parameter)) {
+    if(_M.isDecimal(parameter)) {
+        return parameter + "d";
+    } else if(_M.isNumeric(parameter)) {
         if(parameter > 2147483647 || parameter < -2147483648) {
             return parameter + "L";
         }
@@ -339,9 +341,17 @@ _M.isBoolean = function(itemToEval) {
     return "true" === itemToEval || "false" === itemToEval;
 };
 
+_M.isDecimal = function(x) {
+    if(_M.isNumeric(x)) {
+        return x % 1 !== 0
+    } else {
+        return false;
+    }
+}
+
 _M.isNumeric = function(str) {
     if (typeof str != "string") { return false; }
-    return !isNaN(str) && !isNaN(parseFloat(str));
+    return !isNaN( parseFloat( str ) ) && isFinite( str );
 }
 
 _M.isJavaNumber = function(str) {
