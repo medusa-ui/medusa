@@ -2,6 +2,7 @@ package io.getmedusa.medusa.core.util;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.springframework.expression.spel.SpelParseException;
 
 import java.time.Year;
 import java.util.Arrays;
@@ -16,6 +17,22 @@ class SpelExpressionParserHelperTest {
         String escaped = ExpressionEval.escape(raw);
         String result = SpelExpressionParserHelper.getValue(escaped, new Person("John", 3, new Country("Belgium")));
         Assertions.assertEquals("hello medusa 123 :: 안녕하세요세계hello world'tasdasdsasdx", result);
+    }
+
+    @Test
+    void javaNumber(){
+        Assertions.assertEquals("long", SpelExpressionParserHelper.getValue("typeOf( 1l )", new NumberType()));
+        Assertions.assertEquals("long", SpelExpressionParserHelper.getValue("typeOf( 1L )", new NumberType()));
+
+        Assertions.assertEquals("double",SpelExpressionParserHelper.getValue("typeOf( 1d )", new NumberType()));
+        Assertions.assertEquals("double",SpelExpressionParserHelper.getValue("typeOf( 1D )", new NumberType()));
+
+        Assertions.assertEquals("float",SpelExpressionParserHelper.getValue("typeOf( 1f )", new NumberType()));
+        Assertions.assertEquals("float",SpelExpressionParserHelper.getValue("typeOf( 1F )", new NumberType()));
+
+        Assertions.assertEquals("int",SpelExpressionParserHelper.getValue("typeOf( 1 )", new NumberType()));
+        Assertions.assertEquals("long",SpelExpressionParserHelper.getValue("typeOf( 123456789012345678l )", new NumberType()));
+        Assertions.assertThrowsExactly(SpelParseException.class, () -> SpelExpressionParserHelper.getValue("typeOf(123456789012345678)", new NumberType()));
     }
 
     @Test
@@ -135,4 +152,24 @@ class Country{
     public int hashCode() {
         return name.hashCode();
     }
+}
+
+class NumberType {
+
+    public String typeOf(long value){
+        return "long";
+    }
+
+    public String typeOf(double value){
+        return "double";
+    }
+
+    public String typeOf(float value){
+        return "float";
+    }
+
+    public String typeOf(int value){
+        return "int";
+    }
+
 }
