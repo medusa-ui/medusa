@@ -113,7 +113,7 @@ public class AbstractSeleniumTest {
         return driver.getTitle();
     }
 
-    protected void goTo(String url) {
+    protected String goTo(String url) {
         driver.get(BASE + url);
         waitUntilPageLoaded();
         if(driver.getCurrentUrl().endsWith("/login")) {
@@ -121,6 +121,7 @@ public class AbstractSeleniumTest {
             waitUntilPageLoaded();
             driver.get(BASE + url);
         }
+        return driver.getWindowHandle();
     }
 
     private void waitUntilPageLoaded() {
@@ -165,6 +166,23 @@ public class AbstractSeleniumTest {
         waitUntilPageLoaded();
     }
 
+    protected String openInNewTab(String url) {
+        driver.switchTo().newWindow(WindowType.TAB);
+        goTo(url);
+        return driver.getWindowHandle();
+    }
+
+    protected String openInNewWindow(String url) {
+        driver.switchTo().newWindow(WindowType.WINDOW);
+        goTo(url);
+        return driver.getWindowHandle();
+    }
+
+    protected void switchToWindowOrTab(String window) {
+        driver.switchTo().window(window);
+    }
+
+    @Deprecated /* use openInNewTab(url) */
     protected int openNewTab(){
         javascriptExecutor.executeScript("window.open();");
         List<String> windowHandles = new ArrayList<>(driver.getWindowHandles());
@@ -173,6 +191,7 @@ public class AbstractSeleniumTest {
         return tab;
     }
 
+    @Deprecated
     protected void switchToTab(int tab){
         List<String> windowHandles = new ArrayList<>(driver.getWindowHandles());
         driver.switchTo().window(windowHandles.get(tab));

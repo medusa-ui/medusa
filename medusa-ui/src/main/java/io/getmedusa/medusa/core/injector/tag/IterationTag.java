@@ -203,7 +203,7 @@ public class IterationTag extends AbstractTag {
 
     private String conditionalAttribute(Element e, String attr) {
         if (e.hasAttr(attr)) return e.attr(attr);
-        return null;
+        return "each";
     }
 
     @SuppressWarnings("unchecked")

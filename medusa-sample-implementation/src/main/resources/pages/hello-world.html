@@ -18,6 +18,7 @@
 <button id="my-counter-btn" m:click="increaseMyCounter(uuid, increase)">Increase my counter by <m:text item="increase" /></button>
 <p>Global Counter: <m:text item="counter-value" /></p>
 
+<button m:click="emptyCall()">Empty</button>
 <button m:click="increaseCounter(1)">Increase counter</button>
 <m:if item="counter-value" gt="0">
     <m:foreach collection="items-bought" eachName="item">

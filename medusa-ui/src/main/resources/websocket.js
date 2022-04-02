@@ -142,6 +142,8 @@ _M.handleHydraMenuItemChange = function (k) {
 };
 
 _M.injectVariablesIntoConditionalExpression = function(expression, elem) {
+    if(typeof expression === "boolean") { return expression; }
+
     let found = expression.match(new RegExp("[\\w-]+","g"));
     if(found) {
         found = [...new Set(found)];
@@ -193,6 +195,8 @@ _M.parseEachNameFromConditionalExpression = function(expression) {
 }
 
 _M.injectVariablesIntoMethodExpression = function(expression, element) {
+    if(typeof expression === "boolean") { return expression; }
+
     const startIndexOfParameters = expression.indexOf("(");
 
     //determine if this is a method call or a conditional
@@ -202,15 +206,43 @@ _M.injectVariablesIntoMethodExpression = function(expression, element) {
         //interpret this as an actual expression, so we can differentiate between literals, numbers, booleans and to replace variables
         const methodName = expression.substring(0, startIndexOfParameters);
         const parametersAsOneString = expression.substring(startIndexOfParameters + 1, expression.lastIndexOf(")"));
-        const roughParameters = parametersAsOneString.split(",");
+
+        let roughParameters = parametersAsOneString.split("(?<=')\\s{0,1},\\s{0,1}(?=')");
+
+        let splitParameters = [];
+        for(let parameter of roughParameters) {
+            let roughParameter = parameter.trim();
+            if (roughParameter.indexOf(",") === -1) {
+                splitParameters.push(roughParameter);
+            } else {
+                let deeperSplit = roughParameter.split(",");
+                for (let j = 0; j < deeperSplit.length; j++) {
+                    const currentSplitValue = deeperSplit[j];
+                    const nextSplitValue = deeperSplit[j + 1];
+                    if(typeof nextSplitValue === "undefined") {
+                        splitParameters.push(currentSplitValue.trim());
+                    } else {
+                        if (currentSplitValue.trim().startsWith("'") && !currentSplitValue.trim().endsWith("'") &&
+                            !nextSplitValue.trim().startsWith("'") && nextSplitValue.trim().endsWith("'")) {
+                            let combinedValue = currentSplitValue + "," + nextSplitValue;
+                            splitParameters.push(combinedValue.trim());
+                            j++;
+                        } else {
+                            splitParameters.push(currentSplitValue.trim());
+                        }
+                    }
+                }
+            }
+        }
 
         let parameters = [];
-        for(const roughParameter of roughParameters) {
+        for(const roughParameter of splitParameters) {
             let parameter = roughParameter.trim();
             if(parameter.length === 0) {
                 continue;
             }
-            if(!(_M.isQuoted(parameter) || _M.isNumeric(parameter) || _M.isBoolean(parameter))) {
+            parameter = _M.javaNumberCompatibility(parameter);
+            if(!(_M.isJavaNumber(parameter) ||_M.isQuoted(parameter) || _M.isNumeric(parameter) || _M.isBoolean(parameter) )) {
                 parameter = _M.lookupVariable(parameter, element);
                 if(typeof parameter === "undefined") {
                     parameter = roughParameter;
@@ -223,6 +255,17 @@ _M.injectVariablesIntoMethodExpression = function(expression, element) {
         return _M.buildMethod(methodName, parameters);
     }
 };
+
+_M.javaNumberCompatibility = function(parameter) {
+    if(_M.isDecimal(parameter)) {
+        return parameter + "d";
+    } else if(_M.isNumeric(parameter)) {
+        if(parameter > 2147483647 || parameter < -2147483648) {
+            return parameter + "L";
+        }
+    }
+    return parameter;
+}
 
 _M.lookupVariable = function(parameter, element) {
     let baseParameter = parameter;
@@ -261,6 +304,9 @@ _M.findPotentialEachValue = function (element, eachName) {
             }
         }
     }
+    if(typeof paramValue === "undefined") {
+        return eachName;
+    }
     return paramValue;
 }
 
@@ -295,9 +341,29 @@ _M.isBoolean = function(itemToEval) {
     return "true" === itemToEval || "false" === itemToEval;
 };
 
+_M.isDecimal = function(x) {
+    if(_M.isNumeric(x)) {
+        return x % 1 !== 0;
+    } else {
+        return false;
+    }
+}
+
 _M.isNumeric = function(str) {
     if (typeof str != "string") { return false; }
-    return !isNaN(str) && !isNaN(parseFloat(str));
+    return !isNaN( parseFloat( str ) ) && isFinite( str );
+}
+
+_M.isJavaNumber = function(str) {
+   return _M.isJavaLong(str) || _M.isJavaDoubleOrFloat(str);
+}
+
+_M.isJavaLong = function(str) {
+    return str.match(/^[+-]?\d+[l]$/i);
+}
+
+_M.isJavaDoubleOrFloat = function(str) {
+    return str.match(/^[+-]?(\d+\.?\d*|\.\d+)[df]$/ig);
 }
 
 _M.injectVariablesIntoText = function(text) {
@@ -738,6 +804,7 @@ _M.parseSelfReference = function(raw, e, originElem) {
 _M.waitingForEnable = [];
 
 _M.sendEvent = function(originElem, e) {
+    _M.debug("sendEvent: " + e );
     const disableOnClick = originElem.attributes["m:disable-on-click-until"];
     if(typeof disableOnClick !== "undefined") {
         const loadingStyle = originElem.attributes["m:loading-style"];

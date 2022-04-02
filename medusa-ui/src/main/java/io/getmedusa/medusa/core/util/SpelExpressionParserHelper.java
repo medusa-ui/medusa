@@ -7,7 +7,7 @@ import org.springframework.expression.spel.standard.SpelExpressionParser;
 /**
  * Helper class to parse SPel-Expressions
  */
-abstract class SpelExpressionParserHelper {
+public abstract class SpelExpressionParserHelper {
 
     private static final SpelExpressionParser SPEL_EXPRESSION_PARSER = new SpelExpressionParser();
 

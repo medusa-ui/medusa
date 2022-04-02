@@ -46,7 +46,7 @@ public class ReactiveWebSocketHandler implements WebSocketHandler {
         securityCheckForOrigin(session);
 
         return session.send(session.receive()
-                        .map(msg -> interpretEvent(session, msg.getPayloadAsText()))
+                        .mapNotNull(msg -> interpretEvent(session, msg.getPayloadAsText()))
                         .map(session::textMessage).doFinally(sig -> closeSession(session)));
     }
 
@@ -75,6 +75,7 @@ public class ReactiveWebSocketHandler implements WebSocketHandler {
                 return "unq//ok";
             } else {
                 List<DOMChange> domChanges = DOM_CHANGES_EXECUTION.process(session, executeEvent(session, event));
+                if(domChanges == null || domChanges.isEmpty()) { return null; }
                 return MAPPER.writeValueAsString(domChanges);
             }
         } catch (Exception e) {

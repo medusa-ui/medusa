@@ -49,6 +49,10 @@ public class ExampleEventHandler {
                 .with("query-param-s", request.queryParam("s").orElse(""));
     }
 
+    public void emptyCall() {
+        System.out.println("empty call");
+    }
+
     public DOMChanges increaseMyCounter(String uuid, int increase) {
         counters.put(uuid, counters.get(uuid) + increase);
         return of("my-counter", counters.get(uuid));
