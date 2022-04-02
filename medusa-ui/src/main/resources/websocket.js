@@ -241,6 +241,7 @@ _M.injectVariablesIntoMethodExpression = function(expression, element) {
             if(parameter.length === 0) {
                 continue;
             }
+            parameter = _M.javaNumberCompatibility(parameter);
             if(!(_M.isJavaNumber(parameter) ||_M.isQuoted(parameter) || _M.isNumeric(parameter) || _M.isBoolean(parameter) )) {
                 parameter = _M.lookupVariable(parameter, element);
                 if(typeof parameter === "undefined") {
@@ -254,6 +255,15 @@ _M.injectVariablesIntoMethodExpression = function(expression, element) {
         return _M.buildMethod(methodName, parameters);
     }
 };
+
+_M.javaNumberCompatibility = function(parameter) {
+    if(_M.isNumeric(parameter)) {
+        if(parameter > 2147483647 || parameter < -2147483648) {
+            return parameter + "L";
+        }
+    }
+    return parameter;
+}
 
 _M.lookupVariable = function(parameter, element) {
     let baseParameter = parameter;

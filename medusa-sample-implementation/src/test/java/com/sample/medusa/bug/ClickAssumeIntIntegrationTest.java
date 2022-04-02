@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class ClickAssumeIntIntegrationTest extends AbstractSeleniumTest {
+class ClickAssumeIntIntegrationTest extends AbstractSeleniumTest {
 
     @Test
     void sendJavaNumber(){
@@ -16,10 +16,14 @@ public class ClickAssumeIntIntegrationTest extends AbstractSeleniumTest {
         // load a number after an event
         clickById("load-long");
         Assertions.assertEquals("Long: 16481396653467", getTextById("number-value"));
+        clickById("load-long2");
+        Assertions.assertEquals("Long: 16481396653468", getTextById("number-value"));
         clickById("load-int");
         Assertions.assertEquals("Integer: 1648", getTextById("number-value"));
         clickById("load-double");
         Assertions.assertEquals("Double: 42.1223699988888", getTextById("number-value"));
+        clickById("load-double2");
+        Assertions.assertEquals("Double: 42.1223699988889", getTextById("number-value"));
         clickById("load-float");
         Assertions.assertEquals("Float: 42.12237", getTextById("number-value")); // rounded
 
