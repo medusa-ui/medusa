@@ -16,6 +16,9 @@ import java.util.*;
 
 public class ConditionalTag extends AbstractTag {
     private static final ConditionalRegistry CONDITIONAL_REGISTRY = ConditionalRegistry.getInstance();
+    public static final String ID_SUFFIX_ELSE_IF = "e";
+    public static final String ID_SUFFIX_IF = "i";
+    public static final String ID_SUFFIX_MAIN = "m";
 
     @Override
     public InjectionResult inject(InjectionResult result, Map<String, Object> variables, ServerRequest request) {
@@ -41,14 +44,14 @@ public class ConditionalTag extends AbstractTag {
 
         for(ElseIfElement elseIfElement : elseIfElements) {
             conditions.add(elseIfElement.getCondition());
-            addIfId(elseIfElement.getElement(), elseIfElement.getCondition());
+            addIfId(elseIfElement.getElement(), ID_SUFFIX_ELSE_IF, elseIfElement.getCondition());
         }
 
         //wrapping
         WrapperUtils.wrapAndReplace(conditionalElement, "m-if-wrapper");
         final Element mainElementWrapper = wrapMainElement(mainElements, mainCondition.condition());
         final Element defaultElseWrapper = wrapDefaultElseElement(elseElement);
-        addIfId(defaultElseWrapper, oppositeOfCombinedConditions(conditions));
+        addIfId(defaultElseWrapper, ID_SUFFIX_IF, oppositeOfCombinedConditions(conditions));
 
         //visibility
         final ElseIfElement activeElseIf;
@@ -107,7 +110,7 @@ public class ConditionalTag extends AbstractTag {
 
     private Element wrapMainElement(Elements mainElements, String condition) {
         Element mainWrapper = WrapperUtils.wrap(mainElements, "m-if-main");
-        addIfId(mainWrapper, condition);
+        addIfId(mainWrapper, ID_SUFFIX_MAIN, condition);
         return mainWrapper;
     }
 
@@ -117,9 +120,9 @@ public class ConditionalTag extends AbstractTag {
         return defaultElseWrapper;
     }
 
-    private Element addIfId(Element element, String condition) {
+    private Element addIfId(Element element, String seed, String condition) {
         if(element == null) return null;
-        element.attr(TagConstants.M_IF, generateIfID(element, condition));
+        element.attr(TagConstants.M_IF, generateIfID(element, seed, condition));
         return element;
     }
 
@@ -137,13 +140,12 @@ public class ConditionalTag extends AbstractTag {
         return elements.get(0);
     }
 
-    private String generateIfID(Element element, String condition) {
-        final String ifID = IdentifierGenerator.generateIfID(element.html());
+    private String generateIfID(Element element, String suffix, String condition) {
+        final String ifID = IdentifierGenerator.generateIfID(suffix, element.html());
 
         //check if the condition here contains a reference to any of the wrapping each values
         Map<String, String> wrappingEachValues = findWrappingEachValues(element.parents());
         condition = replaceConditionValues(condition, wrappingEachValues);
-
         CONDITIONAL_REGISTRY.add(ifID, condition);
         return ifID;
     }
