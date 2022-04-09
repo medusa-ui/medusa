@@ -41,14 +41,24 @@ class PeopleService {
 class Person {
     String id;
     String name;
+    List<String> combination;
 
     public Person(String id, String name) {
         this.id = id;
         this.name = name;
+        this.combination = List.of(id, name);
     }
 
     public String getName() {
         return name;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public List<String> getCombination() {
+        return combination;
     }
 }
 
