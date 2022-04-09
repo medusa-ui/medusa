@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en"
+      xmlns:m="https://getmedusa.io" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="https://getmedusa.io https://raw.githubusercontent.com/medusa-ui/medusa/main/medusa-ui.xsd">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Else-If</title>
+    <link href="/stylesheet.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter&family=Merriweather&display=swap" rel="stylesheet">
+    <style>
+        .description { color: steelblue; }
+        .expression, .valid { display:inline-block; width:136px; }
+    </style>
+</head>
+<body>
+    <h2>Else if bug after DOMChanges</h2>
+    <span class="description">@see JS stacktrace after DOMChanges</span>
+    <div class="as_ul_else-if">
+        <h3>Expressions in an ul, with if and else-if. Filtered: <m:text item="filtered"/></h3>
+        <ul>
+            <m:foreach collection="expressions">
+                <m:if item="filtered" eq="false">
+                    <!-- when not filtered, show all expressions -->
+                    <li>
+                        <span class="expression"><m:text item="each.expression"/></span>
+                        <span class="description">=></span>
+                        <span class="valid"><m:text item="each.result"/></span>
+                    </li>
+                    <!-- when filtered, show only the valid expressions -->
+                    <m:elseif item="each.result" eq="true">
+                        <li>
+                            <span class="expression"><m:text item="each.expression"/></span>
+                            <span class="description">=></span>
+                            <span class="valid"><m:text item="each.result"/></span>
+                        </li>
+                    </m:elseif>
+                </m:if>
+            </m:foreach>
+        </ul>
+    </div>
+    <br/>
+    <div>
+        <m:if item="filtered" eq="true">
+            <button id="all_btn" m:click="filtered(false)">Show all Expressions</button>
+            <m:else>
+                <button id="true_btn" m:click="filtered(true)">Show only the valid Expressions</button>
+            </m:else>
+        </m:if>
+    </div>
+</body>

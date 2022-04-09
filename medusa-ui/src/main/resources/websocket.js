@@ -162,15 +162,35 @@ _M.injectVariablesIntoConditionalExpression = function(expression, elem) {
     }
 
     if(elem !== null && typeof elem !== "undefined") {
-        //replace {}[$index#eachName].value with Object.values() w/ index of eachName
-        if(expression.indexOf("[$index#") !== -1) {
-            const eachNameForIndex = _M.parseEachNameFromConditionalExpression(expression);
-            const parentElement = _M.findParentWithEachElement(elem, eachNameForIndex);
-            if(null !== parentElement && typeof parentElement !== "undefined") {
-                const index = parentElement.getAttribute("index");
+        const eachNameForIndex = _M.parseEachNameFromConditionalExpression(expression);
+        const parentElement = _M.findParentWithEachElement(elem, eachNameForIndex);
+
+        if(null !== parentElement && typeof parentElement !== "undefined") {
+            // expression: escape all, ignore \' (already escaped)
+            expression = expression.replace(/([^\\])'/g,"$1\\'");
+
+            const index = parentElement.getAttribute("index");
+            const indexRef = "[$index#" + eachNameForIndex + "]";
+
+            const isArray = expression.indexOf("([{") !== -1;
+            const isMap = expression.indexOf("[$index#") !== -1;
+
+            //handle object array
+            if (isArray) {
+                const objectToWrap = _M.parseArrayFromConditionalExpression(expression);
+                let property = expression.substring(expression.indexOf(indexRef) + indexRef.length);
+                property = property.substring(0, property.indexOf(" "));
+                const valueReplacement = objectToWrap + indexRef ;
+                expression = expression.replaceAll(valueReplacement, _M.evalCondition("Object.values(" + objectToWrap + ")[" + index + "]" + property ));
+                expression = expression.replaceAll( property, "");
+            }
+
+            //handle maps
+            //replace {}[$index#eachName].value with Object.values() w/ index of eachName
+            else if (isMap) {
                 const objectToWrap = _M.parseObjectFromConditionalExpression(expression);
-                const valueReplacement = objectToWrap + "[$index#" + eachNameForIndex + "].value";
-                const keyReplacement = objectToWrap + "[$index#" + eachNameForIndex + "].key";
+                const valueReplacement = objectToWrap + indexRef + ".value";
+                const keyReplacement = objectToWrap + indexRef + ".key";
                 expression = expression.replaceAll(valueReplacement, _M.evalCondition("Object.values(" + objectToWrap + ")[" + index + "]"));
                 expression = expression.replaceAll(keyReplacement, _M.evalCondition("Object.keys(" + objectToWrap + ")[" + index + "]"));
             }
@@ -178,6 +198,12 @@ _M.injectVariablesIntoConditionalExpression = function(expression, elem) {
     }
 
     return expression;
+}
+_M.parseArrayFromConditionalExpression = function(expression) {
+    const endIndex = expression.indexOf("[$index#");
+    const subExpression = expression.substring(0, endIndex);
+    const beginIndex = subExpression.indexOf("[{");
+    return subExpression.substring(beginIndex, endIndex);
 }
 
 _M.parseObjectFromConditionalExpression = function(expression) {
