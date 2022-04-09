@@ -9,15 +9,16 @@ public class IdentifierGenerator {
 
     private IdentifierGenerator() {}
 
-    //TODO: Not ideal, IDs should be unique but also reproducable
+    //TODO: Not ideal, IDs should be unique but also reproducible
     //Hash is not guaranteed unique, especially based on content (same content = same id)
 
-    public static String generateIfID(String value) {
-        final Document document = Jsoup.parse(value);
+    public static String generateIfID(String suffix, String html) {
+        final Document document = Jsoup.parse(html);
         for(Element textSpans : document.getElementsByAttribute(TagConstants.FROM_VALUE)) {
             textSpans.text("");
         }
-        return "if-" + Math.abs(document.body().html().hashCode());
+        String id = "if-" + Math.abs(document.body().html().hashCode()) + suffix;
+        return id;
     }
 
     public static String generateClassConditionalID(String value) {
@@ -27,5 +28,4 @@ public class IdentifierGenerator {
     public static String generateGenericMId(String value) {
         return "m-" + Math.abs(value.hashCode());
     }
-
 }
