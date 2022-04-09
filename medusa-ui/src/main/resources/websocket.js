@@ -167,7 +167,7 @@ _M.injectVariablesIntoConditionalExpression = function(expression, elem) {
 
         if(null !== parentElement && typeof parentElement !== "undefined") {
             // expression: escape all, ignore \' (already escaped)
-            expression = expression.replace(/([^\\])'/g,`$1\\'`);
+            expression = expression.replace(/([^\\])'/g,"$1\\'");
 
             const index = parentElement.getAttribute("index");
             const indexRef = "[$index#" + eachNameForIndex + "]";
