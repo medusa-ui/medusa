@@ -11,7 +11,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT /*, properties = "headless=false" */)
-public class ConditionalIdClashIntegrationTest extends AbstractSeleniumTest {
+class ConditionalIdClashIntegrationTest extends AbstractSeleniumTest {
 
     public static final String CLASS_EXPR_LINE = "expr-line";
     public static final String ID_BTN_ALL = "btn-all";
