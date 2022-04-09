@@ -33,10 +33,10 @@
 <body>
 <h1>🦑 Combo iteration and conditionals</h1>
 
-<h2>Phase <m:text item="phase"/></h2>
+<h2 id="phase">Phase <m:text item="phase"/></h2>
 
-<button m:click="changeBackToPhaseA()">Change to Phase A</button> <br>
-<button m:click="changeToPhaseB()">Change to Phase B</button>
+<button id="phase-a-btn" m:click="changeBackToPhaseA()">Change to Phase A</button> <br>
+<button id="phase-b-btn" m:click="changeToPhaseB()">Change to Phase B</button>
 
 <div class="iteration-wrapper">
     <m:foreach collection="integers" eachName="integer">
@@ -133,6 +133,42 @@
         </m:if>
 
     </m:foreach>
+</div>
+
+<div class="iteration-wrapper">
+    <table>
+        <m:foreach collection="persons" eachName="person">
+            <tr>
+                <td>(each) Actual value: <m:text item="person.id"/> / <m:text item="person.name"/></td>
+                <td>
+                    <m:if item="person.id" eq="Z">
+                        <span class="conditional-bad">Final value: <m:text item="person.id"/></span>
+
+                        <m:elseif item="person.id" eq="1">
+                            <span class="conditional-ok">Final value (=1): <m:text item="person.id"/></span>
+                        </m:elseif>
+
+                        <m:else>
+                            <span class="conditional-ok">Final value (else): <m:text item="person.id"/></span>
+                        </m:else>
+                    </m:if>
+                </td>
+                <td>
+                    <m:if item="person.name" eq="Zardos">
+                        <span class="conditional-bad">Final value(2): <m:text item="person.name"/></span>
+
+                        <m:elseif item="person.name" eq="John">
+                            <span class="conditional-ok">Final value (2)(=John): <m:text item="person.name"/></span>
+                        </m:elseif>
+
+                        <m:else>
+                            <span class="conditional-ok">Final value (2)(else): <m:text item="person.name"/></span>
+                        </m:else>
+                    </m:if>
+                </td>
+            </tr>
+        </m:foreach>
+    </table>
 </div>
 
 </body>
