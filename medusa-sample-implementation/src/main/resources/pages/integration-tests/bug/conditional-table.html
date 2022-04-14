@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en"
+      xmlns:m="https://getmedusa.io" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="https://getmedusa.io https://raw.githubusercontent.com/medusa-ui/medusa/main/medusa-ui.xsd">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport"
+              content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <title>Trouble in a table</title>
+        <link href="/stylesheet.css" rel="stylesheet">
+        <link rel="preconnect" href="https://fonts.gstatic.com">
+        <link href="https://fonts.googleapis.com/css2?family=Inter&family=Merriweather&display=swap" rel="stylesheet">
+        <style>
+            .expression_tbl { border-collapse: collapse; width: 500px;}
+            .expression_tbl td, .expression_tbl th { border: 1px solid #014418; padding: 8px;}
+            .expression_tbl tr:hover { background-color: #014418;}
+            .expression_tbl th { padding: 12px; text-align: left; background-color: #04AA6D; color: white;}
+        </style>
+    </head>
+    <body>
+        <div>
+            <h3>Expressions in a table. Filtered: <m:text item="filtered"/></h3>
+            <table class="expression_tbl">
+                <thead>
+                    <tr><th>Expression</th><th>Valid</th></tr>
+                </thead>
+                <tbody>
+                    <m:foreach collection="expressions">
+                        <m:if item="filtered" eq="false">
+                            <!-- when not filtered, show all expressions -->
+                            <tr class="tr_expr_line">
+                                <td><m:text item="each.expression"/></td>
+                                <td><m:text item="each.result"/></td>
+                            </tr>
+
+                            <!-- when filtered, show only the valid expressions -->
+                            <m:elseif item="each.result" eq="true">
+                                <tr class="tr_expr_line">
+                                    <td><m:text item="each.expression"/></td>
+                                    <td><m:text item="each.result"/></td>
+                                </tr>
+                            </m:elseif>
+                        </m:if>
+                    </m:foreach>
+                </tbody>
+            </table>
+        </div>
+        <br/>
+        <div>
+            <m:if item="filtered" eq="true">
+                <button id="btn_all" m:click="filtered(false)">Show all Expressions</button>
+                <m:else>
+                    <button id="btn_true" m:click="filtered(true)">Show only the valid Expressions</button>
+                </m:else>
+            </m:if>
+        </div>
+    </body>
+</html>
