@@ -3,6 +3,7 @@ var _M = _M || {};
 _M.ws = null;
 _M.timeoutTimer = 0;
 _M.retryAttempts = 0;
+_M.testMode = _M.testMode || false;
 _M.debugMode = true;
 _M.retryMode = false;
 _M.fatalMode = false;
@@ -10,6 +11,7 @@ _M.parser = new DOMParser();
 _M.isLocal = window.location.host.indexOf("localhost") !== -1;
 
 _M.retryConnection = function () {
+    if(_M.testMode) { return; }
     _M.retryAttempts++;
 
     if(!_M.retryMode && _M.retryAttempts > 2) {
@@ -364,7 +366,7 @@ _M.isQuoted = function(itemToEval) {
 };
 
 _M.isBoolean = function(itemToEval) {
-    return "true" === itemToEval || "false" === itemToEval;
+    return "true" === itemToEval.toLowerCase() || "false" === itemToEval.toLowerCase();
 };
 
 _M.isDecimal = function(x) {
