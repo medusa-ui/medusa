@@ -339,8 +339,9 @@ _M.findPotentialEachValue = function (element, eachName) {
 }
 
 _M.findParentWithEachElement = function (element, eachName) {
+    if(eachName === null || typeof eachName === "undefined") { return null; }
     let currentElement = element;
-    while(currentElement !== null) {
+    while(currentElement !== null && typeof currentElement !== "undefined") {
         if(eachName === currentElement.getAttribute("m-each")) {
             return currentElement;
         }
@@ -352,20 +353,28 @@ _M.findParentWithEachElement = function (element, eachName) {
 _M.buildMethod = function(methodName, parameters) {
     let builder = methodName + "(";
     let comma = "";
-    for(const parameter of parameters) {
-        builder += comma;
-        builder += parameter;
-        comma = ", ";
+    if(!(parameters === null || typeof parameters === "undefined")) {
+        for(const parameter of parameters) {
+            builder += comma;
+            if(typeof parameter === "undefined") {
+                builder += "null";
+            } else {
+                builder += parameter;
+            }
+            comma = ", ";
+        }
     }
     builder += ")";
     return builder;
 };
 
 _M.isQuoted = function(itemToEval) {
+    if(itemToEval === null || typeof itemToEval === "undefined") { return false; }
     return (itemToEval.startsWith("'") && itemToEval.endsWith("'")) || (itemToEval.startsWith("\"") && itemToEval.endsWith("\""));
 };
 
 _M.isBoolean = function(itemToEval) {
+    if(itemToEval === null || typeof itemToEval === "undefined") { return false; }
     return "true" === itemToEval.toLowerCase() || "false" === itemToEval.toLowerCase();
 };
 
