@@ -56,4 +56,29 @@ public class WrapperUtils {
         }
         return div;
     }
+
+    public static Object wrapObject(Object potentialToWrap) {
+        if(potentialToWrap instanceof String string &&
+            !TypeUtils.isNumeric(string) &&
+            !TypeUtils.isBoolean(string)) {
+            return wrapString(string);
+        }
+        return potentialToWrap;
+    }
+
+    public static Object wrapString(String potentialToWrap) {
+        if(!isQuoted(potentialToWrap)) {
+            return "'" + potentialToWrap.replace("'", "\\'") +  "'";
+        } else {
+            return potentialToWrap;
+        }
+    }
+
+    public static boolean isQuoted(Object potentialToWrap) {
+        if(potentialToWrap instanceof String) {
+            final String str = potentialToWrap.toString();
+            return (str.startsWith("'") && str.endsWith("'")) || (str.startsWith("\"") && str.endsWith("\""));
+        }
+        return false;
+    }
 }

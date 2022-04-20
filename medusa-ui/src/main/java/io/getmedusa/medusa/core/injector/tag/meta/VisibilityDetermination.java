@@ -2,6 +2,7 @@ package io.getmedusa.medusa.core.injector.tag.meta;
 
 import io.getmedusa.medusa.core.injector.tag.AbstractTag;
 import io.getmedusa.medusa.core.util.ExpressionEval;
+import io.getmedusa.medusa.core.util.WrapperUtils;
 import org.jsoup.nodes.Element;
 import org.springframework.expression.spel.SpelEvaluationException;
 import org.springframework.web.reactive.function.server.ServerRequest;
@@ -160,7 +161,7 @@ public class VisibilityDetermination extends AbstractTag {
         final String comparisonItem = conditionalElement.attr(tag);
         Object comparisonItemValue = ExpressionEval.evalItemAsObjForConditional(comparisonItem, variables);
         if(null == comparisonItemValue) comparisonItemValue = comparisonItem;
-        return comparisonItemValue;
+        return WrapperUtils.wrapObject(comparisonItemValue);
     }
 
     private Object getConditionItemValue(Map<String, Object> variables, Element conditionalElement, ServerRequest request) {

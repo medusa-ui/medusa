@@ -4,7 +4,7 @@ _M.ws = null;
 _M.timeoutTimer = 0;
 _M.retryAttempts = 0;
 _M.testMode = _M.testMode || false;
-_M.debugMode = true;
+_M.debugMode = _M.debugMode || true;
 _M.retryMode = false;
 _M.fatalMode = false;
 _M.parser = new DOMParser();
@@ -311,12 +311,21 @@ _M.lookupVariable = function(parameter, element) {
 };
 
 _M.considerVariableWrap = function (value) {
-    if(typeof value === "string") {
+    if (typeof value === "string") {
         return "'" + value + "'";
+        if (value.length === 0 || (value.startsWith("'") && value.endsWith("'"))) {
+            return value;
+        } else {
+            return "'" + value + "'";
+        }
     } else {
         return value;
     }
-}
+};
+
+_M.isNull = function (value) {
+    return value === null || typeof value === "undefined";
+};
 
 _M.findPotentialEachValue = function (element, eachName) {
     let paramValue = _M.variables[eachName];
@@ -689,10 +698,6 @@ _M.resolveTemplateCondition = function (templateId) {
     return _M.variables[condition];
 }
 
-_M.unwrap = function (node){
-    return node.replaceWith(...node.childNodes);
-}
-
 _M.recursiveObjectUpdate = function(html, obj, path) {
     if(typeof obj === 'object' && obj !== null) {
         html = html.replaceAll("["+path+"]", JSON.stringify(obj));
@@ -764,8 +769,14 @@ _M.handleConditionalClass = function(k) {
 };
 
 _M.evalCondition = function(condition){
+    if(_M.isNull(condition)) { return false; }
     _M.debug("Evaluating condition: " , condition);
-    return Function('"use strict";return (' + condition + ')')();
+    try{
+        return Function('"use strict";return (' + condition + ')')();
+    } catch (e) {
+        _M.debug("Failure to evaluate condition due to: " , e);
+        return false;
+    }
 };
 
 _M.debug = function(textToLog, fullObject) {

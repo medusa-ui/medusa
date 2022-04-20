@@ -17,6 +17,10 @@ import java.io.IOException;
 import java.time.Duration;
 import java.util.List;
 
+/**
+ * If you want to manually check the results of this or quickly run the tests
+ * locally without running this JUnit test open up /target/test-classes/test.html
+ */
 class WebsocketJSTest {
 
     protected WebDriver driver;
@@ -41,6 +45,7 @@ class WebsocketJSTest {
             chromeOptions.addArguments("disable-gpu");
             chromeOptions.addArguments("window-size=1400,2100");
         }
+        chromeOptions.addArguments("--allow-file-access-from-files");
         driver = new ChromeDriver(chromeOptions);
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(1));
         wait = new WebDriverWait(driver,5);

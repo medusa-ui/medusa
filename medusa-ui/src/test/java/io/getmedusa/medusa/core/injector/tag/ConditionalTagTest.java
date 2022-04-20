@@ -15,6 +15,12 @@ class ConditionalTagTest extends AbstractTest {
                     </med:if>
             """;
 
+    private static final String HTML_EQ_SIMPLE_NO_QUOTES = """
+                    <med:if item="some-variable" eq="a">
+                        <p>A</p>
+                    </med:if>
+            """;
+
     private static final String HTML_EQ_ELSE = """
                     <m:if item="some-variable" eq="'a'">
                         <p>A</p>
@@ -134,6 +140,21 @@ class ConditionalTagTest extends AbstractTest {
                         <p>A</p>
                     </m:if>
             """;
+
+    @Test
+    void testSimpleHTMLWithoutQuotes() {
+        Document htmlA = inject(HTML_EQ_SIMPLE_NO_QUOTES, Map.of("some-variable", "a"));
+        Document htmlB = inject(HTML_EQ_SIMPLE_NO_QUOTES, Map.of("some-variable", "b"));
+
+        removeNonDisplayedElements(htmlA);
+        removeNonDisplayedElements(htmlB);
+
+        System.out.println(htmlA.html());
+        System.out.println(htmlB.html());
+
+        Assertions.assertEquals("A", htmlA.text());
+        Assertions.assertEquals("", htmlB.text());
+    }
 
     @Test
     void testSimpleHTML() {

@@ -87,10 +87,10 @@
             </m:else>
         </m:if>
 
-        <m:if item="string" eq="Q">
+        <m:if item="string" eq="'Q'">
             <p class="conditional-bad">Final value(2): <m:text item="string"/></p>
 
-            <m:elseif item="string" eq="B">
+            <m:elseif item="string" eq="'B'">
                 <p class="conditional-ok">Final value (2)(=B): <m:text item="string"/></p>
             </m:elseif>
 
@@ -120,10 +120,10 @@
             </m:else>
         </m:if>
 
-        <m:if item="person.name" eq="Zardos">
+        <m:if item="person.name" eq="'Zardos'">
             <p class="conditional-bad">Final value(2): <m:text item="person.name"/></p>
 
-            <m:elseif item="person.name" eq="John">
+            <m:elseif item="person.name" eq="'John'">
                 <p class="conditional-ok">Final value (2)(=John): <m:text item="person.name"/></p>
             </m:elseif>
 
@@ -141,7 +141,7 @@
             <tr>
                 <td>(each) Actual value: <m:text item="person.id"/> / <m:text item="person.name"/></td>
                 <td>
-                    <m:if item="person.id" eq="Z">
+                    <m:if item="person.id" eq="'Z'">
                         <span class="conditional-bad">Final value: <m:text item="person.id"/></span>
 
                         <m:elseif item="person.id" eq="1">
@@ -154,10 +154,10 @@
                     </m:if>
                 </td>
                 <td>
-                    <m:if item="person.name" eq="Zardos">
+                    <m:if item="person.name" eq="'Zardos'">
                         <span class="conditional-bad">Final value(2): <m:text item="person.name"/></span>
 
-                        <m:elseif item="person.name" eq="John">
+                        <m:elseif item="person.name" eq="'John'">
                             <span class="conditional-ok">Final value (2)(=John): <m:text item="person.name"/></span>
                         </m:elseif>
 
