@@ -792,8 +792,14 @@ _M.elementEscape = function(valueToEscape) {
 };
 
 _M.attributeValue = function (element, attribute) {
+    if(_M.isNull(element) || _M.isNull(attribute)) {
+        return null;
+    }
     if ( attribute in element ) {
         return element[attribute];
+    }
+    if(_M.isNull(element[attribute])) {
+        return null;
     }
     return element.attributes[attribute].value;
 };
@@ -836,7 +842,7 @@ _M.parseSelfReference = function(raw, e, originElem) {
         if(param.indexOf("this.") === 0) {
             const attrName = param.replace("this.", "");
             const resolvedParam = _M.attributeValue(originElem,attrName);
-            if(typeof resolvedParam === "undefined") {
+            if(_M.isNull(resolvedParam)) {
                 param = null;
             } else {
                 param = "'" + _M.elementEscape(resolvedParam) + "'";

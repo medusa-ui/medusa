@@ -212,6 +212,125 @@ QUnit.module("_M.evalCondition", function() {
     //!(4 === Z || !( 4 === Z ) && (4 === 1))
 });
 
+QUnit.module("_M.attributeValue", function() {
+    let elem = document.createElement("input");
+    elem.type = "text";
+
+    QUnit.test("simple existing attribute", function (assert) {
+        assert.equal(_M.attributeValue(elem, "type"), "text");
+    });
+
+    QUnit.test("deeper existing attribute", function (assert) {
+        assert.equal(_M.attributeValue(elem, "type"), "text");
+    });
+
+    QUnit.test("can deal with null", function (assert) {
+        assert.equal(_M.attributeValue(null, "type"), null);
+        assert.equal(_M.attributeValue(elem, null), null);
+        assert.equal(_M.attributeValue(undefined, "type"), null);
+        assert.equal(_M.attributeValue(elem, undefined), null);
+    });
+
+
+});
+
+QUnit.module("_M.parseSelfReference", function() {
+    let originElement = document.createElement("input");
+    originElement.value = "Hello world 123";
+    originElement.type = "text";
+    originElement.name = "my-name";
+
+    QUnit.test("reference without this.", function (assert) {
+        let raw = "('x',3,'y')";
+        let e = "search('x',3,'y')";
+        assert.equal(_M.parseSelfReference(raw, e, originElement), "search('x', 3, 'y')");
+    });
+
+    QUnit.test("reference with this. from input", function (assert) {
+        let raw = "(this.value,3,this.type,this.name)";
+        let e = "search(this.value,3,this.type,this.name)";
+
+        assert.equal(_M.parseSelfReference(raw, e, originElement), "search('Hello%20world%20123', 3, 'text', 'my-name')");
+    });
+
+    QUnit.test("reference with this. from input, with undefined property", function (assert) {
+        let raw = "(this.value,3,this.type,this.class)";
+        let e = "search(this.value,3,this.type,this.class)";
+
+        assert.equal(_M.parseSelfReference(raw, e, originElement), "search('Hello%20world%20123', 3, 'text', null)");
+    });
+
+    QUnit.test("input - no origin element", function (assert) {
+        let raw = "('x',3,'y')";
+        let e = "search('x',3,'y')";
+        assert.equal(_M.parseSelfReference(raw, e, null), "search('x', 3, 'y')");
+    });
+
+    QUnit.test("can deal with empty", function (assert) {
+        assert.equal(_M.parseSelfReference("()", "()", null), "()");
+    });
+});
+
+//
+QUnit.module("_M.parseElementByIdReference", function() {
+
+    let originElement = document.createElement("input");
+    originElement.value = "Hello world 123";
+    originElement.type = "text";
+    originElement.name = "my-name";
+
+    QUnit.test("reference without this.", function (assert) {
+        let raw = "('x',3,'y')";
+        let e = "search('x',3,'y')";
+        assert.equal(_M.parseElementByIdReference(raw, e, originElement), "search('x',3,'y')");
+    });
+
+    QUnit.test("reference with #", function (assert) {
+        let raw = "(#qunit-filter-input.value,3,#qunit-filter-input.type,#qunit-filter-input.name)";
+        let e = "search(#qunit-filter-input.value,3,#qunit-filter-input.type,#qunit-filter-input.name)";
+
+        assert.equal(_M.parseElementByIdReference(raw, e, originElement), "search('',3,'text','filter')");
+    });
+
+});
+
+QUnit.module("_M.parseReference", function() {
+    let originElement = document.createElement("input");
+    originElement.value = "Hello world 123";
+    originElement.type = "text";
+    originElement.name = "my-name";
+
+    QUnit.test("reference without this.", function (assert) {
+        let e = "search('x',3,'y')";
+        assert.equal(_M.parseReference(e, originElement), "search('x',3,'y')");
+    });
+
+    QUnit.test("reference with this. from input", function (assert) {
+        let e = "search(this.value,3,this.type,this.name)";
+
+        assert.equal(_M.parseReference(e, originElement), "search('Hello%20world%20123', 3, 'text', 'my-name')");
+    });
+
+    QUnit.test("reference with this. from input, with undefined property", function (assert) {
+        let e = "search(this.value,3,this.type,this.class)";
+        assert.equal(_M.parseReference(e, originElement), "search('Hello%20world%20123', 3, 'text', null)");
+    });
+
+    QUnit.test("input - no origin element", function (assert) {
+        let e = "search('x',3,'y')";
+        assert.equal(_M.parseReference(e, null), "search('x',3,'y')");
+    });
+
+    QUnit.test("can deal with empty", function (assert) {
+        assert.equal(_M.parseReference("()", null), "()");
+    });
+
+    QUnit.test("reference with #", function (assert) {
+        let e = "search(#qunit-filter-input.value,3,#qunit-filter-input.type,#qunit-filter-input.name)";
+        assert.equal(_M.parseReference(e, originElement), "search('',3,'text','filter')");
+    });
+});
+
 /*
 QUnit.module("_M.parseEachNameFromConditionalExpression", function() {
     QUnit.test("simple parse", function(assert) {
