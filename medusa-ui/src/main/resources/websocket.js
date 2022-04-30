@@ -208,7 +208,7 @@ _M.injectVariablesIntoConditionalExpression = function(expression, elem) {
 }
 _M.parseArrayFromConditionalExpression = function(expression) {
     if(_M.isNull(expression)) {
-        return [];
+        return "[]";
     }
     const endIndex = expression.indexOf("[$index#");
     const subExpression = expression.substring(0, endIndex);
@@ -218,7 +218,7 @@ _M.parseArrayFromConditionalExpression = function(expression) {
 
 _M.parseObjectFromConditionalExpression = function(expression) {
     if(_M.isNull(expression)) {
-        return {};
+        return "{}";
     }
     const endIndex = expression.indexOf("[$index#");
     const subExpression = expression.substring(0, endIndex);
@@ -873,7 +873,7 @@ _M.attributeValue = function (element, attribute) {
     if ( attribute in element ) {
         return element[attribute];
     }
-    if(_M.isNull(element[attribute])) {
+    if(_M.isNull(element.attributes[attribute])) {
         return null;
     }
     return element.attributes[attribute].value;

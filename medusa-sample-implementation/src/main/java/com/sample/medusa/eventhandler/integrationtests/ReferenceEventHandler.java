@@ -18,11 +18,11 @@ public class ReferenceEventHandler {
     }
 
     public DOMChanges calc(String firstValue, String secondValue, String operation) {
-        logger.debug("calc(" + firstValue + ", " + secondValue + ", '" + operation + "')");
+        logger.debug("calc({}, {}, {})", firstValue, secondValue, operation);
         int first = 0;
         int second = 0;
-        if(firstValue != null) first = Integer.valueOf(firstValue);
-        if(secondValue != null) second = Integer.valueOf(secondValue);
+        if(firstValue != null) first = Integer.parseInt(firstValue);
+        if(secondValue != null) second = Integer.parseInt(secondValue);
         if(null != operation) {
             if (operation.equals("add")) return sum(first, second);
             if (operation.equals("minus")) return minus(first, second);

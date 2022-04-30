@@ -399,6 +399,15 @@ QUnit.module("_M.attributeValue", function() {
         assert.equal(_M.attributeValue(undefined, "type"), null);
         assert.equal(_M.attributeValue(elem, undefined), null);
     });
+
+    QUnit.test("operation", function (assert) {
+        let button = document.createElement("button");
+        button.id = "btn_mul";
+        button.setAttribute("operation", "multiply");
+
+        assert.equal(_M.attributeValue(button, "operation"), "multiply");
+    });
+
 });
 
 QUnit.module("_M.parseSelfReference", function() {
@@ -435,6 +444,16 @@ QUnit.module("_M.parseSelfReference", function() {
 
     QUnit.test("can deal with empty", function (assert) {
         assert.equal(_M.parseSelfReference("()", "()", null), "()");
+    });
+
+    QUnit.test("operation", function (assert) {
+        let button = document.createElement("button");
+        button.id = "btn_mul";
+        button.operation = "multiply";
+
+        let raw = "('x',3,this.operation)";
+        let e = "calc('x',3,this.operation)";
+        assert.equal(_M.parseSelfReference(raw, e, button), "calc('x', 3, 'multiply')");
     });
 });
 
@@ -494,6 +513,15 @@ QUnit.module("_M.parseReference", function() {
     QUnit.test("reference with #", function (assert) {
         let e = "search(#qunit-filter-input.value,3,#qunit-filter-input.type,#qunit-filter-input.name)";
         assert.equal(_M.parseReference(e, originElement), "search('',3,'text','filter')");
+    });
+
+    QUnit.test("operation", function (assert) {
+        let button = document.createElement("button");
+        button.id = "btn_mul";
+        button.operation = "multiply";
+
+        let e = "calc('x',3,this.operation)";
+        assert.equal(_M.parseReference(e, button), "calc('x', 3, 'multiply')");
     });
 });
 
@@ -1050,36 +1078,29 @@ QUnit.module("_M.parseObjectFromConditionalExpression", function() {
     });
 
     QUnit.test("can deal with undefined", function(assert) {
-        assert.deepEqual(_M.parseObjectFromConditionalExpression(undefined), {});
+        assert.deepEqual(_M.parseObjectFromConditionalExpression(undefined), "{}");
     });
 
     QUnit.test("can deal with null", function(assert) {
-        assert.deepEqual(_M.parseObjectFromConditionalExpression(null), {});
+        assert.deepEqual(_M.parseObjectFromConditionalExpression(null), "{}");
     });
 });
 
-
-//TODO parseObjectFromConditionalExpression
-/*
 QUnit.module("_M.parseArrayFromConditionalExpression", function() {
     QUnit.test("simple parse", function(assert) {
-        //TODO something weird here, find proper examples
-        assert.equal(_M.parseArrayFromConditionalExpression("[0,1,2][$index#string] === Z"), "[0,1,2]");
-        assert.equal(_M.parseArrayFromConditionalExpression("[{[0,1,2]}][$index#string] === Z"), "[{[0,1,2]}]");
+        assert.deepEqual(_M.parseArrayFromConditionalExpression("[0,1,2][$index#string] === Z"), "[0,1,2]");
+        assert.deepEqual(_M.parseArrayFromConditionalExpression("[{[0,1,2]}][$index#string] === Z"), "[{[0,1,2]}]");
     });
 
     QUnit.test("has nothing to parse", function(assert) {
-        assert.equal(_M.parseArrayFromConditionalExpression("0123"), null);
+        assert.deepEqual(_M.parseArrayFromConditionalExpression("0123"), "");
     });
 
     QUnit.test("can deal with undefined", function(assert) {
-        assert.equal(_M.parseArrayFromConditionalExpression(undefined), null);
+        assert.deepEqual(_M.parseArrayFromConditionalExpression(undefined), "[]");
     });
 
     QUnit.test("can deal with null", function(assert) {
-        assert.equal(_M.parseArrayFromConditionalExpression(null), null);
+        assert.deepEqual(_M.parseArrayFromConditionalExpression(null), "[]");
     });
 });
-
-//TODO injectVariablesIntoConditionalExpression <-- replaces === 'a' with === \'a\' which crashes eval
- */
