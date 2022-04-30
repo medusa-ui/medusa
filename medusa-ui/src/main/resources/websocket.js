@@ -216,7 +216,10 @@ _M.parseObjectFromConditionalExpression = function(expression) {
 }
 
 _M.parseEachNameFromConditionalExpression = function(expression) {
-    const startIndex = expression.indexOf("[$index#") + 8;
+    if(_M.isNull(expression)) { return null; }
+    let indexOf = expression.indexOf("[$index#");
+    if(indexOf === -1) { return null; }
+    const startIndex = indexOf + 8;
     const subExpression = expression.substring(startIndex);
     const endIndex = subExpression.indexOf("]");
     return subExpression.substring(0, endIndex);
@@ -312,7 +315,6 @@ _M.lookupVariable = function(parameter, element) {
 
 _M.considerVariableWrap = function (value) {
     if (typeof value === "string") {
-        return "'" + value + "'";
         if (value.length === 0 || (value.startsWith("'") && value.endsWith("'"))) {
             return value;
         } else {
@@ -591,8 +593,8 @@ _M.mergeIntoOnePath = function (path) {
     return final;
 }
 
-_M.resolveVariableLookup = function (variable, path) {
-    if(_M.isNull(path)) { return variable; }
+_M.resolveVariableLookup = function (fallback, path) {
+    if(_M.isNull(path)) { return fallback; }
     if(!(path.indexOf(".") !== -1 || (path.indexOf("[") !== -1 && path.indexOf("]") !== -1))) {
         return _M.variables[path];
     } else {

@@ -862,7 +862,90 @@ QUnit.module("_M.resolveVariableLookup", function() {
     });
 });
 
-/*
+QUnit.module("_M.lookupVariable", function() {
+
+    QUnit.test("can deal with no element", function(assert) {
+        assert.equal(_M.lookupVariable("x", null), "'x'");
+    });
+
+    QUnit.test("simple lookup", function(assert) {
+        _M.variables = { "letters" : ['A', 'B', 'C'] };
+        _M.conditionals = { "t-123" : "letters" };
+        let parent = document.createElement("div");
+        parent.setAttribute("template-id", "t-123");
+        parent.setAttribute("m-each", "x");
+        parent.setAttribute("index", "1");
+
+        parent.appendChild(document.createElement("div"));
+        let element = parent.childNodes.item(0);
+
+        assert.equal(_M.lookupVariable("x", element), "'B'");
+    });
+
+    QUnit.test("complex lookup", function(assert) {
+        _M.variables = { "letters" : ['A', { "y" : 123 }, 'C'] };
+        _M.conditionals = { "t-123" : "letters" };
+        let parent = document.createElement("div");
+        parent.setAttribute("template-id", "t-123");
+        parent.setAttribute("m-each", "x");
+        parent.setAttribute("index", "1");
+
+        parent.appendChild(document.createElement("div"));
+        let element = parent.childNodes.item(0);
+
+        assert.equal(_M.lookupVariable("x.y", element), "123");
+    });
+
+    QUnit.test("complex lookup as array", function(assert) {
+        _M.variables = { "letters" : ['A', { "y" : 5345 }, 'C'] };
+        _M.conditionals = { "t-123" : "letters" };
+        let parent = document.createElement("div");
+        parent.setAttribute("template-id", "t-123");
+        parent.setAttribute("m-each", "x");
+        parent.setAttribute("index", "1");
+
+        parent.appendChild(document.createElement("div"));
+        let element = parent.childNodes.item(0);
+
+        assert.equal(_M.lookupVariable("x[y]", element), "5345");
+    });
+
+});
+
+QUnit.module("_M.considerVariableWrap", function() {
+    QUnit.test("string should wrap", function(assert) {
+        assert.equal(_M.considerVariableWrap ("hello world"), "'hello world'");
+    });
+
+    QUnit.test("number should not wrap", function(assert) {
+        assert.equal(_M.considerVariableWrap (-1234), "-1234");
+    });
+
+    QUnit.test("already wrapped should not wrap", function(assert) {
+        assert.equal(_M.considerVariableWrap ("'something'"), "'something'");
+    });
+
+    QUnit.test("simple wrap - boolean", function(assert) {
+        assert.equal(_M.considerVariableWrap(true), true);
+    });
+
+    QUnit.test("simple wrap - integer", function(assert) {
+        assert.equal(_M.considerVariableWrap(2), 2);
+    });
+
+    QUnit.test("has nothing to wrap", function(assert) {
+        assert.equal(_M.considerVariableWrap(""), "");
+    });
+
+    QUnit.test("can deal with undefined", function(assert) {
+        assert.equal(_M.considerVariableWrap(undefined), null);
+    });
+
+    QUnit.test("can deal with null", function(assert) {
+        assert.equal(_M.considerVariableWrap(null), null);
+    });
+});
+
 QUnit.module("_M.parseEachNameFromConditionalExpression", function() {
     QUnit.test("simple parse", function(assert) {
         assert.equal(_M.parseEachNameFromConditionalExpression("0123-[$index#hello-world]-0123"), "hello-world");
@@ -882,6 +965,7 @@ QUnit.module("_M.parseEachNameFromConditionalExpression", function() {
     });
 });
 
+/*
 QUnit.module("_M.parseArrayFromConditionalExpression", function() {
     QUnit.test("simple parse", function(assert) {
         //TODO something weird here, find proper examples
@@ -922,82 +1006,5 @@ QUnit.module("_M.parseObjectFromConditionalExpression", function() {
     });
 });
 
-//_M.considerVariableWrap = function (value)
-QUnit.module("_M.considerVariableWrap", function() {
-    QUnit.test("simple wrap - string", function(assert) {
-        assert.equal(_M.considerVariableWrap("hello"), "'hello'");
-    });
-
-    QUnit.test("simple wrap - boolean", function(assert) {
-        assert.equal(_M.considerVariableWrap(true), true);
-    });
-
-    QUnit.test("simple wrap - integer", function(assert) {
-        assert.equal(_M.considerVariableWrap(2), 2);
-    });
-
-    QUnit.test("already wrapped", function(assert) {
-        assert.equal(_M.considerVariableWrap("'hello'"), "'hello'");
-    });
-
-    QUnit.test("has nothing to wrap", function(assert) {
-        assert.equal(_M.considerVariableWrap(""), "");
-    });
-
-    QUnit.test("can deal with undefined", function(assert) {
-        assert.equal(_M.considerVariableWrap(undefined), null);
-    });
-
-    QUnit.test("can deal with null", function(assert) {
-        assert.equal(_M.considerVariableWrap(null), null);
-    });
-});
-*/
-
 //TODO injectVariablesIntoConditionalExpression <-- replaces === 'a' with === \'a\' which crashes eval
-
-//TODO
-//_M.isDecimal = function(x)
-//_M.isNumeric = function(str)
-//_M.isJavaNumber = function(str)
-//_M.isJavaLong = function(str)
-//_M.isJavaDoubleOrFloat = function(str)
-//_M.injectVariablesIntoConditionalExpression = function(expression, elem) <--- has some problems in it
-//_M.injectVariablesIntoMethodExpression = function(expression, element)
-//_M.javaNumberCompatibility = function(parameter)
-//_M.lookupVariable = function(parameter, element)
-
-//_M.findPotentialEachValue = function (element, eachName)
-//_M.injectVariablesIntoText = function(text)
-//_M.buildIterationBlock = function (templateDiv, index, eachObject)
-//_M.buildIterationBlockMEachHandling = function (divWithMEach, eachObject)
-//_M.mergeIntoOnePath = function (path)
-//_M.resolveVariableLookup = function (variable, path)
-//_M.findThroughObjectPath = function (variable, index, path, eachObject, eachName)
-//_M.currentPathUnreachable = function (object, currentPath)
-//_M.determineDeeperObjectPath = function (path)
-//_M.buildTemplateMap = function (divWithMEach)
-//_M.resolveTemplateId = function (template)
-//_M.resolveTemplateCondition = function (templateId)
-//_M.recursiveObjectUpdate = function(html, obj, path)
-//_M.findElementByMIF = function(key)
-//_M.setVisibilityOnElement = function (elem, expression)
-//_M.elementEscape = function(valueToEscape)
-//_M.attributeValue = function (element, attribute)
-//_M.parseReference = function(e, originElem)
-//_M.parseElementByIdReference = function(raw, e, originElem)
-//_M.parseSelfReference = function(raw, e, originElem)
-//_M.sendEvent = function(originElem, e)
-//_M.onEnter = function(originElem, action, event)
-//_M.preventDefault = function(event)
-//_M.eventHandler = function(e)
-//_M.handleMAttributeChange = function (k)
-//_M.handleHydraMenuItemChange = function (k)
-//_M.handleConditionCheckEvent = function(k)
-//_M.handleVisibilityConditionals
-//_M.handleConditionalClass = function(k)
-//_M.handleMAttribute = function (mId, trueFunc, falseFunc, evalValue)
-//_M.handleDefaultEvent = function(k)
-//_M.handleWaitingForEnabled = function()
-//_M.handleTitleChangeEvent = function(k)
-//_M.handleIterationCheck = function (k)
+ */
