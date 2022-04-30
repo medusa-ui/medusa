@@ -592,7 +592,7 @@ _M.mergeIntoOnePath = function (path) {
 }
 
 _M.resolveVariableLookup = function (variable, path) {
-    if(typeof path === "undefined") { return variable; }
+    if(_M.isNull(path)) { return variable; }
     if(!(path.indexOf(".") !== -1 || (path.indexOf("[") !== -1 && path.indexOf("]") !== -1))) {
         return _M.variables[path];
     } else {
@@ -601,11 +601,14 @@ _M.resolveVariableLookup = function (variable, path) {
         let max = paths.length;
         let object = _M.variables[paths[0]];
 
-        while (index !== max) {
+        while (index < max) {
             const p = paths[index++];
-            let unBracketedPath = p.substring(0, p.length - 1);
-            if(_M.isQuoted(unBracketedPath)) {
-                unBracketedPath = unBracketedPath.substring(1, unBracketedPath.length - 1);
+            let unBracketedPath = p;
+            if(unBracketedPath.indexOf("]") !== -1) {
+                unBracketedPath = p.substring(0, p.length - 1);
+                if(_M.isQuoted(unBracketedPath)) {
+                    unBracketedPath = unBracketedPath.substring(1, unBracketedPath.length - 1);
+                }
             }
             object = object[unBracketedPath];
         }

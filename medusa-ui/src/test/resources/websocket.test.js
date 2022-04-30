@@ -836,6 +836,32 @@ QUnit.module("_M.determineDeeperObjectPath", function() {
     });
 });
 
+QUnit.module("_M.resolveVariableLookup", function() {
+    QUnit.test("no path, no lookup", function(assert) {
+        assert.equal(_M.resolveVariableLookup("x", null), "x");
+    });
+
+    QUnit.test("simple lookup", function(assert) {
+        _M.variables = { "a" : 123 };
+        assert.equal(_M.resolveVariableLookup(null, "a"), 123);
+    });
+
+    QUnit.test("chained path lookup as object notation", function(assert) {
+        _M.variables = { "a" : { "b" : 567 } };
+        assert.equal(_M.resolveVariableLookup(null, "a.b"), 567);
+    });
+
+    QUnit.test("chained path lookup as array notation", function(assert) {
+        _M.variables = { "a" : { "b" : 7890 } };
+        assert.equal(_M.resolveVariableLookup(null, "a[b]"), 7890);
+    });
+
+    QUnit.test("chained path lookup as array notation with quoted object", function(assert) {
+        _M.variables = { "b" : { "a" : { "test" : 4239 } } };
+        assert.equal(_M.resolveVariableLookup(null, "b.a['test']"), 4239);
+    });
+});
+
 /*
 QUnit.module("_M.parseEachNameFromConditionalExpression", function() {
     QUnit.test("simple parse", function(assert) {
