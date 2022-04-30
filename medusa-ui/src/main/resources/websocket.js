@@ -151,9 +151,17 @@ _M.injectVariablesIntoConditionalExpression = function(expression, elem) {
         found = [...new Set(found)];
         for(const toReplace of found) {
             const varValue = _M.variables[toReplace];
-            if(typeof varValue === "undefined") {
+            if(_M.isNull(varValue)) {
                 //no action
             } else if(typeof varValue === "object") {
+                //only when not prepended by $index#
+                let indexOfToReplace = expression.indexOf(toReplace);
+                if(indexOfToReplace > 7) {
+                    let prependedBy = expression.substring(indexOfToReplace-7, indexOfToReplace);
+                    if("$index#" === prependedBy) {
+                        continue;
+                    }
+                }
                 expression = expression.replaceAll(toReplace, JSON.stringify(varValue));
             } else if(typeof varValue === "string") {
                 expression = expression.replaceAll( toReplace , "'" + varValue + "'");
@@ -163,14 +171,11 @@ _M.injectVariablesIntoConditionalExpression = function(expression, elem) {
         }
     }
 
-    if(elem !== null && typeof elem !== "undefined") {
+    if(!_M.isNull(elem)) {
         const eachNameForIndex = _M.parseEachNameFromConditionalExpression(expression);
         const parentElement = _M.findParentWithEachElement(elem, eachNameForIndex);
 
         if(null !== parentElement && typeof parentElement !== "undefined") {
-            // expression: escape all, ignore \' (already escaped)
-            expression = expression.replace(/([^\\])'/g,"$1\\'");
-
             const index = parentElement.getAttribute("index");
             const indexRef = "[$index#" + eachNameForIndex + "]";
 
@@ -193,8 +198,8 @@ _M.injectVariablesIntoConditionalExpression = function(expression, elem) {
                 const objectToWrap = _M.parseObjectFromConditionalExpression(expression);
                 const valueReplacement = objectToWrap + indexRef + ".value";
                 const keyReplacement = objectToWrap + indexRef + ".key";
-                expression = expression.replaceAll(valueReplacement, _M.evalCondition("Object.values(" + objectToWrap + ")[" + index + "]"));
-                expression = expression.replaceAll(keyReplacement, _M.evalCondition("Object.keys(" + objectToWrap + ")[" + index + "]"));
+                expression = expression.replaceAll(valueReplacement, JSON.stringify(_M.evalCondition("Object.values(" + objectToWrap + ")[" + index + "]")));
+                expression = expression.replaceAll(keyReplacement, JSON.stringify(_M.evalCondition("Object.keys(" + objectToWrap + ")[" + index + "]")));
             }
         }
     }
@@ -202,6 +207,9 @@ _M.injectVariablesIntoConditionalExpression = function(expression, elem) {
     return expression;
 }
 _M.parseArrayFromConditionalExpression = function(expression) {
+    if(_M.isNull(expression)) {
+        return [];
+    }
     const endIndex = expression.indexOf("[$index#");
     const subExpression = expression.substring(0, endIndex);
     const beginIndex = subExpression.indexOf("[{");
@@ -209,9 +217,15 @@ _M.parseArrayFromConditionalExpression = function(expression) {
 }
 
 _M.parseObjectFromConditionalExpression = function(expression) {
+    if(_M.isNull(expression)) {
+        return {};
+    }
     const endIndex = expression.indexOf("[$index#");
     const subExpression = expression.substring(0, endIndex);
-    const beginIndex = subExpression.indexOf("{");
+    let beginIndex = subExpression.indexOf("[{");
+    if(-1 === beginIndex) {
+        beginIndex = subExpression.indexOf("{");
+    }
     return subExpression.substring(beginIndex, endIndex);
 }
 

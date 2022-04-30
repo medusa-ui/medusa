@@ -965,6 +965,101 @@ QUnit.module("_M.parseEachNameFromConditionalExpression", function() {
     });
 });
 
+QUnit.module("_M.injectVariablesIntoConditionalExpression", function() {
+    QUnit.test("simple boolean does not need injection", function(assert) {
+        assert.equal(_M.injectVariablesIntoConditionalExpression(true, null), true);
+    });
+
+    QUnit.test("empty does not need injection", function(assert) {
+        assert.equal(_M.injectVariablesIntoConditionalExpression("", null), "");
+    });
+
+    QUnit.test("simple integer does not need injection", function(assert) {
+        assert.equal(_M.injectVariablesIntoConditionalExpression("234", null), 234);
+    });
+
+    QUnit.test("no elem injection - number", function(assert) {
+        _M.variables = { "items-bought" : 2 };
+        assert.equal(_M.injectVariablesIntoConditionalExpression("!( items-bought === 0 ) && (items-bought > 3)", null), "!( 2 === 0 ) && (2 > 3)");
+    });
+
+    QUnit.test("no elem injection - string", function(assert) {
+        _M.variables = { "items-bought" : "n" };
+        assert.equal(_M.injectVariablesIntoConditionalExpression("( items-bought === 'y' ) || (items-bought === 'yes')", null), "( 'n' === 'y' ) || ('n' === 'yes')");
+    });
+
+    QUnit.test("no elem injection - object", function(assert) {
+        _M.variables = { "items-bought" : {"x":"y"} };
+        assert.equal(_M.injectVariablesIntoConditionalExpression("items-bought === {}", null), '{"x":"y"} === {}');
+    });
+
+    QUnit.test("complex map injection", function(assert) {
+        _M.variables = { "letters" : ['A', 'name', 'C'] };
+        _M.conditionals = { "t-123" : "letters" };
+        let parent = document.createElement("div");
+        parent.setAttribute("template-id", "t-123");
+        parent.setAttribute("m-each", "letters");
+        parent.setAttribute("index", "1");
+
+        parent.appendChild(document.createElement("div"));
+        let element = parent.childNodes.item(0);
+
+        //this condition means: as part of a map,
+        // we have an each object of {"id":"3","name":"PETER"}
+        // we have an index (based on parent, in this case 1)
+        // we have an eachName of 'letters';
+
+        //so we look up the eachName in viarables, which is { "letters" : ['A', 'name', 'C'] }
+        //we apply the index, which gives us 'name'
+
+        //this is then applied to the eachObject, which results in 'PETER'
+
+        assert.equal(_M.injectVariablesIntoConditionalExpression("{\"id\":\"3\",\"name\":\"PETER\"}[$index#letters].value === \"PETER\"", element), "\"PETER\" === \"PETER\"");
+    });
+
+    QUnit.test("contrived example to test [object] parsing", function(assert) {
+        _M.variables = { "letters" : ['A', 'B', 'C'] };
+        _M.conditionals = { "t-123" : "letters" };
+        let parent = document.createElement("div");
+        parent.setAttribute("template-id", "t-123");
+        parent.setAttribute("m-each", "letters");
+        parent.setAttribute("index", "1");
+
+        parent.appendChild(document.createElement("div"));
+        let element = parent.childNodes.item(0);
+
+        //TODO because this is an array of objects, the result is still an object from the eval, thus causes a [object] to string
+
+        assert.notEqual(_M.injectVariablesIntoConditionalExpression("[{\"id\":\"3\",\"name\":\"PETER\"},{\"id\":\"4\",\"name\":\"JEANETTE\"}][$index#letters].value === true", element), '[object Object] === true');
+    });
+});
+
+QUnit.module("_M.parseObjectFromConditionalExpression", function() {
+    QUnit.test("simple parse", function(assert) {
+        assert.deepEqual(_M.parseObjectFromConditionalExpression("[\"C\",\"D\"][$index#string] === \\'Z\\'"), '["C","D"]');
+    });
+
+    QUnit.test("complexer parse", function(assert) {
+        assert.deepEqual(_M.parseObjectFromConditionalExpression(
+            "[{\"id\":\"3\",\"name\":\"PETER\"},{\"id\":\"4\",\"name\":\"JEANETTE\"}][$index#person].id === \\'Z\\'"),
+            '[{"id":"3","name":"PETER"},{"id":"4","name":"JEANETTE"}]');
+    });
+
+    QUnit.test("has nothing to parse", function(assert) {
+        assert.deepEqual(_M.parseObjectFromConditionalExpression("0123"), "");
+    });
+
+    QUnit.test("can deal with undefined", function(assert) {
+        assert.deepEqual(_M.parseObjectFromConditionalExpression(undefined), {});
+    });
+
+    QUnit.test("can deal with null", function(assert) {
+        assert.deepEqual(_M.parseObjectFromConditionalExpression(null), {});
+    });
+});
+
+
+//TODO parseObjectFromConditionalExpression
 /*
 QUnit.module("_M.parseArrayFromConditionalExpression", function() {
     QUnit.test("simple parse", function(assert) {
@@ -983,26 +1078,6 @@ QUnit.module("_M.parseArrayFromConditionalExpression", function() {
 
     QUnit.test("can deal with null", function(assert) {
         assert.equal(_M.parseArrayFromConditionalExpression(null), null);
-    });
-});
-
-QUnit.module("_M.parseObjectFromConditionalExpression", function() {
-    QUnit.test("simple parse", function(assert) {
-        //TODO something weird here, find proper examples
-        assert.equal(_M.parseObjectFromConditionalExpression("{'x':5}[$index#eachName].value"), "{'x':5}");
-        assert.equal(_M.parseObjectFromConditionalExpression("[\"C\",\"D\"][$index#string] === Z"), "[\"C\",\"D\"]");
-    });
-
-    QUnit.test("has nothing to parse", function(assert) {
-        assert.equal(_M.parseObjectFromConditionalExpression("0123"), null);
-    });
-
-    QUnit.test("can deal with undefined", function(assert) {
-        assert.equal(_M.parseObjectFromConditionalExpression(undefined), null);
-    });
-
-    QUnit.test("can deal with null", function(assert) {
-        assert.equal(_M.parseObjectFromConditionalExpression(null), null);
     });
 });
 
