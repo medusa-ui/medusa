@@ -323,7 +323,12 @@ _M.lookupVariable = function(parameter, element) {
     }
 
     const deeperObjectPath = _M.determineDeeperObjectPath(parameter);
-    const paramValue = _M.findPotentialEachValue(element, baseParameter);
+    let paramValue = _M.findPotentialEachValue(element, baseParameter);
+
+    if(!_M.isNull(_M.variables[paramValue])) {
+        paramValue = _M.variables[paramValue];
+    }
+
     return _M.considerVariableWrap(_M.findThroughObjectPath(paramValue, null, deeperObjectPath, null, null));
 };
 
@@ -684,8 +689,16 @@ _M.findThroughObjectPath = function (variable, index, path, eachObject, eachName
                     object = eachObject[index];
                 } else {
                     if(_M.isNull(object)) { return null; }
-                    object = object[currentPath];
-                    if(_M.isNull(object)) { return null; }
+                    if(_M.isNull(object[currentPath])) {
+                        let variableMatch = _M.variables[currentPath];
+                        if(_M.isNull(variableMatch)) {
+                            return null;
+                        } else {
+                            object = object[variableMatch];
+                        }
+                    } else {
+                        object = object[currentPath];
+                    }
                 }
                 path = path.slice(1);
             }

@@ -749,6 +749,11 @@ QUnit.module("_M.findThroughObjectPath", function() {
         assert.deepEqual(_M.findThroughObjectPath({"y":678}, null, [], null, null), {"y": 678});
     });
 
+    QUnit.test("Path find with variable", function (assert) {
+        _M.variables= { "_val" : "y" };
+        assert.equal(_M.findThroughObjectPath({"y":678}, null, ["_val"], null, null), 678);
+    });
+
     QUnit.test("Map path find - key, no index", function (assert) {
         assert.equal(_M.findThroughObjectPath({"x":{"y":678}}, null, ["x", "key"], null, null), "y");
     });
@@ -796,7 +801,6 @@ QUnit.module("_M.findThroughObjectPath", function() {
     QUnit.test("Can deal with null", function (assert) {
         assert.equal(_M.findThroughObjectPath(null, null, [], null, null), null);
     });
-
 });
 
 QUnit.module("_M.buildTemplateMap ", function() {
@@ -896,7 +900,22 @@ QUnit.module("_M.lookupVariable", function() {
         assert.equal(_M.lookupVariable("x", null), "'x'");
     });
 
-    QUnit.test("simple lookup", function(assert) {
+    QUnit.test("simple lookup - with no element", function(assert) {
+        _M.variables = { "operation" : "sum" };
+        assert.equal(_M.lookupVariable("operation", null), "'sum'");
+    });
+
+    QUnit.test("map lookup - with no element", function(assert) {
+        _M.variables = { "operation" : { "1+2" : "sum" } };
+        assert.equal(_M.lookupVariable("operation['1+2']", null), "'sum'");
+    });
+
+    QUnit.test("map lookup - with no element", function(assert) {
+        _M.variables = { "operation" : { "1+2" : "sum" }, "example" : "1+2" };
+        assert.equal(_M.lookupVariable("operation[example]", null), "'sum'");
+    });
+
+    QUnit.test("simple lookup - with element", function(assert) {
         _M.variables = { "letters" : ['A', 'B', 'C'] };
         _M.conditionals = { "t-123" : "letters" };
         let parent = document.createElement("div");
@@ -910,7 +929,7 @@ QUnit.module("_M.lookupVariable", function() {
         assert.equal(_M.lookupVariable("x", element), "'B'");
     });
 
-    QUnit.test("complex lookup", function(assert) {
+    QUnit.test("complex lookup - with element", function(assert) {
         _M.variables = { "letters" : ['A', { "y" : 123 }, 'C'] };
         _M.conditionals = { "t-123" : "letters" };
         let parent = document.createElement("div");
@@ -924,7 +943,7 @@ QUnit.module("_M.lookupVariable", function() {
         assert.equal(_M.lookupVariable("x.y", element), "123");
     });
 
-    QUnit.test("complex lookup as array", function(assert) {
+    QUnit.test("complex lookup as array - with element", function(assert) {
         _M.variables = { "letters" : ['A', { "y" : 5345 }, 'C'] };
         _M.conditionals = { "t-123" : "letters" };
         let parent = document.createElement("div");
@@ -1103,4 +1122,79 @@ QUnit.module("_M.parseArrayFromConditionalExpression", function() {
     QUnit.test("can deal with null", function(assert) {
         assert.deepEqual(_M.parseArrayFromConditionalExpression(null), "[]");
     });
+});
+
+QUnit.module("_M.injectVariablesIntoMethodExpression", function() {
+    QUnit.test("simple boolean does not need injection", function(assert) {
+        assert.equal(_M.injectVariablesIntoMethodExpression(true, null), true);
+    });
+
+    QUnit.test("no elem injection - number", function(assert) {
+        _M.variables = { "items-bought" : 2 };
+        assert.equal(_M.injectVariablesIntoMethodExpression("helloWorld(items-bought)", null), "helloWorld(2)");
+    });
+
+    /*
+    QUnit.test("empty does not need injection", function(assert) {
+        assert.equal(_M.injectVariablesIntoConditionalExpression("", null), "");
+    });
+
+    QUnit.test("simple integer does not need injection", function(assert) {
+        assert.equal(_M.injectVariablesIntoConditionalExpression("234", null), 234);
+    });
+
+    QUnit.test("no elem injection - number", function(assert) {
+        _M.variables = { "items-bought" : 2 };
+        assert.equal(_M.injectVariablesIntoConditionalExpression("!( items-bought === 0 ) && (items-bought > 3)", null), "!( 2 === 0 ) && (2 > 3)");
+    });
+
+    QUnit.test("no elem injection - string", function(assert) {
+        _M.variables = { "items-bought" : "n" };
+        assert.equal(_M.injectVariablesIntoConditionalExpression("( items-bought === 'y' ) || (items-bought === 'yes')", null), "( 'n' === 'y' ) || ('n' === 'yes')");
+    });
+
+    QUnit.test("no elem injection - object", function(assert) {
+        _M.variables = { "items-bought" : {"x":"y"} };
+        assert.equal(_M.injectVariablesIntoConditionalExpression("items-bought === {}", null), '{"x":"y"} === {}');
+    });
+
+    QUnit.test("complex map injection", function(assert) {
+        _M.variables = { "letters" : ['A', 'name', 'C'] };
+        _M.conditionals = { "t-123" : "letters" };
+        let parent = document.createElement("div");
+        parent.setAttribute("template-id", "t-123");
+        parent.setAttribute("m-each", "letters");
+        parent.setAttribute("index", "1");
+
+        parent.appendChild(document.createElement("div"));
+        let element = parent.childNodes.item(0);
+
+        //this condition means: as part of a map,
+        // we have an each object of {"id":"3","name":"PETER"}
+        // we have an index (based on parent, in this case 1)
+        // we have an eachName of 'letters';
+
+        //so we look up the eachName in viarables, which is { "letters" : ['A', 'name', 'C'] }
+        //we apply the index, which gives us 'name'
+
+        //this is then applied to the eachObject, which results in 'PETER'
+
+        assert.equal(_M.injectVariablesIntoConditionalExpression("{\"id\":\"3\",\"name\":\"PETER\"}[$index#letters].value === \"PETER\"", element), "\"PETER\" === \"PETER\"");
+    });
+
+    QUnit.test("contrived example to test [object] parsing", function(assert) {
+        _M.variables = { "letters" : ['A', 'B', 'C'] };
+        _M.conditionals = { "t-123" : "letters" };
+        let parent = document.createElement("div");
+        parent.setAttribute("template-id", "t-123");
+        parent.setAttribute("m-each", "letters");
+        parent.setAttribute("index", "1");
+
+        parent.appendChild(document.createElement("div"));
+        let element = parent.childNodes.item(0);
+
+        //TODO because this is an array of objects, the result is still an object from the eval, thus causes a [object] to string
+
+        assert.notEqual(_M.injectVariablesIntoConditionalExpression("[{\"id\":\"3\",\"name\":\"PETER\"},{\"id\":\"4\",\"name\":\"JEANETTE\"}][$index#letters].value === true", element), '[object Object] === true');
+    });*/
 });
