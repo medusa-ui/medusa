@@ -574,6 +574,7 @@ _M.buildIterationBlockMEachHandling = function (divWithMEach, eachObject) {
 }
 
 _M.mergeIntoOnePath = function (path) {
+    if(_M.isNull(path)) { return null; }
     let final = "";
     let concat = "";
     for(let pathVal of path) {
@@ -647,7 +648,7 @@ _M.findThroughObjectPath = function (variable, index, path, eachObject, eachName
 }
 
 _M.currentPathUnreachable = function (object, currentPath) {
-    return typeof object === "undefined" || null === object[currentPath];
+    return _M.isNull(object) || _M.isNull(object[currentPath]);
 }
 
 _M.determineDeeperObjectPath = function (path) {

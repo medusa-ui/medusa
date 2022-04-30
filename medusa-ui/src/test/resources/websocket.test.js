@@ -574,6 +574,34 @@ QUnit.module("_M.injectVariablesIntoText", function() {
     });
 });
 
+QUnit.module("_M.currentPathUnreachable", function() {
+    QUnit.test("Simple reachable path", function (assert) {
+        assert.false(_M.currentPathUnreachable({"x":1}, "x"));
+    });
+
+    QUnit.test("Deeper path unreachable", function (assert) {
+        assert.true(_M.currentPathUnreachable({"x": {"y": {"z": {"_" : 1}}}}, "y"));
+    });
+
+    QUnit.test("Can deal with null", function (assert) {
+        assert.true(_M.currentPathUnreachable(null, "x"));
+    });
+});
+
+QUnit.module("_M.mergeIntoOnePath", function() {
+    QUnit.test("Simple merge", function (assert) {
+        assert.equal(_M.mergeIntoOnePath(["x", "y", "z"]), "x.y.z");
+    });
+
+    QUnit.test("Can deal with empty", function (assert) {
+        assert.equal(_M.mergeIntoOnePath([]), "");
+    });
+
+    QUnit.test("Can deal with null", function (assert) {
+        assert.equal(_M.mergeIntoOnePath(null), null);
+    });
+});
+
 /*
 QUnit.module("_M.parseEachNameFromConditionalExpression", function() {
     QUnit.test("simple parse", function(assert) {
