@@ -331,6 +331,65 @@ QUnit.module("_M.parseReference", function() {
     });
 });
 
+QUnit.module("_M.resolveTemplateId", function() {
+    QUnit.test("standard lookup", function (assert) {
+        let template = document.createElement("template");
+        template.setAttribute("m-id", "template-123");
+
+        assert.equal(_M.resolveTemplateId(template), "template-123");
+    });
+
+    QUnit.test("can deal with no m-id", function (assert) {
+        let template = document.createElement("template");
+        assert.equal(_M.resolveTemplateId(template), null);
+    });
+
+    QUnit.test("can deal with null", function (assert) {
+        assert.equal(_M.resolveTemplateId(null), null);
+    });
+});
+
+QUnit.module("_M.resolveTemplateCondition", function() {
+    QUnit.test("Simple lookup", function (assert) {
+        _M.conditionals = { "t-512841462": "items-bought" };
+        _M.variables = { "items-bought": ["123"]};
+
+        assert.equal(_M.resolveTemplateCondition("t-512841462"), "123");
+    });
+
+    QUnit.test("Lookup not found", function (assert) {
+        _M.conditionals = { "t-512841462": "xyz" };
+        _M.variables = { "items-bought": ["123"]};
+
+        assert.equal(_M.resolveTemplateCondition("t-512841462"), null);
+        assert.equal(_M.resolveTemplateCondition("t-512800xyz"), null);
+    });
+});
+
+QUnit.module("_M.recursiveObjectUpdate", function() {
+    QUnit.test("Simple one-layer update", function (assert) {
+        let html = "xyz[john]zyx";
+        let obj = "_";
+        let path = "john";
+
+        assert.equal(_M.recursiveObjectUpdate(html, obj, path), "xyz_zyx");
+    });
+
+    QUnit.test("Simple two-layer update", function (assert) {
+        let html = "xyz[x.y]zyx";
+        let obj = {"y" : "_" };
+        let path = "x";
+
+        assert.equal(_M.recursiveObjectUpdate(html, obj, path), "xyz_zyx");
+    });
+
+    //TODO when not found, etc
+
+    QUnit.test("Empty", function (assert) {
+        assert.equal(_M.recursiveObjectUpdate("", {}, ""), "");
+    });
+});
+
 /*
 QUnit.module("_M.parseEachNameFromConditionalExpression", function() {
     QUnit.test("simple parse", function(assert) {

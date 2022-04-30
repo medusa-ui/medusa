@@ -690,6 +690,9 @@ _M.buildTemplateMap = function (divWithMEach) {
 }
 
 _M.resolveTemplateId = function (template) {
+    if(_M.isNull(template) || _M.isNull(template.attributes["m-id"])) {
+        return null;
+    }
     return template.attributes["m-id"].nodeValue;
 }
 

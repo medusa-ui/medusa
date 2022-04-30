@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">25.17% </span>
+                <span class="strong">26.94% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>148/588</span>
+                <span class='fraction'>159/590</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">18.2% </span>
+                <span class="strong">20.42% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>59/324</span>
+                <span class='fraction'>67/328</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">17.8% </span>
+                <span class="strong">21.91% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>13/73</span>
+                <span class='fraction'>16/73</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">25.44% </span>
+                <span class="strong">27.3% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>143/562</span>
+                <span class='fraction'>154/564</span>
             </div>
         
             
@@ -960,7 +960,10 @@
 <a name='L895'></a><a href='#L895'>895</a>
 <a name='L896'></a><a href='#L896'>896</a>
 <a name='L897'></a><a href='#L897'>897</a>
-<a name='L898'></a><a href='#L898'>898</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
+<a name='L898'></a><a href='#L898'>898</a>
+<a name='L899'></a><a href='#L899'>899</a>
+<a name='L900'></a><a href='#L900'>900</a>
+<a name='L901'></a><a href='#L901'>901</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
@@ -1286,7 +1289,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">68x</span>
+<span class="cline-any cline-yes">73x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
@@ -1652,24 +1655,27 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">4x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
@@ -2548,25 +2554,28 @@ _M.buildTemplateMap = <span class="fstat-no" title="function not covered" >fu</s
 <span class="cstat-no" title="statement not covered" >    return map;</span>
 }
 &nbsp;
-_M.resolveTemplateId = <span class="fstat-no" title="function not covered" >fu</span>nction (template) {
-<span class="cstat-no" title="statement not covered" >    return template.attributes["m-id"].nodeValue;</span>
+_M.resolveTemplateId = function (template) {
+    if(_M.isNull(template) || _M.isNull(template.attributes["m-id"])) {
+        return null;
+    }
+    return template.attributes["m-id"].nodeValue;
 }
 &nbsp;
-_M.resolveTemplateCondition = <span class="fstat-no" title="function not covered" >fu</span>nction (templateId) {
-    const condition = <span class="cstat-no" title="statement not covered" >_M.conditionals[templateId];</span>
-<span class="cstat-no" title="statement not covered" >    return _M.variables[condition];</span>
+_M.resolveTemplateCondition = function (templateId) {
+    const condition = _M.conditionals[templateId];
+    return _M.variables[condition];
 }
 &nbsp;
-_M.recursiveObjectUpdate = <span class="fstat-no" title="function not covered" >fu</span>nction(html, obj, path) {
-<span class="cstat-no" title="statement not covered" >    if(typeof obj === 'object' &amp;&amp; obj !== null) {</span>
-<span class="cstat-no" title="statement not covered" >        html = html.replaceAll("["+path+"]", JSON.stringify(obj));</span>
-<span class="cstat-no" title="statement not covered" >        for(const objKey of Object.keys(obj)) {</span>
-<span class="cstat-no" title="statement not covered" >            html = _M.recursiveObjectUpdate(html, obj[objKey], path + "." + objKey);</span>
+_M.recursiveObjectUpdate = function(html, obj, path) {
+    if(typeof obj === 'object' &amp;&amp; obj !== null) {
+        html = html.replaceAll("["+path+"]", JSON.stringify(obj));
+        for(const objKey of Object.keys(obj)) {
+            html = _M.recursiveObjectUpdate(html, obj[objKey], path + "." + objKey);
         }
     } else {
-<span class="cstat-no" title="statement not covered" >        html = html.replaceAll("["+path+"]", obj);</span>
+        html = html.replaceAll("["+path+"]", obj);
     }
-<span class="cstat-no" title="statement not covered" >    return html;</span>
+    return html;
 };
 &nbsp;
 _M.findElementByMIF = <span class="fstat-no" title="function not covered" >fu</span>nction(key) {
@@ -2761,7 +2770,7 @@ _M.connectionDropFatal = "&lt;div id='m-top-error-fatal' style=\"position: absol
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at Fri Apr 29 2022 15:16:58 GMT-0700 (Pacific Daylight Time)
+                at Fri Apr 29 2022 18:18:11 GMT-0700 (Pacific Daylight Time)
             </div>
         <script src="prettify.js"></script>
         <script>
