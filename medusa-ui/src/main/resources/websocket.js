@@ -328,20 +328,26 @@ _M.isNull = function (value) {
 };
 
 _M.findPotentialEachValue = function (element, eachName) {
-    let paramValue = _M.variables[eachName];
-    if(null !== element && typeof element !== "undefined") {
-        const parentElement = _M.findParentWithEachElement(element, eachName);
-        if(null !== parentElement && typeof parentElement !== "undefined") {
-            const index = parentElement.getAttribute("index");
-            let relevantTemplateId = parentElement.getAttribute("template-id");
-            relevantTemplateId = relevantTemplateId.substring(relevantTemplateId.lastIndexOf("#") + 1);
-            const relevantVariableName = _M.conditionals[relevantTemplateId];
-            if(null !== relevantVariableName && typeof relevantVariableName !== "undefined") {
-                paramValue = _M.variables[relevantVariableName][index];
-            }
-        }
+    if(_M.isNull(eachName) || _M.isNull(element)) {
+        return eachName;
     }
-    if(typeof paramValue === "undefined") {
+
+    let paramValue = _M.variables[eachName];
+
+    const parentElement = _M.findParentWithEachElement(element, eachName);
+    if(_M.isNull(parentElement)) {
+        return eachName;
+    }
+    const index = parentElement.getAttribute("index");
+    let relevantTemplateId = parentElement.getAttribute("template-id");
+    if(!_M.isNull(relevantTemplateId)) {
+        relevantTemplateId = relevantTemplateId.substring(relevantTemplateId.lastIndexOf("#") + 1);
+    }
+    const relevantVariableName = _M.conditionals[relevantTemplateId];
+    if(!_M.isNull(relevantVariableName) && !_M.isNull(_M.variables[relevantVariableName])) {
+        paramValue = _M.variables[relevantVariableName][index];
+    }
+    if(_M.isNull(paramValue)) {
         return eachName;
     }
     return paramValue;

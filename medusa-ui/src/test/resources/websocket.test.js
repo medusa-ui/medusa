@@ -323,8 +323,9 @@ QUnit.module("_M.findParentWithEachElement", function() {
 
     QUnit.test("no match - deals with null", function(assert) {
         let element = document.createElement("div");
-        let foundVal = _M.findParentWithEachElement(element, null)
+        let foundVal = _M.findParentWithEachElement(element, null);
         assert.equal(foundVal, null);
+        assert.equal(_M.findParentWithEachElement(null, null), null);
     });
 
     QUnit.test("no match - deals with undefined", function(assert) {
@@ -599,6 +600,102 @@ QUnit.module("_M.mergeIntoOnePath", function() {
 
     QUnit.test("Can deal with null", function (assert) {
         assert.equal(_M.mergeIntoOnePath(null), null);
+    });
+});
+
+QUnit.module("_M.findPotentialEachValue", function() {
+    _M.variables = {};
+
+    QUnit.test("Simple find", function (assert) {
+        _M.variables = { "letters" : ['A', 'B', 'C'] };
+        _M.conditionals = { "t-123" : "letters" };
+        let parent = document.createElement("div");
+        parent.setAttribute("template-id", "t-123");
+        parent.setAttribute("m-each", "xyz");
+        parent.setAttribute("index", "0");
+
+        parent.appendChild(document.createElement("div"));
+        let element = parent.childNodes.item(0);
+
+        assert.equal(_M.findPotentialEachValue(element, "xyz"), "A");
+    });
+
+    QUnit.test("Find with # - Nested loop", function (assert) {
+        _M.variables = { "letters" : ['A', 'B', 'C'] };
+        _M.conditionals = { "t-123" : "letters" };
+        let parent = document.createElement("div");
+        parent.setAttribute("template-id", "t-543#t-123");
+        parent.setAttribute("m-each", "xyz");
+        parent.setAttribute("index", "1");
+
+        parent.appendChild(document.createElement("div"));
+        let element = parent.childNodes.item(0);
+
+        assert.equal(_M.findPotentialEachValue(element, "xyz"), "B");
+    });
+
+    QUnit.test("Find with no index in parent", function (assert) {
+        _M.variables = {};
+        _M.conditionals = {};
+        let parent = document.createElement("div");
+        parent.setAttribute("template-id", "t-123");
+        parent.setAttribute("m-each", "xyz");
+
+        parent.appendChild(document.createElement("div"));
+        let element = parent.childNodes.item(0);
+
+        assert.equal(_M.findPotentialEachValue(element, "xyz"), "xyz");
+    });
+
+    QUnit.test("Find with no template-id in parent", function (assert) {
+        _M.variables = {};
+        _M.conditionals = {};
+        let parent = document.createElement("div");
+        parent.setAttribute("index", "0");
+        parent.setAttribute("m-each", "xyz");
+
+        parent.appendChild(document.createElement("div"));
+        let element = parent.childNodes.item(0);
+
+        assert.equal(_M.findPotentialEachValue(element, "xyz"), "xyz");
+    });
+
+    QUnit.test("No variables to find", function (assert) {
+        _M.variables = {};
+        _M.conditionals = { "t-123" : "letters" };
+        let parent = document.createElement("div");
+        parent.setAttribute("template-id", "t-123");
+        parent.setAttribute("m-each", "xyz");
+        parent.setAttribute("index", "0");
+
+        parent.appendChild(document.createElement("div"));
+        let element = parent.childNodes.item(0);
+
+        assert.equal(_M.findPotentialEachValue(element, "xyz"), "xyz");
+    });
+
+    QUnit.test("No conditionals to find", function (assert) {
+        _M.variables = { "letters" : ['A', 'B', 'C'] };
+        _M.conditionals = {};
+        let parent = document.createElement("div");
+        parent.setAttribute("template-id", "t-123");
+        parent.setAttribute("m-each", "xyz");
+        parent.setAttribute("index", "0");
+
+        parent.appendChild(document.createElement("div"));
+        let element = parent.childNodes.item(0);
+
+        assert.equal(_M.findPotentialEachValue(element, "xyz"), "xyz");
+    });
+
+    QUnit.test("No find - default to eachName", function (assert) {
+        assert.equal(_M.findPotentialEachValue(document.createElement("p"), "x"), "x");
+    });
+
+    QUnit.test("Can handle null", function (assert) {
+        assert.equal(_M.findPotentialEachValue( document.createElement("p"), null), null);
+        assert.equal(_M.findPotentialEachValue( null, null), null);
+        assert.equal(_M.findPotentialEachValue( null, "x"), "x");
     });
 });
 
