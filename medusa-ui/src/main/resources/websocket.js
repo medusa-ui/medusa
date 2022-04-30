@@ -615,41 +615,84 @@ _M.resolveVariableLookup = function (variable, path) {
 
 _M.findThroughObjectPath = function (variable, index, path, eachObject, eachName) {
     let object;
-    if(index == null) {
+    if(_M.isNull(index)) {
         object = variable;
     } else {
         object = variable[index];
+        if(_M.isNull(object)) {
+            object = variable;
+        }
     }
 
     if(typeof object === "string" || typeof object === "number") {
         return object;
     } else {
-        const possibleKeys = Object.keys(variable);
-        const possibleKey = possibleKeys[index];
+        let possibleKeys = null;
+        let possibleKey = null;
+        
+        if(!_M.isNull(variable)) {
+            possibleKeys = Object.keys(variable);
+            if(!_M.isNull(possibleKeys)) {
+                possibleKey = possibleKeys[index];
+            }
+        }
 
         if(path.length === 0) return object;
 
         while (path.length > 0) {
             const currentPath = path[0];
+            //map logic
             if("key" === currentPath && _M.currentPathUnreachable(object, currentPath)) {
-                return possibleKey;
+                if(_M.isNull(possibleKey)) {
+                    return _M.getKeyOfObject(object);
+                } else {
+                    return possibleKey;
+                }
             } else if ("value" === currentPath && _M.currentPathUnreachable(object, currentPath)) {
-                return variable[possibleKey];
+                if(_M.isNull(possibleKey)) {
+                    return _M.getValueOfObject(object);
+                } else {
+                    let result = object[possibleKey];
+                    if(_M.isNull(result)) {
+                        return _M.getValueOfObject(object);
+                    }
+                    return result;
+                }
             } else {
                 if((eachObject !== null && typeof object === "undefined") || (currentPath === eachName && index === null)) {
                     object = eachObject;
                 } else if (currentPath === eachName && index !== null) {
                     object = eachObject[index];
                 } else {
-                    if(typeof object === "undefined") { return null; }
+                    if(_M.isNull(object)) { return null; }
                     object = object[currentPath];
-                    if(typeof object === "undefined") { return null; }
+                    if(_M.isNull(object)) { return null; }
                 }
                 path = path.slice(1);
             }
         }
 
         return object;
+    }
+}
+
+_M.getValueOfObject = function (object) {
+    if(typeof object === "object") {
+        return Object.values(object)[0];
+    } else if(typeof object === "undefined") {
+        return null;
+    } else {
+        return object;
+    }
+}
+
+_M.getKeyOfObject = function (object) {
+    if(typeof object === "object") {
+        return Object.keys(object)[0];
+    } else if(typeof object === "undefined") {
+        return null;
+    } else {
+        return 0; //assume we're talking about the index of a non-array object, which is always 0
     }
 }
 

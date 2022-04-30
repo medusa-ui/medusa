@@ -699,6 +699,78 @@ QUnit.module("_M.findPotentialEachValue", function() {
     });
 });
 
+QUnit.module("_M.findThroughObjectPath", function() {
+
+    QUnit.test("Simple find", function (assert) {
+        assert.equal(_M.findThroughObjectPath({"x":123}, null, "x", null, null), 123);
+    });
+
+    QUnit.test("Simple find - array", function (assert) {
+        assert.equal(_M.findThroughObjectPath([541, 123, 678], 1, "x", null, null), 123);
+    });
+
+    QUnit.test("Simple find - object", function (assert) {
+        assert.equal(_M.findThroughObjectPath({"x":541}, "x", null, null, null), 541);
+    });
+
+    QUnit.test("Path find", function (assert) {
+        assert.equal(_M.findThroughObjectPath({"x":{"y":678}}, null, ["x", "y"], null, null), 678);
+    });
+
+    QUnit.test("Path find - no path", function (assert) {
+        assert.deepEqual(_M.findThroughObjectPath({"y":678}, null, [], null, null), {"y": 678});
+    });
+
+    QUnit.test("Map path find - key, no index", function (assert) {
+        assert.equal(_M.findThroughObjectPath({"x":{"y":678}}, null, ["x", "key"], null, null), "y");
+    });
+
+    QUnit.test("Path find w/ index", function (assert) {
+        assert.equal(_M.findThroughObjectPath({"x":678}, 0, ["x"], null, null), 678);
+    });
+
+    QUnit.test("Map path find - key, w/ index", function (assert) {
+        assert.equal(_M.findThroughObjectPath({"x":{"y":678}}, 0, ["x", "key"], null, null), "x");
+    });
+
+    QUnit.test("Map path find - value, no index", function (assert) {
+        assert.equal(_M.findThroughObjectPath({"x":{"y":678}}, null, ["x", "value"], null, null), 678);
+    });
+
+    QUnit.test("Map path find - value, w/ index", function (assert) {
+        assert.equal(_M.findThroughObjectPath({"x":{"y":678}}, 0, ["x", "value"], null, null), 678);
+    });
+
+    QUnit.test("Direct object path find - key, no index", function (assert) {
+      assert.equal(_M.findThroughObjectPath({"x":2}, null, ["x", "key"], null, null), 0);
+    });
+
+    QUnit.test("Direct object map path find - value, no index", function (assert) {
+      assert.equal(_M.findThroughObjectPath({"x":"2"}, null, ["x", "value"], null, null), "2");
+    });
+
+    QUnit.test("Direct object path find - null, no index", function (assert) {
+        assert.equal(_M.findThroughObjectPath({"x": null}, null, ["x", "y"], null, null), null);
+    });
+
+    QUnit.test("Deep direct object path find - null, no index", function (assert) {
+        assert.equal(_M.findThroughObjectPath({"x":{"y": null}}, null, ["x", "y"], null, null), null);
+    });
+
+    QUnit.test("Each object", function (assert) {
+        assert.equal(_M.findThroughObjectPath({}, 1, ["eachLookup"], [123, 567], "eachLookup"), 567);
+    });
+
+    QUnit.test("Each object - without index", function (assert) {
+        assert.equal(_M.findThroughObjectPath({}, null, ["eachLookup"], 123, "eachLookup"), 123);
+    });
+
+    QUnit.test("Can deal with null", function (assert) {
+        assert.equal(_M.findThroughObjectPath(null, null, [], null, null), null);
+    });
+
+});
+
 /*
 QUnit.module("_M.parseEachNameFromConditionalExpression", function() {
     QUnit.test("simple parse", function(assert) {
