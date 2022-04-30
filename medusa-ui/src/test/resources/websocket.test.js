@@ -771,6 +771,71 @@ QUnit.module("_M.findThroughObjectPath", function() {
 
 });
 
+QUnit.module("_M.buildTemplateMap ", function() {
+    QUnit.test("no template-id", function(assert) {
+        assert.deepEqual(_M.buildTemplateMap (document.createElement("p")), []);
+    });
+
+    QUnit.test("no meach", function(assert) {
+        let element = document.createElement("div");
+        element.setAttribute("template-id", "t-123");
+
+        assert.deepEqual(_M.buildTemplateMap (element), []);
+    });
+
+    QUnit.test("simple build", function(assert) {
+        let element = document.createElement("div");
+        element.setAttribute("template-id", "t-123");
+        element.setAttribute("m-each", "person");
+        element.setAttribute("index", "0");
+
+        assert.deepEqual(_M.buildTemplateMap (element), [{"eachName": "person", "index": "0", "templateId": "t-123"}]);
+    });
+
+    QUnit.test("nested build", function(assert) {
+        let element = document.createElement("div");
+        element.setAttribute("template-id", "t-534#t-123");
+        element.setAttribute("m-each", "person");
+        element.setAttribute("index", "5");
+
+        assert.deepEqual(_M.buildTemplateMap (element), [{"eachName": "person", "index": "5", "templateId": "t-123"}]);
+    });
+
+    QUnit.test("no index", function(assert) {
+        let element = document.createElement("div");
+        element.setAttribute("template-id", "t-123");
+        element.setAttribute("m-each", "person");
+
+        assert.deepEqual(_M.buildTemplateMap (element), [{"eachName": "person", "index": null, "templateId": "t-123"}]);
+    });
+});
+
+QUnit.module("_M.determineDeeperObjectPath", function() {
+    QUnit.test("no path to parse", function(assert) {
+        assert.deepEqual(_M.determineDeeperObjectPath(""), []);
+    });
+
+    QUnit.test("simple path, disregards first value so empty", function(assert) {
+        assert.deepEqual(_M.determineDeeperObjectPath("x"), []);
+    });
+
+    QUnit.test("simple chain", function(assert) {
+        assert.deepEqual(_M.determineDeeperObjectPath("x.y.z"), ["y", "z"]);
+    });
+
+    QUnit.test("complex array chain", function(assert) {
+        assert.deepEqual(_M.determineDeeperObjectPath("x.y[a].z"), ["y", "a", "z"]);
+    });
+
+    QUnit.test("complex array chain with inner object depth", function(assert) {
+        assert.deepEqual(_M.determineDeeperObjectPath("x.y[a.b].z"), ["y", "a", "b", "z"]);
+    });
+
+    QUnit.test("complex array chain - quotes", function(assert) {
+        assert.deepEqual(_M.determineDeeperObjectPath("x.y['a'].z"), ["y", "a", "z"]);
+    });
+});
+
 /*
 QUnit.module("_M.parseEachNameFromConditionalExpression", function() {
     QUnit.test("simple parse", function(assert) {
