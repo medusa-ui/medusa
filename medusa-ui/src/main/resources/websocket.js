@@ -289,7 +289,7 @@ _M.javaNumberCompatibility = function(parameter) {
         return parameter + "d";
     } else if(_M.isNumeric(parameter)) {
         if(parameter > 2147483647 || parameter < -2147483648) {
-            return parameter + "L";
+            return parameter + "l";
         }
     }
     return parameter;
@@ -396,7 +396,8 @@ _M.isDecimal = function(x) {
 }
 
 _M.isNumeric = function(str) {
-    if (typeof str != "string") { return false; }
+    if (typeof str === "number") { return true; }
+    if (typeof str !== "string") { return false; }
     return !isNaN( parseFloat( str ) ) && isFinite( str );
 }
 
@@ -405,11 +406,13 @@ _M.isJavaNumber = function(str) {
 }
 
 _M.isJavaLong = function(str) {
-    return str.match(/^[+-]?\d+[l]$/i);
+    if(_M.isNull(str)) { return false; }
+    return str.toLowerCase().match(/^[+-]?\d+[l]$/i) !== null;
 }
 
 _M.isJavaDoubleOrFloat = function(str) {
-    return str.match(/^[+-]?(\d+\.?\d*|\.\d+)[df]$/ig);
+    if(_M.isNull(str)) { return false; }
+    return str.toLowerCase().match(/^[+-]?(\d+\.?\d*|\.\d+)[df]$/ig) !== null;
 }
 
 _M.injectVariablesIntoText = function(text) {

@@ -22,6 +22,174 @@ QUnit.module("_M.isBoolean", function() {
     });
 });
 
+QUnit.module("_M.isNumeric", function() {
+    QUnit.test("\"x\" is not numeric", function(assert) {
+        assert.false(_M.isNumeric("x"));
+    });
+
+    QUnit.test("undefined is not a dnumericcimal", function(assert) {
+        assert.false(_M.isNumeric(undefined));
+    });
+
+    QUnit.test("null is not a numeric", function(assert) {
+        assert.false(_M.isNumeric(null));
+    });
+
+    QUnit.test("1 is numeric", function(assert) {
+        assert.true(_M.isNumeric(1));
+    });
+
+    QUnit.test("1345 is numeric", function(assert) {
+        assert.true(_M.isNumeric(1345));
+    });
+
+    QUnit.test("1.36 is numeric", function(assert) {
+        assert.true(_M.isNumeric(1.36));
+    });
+
+    QUnit.test("0.5 is numeric", function(assert) {
+        assert.true(_M.isNumeric(0.5));
+    });
+
+    QUnit.test("'1' is numeric", function(assert) {
+        assert.true(_M.isNumeric('1'));
+    });
+
+    QUnit.test("'1345' is numeric", function(assert) {
+        assert.true(_M.isNumeric('1345'));
+    });
+
+    QUnit.test("'1.36' is numeric", function(assert) {
+        assert.true(_M.isNumeric('1.36'));
+    });
+
+    QUnit.test("'0.5' is numeric", function(assert) {
+        assert.true(_M.isNumeric('0.5'));
+    });
+
+    QUnit.test("'-0.5' is numeric", function(assert) {
+        assert.true(_M.isNumeric('-0.5'));
+    });
+});
+
+QUnit.module("_M.isDecimal", function() {
+    QUnit.test("\"x\" is not a decimal", function(assert) {
+        assert.false(_M.isDecimal("x"));
+    });
+
+    QUnit.test("undefined is not a decimal", function(assert) {
+        assert.false(_M.isDecimal(undefined));
+    });
+
+    QUnit.test("null is not a decimal", function(assert) {
+        assert.false(_M.isDecimal(null));
+    });
+
+    QUnit.test("1 is not a decimal", function(assert) {
+        assert.false(_M.isDecimal(1));
+    });
+
+    QUnit.test("1.36 is a decimal", function(assert) {
+        assert.true(_M.isDecimal(1.36));
+    });
+
+    QUnit.test("0.5 is a decimal", function(assert) {
+        assert.true(_M.isDecimal(0.5));
+    });
+
+    QUnit.test("'1' is not a decimal", function(assert) {
+        assert.false(_M.isDecimal('1'));
+    });
+
+    QUnit.test("'1.36' is a decimal", function(assert) {
+        assert.true(_M.isDecimal('1.36'));
+    });
+
+    QUnit.test("'0.5' is a decimal", function(assert) {
+        assert.true(_M.isDecimal('0.5'));
+    });
+
+    QUnit.test("'-0.5' is a decimal", function(assert) {
+        assert.true(_M.isDecimal('-0.5'));
+    });
+});
+
+QUnit.module("_M.isJavaNumber", function() {
+    QUnit.test("\"x\" is not a decimal", function(assert) {
+        assert.false(_M.isJavaNumber("x"));
+    });
+});
+
+QUnit.module("_M.isJavaLong", function() {
+    QUnit.test("null is not java long", function(assert) {
+        assert.false(_M.isJavaLong(null));
+    });
+
+    QUnit.test("'bowl' is not java long", function(assert) {
+        assert.false(_M.isJavaLong('bowl'));
+    });
+
+    QUnit.test("'4435l' is a java long", function(assert) {
+        assert.true(_M.isJavaLong('4435l'));
+    });
+
+    QUnit.test("'4435L' is a java long", function(assert) {
+        assert.true(_M.isJavaLong('4435L'));
+    });
+});
+
+QUnit.module("_M.isJavaDoubleOrFloat", function() {
+    QUnit.test("null is not java float or double", function(assert) {
+        assert.false(_M.isJavaDoubleOrFloat(null));
+    });
+
+    QUnit.test("'loaf' is not java float or double", function(assert) {
+        assert.false(_M.isJavaDoubleOrFloat('loaf'));
+    });
+
+    QUnit.test("'road' is not java float", function(assert) {
+        assert.false(_M.isJavaDoubleOrFloat('road'));
+    });
+
+    QUnit.test("'0.4435f' is a java float", function(assert) {
+        assert.true(_M.isJavaDoubleOrFloat('0.4435f'));
+    });
+
+    QUnit.test("'0.4435d' is a java double", function(assert) {
+        assert.true(_M.isJavaDoubleOrFloat('0.4435d'));
+    });
+
+    QUnit.test("'0.4435F' is a java float", function(assert) {
+        assert.true(_M.isJavaDoubleOrFloat('0.4435F'));
+    });
+
+    QUnit.test("'0.4435D' is a java double", function(assert) {
+        assert.true(_M.isJavaDoubleOrFloat('0.4435D'));
+    });
+});
+
+QUnit.module("_M.javaNumberCompatibility", function() {
+    QUnit.test("simple single quoted string", function(assert) {
+        assert.equal(_M.javaNumberCompatibility("'hello world'"), "'hello world'");
+    });
+
+    QUnit.test("0 < x < 2147483647 should stay as-is", function(assert) {
+        assert.equal(_M.javaNumberCompatibility(99999), 99999);
+    });
+
+    QUnit.test("decimals should turn to double", function(assert) {
+        assert.equal(_M.javaNumberCompatibility(99999.99), "99999.99d");
+    });
+
+    QUnit.test("< -2147483647 should become a long", function(assert) {
+        assert.equal(_M.javaNumberCompatibility(-9999999999), "-9999999999l");
+    });
+
+    QUnit.test("> 2147483647 should become a long", function(assert) {
+        assert.equal(_M.javaNumberCompatibility(9999999999), "9999999999l");
+    });
+});
+
 QUnit.module("_M.isQuoted", function() {
     QUnit.test("simple single quoted string", function(assert) {
         assert.true(_M.isQuoted("'hello world'"));
@@ -230,8 +398,6 @@ QUnit.module("_M.attributeValue", function() {
         assert.equal(_M.attributeValue(undefined, "type"), null);
         assert.equal(_M.attributeValue(elem, undefined), null);
     });
-
-
 });
 
 QUnit.module("_M.parseSelfReference", function() {
@@ -271,7 +437,6 @@ QUnit.module("_M.parseSelfReference", function() {
     });
 });
 
-//
 QUnit.module("_M.parseElementByIdReference", function() {
 
     let originElement = document.createElement("input");
@@ -387,6 +552,25 @@ QUnit.module("_M.recursiveObjectUpdate", function() {
 
     QUnit.test("Empty", function (assert) {
         assert.equal(_M.recursiveObjectUpdate("", {}, ""), "");
+    });
+});
+
+QUnit.module("_M.injectVariablesIntoText", function() {
+    QUnit.test("Simple injection", function (assert) {
+        let text = "ABC y";
+        _M.variables = {"y" : "123"};
+        assert.equal(_M.injectVariablesIntoText(text), "ABC 123");
+    });
+
+    QUnit.test("No injection", function (assert) {
+        let text = "ABC y";
+        _M.variables = {};
+        assert.equal(_M.injectVariablesIntoText(text), "ABC y");
+    });
+
+    QUnit.test("Can deal with null", function (assert) {
+        _M.variables = {};
+        assert.equal(_M.injectVariablesIntoText(null), null);
     });
 });
 
