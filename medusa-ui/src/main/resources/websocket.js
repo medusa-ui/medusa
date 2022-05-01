@@ -179,7 +179,7 @@ _M.injectVariablesIntoConditionalExpression = function(expression, elem) {
             const index = parentElement.getAttribute("index");
             const indexRef = "[$index#" + eachNameForIndex + "]";
 
-            const isArray = expression.indexOf("([{") !== -1;
+            const isArray = expression.indexOf("][$index#") !== -1;
             const isMap = expression.indexOf("[$index#") !== -1;
 
             //handle object array
@@ -188,7 +188,7 @@ _M.injectVariablesIntoConditionalExpression = function(expression, elem) {
                 let property = expression.substring(expression.indexOf(indexRef) + indexRef.length);
                 property = property.substring(0, property.indexOf(" "));
                 const valueReplacement = objectToWrap + indexRef ;
-                expression = expression.replaceAll(valueReplacement, _M.evalCondition("Object.values(" + objectToWrap + ")[" + index + "]" + property ));
+                expression = expression.replaceAll(valueReplacement, JSON.stringify(_M.evalCondition("Object.values(" + objectToWrap + ")[" + index + "]" + property )));
                 expression = expression.replaceAll( property, "");
             }
 
@@ -212,7 +212,16 @@ _M.parseArrayFromConditionalExpression = function(expression) {
     }
     const endIndex = expression.indexOf("[$index#");
     const subExpression = expression.substring(0, endIndex);
-    const beginIndex = subExpression.indexOf("[{");
+    let beginIndex = subExpression.indexOf("[{");
+    if(-1 === beginIndex) {
+        beginIndex = subExpression.indexOf("[");
+        if(-1 === beginIndex) {
+            beginIndex = subExpression.indexOf(" ") + 1;
+            if(-1 === beginIndex) {
+                beginIndex = 0;
+            }
+        }
+    }
     return subExpression.substring(beginIndex, endIndex);
 }
 

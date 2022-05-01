@@ -377,6 +377,11 @@ QUnit.module("_M.evalCondition", function() {
         assert.equal(_M.evalCondition(null), false);
     });
 
+    QUnit.test("can deal with simple JS functions", function(assert) {
+        assert.equal(_M.evalCondition("Object.values([\"A\",\"B\"])[0]"), "A");
+    });
+
+
     //Object.values([{"id":"3","name":"PETER"},{"id":"4","name":"JEANETTE"}])[1].id
     //!(4 === Z || !( 4 === Z ) && (4 === 1))
 });
@@ -1079,6 +1084,34 @@ QUnit.module("_M.injectVariablesIntoConditionalExpression", function() {
 
         assert.notEqual(_M.injectVariablesIntoConditionalExpression("[{\"id\":\"3\",\"name\":\"PETER\"},{\"id\":\"4\",\"name\":\"JEANETTE\"}][$index#letters].value === true", element), '[object Object] === true');
     });
+
+    QUnit.test("Array check", function(assert) {
+        _M.variables = { "strings" : ['A', 'B'] };
+        _M.conditionals = { "t-123" : "strings" };
+        let parent = document.createElement("div");
+        parent.setAttribute("template-id", "t-123");
+        parent.setAttribute("m-each", "string");
+        parent.setAttribute("index", "0");
+
+        parent.appendChild(document.createElement("div"));
+        let element = parent.childNodes.item(0);
+
+        assert.equal(_M.injectVariablesIntoConditionalExpression("[\"A\",\"B\"][$index#string] === \"Z\"", element), "\"A\" === \"Z\"");
+    });
+
+    QUnit.test("Complex check", function(assert) {
+        _M.variables = { "strings" : ['A', 'B'] };
+        _M.conditionals = { "t-123" : "strings" };
+        let parent = document.createElement("div");
+        parent.setAttribute("template-id", "t-123");
+        parent.setAttribute("m-each", "string");
+        parent.setAttribute("index", "0");
+
+        parent.appendChild(document.createElement("div"));
+        let element = parent.childNodes.item(0);
+
+        assert.equal(_M.injectVariablesIntoConditionalExpression("!( strings[$index#string] === 'Z' ) && (strings[$index#string] === 'A')", element), "!( \"A\" === 'Z' ) && (\"A\" === 'A')");
+    });
 });
 
 QUnit.module("_M.parseObjectFromConditionalExpression", function() {
@@ -1109,6 +1142,7 @@ QUnit.module("_M.parseArrayFromConditionalExpression", function() {
     QUnit.test("simple parse", function(assert) {
         assert.deepEqual(_M.parseArrayFromConditionalExpression("[0,1,2][$index#string] === Z"), "[0,1,2]");
         assert.deepEqual(_M.parseArrayFromConditionalExpression("[{[0,1,2]}][$index#string] === Z"), "[{[0,1,2]}]");
+        assert.deepEqual(_M.parseArrayFromConditionalExpression("strings[$index#string] === 'Z'"), "strings");
     });
 
     QUnit.test("has nothing to parse", function(assert) {
@@ -1122,6 +1156,12 @@ QUnit.module("_M.parseArrayFromConditionalExpression", function() {
     QUnit.test("can deal with null", function(assert) {
         assert.deepEqual(_M.parseArrayFromConditionalExpression(null), "[]");
     });
+
+    QUnit.test("can deal with negation", function(assert) {
+        assert.deepEqual(_M.parseArrayFromConditionalExpression("!( strings[$index#string] === 'Z' ) && (strings[$index#string] === 'A')"), "strings");
+    });
+
+
 });
 
 QUnit.module("_M.injectVariablesIntoMethodExpression", function() {
