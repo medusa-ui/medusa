@@ -30,8 +30,12 @@ public class ActiveSessionRegistry {
 
     private final Map<String, WebSocketSession> registry = new HashMap<>();
     private final Map<String, SecurityContext> registrySecurityContext = new HashMap<>();
+    private final Map<String, ActiveDocument> documentRegistry = new HashMap<>();
 
     private static final Cache<String, SecurityContext> securityContextCache = Caffeine.newBuilder()
+            .expireAfterWrite(30, TimeUnit.SECONDS)
+            .build();
+    private static final Cache<String, ActiveDocument> activeDocumentCache = Caffeine.newBuilder()
             .expireAfterWrite(30, TimeUnit.SECONDS)
             .build();
 
@@ -44,6 +48,7 @@ public class ActiveSessionRegistry {
         if (null == session) return;
         registry.remove(session.getId());
         registrySecurityContext.remove(session.getId());
+        documentRegistry.remove(session.getId());
     }
 
     private Collection<WebSocketSession> getAllSessions() {
@@ -87,6 +92,7 @@ public class ActiveSessionRegistry {
 
     public void associateSecurityContext(String uniqueSecurityId, WebSocketSession session) {
         registrySecurityContext.put(session.getId(), securityContextCache.getIfPresent(uniqueSecurityId));
+        documentRegistry.put(session.getId(), activeDocumentCache.getIfPresent(uniqueSecurityId));
     }
 
     public void registerSecurityContext(SecurityContext securityContext) {
@@ -96,6 +102,16 @@ public class ActiveSessionRegistry {
     public void clear() {
         registry.clear();
         registrySecurityContext.clear();
+        documentRegistry.clear();
+        activeDocumentCache.cleanUp();
         securityContextCache.cleanUp();
+    }
+
+    public void registerDocument(String uniqueSecurityId, ActiveDocument document) {
+        activeDocumentCache.put(uniqueSecurityId, document);
+    }
+
+    public ActiveDocument getLastDocument(String sessionId) {
+        return documentRegistry.getOrDefault(sessionId, ActiveDocument.empty());
     }
 }

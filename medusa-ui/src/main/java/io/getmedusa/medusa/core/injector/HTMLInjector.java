@@ -4,10 +4,7 @@ import io.getmedusa.medusa.core.annotation.UIEventWithAttributes;
 import io.getmedusa.medusa.core.cache.HTMLCache;
 import io.getmedusa.medusa.core.injector.tag.*;
 import io.getmedusa.medusa.core.injector.tag.meta.InjectionResult;
-import io.getmedusa.medusa.core.registry.EachValueRegistry;
-import io.getmedusa.medusa.core.registry.EventHandlerRegistry;
-import io.getmedusa.medusa.core.registry.IterationRegistry;
-import io.getmedusa.medusa.core.registry.RouteRegistry;
+import io.getmedusa.medusa.core.registry.*;
 import io.getmedusa.medusa.core.util.SecurityContext;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -31,6 +28,7 @@ public enum HTMLInjector {
 
     public static final Charset CHARSET = StandardCharsets.UTF_8;
     public static final String EVENT_EMITTER = "/event-emitter/";
+    private final HashGenerationService hashGenerationService = new HashGenerationService();
     private String script = null;
     private String styling = null;
 
@@ -65,7 +63,7 @@ public enum HTMLInjector {
             if(this.script == null) this.script = script;
             if(this.styling == null) this.styling = styling;
             Document document = HTMLCache.getInstance().getDocument(fileName);
-            return htmlStringInject(request, securityContext, csrfToken, document);
+            return htmlStringInject(fileName, request, securityContext, csrfToken, document);
         } catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException(e);
@@ -87,10 +85,10 @@ public enum HTMLInjector {
 
     //only used in testing
     String htmlStringInject(ServerRequest request, SecurityContext securityContext, String htmlString) {
-        return htmlStringInject(request, securityContext, null, Jsoup.parse(htmlString));
+        return htmlStringInject(null, request, securityContext, null, Jsoup.parse(htmlString));
     }
 
-    String htmlStringInject(ServerRequest request, SecurityContext securityContext, String csrfToken, Document document) {
+    public String htmlStringInject(String fileName, ServerRequest request, SecurityContext securityContext, String csrfToken, Document document) {
         final Map<String, Object> variables = newLargestFirstMap();
 
         final String matchedPath = matchRequestPath(request);
@@ -105,7 +103,7 @@ public enum HTMLInjector {
             }
             injectVariablesInScript(result, variables);
 
-            return injectScript(matchedPath, result, securityContext.getUniqueId(), csrfToken, request);
+            return injectScript(fileName, matchedPath, result, securityContext.getUniqueId(), csrfToken, request);
         } finally {
             EachValueRegistry.getInstance().clear(request);
         }
@@ -141,7 +139,10 @@ public enum HTMLInjector {
         }
     }
 
-    private String injectScript(String path, InjectionResult html, String uniqueId, String csrfToken, ServerRequest request) {
+    private String injectScript(String fileName, String path, InjectionResult html, String uniqueId, String csrfToken, ServerRequest request) {
+        hashGenerationService.recursivelyAddPath(html.getDocument(), true);
+        ActiveSessionRegistry.getInstance().registerDocument(uniqueId, new ActiveDocument(fileName, path, html.getDocument(), request));
+
         String injectedHTML = html.getHTML();
         if(script != null) {
             final String bodyEndTagReplacement = "<script id=\"m-websocket-setup\">\n" +

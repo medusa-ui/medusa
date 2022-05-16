@@ -1,26 +1,21 @@
 package io.getmedusa.medusa.core.rewrite;
 
-import com.google.common.hash.HashFunction;
-import com.google.common.hash.Hashing;
+import io.getmedusa.medusa.core.injector.HashGenerationService;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
-
 class GenerateHashesForDOMTest {
 
-    protected static final HashFunction HASH_FUNCTION = Hashing.murmur3_32_fixed();
+    private HashGenerationService hashGenerationService = new HashGenerationService();
 
     @Test
     void testContentHash() {
         Document document = Jsoup.parse(SAMPLE_DOM);
-        recursivelyAddPath(document.children(), "",true);
+        hashGenerationService.recursivelyAddPath(document,true);
+
         Element span = document.getAllElements().stream().filter(e->e.tagName().equals("span")).findFirst().get();
         Element body = document.getAllElements().stream().filter(e->e.tagName().equals("body")).findFirst().get();
         Assertions.assertNotNull(span);
@@ -36,7 +31,8 @@ class GenerateHashesForDOMTest {
     @Test
     void testFindPathForEachNode() {
         Document document = Jsoup.parse(SAMPLE_DOM);
-        recursivelyAddPath(document.children(), "",false);
+        hashGenerationService.recursivelyAddPath(document,false);
+
         Element span = document.getAllElements().stream().filter(e->e.tagName().equals("span")).findFirst().get();
         Assertions.assertNotNull(span);
 
@@ -44,64 +40,6 @@ class GenerateHashesForDOMTest {
         Assertions.assertNotNull(path);
 
         Assertions.assertEquals("html>body>p[1]>span", path);
-
-        System.out.println(path);
-    }
-
-    private void recursivelyAddPath(Elements elements, String context, boolean applyHash) {
-        for(Element element : elements) {
-            StringBuilder hashBasis = new StringBuilder(context);
-            if(!context.isBlank()) {
-                hashBasis.append(">");
-            }
-            hashBasis.append(element.tagName());
-
-            List<Element> siblings = findSiblings(element);
-
-            if(siblings.size() > 1) {
-                hashBasis.append("[");
-                hashBasis.append(siblings.indexOf(element));
-                hashBasis.append("]");
-            }
-
-            final String newContext = hashBasis.toString();
-
-            applyPathHash(applyHash, element, newContext);
-            applyContentHash(applyHash, element);
-
-            if(element.childrenSize() > 0) {
-                recursivelyAddPath(element.children(), newContext, applyHash);
-            }
-        }
-    }
-
-    private void applyPathHash(boolean applyHash, Element element, String newContext) {
-        element.attr("p", applyHash ? hash(newContext) : newContext);
-    }
-
-    private void applyContentHash(boolean applyHash, final Element element) {
-        if(applyHash) {
-            String directContent = element.ownText(); //TODO remove child nodes first
-            if(!directContent.isBlank()) {
-
-                if(element.childrenSize() > 0) {
-                    Element clone = element.clone();
-                    clone.children().remove();
-                    directContent = clone.ownText();
-                }
-
-                element.attr("c", hash(directContent));
-            }
-        }
-    }
-
-    private List<Element> findSiblings(Element element) {
-        if(element.parent() == null) return new ArrayList<>();
-        return element.parent().children().stream().filter(s -> s.tagName().equals(element.tagName())).toList();
-    }
-
-    private String hash(String raw) {
-        return HASH_FUNCTION.hashString(raw, StandardCharsets.UTF_8).toString();
     }
 
     @Test
@@ -109,9 +47,9 @@ class GenerateHashesForDOMTest {
         String a = "A";
         String b = "B";
 
-        String hashA = hash(a);
-        String hashB = hash(b);
-        String hashC = hash("A");
+        String hashA = hashGenerationService.hash(a);
+        String hashB = hashGenerationService.hash(b);
+        String hashC = hashGenerationService.hash("A");
 
         Assertions.assertNotEquals(a, hashA);
         Assertions.assertNotEquals(b, hashB);
