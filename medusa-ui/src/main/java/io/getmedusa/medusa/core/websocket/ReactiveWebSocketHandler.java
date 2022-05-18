@@ -6,7 +6,7 @@ import io.getmedusa.medusa.core.cache.HTMLCache;
 import io.getmedusa.medusa.core.injector.DOMChanges;
 import io.getmedusa.medusa.core.injector.DOMChanges.DOMChange;
 import io.getmedusa.medusa.core.injector.DiffCheckService;
-import io.getmedusa.medusa.core.injector.Diff;
+import io.getmedusa.medusa.core.injector.JSReadyDiff;
 import io.getmedusa.medusa.core.registry.ActiveDocument;
 import io.getmedusa.medusa.core.registry.ActiveSessionRegistry;
 import io.getmedusa.medusa.core.registry.EventHandlerRegistry;
@@ -93,7 +93,7 @@ public class ReactiveWebSocketHandler implements WebSocketHandler {
                 Document newDocument = Jsoup.parse(INSTANCE.htmlStringInject(lastDocument.getFile(), lastDocument.getRequest(), context, null, document));
                 //TODO start with a PageAttributes() render, then apply DOMChange to it
 
-                List<Diff> diffs = new DiffCheckService().diffCheckDocuments(lastDocument, newDocument);
+                List<JSReadyDiff> diffs = new DiffCheckService().diffCheckDocuments(lastDocument, newDocument);
                 if(diffs == null || diffs.isEmpty()) { return null; }
                 return MAPPER.writeValueAsString(diffs);
             }

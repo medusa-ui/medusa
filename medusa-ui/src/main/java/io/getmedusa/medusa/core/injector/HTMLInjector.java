@@ -140,7 +140,7 @@ public enum HTMLInjector {
     }
 
     private String injectScript(String fileName, String path, InjectionResult html, String uniqueId, String csrfToken, ServerRequest request) {
-        hashGenerationService.recursivelyAddPath(html.getDocument(), true);
+        hashGenerationService.recursivelyAddPath(html.getDocument());
         ActiveSessionRegistry.getInstance().registerDocument(uniqueId, new ActiveDocument(fileName, path, html.getDocument(), request));
 
         String injectedHTML = html.getHTML();

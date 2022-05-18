@@ -14,60 +14,63 @@ public class HashGenerationService {
 
     private static final HashFunction HASH_FUNCTION = Hashing.murmur3_32_fixed();
 
-    public void recursivelyAddPath(Document document, boolean applyHash) {
-        recursivelyAddPath(document.children(), "", applyHash);
+    public void recursivelyAddPath(Document document) {
+        recursivelyAddPath(document.children(), null, "");
     }
 
-    private void recursivelyAddPath(Elements elements, String context, boolean applyHash) {
+    private void recursivelyAddPath(Elements elements, Element previousElement, String pathSoFar) {
         for(Element element : elements) {
-            StringBuilder hashBasis = new StringBuilder(context);
-            if(!context.isBlank()) {
-                hashBasis.append(">");
-            }
-            hashBasis.append(element.tagName());
-
-            List<Element> siblings = findSiblings(element);
-
-            if(siblings.size() > 1) {
-                hashBasis.append("[");
-                hashBasis.append(siblings.indexOf(element));
-                hashBasis.append("]");
-            }
-
-            final String newContext = hashBasis.toString();
-
-            applyPathHash(applyHash, element, newContext);
-            applyContentHash(applyHash, element);
+            pathSoFar = calculatePath(element, pathSoFar);
+            applyHash(element, previousElement, pathSoFar);
+            previousElement = element;
 
             if(element.childrenSize() > 0) {
-                recursivelyAddPath(element.children(), newContext, applyHash);
+                recursivelyAddPath(element.children(), previousElement, pathSoFar);
             }
         }
     }
 
-    private void applyPathHash(boolean applyHash, Element element, String newContext) {
-        element.attr("p", applyHash ? hash(newContext) : newContext);
-    }
-
-    private void applyContentHash(boolean applyHash, final Element element) {
-        if(applyHash) {
-            String directContent = element.ownText();
-            if(!directContent.isBlank()) {
-
-                if(element.childrenSize() > 0) {
-                    Element clone = element.clone();
-                    clone.children().remove();
-                    directContent = clone.ownText();
-                }
-
-                element.attr("c", hash(directContent));
-            }
+    private String calculatePath(Element element, String pathSoFar) {
+        StringBuilder hashBasis = new StringBuilder(pathSoFar);
+        if(!pathSoFar.isBlank()) {
+            hashBasis.append(">");
         }
+        hashBasis.append(element.tagName());
+
+        List<Element> siblings = findSiblings(element);
+
+        if(siblings.size() > 1) {
+            hashBasis.append("[");
+            hashBasis.append(siblings.indexOf(element));
+            hashBasis.append("]");
+        }
+
+        return hashBasis.toString();
     }
 
     private List<Element> findSiblings(Element element) {
         if(element.parent() == null) return new ArrayList<>();
         return element.parent().children().stream().filter(s -> s.tagName().equals(element.tagName())).toList();
+    }
+
+
+    private void applyHash(Element element, Element previousElement, String pathSoFar) {
+        element.attr("b", (previousElement != null) ? previousElement.attr("c") : hash("%no-previous"));
+        element.attr("c", getContentHash(element, pathSoFar));
+    }
+
+    private String getContentHash(final Element element, String pathSoFar) {
+        String directContent = element.ownText();
+        if(!directContent.isBlank()) {
+            if(element.childrenSize() > 0) {
+                Element clone = element.clone();
+                clone.children().remove();
+                directContent = clone.ownText();
+            }
+            return hash(pathSoFar + directContent);
+        } else {
+            return hash(pathSoFar + "%no-content");
+        }
     }
 
     public String hash(String raw) {

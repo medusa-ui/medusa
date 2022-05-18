@@ -14,7 +14,7 @@ class GenerateHashesForDOMTest {
     @Test
     void testContentHash() {
         Document document = Jsoup.parse(SAMPLE_DOM);
-        hashGenerationService.recursivelyAddPath(document,true);
+        hashGenerationService.recursivelyAddPath(document);
 
         Element span = document.getAllElements().stream().filter(e->e.tagName().equals("span")).findFirst().get();
         Element body = document.getAllElements().stream().filter(e->e.tagName().equals("body")).findFirst().get();
@@ -31,7 +31,7 @@ class GenerateHashesForDOMTest {
     @Test
     void testFindPathForEachNode() {
         Document document = Jsoup.parse(SAMPLE_DOM);
-        hashGenerationService.recursivelyAddPath(document,false);
+        hashGenerationService.recursivelyAddPath(document);
 
         Element span = document.getAllElements().stream().filter(e->e.tagName().equals("span")).findFirst().get();
         Assertions.assertNotNull(span);
