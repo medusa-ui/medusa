@@ -1,9 +1,8 @@
 package io.getmedusa.medusa.core.rewrite;
 
-import io.getmedusa.medusa.core.injector.JSReadyDiff;
 import io.getmedusa.medusa.core.injector.DiffCheckService;
 import io.getmedusa.medusa.core.injector.DiffType;
-import io.getmedusa.medusa.core.injector.HashGenerationService;
+import io.getmedusa.medusa.core.injector.JSReadyDiff;
 import io.getmedusa.medusa.core.registry.ActiveDocument;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -15,7 +14,6 @@ import java.util.List;
 class DiffCheckServiceTest {
 
     private final DiffCheckService diffCheckService = new DiffCheckService();
-    private final HashGenerationService hashGenerationService = new HashGenerationService();
 
     @Test
     void testAdditionEnd() {
@@ -75,6 +73,11 @@ class DiffCheckServiceTest {
         """);
         Assertions.assertNotNull(diffs);
         Assertions.assertEquals(1, diffs.size());
+
+        JSReadyDiff firstDiff = diffs.get(0);
+        Assertions.assertEquals("/html[1]/body[1]/p[1]/span[1]", firstDiff.getXpath());
+        Assertions.assertEquals(DiffType.EDIT, firstDiff.getType());
+        Assertions.assertEquals("EDITED", firstDiff.getContent());
     }
 
     @Test
@@ -100,8 +103,19 @@ class DiffCheckServiceTest {
             </html>
         """);
         Assertions.assertNotNull(diffs);
-        Assertions.assertEquals(1, diffs.size());
+        Assertions.assertEquals(2, diffs.size());
+
+        JSReadyDiff firstDiff = diffs.get(0);
+        Assertions.assertEquals("/html[1]/body[1]/p[3]", firstDiff.getXpath());
+        Assertions.assertEquals(DiffType.EDIT, firstDiff.getType());
+        Assertions.assertEquals("BETWEEN", firstDiff.getContent());
+
+        JSReadyDiff secondDiff = diffs.get(1);
+        Assertions.assertEquals("/html[1]/body[1]/p[5]", secondDiff.getXpath());
+        Assertions.assertEquals(DiffType.ADDITION, secondDiff.getType());
+        Assertions.assertTrue(secondDiff.getContent().contains(">A</p>"), "Should match '>A</p>'");
     }
+
     @Test
     void testAdditionInside() {
         final List<JSReadyDiff> diffs = getDiffs("""
@@ -124,11 +138,14 @@ class DiffCheckServiceTest {
                 <p>B</p>
                 <p>C</p>
         """, """
+                <p>A</p>
                 <p>B</p>
-                <p>C</p>
         """);
         Assertions.assertNotNull(diffs);
         Assertions.assertEquals(1, diffs.size());
+        JSReadyDiff diff = diffs.get(0);
+        Assertions.assertEquals("/html[1]/body[1]/p[3]", diff.getXpath());
+        Assertions.assertEquals(DiffType.REMOVAL, diff.getType());
     }
 
     @Test

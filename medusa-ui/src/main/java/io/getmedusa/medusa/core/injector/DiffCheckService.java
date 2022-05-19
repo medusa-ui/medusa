@@ -30,7 +30,7 @@ public class DiffCheckService {
                 .withTest(cleanString(newDocument.outerHtml()))
                 .build();
 
-        for(Difference difference : differences.getDifferences()) {
+        for (Difference difference : differences.getDifferences()) {
             final Comparison comparison = difference.getComparison();
             if(!ComparisonType.CHILD_NODELIST_LENGTH.equals(comparison.getType())){
                 final JSReadyDiff diff = comparisonToDiff(comparison);
@@ -47,6 +47,8 @@ public class DiffCheckService {
 
         if(isAddition(lastDocumentNode, newDocumentNode)) {
             return createAdditionDiff(newDocumentNode, comparison.getTestDetails().getXPath());
+        } else if(isRemoval(lastDocumentNode, newDocumentNode)) {
+            return createRemovalDiff(comparison.getControlDetails().getXPath());
         } else if(comparison.getType().equals(ComparisonType.TEXT_VALUE)) {
             return createEditDiff(comparison.getTestDetails().getTarget().getTextContent(), comparison.getTestDetails().getParentXPath());
         }
@@ -56,6 +58,16 @@ public class DiffCheckService {
 
     private boolean isAddition(Node lastDocumentNode, Node newDocumentNode) {
         return lastDocumentNode == null && newDocumentNode != null;
+    }
+
+    private boolean isRemoval(Node lastDocumentNode, Node newDocumentNode) {
+        return lastDocumentNode != null && newDocumentNode == null;
+    }
+
+    private JSReadyDiff createRemovalDiff(String xPath) {
+        JSReadyDiff d = new JSReadyDiff(DiffType.REMOVAL);
+        d.setXpath(xPath);
+        return d;
     }
 
     private JSReadyDiff createEditDiff(String textContent, String xPath) {
