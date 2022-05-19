@@ -28,7 +28,6 @@ public enum HTMLInjector {
 
     public static final Charset CHARSET = StandardCharsets.UTF_8;
     public static final String EVENT_EMITTER = "/event-emitter/";
-    private final HashGenerationService hashGenerationService = new HashGenerationService();
     private String script = null;
     private String styling = null;
 
@@ -58,6 +57,7 @@ public enum HTMLInjector {
      * @param script cached websocket script
      * @return parsed html
      */
+    //TODO this needs a good rewrite so it's just render(page x, with this state)
     public String inject(ServerRequest request, SecurityContext securityContext, String fileName, String script, String styling, String csrfToken) {
         try {
             if(this.script == null) this.script = script;
@@ -89,11 +89,26 @@ public enum HTMLInjector {
     }
 
     public String htmlStringInject(String fileName, ServerRequest request, SecurityContext securityContext, String csrfToken, Document document) {
+        return htmlStringInject(fileName, request, securityContext, csrfToken, document, null);
+    }
+
+    public String htmlStringInject(String fileName, ServerRequest request, SecurityContext securityContext, String csrfToken, Document document,
+                                   List<DOMChanges.DOMChange> additionalChangesToState) {
         final Map<String, Object> variables = newLargestFirstMap();
 
         final String matchedPath = matchRequestPath(request);
         final UIEventWithAttributes uiEventController = EventHandlerRegistry.getInstance().get(matchedPath);
         if(uiEventController != null) variables.putAll(uiEventController.setupAttributes(request, securityContext).getPageVariables());
+
+        //apply additional diff changes
+        if (additionalChangesToState != null) {
+            for(DOMChanges.DOMChange k : additionalChangesToState) {
+                if(k.getV() == null) {
+                    k.setV("");
+                }
+                variables.put(k.getF(), k.getV());
+            }
+        }
 
         try {
             InjectionResult result = new InjectionResult(document);
@@ -140,7 +155,6 @@ public enum HTMLInjector {
     }
 
     private String injectScript(String fileName, String path, InjectionResult html, String uniqueId, String csrfToken, ServerRequest request) {
-        hashGenerationService.recursivelyAddPath(html.getDocument());
         ActiveSessionRegistry.getInstance().registerDocument(uniqueId, new ActiveDocument(fileName, path, html.getDocument(), request));
 
         String injectedHTML = html.getHTML();
@@ -183,5 +197,11 @@ public enum HTMLInjector {
                 return s1.compareTo(s2);
             }
         });
+    }
+
+    public String rerender(ActiveDocument lastDocument, List<DOMChanges.DOMChange> additionalChangesToStateDueToEvent) {
+        Document document = lastDocument.getDocument();
+        final SecurityContext securityContext = new SecurityContext(null); //TODO get this from somewhere, idk
+        return htmlStringInject(lastDocument.getFile(), lastDocument.getRequest(), securityContext, null, document, additionalChangesToStateDueToEvent);
     }
 }

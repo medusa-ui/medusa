@@ -2,7 +2,6 @@ package io.getmedusa.medusa.core.websocket;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.getmedusa.medusa.core.annotation.UIEventController;
-import io.getmedusa.medusa.core.cache.HTMLCache;
 import io.getmedusa.medusa.core.injector.DOMChanges;
 import io.getmedusa.medusa.core.injector.DOMChanges.DOMChange;
 import io.getmedusa.medusa.core.injector.DiffCheckService;
@@ -12,7 +11,6 @@ import io.getmedusa.medusa.core.registry.ActiveSessionRegistry;
 import io.getmedusa.medusa.core.registry.EventHandlerRegistry;
 import io.getmedusa.medusa.core.util.ExpressionEval;
 import io.getmedusa.medusa.core.util.ObjectMapperBuilder;
-import io.getmedusa.medusa.core.util.SecurityContext;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.springframework.beans.factory.annotation.Value;
@@ -36,7 +34,7 @@ import static io.getmedusa.medusa.core.injector.HTMLInjector.INSTANCE;
 public class ReactiveWebSocketHandler implements WebSocketHandler {
 
     public static final ObjectMapper MAPPER = ObjectMapperBuilder.setupObjectMapper();
-    private static final DomChangesExecution DOM_CHANGES_EXECUTION = new DomChangesExecution();
+    protected static final DiffCheckService DIFF_CHECK_SERVICE = new DiffCheckService();
 
     private final String hydraURL;
     public ReactiveWebSocketHandler(@Value("${hydra.url:}") String hydraURL) {
@@ -83,17 +81,10 @@ public class ReactiveWebSocketHandler implements WebSocketHandler {
                 ActiveSessionRegistry.getInstance().associateSecurityContext(uniqueSecurityId, session);
                 return "unq//ok";
             } else {
-                ActiveDocument lastDocument = ActiveSessionRegistry.getInstance().getLastDocument(session.getId());
-
-                //TODO do re-render here
-                final List<DOMChange> changes = executeEvent(session, event);
-
-                Document document = HTMLCache.getInstance().getDocument(lastDocument.getFile());
-                final SecurityContext context = ActiveSessionRegistry.getInstance().getSecurityContextById(session.getId());
-                Document newDocument = Jsoup.parse(INSTANCE.htmlStringInject(lastDocument.getFile(), lastDocument.getRequest(), context, null, document));
-                //TODO start with a PageAttributes() render, then apply DOMChange to it
-
-                List<JSReadyDiff> diffs = new DiffCheckService().diffCheckDocuments(lastDocument, newDocument);
+                ActiveDocument lastDocument = ActiveSessionRegistry.getInstance().getLastDocument(session.getId()); //this is the actual last document
+                final List<DOMChange> additionalChangesToStateDueToEvent = executeEvent(session, event); //this event just happened, so there's changes on top of that
+                Document newDocument = Jsoup.parse(INSTANCE.rerender(lastDocument, additionalChangesToStateDueToEvent)); //we rerender the same page as the last document, except we add the additional changes to it
+                List<JSReadyDiff> diffs = DIFF_CHECK_SERVICE.diffCheckDocuments(lastDocument, newDocument);
                 if(diffs == null || diffs.isEmpty()) { return null; }
                 return MAPPER.writeValueAsString(diffs);
             }
