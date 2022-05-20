@@ -2,6 +2,7 @@ package io.getmedusa.medusa.core.injector.tag.meta;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Entities;
 import org.jsoup.parser.Parser;
 
 import java.util.ArrayList;
@@ -25,6 +26,9 @@ public class InjectionResult {
     }
 
     public String getHTML() {
+        document.outputSettings().prettyPrint(true);
+        document.outputSettings().escapeMode(Entities.EscapeMode.xhtml);
+        document.outputSettings().syntax(Document.OutputSettings.Syntax.xml);
         return document.html();
     }
 

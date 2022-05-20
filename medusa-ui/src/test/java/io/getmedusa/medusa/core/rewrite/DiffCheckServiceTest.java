@@ -1,5 +1,6 @@
 package io.getmedusa.medusa.core.rewrite;
 
+import io.getmedusa.medusa.core.cache.HTMLCache;
 import io.getmedusa.medusa.core.injector.DiffCheckService;
 import io.getmedusa.medusa.core.injector.DiffType;
 import io.getmedusa.medusa.core.injector.JSReadyDiff;
@@ -9,6 +10,7 @@ import org.jsoup.nodes.Document;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.util.HashMap;
 import java.util.List;
 
 class DiffCheckServiceTest {
@@ -178,7 +180,8 @@ class DiffCheckServiceTest {
     }
 
     private ActiveDocument buildActiveDocument(String html) {
-        return new ActiveDocument("index.html", "/", Jsoup.parse(html), null);
+        HTMLCache.getInstance().getHTMLOrAdd("index.html", html);
+        return new ActiveDocument("index.html", "/", new HashMap<>(), html, null);
     }
 
     private List<JSReadyDiff> getDiffs(String a, String b) {

@@ -89,19 +89,27 @@ public enum HTMLInjector {
     }
 
     public String htmlStringInject(String fileName, ServerRequest request, SecurityContext securityContext, String csrfToken, Document document) {
-        return htmlStringInject(fileName, request, securityContext, csrfToken, document, null);
+        return htmlStringInject(fileName, request, securityContext, csrfToken, document, null, null);
     }
 
     public String htmlStringInject(String fileName, ServerRequest request, SecurityContext securityContext, String csrfToken, Document document,
-                                   List<DOMChanges.DOMChange> additionalChangesToState) {
-        final Map<String, Object> variables = newLargestFirstMap();
+    List<DOMChanges.DOMChange> additionalChangesToState, Map<String, Object> initialVariables) {
+
+        boolean appliedAdditionalDiffs = additionalChangesToState != null;
+
+        final Map<String, Object> variables;
+        if(appliedAdditionalDiffs) {
+            variables = initialVariables;
+        } else {
+            variables = newLargestFirstMap();
+        }
 
         final String matchedPath = matchRequestPath(request);
         final UIEventWithAttributes uiEventController = EventHandlerRegistry.getInstance().get(matchedPath);
         if(uiEventController != null) variables.putAll(uiEventController.setupAttributes(request, securityContext).getPageVariables());
 
         //apply additional diff changes
-        if (additionalChangesToState != null) {
+        if (appliedAdditionalDiffs) {
             for(DOMChanges.DOMChange k : additionalChangesToState) {
                 if(k.getV() == null) {
                     k.setV("");
@@ -118,7 +126,10 @@ public enum HTMLInjector {
             }
             injectVariablesInScript(result, variables);
 
-            return injectScript(fileName, matchedPath, result, securityContext.getUniqueId(), csrfToken, request);
+            //store for re-render use
+            ActiveSessionRegistry.getInstance().registerDocument(securityContext.getUniqueId(), new ActiveDocument(fileName, matchedPath, variables, result.getHTML(), request));
+
+            return injectScript(fileName, matchedPath, result, securityContext.getUniqueId(), csrfToken, request, appliedAdditionalDiffs);
         } finally {
             EachValueRegistry.getInstance().clear(request);
         }
@@ -154,10 +165,14 @@ public enum HTMLInjector {
         }
     }
 
-    private String injectScript(String fileName, String path, InjectionResult html, String uniqueId, String csrfToken, ServerRequest request) {
-        ActiveSessionRegistry.getInstance().registerDocument(uniqueId, new ActiveDocument(fileName, path, html.getDocument(), request));
+    private String injectScript(String fileName, String path, InjectionResult html, String uniqueId, String csrfToken, ServerRequest request, boolean appliedDomChanges) {
 
         String injectedHTML = html.getHTML();
+
+        if(appliedDomChanges) {
+            return injectedHTML;
+        }
+
         if(script != null) {
             final String bodyEndTagReplacement = "<script id=\"m-websocket-setup\">\n" +
                     script.replaceFirst("%WEBSOCKET_URL%", EVENT_EMITTER + path.hashCode()).replaceFirst("%SECURITY_CONTEXT_ID%", uniqueId) +
@@ -200,8 +215,8 @@ public enum HTMLInjector {
     }
 
     public String rerender(ActiveDocument lastDocument, List<DOMChanges.DOMChange> additionalChangesToStateDueToEvent) {
-        Document document = lastDocument.getDocument();
+        Document document = HTMLCache.getInstance().getDocument(lastDocument.getFile());
         final SecurityContext securityContext = new SecurityContext(null); //TODO get this from somewhere, idk
-        return htmlStringInject(lastDocument.getFile(), lastDocument.getRequest(), securityContext, null, document, additionalChangesToStateDueToEvent);
+        return htmlStringInject(lastDocument.getFile(), lastDocument.getRequest(), securityContext, null, document, additionalChangesToStateDueToEvent, lastDocument.getVariables());
     }
 }

@@ -3,6 +3,7 @@ package io.getmedusa.medusa.core.injector;
 import io.getmedusa.medusa.core.registry.ActiveDocument;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.jsoup.nodes.Entities;
 import org.w3c.dom.Node;
 import org.xmlunit.builder.DiffBuilder;
 import org.xmlunit.diff.Comparison;
@@ -22,20 +23,41 @@ import java.util.Set;
 
 public class DiffCheckService {
 
-    public List<JSReadyDiff> diffCheckDocuments(ActiveDocument lastDocument, Document newDocument) {
+    public List<JSReadyDiff> diffCheckDocuments(ActiveDocument activeDocument, Document newDocument) {
+
+        newDocument.outputSettings().prettyPrint(true);
+        newDocument.outputSettings().escapeMode(Entities.EscapeMode.xhtml);
+        newDocument.outputSettings().syntax(Document.OutputSettings.Syntax.xml);
+
+
         List<JSReadyDiff> diffs = new ArrayList<>();
+        try {
+            final String control = cleanString(activeDocument.getLastRender());
+            final String test = cleanString(newDocument.outerHtml());
 
-        Diff differences = DiffBuilder
-                .compare(cleanString(lastDocument.getDocument().outerHtml()))
-                .withTest(cleanString(newDocument.outerHtml()))
-                .build();
+            System.out.println("Compare HTMLs:");
+            System.out.println(control);
+            System.out.println("------");
+            System.out.println(test);
+            System.out.println("------");
 
-        for (Difference difference : differences.getDifferences()) {
-            final Comparison comparison = difference.getComparison();
-            if(!ComparisonType.CHILD_NODELIST_LENGTH.equals(comparison.getType())){
-                final JSReadyDiff diff = comparisonToDiff(comparison);
-                if(null != diff) { diffs.add(diff); }
+            Diff differences = DiffBuilder
+                    .compare(control)
+                    .withTest(test)
+                    .build();
+
+            for (Difference difference : differences.getDifferences()) {
+                final Comparison comparison = difference.getComparison();
+                if (!ComparisonType.CHILD_NODELIST_LENGTH.equals(comparison.getType())) {
+                    final JSReadyDiff diff = comparisonToDiff(comparison);
+                    if (null != diff) {
+                        diffs.add(diff);
+                    }
+                }
             }
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
         }
 
         return diffs;
@@ -101,11 +123,7 @@ public class DiffCheckService {
     }
 
     private String cleanString(String str) {
-        return str.trim()
-                .replace("\n", "")
-                .replace(">   <", "><")
-                .replace(">  <", "><")
-                .replace("> <", "><");
+        return str.replaceAll(">[\s\\r\\n]*<", "><");
     }
 
     private Set<String> getAllHashes(Document document, String attribute) {
