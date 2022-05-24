@@ -35,12 +35,6 @@ public class DiffCheckService {
             final String control = cleanString(activeDocument.getLastRender());
             final String test = cleanString(newDocument.outerHtml());
 
-            System.out.println("Compare HTMLs:");
-            System.out.println(control);
-            System.out.println("------");
-            System.out.println(test);
-            System.out.println("------");
-
             Diff differences = DiffBuilder
                     .compare(control)
                     .withTest(test)
@@ -72,7 +66,7 @@ public class DiffCheckService {
         } else if(isRemoval(lastDocumentNode, newDocumentNode)) {
             return createRemovalDiff(comparison.getControlDetails().getXPath());
         } else if(comparison.getType().equals(ComparisonType.TEXT_VALUE)) {
-            return createEditDiff(comparison.getTestDetails().getTarget().getTextContent(), comparison.getTestDetails().getParentXPath());
+            return createEditDiff(comparison.getTestDetails().getTarget().getParentNode(), comparison.getTestDetails().getParentXPath());
         }
 
         return null;
@@ -92,10 +86,10 @@ public class DiffCheckService {
         return d;
     }
 
-    private JSReadyDiff createEditDiff(String textContent, String xPath) {
+    private JSReadyDiff createEditDiff(Node node, String xPath) {
         JSReadyDiff d = new JSReadyDiff(DiffType.EDIT);
         d.setXpath(xPath);
-        d.setContent(textContent);
+        d.setContent(nodeToContent(node));
         return d;
     }
 

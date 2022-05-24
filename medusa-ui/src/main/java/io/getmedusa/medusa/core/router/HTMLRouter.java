@@ -41,10 +41,11 @@ class HTMLRouter {
     private final SimpleUrlHandlerMapping mapping = new SimpleUrlHandlerMapping();
 
     @Bean
-    public RouterFunction<ServerResponse> htmlRouter(@Value("classpath:/websocket.js") Resource scripts,
+    public RouterFunction<ServerResponse> htmlRouter(@Value("classpath:/websocket.js") Resource websocketjs,
+                                                     @Value("classpath:/morphdom.js") Resource morphdomjs,
                                                      @Value("classpath:/medusa-default-styling.css") Resource style,
                                                      IRequestStreamHandler requestStreamHandler) {
-        final String script = loadScript(scripts);
+        final String script = loadScript(websocketjs) + "\n" + loadScript(morphdomjs);
         final String styling = loadDefaultStyle(style);
         return RouteRegistry.getInstance().getRoutesWithHTMLFile().stream().map(route -> {
             String fileName = getPath(loadHTMLIntoCache(route.getValue(), Integer.toString(route.getKey().hashCode())));
