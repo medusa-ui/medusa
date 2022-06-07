@@ -23,7 +23,7 @@ public class Session {
         setLastParameters(route.getSetupAttributes(request));
         setLastUsedTemplate(route.getTemplateHTML());
         setLastUsedController(route.getControllerFQDN());
-        getTags().put(StandardTags.CURRENT_ROUTE.name(), route.getPath());
+        getTags().put(StandardSessionTags.CURRENT_ROUTE.name(), route.getPath());
     }
 
     public String getLastUsedTemplate() {

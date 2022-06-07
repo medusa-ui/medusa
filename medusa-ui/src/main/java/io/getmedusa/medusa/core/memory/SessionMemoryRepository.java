@@ -6,7 +6,7 @@ import org.springframework.stereotype.Repository;
 //decides on redis or in-memory storage based on properties
 
 @Repository
-public class MemoryRepository {
+public class SessionMemoryRepository {
 
     public Session store(Session session) {
         return session;
