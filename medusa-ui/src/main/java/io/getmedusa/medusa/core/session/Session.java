@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class Session {
 
@@ -56,6 +57,10 @@ public class Session {
 
     public void setLastParameters(List<Attribute> lastParameters) {
         this.lastParameters = lastParameters;
+    }
+
+    public Map<String, Object> toLastParameterMap() {
+        return this.lastParameters.stream().collect(Collectors.toMap(Attribute::name, Attribute::value, (a, b) -> b));
     }
 
     public Map<String, String> getTags() {
