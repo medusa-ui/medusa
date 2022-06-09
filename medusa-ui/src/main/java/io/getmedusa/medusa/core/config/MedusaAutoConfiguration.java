@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration
 @ComponentScan("io.getmedusa")
-@ConfigurationPropertiesScan("io.getmedusa.config")
+@ConfigurationPropertiesScan("io.getmedusa.medusa.config")
 class MedusaAutoConfiguration {
 
 }

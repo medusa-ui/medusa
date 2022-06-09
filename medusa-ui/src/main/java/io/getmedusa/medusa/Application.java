@@ -23,6 +23,7 @@ public class Application {
 				.sorted()
 				.forEach(builder::with);
 		builder.allowBlockingCallsInside("org.springframework.http.MediaTypeFactory", "parseMimeTypes"); //https://github.com/spring-projects/spring-framework/issues/26631#issuecomment-791504853
+		builder.allowBlockingCallsInside("org.springframework.boot.web.reactive.context.ReactiveWebServerApplicationContext", "getHttpHandler");
 		builder.install();
 	}
 
