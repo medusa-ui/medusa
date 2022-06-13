@@ -9,21 +9,6 @@ const {
 
 const MAX_REQUEST_N = 2147483647;
 
-function addErrorMessage(prefix, error) {
-    var ul = document.getElementById("messages");
-    var li = document.createElement("li");
-    li.appendChild(document.createTextNode(prefix + error));
-    ul.appendChild(li);
-}
-
-function addMessage(message) {
-    var ul = document.getElementById("messages");
-
-    var li = document.createElement("li");
-    li.appendChild(document.createTextNode(JSON.stringify(message)));
-    ul.appendChild(li);
-}
-
 //TODO https://github.com/viglucci/rsocket-chat-demo/blob/main/frontend/src/context/ClientProvider.jsx
 //TODO read https://github.com/viglucci/rsocket-chat-demo/blob/main/frontend/src/hooks/useChat.js
 
@@ -43,7 +28,7 @@ async function setupRouter() {
             metadataMimeType: WellKnownMimeType.MESSAGE_RSOCKET_COMPOSITE_METADATA.string,
         },
         transport: new WebsocketClientTransport({
-            url: 'ws://localhost:7000/tweetsocket'
+            url: 'ws://localhost:7000/socket'
         }),
     });
     const rsocket = await connector.connect();
@@ -52,7 +37,7 @@ async function setupRouter() {
 
 let stream;
 async function buildStream(rsocket) {
-    const encodedRoute = encodeRoute('tweets.by.author');
+    const encodedRoute = encodeRoute('event-emitter/' + _M.controller);
     const map = new Map();
     map.set(WellKnownMimeType.MESSAGE_RSOCKET_ROUTING, encodedRoute);
     map.set(WellKnownMimeType.MESSAGE_RSOCKET_AUTHENTICATION, encodeSimpleAuthMetadata("user", "pass"));
@@ -86,11 +71,6 @@ async function buildStream(rsocket) {
     });
 }
 
-function sendNextMessage() {
-    let payloadData = { author: document.getElementById("author-filter").value };
-    sendMessage(payloadData);
-}
-
 function sendMessage(payloadData) {
     stream.onNext({
         data: Buffer.from(JSON.stringify(payloadData))
@@ -98,4 +78,14 @@ function sendMessage(payloadData) {
 }
 
 document.addEventListener('DOMContentLoaded', setupRouter);
-document.getElementById('author-filter').addEventListener('change', sendNextMessage);
+
+const _M = new Medusa();
+function Medusa() {}
+Medusa.prototype.doAction = function(parentFragment, actionToExecute) {
+    console.log(actionToExecute);
+    sendMessage({
+        "fragment": null,
+        "action": actionToExecute
+    });
+}
+module.exports = _M;

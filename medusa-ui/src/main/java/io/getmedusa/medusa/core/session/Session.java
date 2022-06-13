@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 public class Session {
 
     private String lastUsedTemplate;
-    private String lastUsedController;
+    private String lastUsedHash;
     private String lastRenderedHTML;
     private List<Attribute> lastParameters = new ArrayList<>();
     private Map<String, String> tags = new HashMap<>();
@@ -23,7 +23,7 @@ public class Session {
     public Session(Route route, ServerRequest request) {
         setLastParameters(route.getSetupAttributes(request));
         setLastUsedTemplate(route.getTemplateHTML());
-        setLastUsedController(route.getControllerFQDN());
+        setLastUsedHash(route.generateHash());
         getTags().put(StandardSessionTags.CURRENT_ROUTE.name(), route.getPath());
     }
 
@@ -35,12 +35,12 @@ public class Session {
         this.lastUsedTemplate = lastUsedTemplate;
     }
 
-    public String getLastUsedController() {
-        return lastUsedController;
+    public String getLastUsedHash() {
+        return lastUsedHash;
     }
 
-    public void setLastUsedController(String lastUsedController) {
-        this.lastUsedController = lastUsedController;
+    public void setLastUsedHash(String lastUsedHash) {
+        this.lastUsedHash = lastUsedHash;
     }
 
     public String getLastRenderedHTML() {

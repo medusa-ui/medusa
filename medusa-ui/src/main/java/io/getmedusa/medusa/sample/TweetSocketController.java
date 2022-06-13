@@ -1,5 +1,8 @@
 package io.getmedusa.medusa.sample;
 
+import io.getmedusa.medusa.core.boot.RouteDetection;
+import io.getmedusa.medusa.core.router.request.Route;
+import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.Headers;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
@@ -12,18 +15,16 @@ import java.util.Map;
 @Controller
 public class TweetSocketController {
 
-    private final TweetService service;
-
-    public TweetSocketController(TweetService service) {
-        this.service = service;
+    public TweetSocketController(){
     }
 
     @PreAuthorize("hasRole('USER')")
-    @MessageMapping("tweets.by.author")
-    public Flux<Tweet> getByAuthor(final @Headers Map<String, Object> metadata, @Payload final Flux<TweetRequest> request) {
+    @MessageMapping("event-emitter/{hash}")
+    public Flux<Tweet> getByAuthor(final @Headers Map<String, Object> metadata, @Payload final Flux<SocketAction> request, @DestinationVariable String hash) {
+        final Route route = RouteDetection.INSTANCE.findRoute(hash);
         return request.log().map(r -> {
-            System.out.println(metadata);
-            return service.getByAuthor(r.getAuthor());
+            System.out.println(route.getControllerFQDN() + " // " + r.getAction());
+            return new Tweet();
         });
     }
 
