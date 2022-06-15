@@ -2,6 +2,7 @@ package io.getmedusa.medusa.core.session;
 
 import io.getmedusa.medusa.core.attributes.Attribute;
 import io.getmedusa.medusa.core.router.request.Route;
+import io.getmedusa.medusa.core.util.RandomUtils;
 import org.springframework.web.reactive.function.server.ServerRequest;
 
 import java.util.ArrayList;
@@ -12,15 +13,19 @@ import java.util.stream.Collectors;
 
 public class Session {
 
+    private final String id;
     private String lastUsedTemplate;
     private String lastUsedHash;
     private String lastRenderedHTML;
     private List<Attribute> lastParameters = new ArrayList<>();
     private Map<String, String> tags = new HashMap<>();
 
-    public Session() {}
+    public Session() {
+        this.id = RandomUtils.generateId();
+    }
 
     public Session(Route route, ServerRequest request) {
+        this.id = RandomUtils.generateId();
         setLastParameters(route.getSetupAttributes(request));
         setLastUsedTemplate(route.getTemplateHTML());
         setLastUsedHash(route.generateHash());
@@ -69,5 +74,22 @@ public class Session {
 
     public void setTags(Map<String, String> tags) {
         this.tags = tags;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public Session merge(List<Attribute> newAttributes) {
+        final Map<String, Object> map = toLastParameterMap();
+        for(Attribute attribute : newAttributes) {
+            map.put(attribute.name(), attribute.value());
+        }
+        this.lastParameters = new ArrayList<>();
+        for(Map.Entry<String, Object> entry : map.entrySet()) {
+            this.lastParameters.add(new Attribute(entry.getKey(), entry.getValue()));
+        }
+
+        return this;
     }
 }

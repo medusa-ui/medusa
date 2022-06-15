@@ -1,7 +1,8 @@
-package io.getmedusa.medusa.sample;
+package io.getmedusa.medusa.core.router.action;
 
 import java.util.Map;
 
+//incoming browser change
 public class SocketAction {
 
     private String fragment;

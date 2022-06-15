@@ -45,7 +45,9 @@ public class Renderer {
         return rawTemplate
                 .replace("</body>", "\t" +
                         "<script src=\"websocket.js\"></script>\n" +
-                        "<script>_M.controller = 'x';</script>\n".replace("x", session.getLastUsedHash()) +
+                        "<script>_M.controller = 'x'; _M.sessionId = 'y';</script>\n"
+                                .replace("x", session.getLastUsedHash())
+                                .replace("y", session.getId()) +
                         "</body>");
     }
 

@@ -32,6 +32,10 @@ public class Route {
         return controller.toFQDN();
     }
 
+    public Object getController() {
+        return controller.getController();
+    }
+
     public List<Attribute> getSetupAttributes(ServerRequest request) {
         return controller.setupAttributes(request, null);
     }

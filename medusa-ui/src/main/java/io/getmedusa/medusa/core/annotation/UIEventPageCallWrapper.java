@@ -124,6 +124,10 @@ public class UIEventPageCallWrapper {
         return controller.getClass().getName();
     }
 
+    public Object getController() {
+        return controller;
+    }
+
     private enum SetupAttributesMethodType {
         NONE, EMPTY, REQUEST, SECURED, REQUEST_SECURED, SECURED_REQUEST;
     }
