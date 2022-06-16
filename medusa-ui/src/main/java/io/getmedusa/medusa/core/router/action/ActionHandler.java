@@ -35,6 +35,7 @@ public class ActionHandler {
     }
 
     String escape(String raw) {
+        if(raw == null) return null;
         try {
             return URLDecoder.decode(raw.replace("%27", "''"), Charset.defaultCharset().displayName());
         } catch (UnsupportedEncodingException e) {

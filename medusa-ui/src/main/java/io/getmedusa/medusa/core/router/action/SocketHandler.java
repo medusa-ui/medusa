@@ -40,10 +40,10 @@ public class SocketHandler {
 
     @PreAuthorize("hasRole('USER')")
     @MessageMapping("event-emitter/{hash}/{sessionId}")
-    public Flux<JSReadyDiff> getByAuthor(final @Headers Map<String, Object> metadata,
-                                         final @Payload Flux<SocketAction> request,
-                                         final @DestinationVariable String hash,
-                                         final @DestinationVariable String sessionId) {
+    public Flux<JSReadyDiff> eventEmitter(final @Headers Map<String, Object> metadata,
+                                          final @Payload Flux<SocketAction> request,
+                                          final @DestinationVariable String hash,
+                                          final @DestinationVariable String sessionId) {
 
         final Route route = RouteDetection.INSTANCE.findRoute(hash);
 
