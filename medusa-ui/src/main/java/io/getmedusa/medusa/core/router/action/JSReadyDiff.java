@@ -24,7 +24,18 @@ public class JSReadyDiff {
     }
 
     public static JSReadyDiff buildNewAddition(String xPath, String content) {
-        return new JSReadyDiff(content, xPath, DiffType.ADDITION);
+        return new JSReadyDiff(content, determinePreviousNode(xPath), DiffType.ADDITION);
+    }
+
+    static String determinePreviousNode(String xPath) {
+        final int beginIndex = xPath.lastIndexOf("[") + 1;
+        final int endIndex = xPath.length() - 1;
+        int index = Integer.parseInt(xPath.substring(beginIndex, endIndex));
+        if(index == 1) {
+            return xPath.substring(0, xPath.lastIndexOf("/") + 1) + "::first";
+        } else {
+            return xPath.substring(0, beginIndex) + (index-1) + "]";
+        }
     }
 
     public String getContent() {
@@ -54,7 +65,16 @@ public class JSReadyDiff {
     enum DiffType {
         ADDITION,
         EDIT,
-        REMOVAL
+        REMOVAL,
+        TAG_CHANGE
     }
 
+    @Override
+    public String toString() {
+        return "JSReadyDiff{" +
+                "content='" + content + '\'' +
+                ", xpath='" + xpath + '\'' +
+                ", type=" + type +
+                '}';
+    }
 }

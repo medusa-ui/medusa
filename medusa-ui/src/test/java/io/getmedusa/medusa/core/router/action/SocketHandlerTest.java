@@ -55,14 +55,14 @@ class SocketHandlerTest {
 
         Mockito.when(actionHandler.executeAndMerge(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(new Session());
         Mockito.when(renderer.render(Mockito.anyString(), Mockito.any())).thenReturn(createDataBuffer("test"));
-        Mockito.when(diffEngine.findDiffs(Mockito.nullable(String.class), Mockito.nullable(String.class))).thenReturn(Flux.just(new JSReadyDiff()));
+        Mockito.when(diffEngine.findDiffs(Mockito.nullable(String.class), Mockito.nullable(String.class))).thenReturn(Flux.just(List.of(new JSReadyDiff())));
 
-        final Flux<JSReadyDiff> jsReadyDiffFlux = socketHandler.eventEmitter(new HashMap<>(),
+        final Flux<List<JSReadyDiff>> jsReadyDiffFlux = socketHandler.eventEmitter(new HashMap<>(),
                 Flux.just(socketAction),
                 findSampleHash(),
                 "sessionId");
 
-        JSReadyDiff diff = jsReadyDiffFlux.blockLast();
+        List<JSReadyDiff> diff = jsReadyDiffFlux.blockLast();
         Assertions.assertNotNull(diff);
     }
 

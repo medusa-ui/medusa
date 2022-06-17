@@ -93,6 +93,14 @@
 			<artifactId>reactor-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+
+		<!-- USED FOR DEBUGGING -->
+		<dependency>
+			<groupId>io.projectreactor</groupId>
+			<artifactId>reactor-tools</artifactId>
+			<version>3.4.19</version>
+		</dependency>
+
 	</dependencies>
 
 	<build>
