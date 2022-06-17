@@ -94,6 +94,10 @@ handleIncomingChange = function (obj) {
 
 doLookups = function (listOfDiffs) {
     for(let diff of listOfDiffs) {
+        if(diff.xpath.endsWith("::first")) { //additions - no previous entry, so pick parent pom and mark as first entry
+            diff.firstEntry = true;
+            diff.xpath = diff.xpath.substring(0, diff.xpath.length - 8); //8 = '/::first'.length
+        }
         diff.element = evalXPath(diff.xpath);
     }
     return listOfDiffs;
@@ -115,14 +119,19 @@ handleIncomingAddition = function (obj) {
     let existingNode = obj.element;
     let nodeToAdd = htmlToElement(obj.content);
 
-    console.log("handleIncomingAddition: obj", obj);
-    console.log("handleIncomingAddition: element", existingNode);
-    console.log("handleIncomingAddition: nodeToAdd", nodeToAdd);
-    console.log("--");
     if(existingNode !== null && nodeToAdd !== null) {
-        existingNode.parentNode.insertBefore(nodeToAdd, existingNode.nextSibling);
+        if(obj.firstEntry) {
+            //existingNode is parentNode, so add as child
+            existingNode.appendChild(nodeToAdd);
+        } else {
+            //existing node is previous node, so do an 'add after' (= addBefore of nextSibling)
+            existingNode.parentNode.insertBefore(nodeToAdd, existingNode.nextSibling);
+        }
     } else {
         console.error("failed to add", obj.xpath);
+        console.log("handleIncomingAddition: obj", obj);
+        console.log("handleIncomingAddition: element", existingNode);
+        console.log("handleIncomingAddition: nodeToAdd", nodeToAdd);
     }
 }
 
@@ -140,13 +149,12 @@ handleMorph = function (obj) {
 
 handleRemoval = function(obj) {
     let element = obj.element;
-    console.log("handleRemoval: obj", obj);
-    console.log("handleRemoval: element", element);
-    console.log("--");
     if(element !== null) {
         element.remove();
     } else {
         console.error("failed to remove", obj.xpath);
+        console.log("handleRemoval: obj", obj);
+        console.log("handleRemoval: element", element);
     }
 }
 

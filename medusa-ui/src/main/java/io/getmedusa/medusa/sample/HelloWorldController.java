@@ -16,7 +16,7 @@ public class HelloWorldController {
     private List<Person> globalPeople = new ArrayList<>();
 
     public List<Attribute> setupAttributes() {
-        List<Person> people = generateListOfPeople();
+        List<Person> people = new ArrayList<>();//generateListOfPeople();
         return List.of(
                 new Attribute("counterValue", counter),
                 new Attribute("expectedTableCount", people.size()),
