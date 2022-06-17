@@ -117,6 +117,11 @@ applyAllChanges = function (listOfDiffs) {
 
 handleIncomingAddition = function (obj) {
     let existingNode = obj.element;
+
+    if(existingNode === null) { //if node added by previous event, it would only exist now, so do last chance lookup
+        existingNode = evalXPath(obj.xpath);
+    }
+
     let nodeToAdd = htmlToElement(obj.content);
 
     if(existingNode !== null && nodeToAdd !== null) {
