@@ -10,6 +10,32 @@
     <div th:text="${counterValue}"></div>
     <button onclick="_M.doAction(null, 'increaseCounter()')">Increase counter</button>
 
+    <table>
+        <thead>
+            <tr>
+                <td>Random text</td>
+                <td>Conditional button</td>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="person: ${people}">
+                <td th:text="${person.name}"></td>
+                <td>
+                    <th:block th:if="${person.number > 5}">
+                        <button onclick="_M.doAction(null, 'randomNewTable()')">Regenerate table</button>
+                    </th:block>
+                    <th:block th:if="${person.number <= 5}">
+                        <button disabled="disabled">Cannot remove</button>
+                    </th:block>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <div>total = <span th:text="${expectedTableCount}"></span></div>
+
+    <button onclick="_M.doAction(null, 'addPerson()')">Add person</button>
+    <button onclick="_M.doAction(null, 'removePerson()')">Remove person</button>
+
     <h2>The end</h2>
 </body>
 </html>

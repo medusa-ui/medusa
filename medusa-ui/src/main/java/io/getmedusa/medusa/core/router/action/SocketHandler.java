@@ -16,6 +16,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import reactor.core.publisher.Flux;
 
+import java.util.List;
 import java.util.Map;
 
 //event emitter endpoint that rsocket can connect to
@@ -40,10 +41,10 @@ public class SocketHandler {
 
     @PreAuthorize("hasRole('USER')")
     @MessageMapping("event-emitter/{hash}/{sessionId}")
-    public Flux<JSReadyDiff> eventEmitter(final @Headers Map<String, Object> metadata,
-                                          final @Payload Flux<SocketAction> request,
-                                          final @DestinationVariable String hash,
-                                          final @DestinationVariable String sessionId) {
+    public Flux<List<JSReadyDiff>> eventEmitter(final @Headers Map<String, Object> metadata,
+                                                final @Payload Flux<SocketAction> request,
+                                                final @DestinationVariable String hash,
+                                                final @DestinationVariable String sessionId) {
 
         final Route route = RouteDetection.INSTANCE.findRoute(hash);
 
@@ -51,7 +52,7 @@ public class SocketHandler {
         //TODO can this be done via metadata/a more secure way?
         final Session session = sessionMemoryRepository.retrieve(sessionId, route);
 
-        return request.log().flatMap(r -> {
+        return request.flatMap(r -> {
             //execute action and combine attributes
             Session updatedSession = actionHandler.executeAndMerge(r, route, session);
 

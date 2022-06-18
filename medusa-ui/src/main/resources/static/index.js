@@ -88,30 +88,79 @@ Medusa.prototype.doAction = function(parentFragment, actionToExecute) {
 }
 
 handleIncomingChange = function (obj) {
-    if(obj.type === "ADDITION") {
-        handleIncomingAddition(obj);
-    } else if(obj.type === "EDIT") {
-        handleMorph(obj);
-    } else if(obj.type === "REMOVAL") {
-        handleMorph(obj);
-    }
+    const toApply = doLookups(obj);
+    applyAllChanges(toApply);
 };
 
+doLookups = function (listOfDiffs) {
+    for(let diff of listOfDiffs) {
+        if(diff.xpath.endsWith("::first")) { //additions - no previous entry, so pick parent pom and mark as first entry
+            diff.firstEntry = true;
+            diff.xpath = diff.xpath.substring(0, diff.xpath.length - 8); //8 = '/::first'.length
+        }
+        diff.element = evalXPath(diff.xpath);
+    }
+    return listOfDiffs;
+}
+
+applyAllChanges = function (listOfDiffs) {
+    for(let diff of listOfDiffs) {
+        if(diff.type === "ADDITION") {
+            handleIncomingAddition(diff);
+        } else if(diff.type === "EDIT") {
+            handleMorph(diff);
+        } else if(diff.type === "REMOVAL") {
+            handleRemoval(diff);
+        }
+    }
+}
+
 handleIncomingAddition = function (obj) {
-    let element = evalXPath(obj.xpath);
+    let existingNode = obj.element;
+
+    if(existingNode === null) { //if node added by previous event, it would only exist now, so do last chance lookup
+        existingNode = evalXPath(obj.xpath);
+    }
+
     let nodeToAdd = htmlToElement(obj.content);
 
-    element.parentNode.insertBefore(nodeToAdd, element);
+    if(existingNode !== null && nodeToAdd !== null) {
+        if(obj.firstEntry) {
+            //existingNode is parentNode, so add as child
+            existingNode.appendChild(nodeToAdd);
+        } else {
+            //existing node is previous node, so do an 'add after' (= addBefore of nextSibling)
+            existingNode.parentNode.insertBefore(nodeToAdd, existingNode.nextSibling);
+        }
+    } else {
+        console.error("failed to add", obj.xpath);
+        console.log("handleIncomingAddition: obj", obj);
+        console.log("handleIncomingAddition: element", existingNode);
+        console.log("handleIncomingAddition: nodeToAdd", nodeToAdd);
+    }
 }
 
 handleMorph = function (obj) {
-    let element = evalXPath(obj.xpath);
-    morphdom(element, obj.content);
+    let element = obj.element;
+    console.log("handleMorph: obj", obj);
+    console.log("handleMorph: element", element);
+    console.log("--");
+    if(element !== null) {
+        morphdom(element, obj.content);
+    } else {
+        console.error("failed to morphdom", obj.xpath);
+    }
 }
 
 handleRemoval = function(obj) {
-    let element = evalXPath(obj.xpath);
-    element.delete();
+    let element = obj.element;
+    if(element !== null) {
+        element.remove();
+    } else {
+        console.error("failed to remove", obj.xpath);
+        console.log("handleRemoval: obj", obj);
+        console.log("handleRemoval: element", element);
+    }
 }
 
 evalXPath = function(xpath) {
