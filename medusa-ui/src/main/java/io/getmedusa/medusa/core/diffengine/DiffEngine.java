@@ -38,7 +38,6 @@ public class DiffEngine {
                     .ignoreWhitespace()
                     .build();
 
-            //TODO in a list, what does it mean to remove elements and also add elements?
             for (Difference difference : differences.getDifferences()) {
                 final Comparison comparison = difference.getComparison();
 

@@ -94,21 +94,21 @@ class DiffEngineTest {
                     System.out.println(jsReadyDiff1);
                     Assertions.assertNotNull(jsReadyDiff1);
                     Assertions.assertTrue(jsReadyDiff1.toString().contains("type=ADDITION"));
-                    Assertions.assertEquals("/html[1]/table[1]/tr[1]/td[3]", jsReadyDiff1.getXpath());
+                    Assertions.assertEquals("/html[1]/table[1]/tr[1]/td[2]", jsReadyDiff1.getXpath());
                     Assertions.assertEquals("<td>3</td>", jsReadyDiff1.getContent());
 
                     final JSReadyDiff jsReadyDiff2 = listOf.get(1);
                     System.out.println(jsReadyDiff2);
                     Assertions.assertNotNull(jsReadyDiff2);
                     Assertions.assertTrue(jsReadyDiff2.toString().contains("type=ADDITION"));
-                    Assertions.assertEquals("/html[1]/table[1]/tr[1]/td[4]", jsReadyDiff2.getXpath());
+                    Assertions.assertEquals("/html[1]/table[1]/tr[1]/td[3]", jsReadyDiff2.getXpath());
                     Assertions.assertEquals("<td>4</td>", jsReadyDiff2.getContent());
 
                     final JSReadyDiff jsReadyDiff3 = listOf.get(2);
                     System.out.println(jsReadyDiff3);
                     Assertions.assertNotNull(jsReadyDiff3);
                     Assertions.assertTrue(jsReadyDiff3.toString().contains("type=ADDITION"));
-                    Assertions.assertEquals("/html[1]/p[1]", jsReadyDiff3.getXpath());
+                    Assertions.assertEquals("/html[1]/::first", jsReadyDiff3.getXpath());
                     Assertions.assertEquals("<p>Hello world</p>", jsReadyDiff3.getContent());
                 })
                 .expectComplete()

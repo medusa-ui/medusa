@@ -44,7 +44,7 @@ public class Renderer {
     public String appendRSocketScript(String rawTemplate, Session session) {
         return rawTemplate
                 .replace("</body>", "\t" +
-                        "<script src=\"websocket.js\"></script>\n" +
+                        "<script src=\"/static/websocket.js\"></script>\n" +
                         "<script>_M.controller = 'x'; _M.sessionId = 'y';</script>\n"
                                 .replace("x", session.getLastUsedHash())
                                 .replace("y", session.getId()) +

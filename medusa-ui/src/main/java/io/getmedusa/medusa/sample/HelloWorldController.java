@@ -2,6 +2,7 @@ package io.getmedusa.medusa.sample;
 
 import io.getmedusa.medusa.core.annotation.UIEventPage;
 import io.getmedusa.medusa.core.attributes.Attribute;
+import org.springframework.web.reactive.function.server.ServerRequest;
 
 import java.security.SecureRandom;
 import java.util.ArrayList;
@@ -15,10 +16,11 @@ public class HelloWorldController {
 
     private List<Person> globalPeople = new ArrayList<>();
 
-    public List<Attribute> setupAttributes() {
+    public List<Attribute> setupAttributes(ServerRequest serverRequest) {
         List<Person> people = new ArrayList<>();//generateListOfPeople();
         return List.of(
-                new Attribute("counterValue", counter),
+                //new Attribute("counterValue", Integer.parseInt(serverRequest.pathVariable("samplePathVariable"))),
+                new Attribute("counterValue", 0),
                 new Attribute("expectedTableCount", people.size()),
                 new Attribute("people", people));
     }
