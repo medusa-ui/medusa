@@ -34,6 +34,8 @@ public class DiffEngine {
             Diff differences = DiffBuilder
                     .compare(oldHTML)
                     .withTest(newHTML)
+                    .ignoreComments()
+                    .ignoreWhitespace()
                     .build();
 
             //TODO in a list, what does it mean to remove elements and also add elements?
@@ -73,8 +75,7 @@ public class DiffEngine {
         } else if(isRemoval(comparison)) {
             return buildNewRemoval(oldDetail.getXPath());
         } else if(TEXT_VALUE.equals(comparison.getType())) {
-            //return buildNewEdit(newDetail.getParentXPath(), nodeToContent(newDocumentNode.getParentNode()));
-            return null; //TODO but not now
+            return buildNewEdit(newDetail.getParentXPath(), nodeToContent(newDocumentNode.getParentNode()));
         } else {
             System.out.println();
         }
