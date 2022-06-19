@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.context.EngineContext;
 import org.thymeleaf.context.IContext;
+import org.thymeleaf.dialect.AbstractProcessorDialect;
 import org.thymeleaf.spring5.SpringWebFluxTemplateEngine;
 import reactor.core.publisher.Flux;
 
@@ -25,11 +26,17 @@ public class Renderer {
     private final SpringWebFluxTemplateEngine engine;
     private final DataBufferFactory bufferFactory;
     final IEngineConfiguration configuration;
-    public Renderer() {
+
+    /**
+     * Thymeleaf renderer
+     * @param dialects a set of additional custom Thymeleaf-dialects
+     */
+    public Renderer(Set<AbstractProcessorDialect> dialects) {
         this.bufferFactory = new DefaultDataBufferFactory();
 
         SpringWebFluxTemplateEngine templateEngine = new SpringWebFluxTemplateEngine();
         templateEngine.setEnableSpringELCompiler(true);
+        dialects.forEach(templateEngine::addDialect);
         this.engine = templateEngine;
         this.configuration = engine.getConfiguration();
     }
