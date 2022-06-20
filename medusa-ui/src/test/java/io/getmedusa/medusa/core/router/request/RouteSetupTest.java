@@ -35,7 +35,7 @@ class RouteSetupTest {
 
         final RouterFunction<ServerResponse> serverResponseRouterFunction = routeSetup.htmlRouter(requestStreamHandler);
         final String mapping = serverResponseRouterFunction.toString();
-        Assertions.assertTrue(mapping.startsWith("(GET && /test-123) -> io.getmedusa.medusa.core.router.request.RouteSetupTest"), "Expect router to map to proper get call and internal controller");
+        Assertions.assertTrue(mapping.contains("(GET && /test-123) -> io.getmedusa.medusa.core.router.request.RouteSetupTest"), "Expect router to map to proper get call and internal controller");
     }
 
     @Test
