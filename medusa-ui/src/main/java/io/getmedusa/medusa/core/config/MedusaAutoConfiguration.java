@@ -9,8 +9,8 @@ import org.springframework.context.annotation.Configuration;
  * It simply ensures the beans defined in the medusa library are component scanned
  */
 @Configuration
-@ComponentScan("io.getmedusa")
-@ConfigurationPropertiesScan("io.getmedusa.medusa.config")
+@ComponentScan("io.getmedusa.medusa.core")
+@ConfigurationPropertiesScan("io.getmedusa.medusa.core")
 class MedusaAutoConfiguration {
 
 }
