@@ -157,9 +157,9 @@ class DiffEngineTest {
 
         StepVerifier
                 .create(diffEngine.findDiffs(oldHTML_OK, newHTML_OK))
-                .assertNext(listOf -> {
-                    System.out.println(listOf);
-                    //TODO
+                .assertNext(jsReadyDiffs -> {
+                    System.out.println(jsReadyDiffs);
+                    Assertions.assertEquals( 1, jsReadyDiffs.size(), "expected only 1 addition");
                 })
                 .expectComplete()
                 .verify();
@@ -185,9 +185,9 @@ class DiffEngineTest {
 
         StepVerifier
                 .create(diffEngine.findDiffs(oldHTML_BUG, newHTML_BUG))
-                .assertNext(listOf -> {
-                    System.out.println(listOf);
-                    //TODO
+                .assertNext(jsReadyDiffs -> {
+                    System.out.println(jsReadyDiffs);
+                    Assertions.assertEquals( 1, jsReadyDiffs.size(), "expected only 1 addition");
                 })
                 .expectComplete()
                 .verify();
