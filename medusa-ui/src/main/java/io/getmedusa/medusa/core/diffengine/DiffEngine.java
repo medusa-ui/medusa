@@ -1,6 +1,8 @@
 package io.getmedusa.medusa.core.diffengine;
 
 import io.getmedusa.medusa.core.router.action.JSReadyDiff;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.w3c.dom.Node;
 import org.xmlunit.builder.DiffBuilder;
@@ -22,7 +24,7 @@ import static org.xmlunit.diff.ComparisonType.*;
 
 @Component
 public class DiffEngine {
-
+    private static final Logger logger = LoggerFactory.getLogger(DiffEngine.class);
     private static final TransformerFactory T_FACTORY = TransformerFactory.newInstance();
     private static final String XML_VERSION = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
     private static final int XML_VERSION_LENGTH = XML_VERSION.length();
@@ -65,9 +67,11 @@ public class DiffEngine {
 
         if(ELEMENT_TAG_NAME.equals(comparison.getType())) {
             //return buildNewEdit(oldDetail.getXPath(), nodeToContent(newDocumentNode));
+            logger.debug("comparisonToDiff: no implementation for comparison: " + comparison + " of type ELEMENT_TAG_NAME");
             return null; //TODO might add? but not right now
         } else if(ATTR_NAME_LOOKUP.equals(comparison.getType())){
             //return buildNewEdit(oldDetail.getParentXPath(), nodeToContent(newDocumentNode));
+            logger.debug("comparisonToDiff: no implementation for comparison: " + comparison + " of type ATTR_NAME_LOOKUP");
             return null; //TODO should do this, but not right now
         } else if(isAddition(comparison)) {
             return buildNewAddition(newDetail.getXPath(), nodeToContent(newDocumentNode));
@@ -76,7 +80,7 @@ public class DiffEngine {
         } else if(TEXT_VALUE.equals(comparison.getType())) {
             return buildNewEdit(newDetail.getParentXPath(), nodeToContent(newDocumentNode.getParentNode()));
         } else {
-            System.out.println();
+            logger.warn("comparisonToDiff: no match for comparison: " + comparison);
         }
 
         return null;
