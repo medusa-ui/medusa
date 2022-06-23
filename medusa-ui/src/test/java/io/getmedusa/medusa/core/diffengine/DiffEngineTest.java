@@ -130,5 +130,68 @@ class DiffEngineTest {
                 .verify();
     }
 
+    @Test
+    void testDiffGeneration_Addition_Bug() {
+        //This is OK
+        final String oldHTML_OK = """
+                <div>
+                    <div>
+                        <p>Hello world</p>
+                    </div>
+                    <div>
+                        <button onclick="_M.doAction(null, 'sayHi()')">Say Hi</button>
+                    </div>
+                </div>
+                """;
+        final String newHTML_OK = """
+                <div>
+                    <div>
+                        <p>Hello world</p>
+                        <p>Hi there</p>
+                    </div>
+                    <div>
+                        <button onclick="_M.doAction(null, 'sayHi()')">Say Hi</button>
+                    </div>
+                </div>
+                """;
+
+        StepVerifier
+                .create(diffEngine.findDiffs(oldHTML_OK, newHTML_OK))
+                .assertNext(listOf -> {
+                    System.out.println(listOf);
+                    //TODO
+                })
+                .expectComplete()
+                .verify();
+
+        // Here there is bug
+        final String oldHTML_BUG = """
+                <div>
+                    <div>
+                        <p>Hello world</p>
+                        <button onclick="_M.doAction(null, 'sayHi()')">Say Hi</button>
+                    </div>
+                </div>
+                """;
+        final String newHTML_BUG = """
+                <div>
+                    <div>
+                        <p>Hello world</p>
+                        <p>Hi there</p>
+                        <button onclick="_M.doAction(null, 'sayHi()')">Say Hi</button>
+                    </div>
+                </div>
+                """;
+
+        StepVerifier
+                .create(diffEngine.findDiffs(oldHTML_BUG, newHTML_BUG))
+                .assertNext(listOf -> {
+                    System.out.println(listOf);
+                    //TODO
+                })
+                .expectComplete()
+                .verify();
+    }
+
 }
 
