@@ -51,9 +51,10 @@ public class Renderer {
         Set<String> markupSelectors = new HashSet<>(); //see https://www.baeldung.com/spring-thymeleaf-fragments#markup-selector
 
         IContext context = new EngineContext(configuration, null, new HashMap<>(), Locale.getDefault(), session.toLastParameterMap());
-        return Flux.from(engine.processStream(appendRSocketScript(xhtml(templateHTML), session), markupSelectors, context, bufferFactory, MediaType.TEXT_HTML, UTF_8));
+        return Flux.from(engine.processStream(appendRSocketScript(convertToXHTML(templateHTML), session), markupSelectors, context, bufferFactory, MediaType.TEXT_HTML, UTF_8));
     }
-    private String xhtml(String source) {
+
+    private String convertToXHTML(String source) {
         final Document document = Jsoup.parse(source);
         document.outputSettings().syntax(Document.OutputSettings.Syntax.xml);
         return document.html();
