@@ -1,6 +1,8 @@
 package io.getmedusa.medusa.core.render;
 
 import io.getmedusa.medusa.core.session.Session;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DataBufferFactory;
 import org.springframework.core.io.buffer.DefaultDataBufferFactory;
@@ -11,9 +13,13 @@ import org.thymeleaf.context.EngineContext;
 import org.thymeleaf.context.IContext;
 import org.thymeleaf.dialect.AbstractProcessorDialect;
 import org.thymeleaf.spring5.SpringWebFluxTemplateEngine;
+
 import reactor.core.publisher.Flux;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Locale;
+import java.util.Set;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
@@ -45,7 +51,12 @@ public class Renderer {
         Set<String> markupSelectors = new HashSet<>(); //see https://www.baeldung.com/spring-thymeleaf-fragments#markup-selector
 
         IContext context = new EngineContext(configuration, null, new HashMap<>(), Locale.getDefault(), session.toLastParameterMap());
-        return Flux.from(engine.processStream(appendRSocketScript(templateHTML, session), markupSelectors, context, bufferFactory, MediaType.TEXT_HTML, UTF_8));
+        return Flux.from(engine.processStream(appendRSocketScript(xhtml(templateHTML), session), markupSelectors, context, bufferFactory, MediaType.TEXT_HTML, UTF_8));
+    }
+    private String xhtml(String source) {
+        final Document document = Jsoup.parse(source);
+        document.outputSettings().syntax(Document.OutputSettings.Syntax.xml);
+        return document.html();
     }
 
     public String appendRSocketScript(String rawTemplate, Session session) {
