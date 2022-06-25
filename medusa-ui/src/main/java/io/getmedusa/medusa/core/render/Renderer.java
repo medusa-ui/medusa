@@ -16,10 +16,7 @@ import org.thymeleaf.spring5.SpringWebFluxTemplateEngine;
 
 import reactor.core.publisher.Flux;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Locale;
-import java.util.Set;
+import java.util.*;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
@@ -32,6 +29,9 @@ public class Renderer {
     private final SpringWebFluxTemplateEngine engine;
     private final DataBufferFactory bufferFactory;
     final IEngineConfiguration configuration;
+
+    //see https://www.baeldung.com/spring-thymeleaf-fragments#markup-selector
+    protected static final Set<String> MARKUP_SELECTORS = new HashSet<>();
 
     /**
      * Thymeleaf renderer
@@ -48,10 +48,8 @@ public class Renderer {
     }
 
     public Flux<DataBuffer> render(String templateHTML, Session session) {
-        Set<String> markupSelectors = new HashSet<>(); //see https://www.baeldung.com/spring-thymeleaf-fragments#markup-selector
-
         IContext context = new EngineContext(configuration, null, new HashMap<>(), Locale.getDefault(), session.toLastParameterMap());
-        return Flux.from(engine.processStream(appendRSocketScript(convertToXHTML(templateHTML), session), markupSelectors, context, bufferFactory, MediaType.TEXT_HTML, UTF_8));
+        return Flux.from(engine.processStream(appendRSocketScript(convertToXHTML(templateHTML), session), MARKUP_SELECTORS, context, bufferFactory, MediaType.TEXT_HTML, UTF_8));
     }
 
     private String convertToXHTML(String source) {
@@ -70,4 +68,8 @@ public class Renderer {
                         "</body>");
     }
 
+    public Flux<DataBuffer> renderFragment(String html, Map<String, Object> attributes) {
+        IContext context = new EngineContext(configuration, null, new HashMap<>(), Locale.getDefault(), attributes);
+        return Flux.from(engine.processStream(convertToXHTML(html), MARKUP_SELECTORS, context, bufferFactory, MediaType.TEXT_HTML, UTF_8));
+    }
 }
