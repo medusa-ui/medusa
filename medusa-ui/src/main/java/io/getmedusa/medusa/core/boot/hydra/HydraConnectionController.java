@@ -11,8 +11,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClient.RequestBodySpec;
-import org.springframework.web.reactive.function.client.WebClient.RequestHeadersSpec;
-import org.springframework.web.reactive.function.client.WebClient.UriSpec;
 import reactor.core.publisher.Mono;
 
 import java.net.InetAddress;
@@ -21,13 +19,12 @@ import java.net.InetAddress;
 @Component
 public class HydraConnectionController {
 
-    private final WebClient client;
-    private final String publicKey;
     private final String privateKey;
 
-    private final String hydraBaseURI;
-
     private final ActiveService activeService;
+
+    private final RequestBodySpec registrationURL;
+    private final RequestBodySpec isAliveURL;
 
     private ConnectivityState state = ConnectivityState.NOT_REGISTERED;
     private boolean hasShownConnectionError = false;
@@ -41,10 +38,10 @@ public class HydraConnectionController {
                                      @Value("${medusa.hydra.uri}") String uri,
                                      @Value("${spring.rsocket.server.port}") Integer port,
                                      @Value("${medusa.name}") String appName) {
-        this.client = webClient;
         this.privateKey = privateKey;
-        this.publicKey = publicKey;
-        this.hydraBaseURI = uri;
+
+        this.registrationURL = webClient.post().uri(uri + "/h/discovery/_publicKey_/registration".replace("_publicKey_", publicKey));
+        this.isAliveURL = webClient.post().uri(uri + "/h/discovery/_publicKey_/alive".replace("_publicKey_", publicKey));
 
         activeService = new ActiveService();
         activeService.setName(appName);
@@ -61,34 +58,29 @@ public class HydraConnectionController {
     }
 
     public void sendRegistration() {
-        UriSpec<RequestBodySpec> uriSpec = client.post();
-        String uri = hydraBaseURI + "/h/discovery/_publicKey_/registration".replace("_publicKey_", publicKey);
-        RequestBodySpec bodySpec = uriSpec.uri(uri);
-        RequestHeadersSpec<?> headersSpec = bodySpec.bodyValue(activeService);
-
-        headersSpec.exchangeToMono(response -> {
+        registrationURL.bodyValue(activeService).exchangeToMono(response -> {
             if (response.statusCode().equals(HttpStatus.OK)) {
                 state = ConnectivityState.REGISTERED;
                 if(hasShownConnectionError) {
+                    logger.info("Connection to Hydra restored, downtime of {}", TimeUtils.diffString(downtimeStart, TimeUtils.now()));
                     hasShownConnectionError = false;
-                    logger.info("Connection to Hydra restored, downtime of {}s", TimeUtils.secondsDiff(downtimeStart, TimeUtils.now()));
                     downtimeStart = 0L;
                 }
                 return response.bodyToMono(String.class);
             } else {
-                registrationFailure();
+                registrationFailure(null);
                 return Mono.empty();
             }
         })
-        .doOnError(throwable -> registrationFailure())
-        .onErrorReturn("Failed registration")
+        .doOnError(this::registrationFailure)
+        .onErrorReturn("")
         .subscribe();
     }
 
-    private void registrationFailure() {
-        aliveFailure();
+    private void registrationFailure(Throwable e) {
         if (!hasShownConnectionError) {
             logger.error("Connection to Hydra failed, retrying every second");
+            if(e != null) { aliveFailure(e); }
             hasShownConnectionError = true;
         }
     }
@@ -101,27 +93,23 @@ public class HydraConnectionController {
     }
 
     public void sendIsAlive() {
-        UriSpec<RequestBodySpec> uriSpec = client.post();
-        String uri = hydraBaseURI + "/h/discovery/_publicKey_/alive".replace("_publicKey_", publicKey);
-        RequestBodySpec bodySpec = uriSpec.uri(uri);
-        RequestHeadersSpec<?> headersSpec = bodySpec.bodyValue(activeService.getName());
-
-        headersSpec.exchangeToMono(response -> {
+        isAliveURL.bodyValue(activeService.getName()).exchangeToMono(response -> {
             if (response.statusCode().equals(HttpStatus.OK)) {
                 return response.bodyToMono(String.class);
             } else {
-                aliveFailure();
+                aliveFailure(null);
                 return Mono.empty();
             }
-        }).doOnError(throwable -> aliveFailure())
+        })
+                .doOnError(this::aliveFailure)
                 .onErrorReturn("Failed registration")
                 .subscribe();
     }
 
-    private void aliveFailure() {
-        state = ConnectivityState.NOT_REGISTERED;
-        if(downtimeStart == 0L) {
-            downtimeStart = TimeUtils.now();
+    private void aliveFailure(Throwable e) {
+        this.state = ConnectivityState.NOT_REGISTERED;
+        if(this.downtimeStart == 0L) {
+            this.downtimeStart = TimeUtils.now();
         }
     }
 
