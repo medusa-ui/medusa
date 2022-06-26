@@ -9,7 +9,7 @@ import java.util.Set;
 public class ActiveService {
 
     // TODO: will be overridden when ServiceController get initialised
-    public static String webProtocol = "https";
+    public String webProtocol = "https";
 
     private String host;
     private int port;
@@ -28,12 +28,12 @@ public class ActiveService {
     }
 
 
-    public static String getWebProtocol() {
+    public String getWebProtocol() {
         return webProtocol;
     }
 
-    public static void setWebProtocol(String webProtocol) {
-        ActiveService.webProtocol = webProtocol;
+    public void setWebProtocol(String webProtocol) {
+        this.webProtocol = webProtocol;
     }
 
     public String getHost() {
@@ -119,6 +119,8 @@ public class ActiveService {
     public void setSocketPort(int socketPort) {
         this.socketPort = socketPort;
     }
+
+
 
     @Override
     public String toString() {

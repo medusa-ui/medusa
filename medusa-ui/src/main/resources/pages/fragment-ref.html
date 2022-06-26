@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:m="http://www.getmedusa.io/">
+<head>
+    <meta charset="UTF-8">
+    <title>Pretend this is another server</title>
+</head>
+<body>
+
+<div m:ref="search-bar">
+    This piece of code can be used in another app.
+    <p>Search bar</p>
+    End of code.
+</div>
+
+<section m:ref="checkout2">
+    This piece of code can be used in another app.
+    <p>Value: <span th:text="${counter}"></span></p>
+    End of code.
+</section>
+
+
+</body>
+</html>

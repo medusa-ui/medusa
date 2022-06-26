@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:m="http://www.getmedusa.io/">
+<head>
+    <meta charset="UTF-8">
+    <title>This page embeds a fragment</title>
+</head>
+<body>
+
+<h1>Hello, this is a core page</h1>
+
+<m:fragment service="sample-impl" ref="search-bar">
+    <p>Fallback for search-bar</p>
+</m:fragment>
+
+<p>End of content</p>
+
+</body>
+</html>

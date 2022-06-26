@@ -26,7 +26,7 @@ public class HydraConnectionController {
     private final RequestBodySpec registrationURL;
     private final RequestBodySpec isAliveURL;
 
-    private ConnectivityState state = ConnectivityState.NOT_REGISTERED;
+    private ConnectivityState state = ConnectivityState.INITIALIZING;
     private boolean hasShownConnectionError = false;
     private long downtimeStart;
 
@@ -36,7 +36,8 @@ public class HydraConnectionController {
                                      @Value("${medusa.hydra.secret.public}") String publicKey,
                                      @Value("${medusa.hydra.secret.private}") String privateKey,
                                      @Value("${medusa.hydra.uri}") String uri,
-                                     @Value("${spring.rsocket.server.port}") Integer port,
+                                     @Value("${spring.rsocket.server.port}") Integer socketPort,
+                                     @Value("${server.port}") Integer serverPort,
                                      @Value("${medusa.name}") String appName) {
         this.privateKey = privateKey;
 
@@ -46,8 +47,13 @@ public class HydraConnectionController {
         activeService = new ActiveService();
         activeService.setName(appName);
         activeService.setHost(getCurrentIP());
-        activeService.setPort(port);
-        sendRegistration();
+        activeService.setPort(serverPort);
+        activeService.setWebProtocol("http");
+        //finish setup in dynamic detection
+    }
+
+    public ActiveService getActiveService() {
+        return activeService;
     }
 
     @Scheduled(fixedDelay = 1000)
@@ -122,6 +128,7 @@ public class HydraConnectionController {
     }
 
     private enum ConnectivityState {
+        INITIALIZING,
         NOT_REGISTERED,
         REGISTERED
     }
