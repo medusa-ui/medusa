@@ -3,6 +3,7 @@ package io.getmedusa.medusa.core.boot;
 import io.getmedusa.medusa.core.boot.hydra.HydraConnectionController;
 import io.getmedusa.medusa.core.router.request.Route;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.stereotype.Component;
 
@@ -11,7 +12,7 @@ public class RootDetector implements BeanPostProcessor {
 
     private final HydraConnectionController hydraConnectionController;
 
-    public RootDetector(HydraConnectionController hydraConnectionController) {
+    public RootDetector(@Autowired(required = false) HydraConnectionController hydraConnectionController) {
         this.hydraConnectionController = hydraConnectionController;
     }
 
@@ -27,7 +28,7 @@ public class RootDetector implements BeanPostProcessor {
 
     @Override
     public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
-        if(lastClass.equals(bean.getClass().getName())) {
+        if(lastClass.equals(bean.getClass().getName()) && hydraConnectionController != null) {
             hydraConnectionController
                     .getActiveService()
                     .getEndpoints().addAll(

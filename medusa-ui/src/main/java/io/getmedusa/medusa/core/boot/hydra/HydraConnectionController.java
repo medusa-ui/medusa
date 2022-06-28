@@ -12,12 +12,13 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClient.RequestBodySpec;
 import reactor.core.publisher.Mono;
+import io.getmedusa.medusa.tags.action.HydraConnection;
 
 import java.net.InetAddress;
 
 @ConditionalOnProperty(name = "medusa.hydra.uri")
 @Component
-public class HydraConnectionController {
+public class HydraConnectionController implements HydraConnection {
 
     private final String privateKey;
 
@@ -25,6 +26,7 @@ public class HydraConnectionController {
 
     private final RequestBodySpec registrationURL;
     private final RequestBodySpec isAliveURL;
+    private final RequestBodySpec requestFragmentURL;
 
     private ConnectivityState state = ConnectivityState.INITIALIZING;
     private boolean hasShownConnectionError = false;
@@ -43,6 +45,7 @@ public class HydraConnectionController {
 
         this.registrationURL = webClient.post().uri(uri + "/h/discovery/_publicKey_/registration".replace("_publicKey_", publicKey));
         this.isAliveURL = webClient.post().uri(uri + "/h/discovery/_publicKey_/alive".replace("_publicKey_", publicKey));
+        this.requestFragmentURL = webClient.post().uri(uri + "/h/discovery/_publicKey_/requestFragment".replace("_publicKey_", publicKey));
 
         activeService = new ActiveService();
         activeService.setName(appName);
@@ -125,6 +128,22 @@ public class HydraConnectionController {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public Mono<String> askHydraForFragment(String service, String ref) {
+        return requestFragmentURL
+                .bodyValue(activeService.getName())
+                .exchangeToMono(response -> {
+                    if (response.statusCode().equals(HttpStatus.OK)) {
+                        return response.bodyToMono(String.class);
+                    } else {
+                        aliveFailure(null);
+                        return Mono.empty();
+                    }
+                })
+                .doOnError(this::aliveFailure)
+                .onErrorReturn("Failed registration");
     }
 
     private enum ConnectivityState {

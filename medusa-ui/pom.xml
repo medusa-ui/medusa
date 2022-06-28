@@ -59,6 +59,13 @@
 		</dependency>
 
 		<dependency>
+			<groupId>io.getmedusa</groupId>
+			<artifactId>medusa-tags</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
 			<groupId>com.auth0</groupId>
 			<artifactId>java-jwt</artifactId>
 			<version>4.0.0</version>

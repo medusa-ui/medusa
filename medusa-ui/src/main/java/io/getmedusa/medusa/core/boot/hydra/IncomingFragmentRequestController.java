@@ -7,6 +7,7 @@ import io.getmedusa.medusa.core.boot.hydra.model.meta.RenderedFragment;
 import io.getmedusa.medusa.core.render.Renderer;
 import io.getmedusa.medusa.core.util.FluxUtils;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.server.reactive.ServerHttpResponse;
@@ -20,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
+@ConditionalOnProperty(name = "medusa.hydra.uri")
 public class IncomingFragmentRequestController {
 
     private final Renderer renderer;
