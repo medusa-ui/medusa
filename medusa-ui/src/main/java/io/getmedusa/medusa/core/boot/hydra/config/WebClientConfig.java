@@ -16,7 +16,7 @@ import java.util.concurrent.TimeUnit;
 @Configuration
 public class WebClientConfig {
 
-    protected static final int TIMEOUT_MILLISECONDS = 2000;
+    protected static final int TIMEOUT_MILLISECONDS = 2000; /*TODO configurable via medusa.webclient-timeout property?*/
 
     @Bean
     public WebClient webClient() {

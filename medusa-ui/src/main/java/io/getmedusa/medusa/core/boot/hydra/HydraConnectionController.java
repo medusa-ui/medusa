@@ -1,5 +1,6 @@
 package io.getmedusa.medusa.core.boot.hydra;
 
+import io.getmedusa.medusa.core.boot.hydra.config.MedusaConfigurationProperties;
 import io.getmedusa.medusa.core.boot.hydra.model.meta.ActiveService;
 import io.getmedusa.medusa.core.util.TimeUtils;
 import org.slf4j.Logger;
@@ -35,20 +36,17 @@ public class HydraConnectionController implements HydraConnection {
     private static final Logger logger = LoggerFactory.getLogger(HydraConnectionController.class);
 
     public HydraConnectionController(WebClient webClient,
-                                     @Value("${medusa.hydra.secret.public}") String publicKey,
-                                     @Value("${medusa.hydra.secret.private}") String privateKey,
-                                     @Value("${medusa.hydra.uri}") String uri,
+                                     MedusaConfigurationProperties configProps,
                                      @Value("${spring.rsocket.server.port}") Integer socketPort,
-                                     @Value("${server.port}") Integer serverPort,
-                                     @Value("${medusa.name}") String appName) {
-        this.privateKey = privateKey;
+                                     @Value("${server.port}") Integer serverPort) {
+        this.privateKey = configProps.getHydra().getSecret().getPrivateKey();
 
-        this.registrationURL = webClient.post().uri(uri + "/h/discovery/_publicKey_/registration".replace("_publicKey_", publicKey));
-        this.isAliveURL = webClient.post().uri(uri + "/h/discovery/_publicKey_/alive".replace("_publicKey_", publicKey));
-        this.requestFragmentURL = webClient.post().uri(uri + "/h/discovery/_publicKey_/requestFragment".replace("_publicKey_", publicKey));
+        this.registrationURL = webClient.post().uri(configProps.getHydra().registrationURL());
+        this.isAliveURL = webClient.post().uri(configProps.getHydra().isAliveURL());
+        this.requestFragmentURL = webClient.post().uri(configProps.getHydra().requestFragmentURL());
 
         activeService = new ActiveService();
-        activeService.setName(appName);
+        activeService.setName(configProps.getName());
         activeService.setHost(getCurrentIP());
         activeService.setPort(serverPort);
         activeService.setWebProtocol("http");

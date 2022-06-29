@@ -28,8 +28,8 @@ public class IncomingFragmentRequestController {
     private final String publicKey;
     private final String privateKey;
 
-    public IncomingFragmentRequestController(@Value("${medusa.hydra.secret.public}") String publicKey,
-                                             @Value("${medusa.hydra.secret.private}") String privateKey,
+    public IncomingFragmentRequestController(@Value("${medusa.hydra.secret.public-key}") String publicKey,
+                                             @Value("${medusa.hydra.secret.private-key}") String privateKey,
                                              Renderer renderer) {
         this.renderer = renderer;
         this.privateKey = privateKey;
