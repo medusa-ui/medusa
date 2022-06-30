@@ -1,24 +1,30 @@
 package io.getmedusa.medusa.core.boot.hydra;
 
+import io.getmedusa.medusa.core.boot.RouteDetection;
 import io.getmedusa.medusa.core.boot.hydra.config.MedusaConfigurationProperties;
 import io.getmedusa.medusa.core.boot.hydra.model.meta.ActiveService;
+import io.getmedusa.medusa.core.router.request.Route;
 import io.getmedusa.medusa.core.util.TimeUtils;
+import io.getmedusa.medusa.tags.action.HydraConnection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClient.RequestBodySpec;
 import reactor.core.publisher.Mono;
-import io.getmedusa.medusa.tags.action.HydraConnection;
 
 import java.net.InetAddress;
+import java.util.ArrayList;
+import java.util.List;
 
 @ConditionalOnProperty(name = "medusa.hydra.uri")
 @Component
+@Order
 public class HydraConnectionController implements HydraConnection {
 
     private final String privateKey;
@@ -51,6 +57,15 @@ public class HydraConnectionController implements HydraConnection {
         activeService.setPort(serverPort);
         activeService.setWebProtocol("http");
         //finish setup in dynamic detection
+
+        this
+                .getActiveService()
+                .getEndpoints().addAll(
+                        RouteDetection.INSTANCE.getDetectedRoutes()
+                                .stream()
+                                .map(Route::getPath)
+                                .toList());
+        this.enableHydraConnectivity();
     }
 
     public ActiveService getActiveService() {
@@ -64,6 +79,10 @@ public class HydraConnectionController implements HydraConnection {
         }
     }
 
+    public void enableHydraConnectivity() {
+        this.state = ConnectivityState.NOT_REGISTERED;
+    }
+
     public void sendRegistration() {
         registrationURL.bodyValue(activeService).exchangeToMono(response -> {
             if (response.statusCode().equals(HttpStatus.OK)) {
@@ -73,20 +92,22 @@ public class HydraConnectionController implements HydraConnection {
                     hasShownConnectionError = false;
                     downtimeStart = 0L;
                 }
-                return response.bodyToMono(String.class);
+                return response.bodyToMono(List.class);
             } else {
                 registrationFailure(null);
                 return Mono.empty();
             }
         })
         .doOnError(this::registrationFailure)
-        .onErrorReturn("")
-        .subscribe();
+        .onErrorReturn(new ArrayList())
+        .subscribe(l -> {
+            System.out.println(l);
+        });
     }
 
     private void registrationFailure(Throwable e) {
         if (!hasShownConnectionError) {
-            logger.error("Connection to Hydra failed, retrying every second");
+            logger.error("Connection to Hydra failed, retrying every second", e);
             if(e != null) { aliveFailure(e); }
             hasShownConnectionError = true;
         }

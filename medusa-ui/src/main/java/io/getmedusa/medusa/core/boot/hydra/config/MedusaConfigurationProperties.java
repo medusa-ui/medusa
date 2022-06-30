@@ -61,27 +61,24 @@ public class MedusaConfigurationProperties {
         }
 
         public String registrationURL(){
-            return new StringBuilder(uri)
-                    .append("/h/discovery/")
-                    .append(secret.publicKey)
-                    .append("registration")
-                    .toString();
+            return uri +
+                    "/h/discovery/" +
+                    secret.publicKey +
+                    "/registration";
         }
 
         public String isAliveURL(){
-            return new StringBuilder(uri)
-                    .append("/h/discovery/")
-                    .append(secret.publicKey)
-                    .append("alive")
-                    .toString();
+            return uri +
+                    "/h/discovery/" +
+                    secret.publicKey +
+                    "/alive";
         }
 
         public String requestFragmentURL(){
-            return new StringBuilder(uri)
-                    .append("/h/discovery/")
-                    .append(secret.publicKey)
-                    .append("requestFragment")
-                    .toString();
+            return uri +
+                    "/h/discovery/" +
+                    secret.publicKey +
+                    "/requestFragment";
         }
     }
 
