@@ -3,6 +3,7 @@ package io.getmedusa.medusa.core.config;
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 /**
@@ -13,6 +14,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @ComponentScan("io.getmedusa.medusa.core")
 @ConfigurationPropertiesScan("io.getmedusa.medusa.core")
 @EnableScheduling
-class MedusaAutoConfiguration {
+@Order
+public class MedusaAutoConfiguration {
 
 }

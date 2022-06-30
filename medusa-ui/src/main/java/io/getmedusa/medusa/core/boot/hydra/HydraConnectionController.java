@@ -10,7 +10,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -24,7 +23,6 @@ import java.util.List;
 
 @ConditionalOnProperty(name = "medusa.hydra.uri")
 @Component
-@Order
 public class HydraConnectionController implements HydraConnection {
 
     private final String privateKey;
@@ -57,15 +55,6 @@ public class HydraConnectionController implements HydraConnection {
         activeService.setPort(serverPort);
         activeService.setWebProtocol("http");
         //finish setup in dynamic detection
-
-        this
-                .getActiveService()
-                .getEndpoints().addAll(
-                        RouteDetection.INSTANCE.getDetectedRoutes()
-                                .stream()
-                                .map(Route::getPath)
-                                .toList());
-        this.enableHydraConnectivity();
     }
 
     public ActiveService getActiveService() {
@@ -79,7 +68,15 @@ public class HydraConnectionController implements HydraConnection {
         }
     }
 
+    //@PostConstruct
     public void enableHydraConnectivity() {
+        this
+                .getActiveService()
+                .getEndpoints().addAll(
+                        RouteDetection.INSTANCE.getDetectedRoutes()
+                                .stream()
+                                .map(Route::getPath)
+                                .toList());
         this.state = ConnectivityState.NOT_REGISTERED;
     }
 
