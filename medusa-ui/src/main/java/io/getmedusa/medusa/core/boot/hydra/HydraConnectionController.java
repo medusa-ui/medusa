@@ -1,8 +1,11 @@
 package io.getmedusa.medusa.core.boot.hydra;
 
+import io.getmedusa.medusa.core.boot.Fragment;
 import io.getmedusa.medusa.core.boot.RouteDetection;
 import io.getmedusa.medusa.core.boot.hydra.config.MedusaConfigurationProperties;
+import io.getmedusa.medusa.core.boot.hydra.model.FragmentHydraRequestWrapper;
 import io.getmedusa.medusa.core.boot.hydra.model.meta.ActiveService;
+import io.getmedusa.medusa.core.boot.hydra.model.meta.RenderedFragment;
 import io.getmedusa.medusa.core.router.request.Route;
 import io.getmedusa.medusa.core.util.TimeUtils;
 import io.getmedusa.medusa.tags.action.HydraConnection;
@@ -19,7 +22,9 @@ import reactor.core.publisher.Mono;
 
 import java.net.InetAddress;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 @ConditionalOnProperty(name = "medusa.hydra.uri")
 @Component
@@ -147,19 +152,27 @@ public class HydraConnectionController implements HydraConnection {
     }
 
     @Override
+    @Deprecated
     public Mono<String> askHydraForFragment(String service, String ref) {
+        return Mono.empty();
+    }
+
+    public Mono<List<RenderedFragment>> askHydraForFragment(Map<String, List<Fragment>> requests, Map<String, Object> attributes) {
+        FragmentHydraRequestWrapper wrapper = new FragmentHydraRequestWrapper();
+        wrapper.setAttributes(attributes);
+        wrapper.setRequests(requests);
         return requestFragmentURL
-                .bodyValue(activeService.getName())
+                .bodyValue(wrapper)
                 .exchangeToMono(response -> {
                     if (response.statusCode().equals(HttpStatus.OK)) {
-                        return response.bodyToMono(String.class);
+                        return response.bodyToMono(RenderedFragment[].class);
                     } else {
-                        aliveFailure(null);
-                        return Mono.empty();
+                        return Mono.just(new RenderedFragment[]{});
                     }
                 })
-                .doOnError(this::aliveFailure)
-                .onErrorReturn("Failed registration");
+                .map(x -> Arrays.stream(x).toList())
+                .doOnError(err -> {})
+                .onErrorReturn(List.of());
     }
 
     private enum ConnectivityState {

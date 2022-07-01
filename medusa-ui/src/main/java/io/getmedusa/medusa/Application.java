@@ -12,7 +12,7 @@ import java.util.stream.StreamSupport;
 public class Application {
 
 	public static void main(String[] args) {
-		errorOnAnyBlockingCalls();
+		//errorOnAnyBlockingCalls();
 		SpringApplication.run(Application.class, args);
 	}
 

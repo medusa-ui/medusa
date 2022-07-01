@@ -5,10 +5,10 @@ import io.getmedusa.medusa.core.boot.Fragment;
 import java.util.List;
 import java.util.Map;
 
-public class FragmentRequestWrapper {
+public class FragmentHydraRequestWrapper {
 
     private Map<String, Object> attributes;
-    private List<Fragment> requests;
+    private Map<String, List<Fragment>> requests;
 
     public Map<String, Object> getAttributes() {
         return attributes;
@@ -18,11 +18,11 @@ public class FragmentRequestWrapper {
         this.attributes = attributes;
     }
 
-    public List<Fragment> getRequests() {
+    public Map<String, List<Fragment>> getRequests() {
         return requests;
     }
 
-    public void setRequests(List<Fragment> requests) {
+    public void setRequests(Map<String, List<Fragment>> requests) {
         this.requests = requests;
     }
 }

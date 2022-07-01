@@ -1,12 +1,12 @@
 package io.getmedusa.medusa.core.boot;
 
 import io.getmedusa.medusa.core.annotation.UIEventPage;
-import io.getmedusa.medusa.core.annotation.UIEventPageCallWrapper;
 import io.getmedusa.medusa.core.router.request.Route;
 import io.getmedusa.medusa.core.util.FileUtils;
-import org.springframework.stereotype.Component;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Keeps a singleton instance with all routes and their respective HTML files, as set up by {@link UIEventPage}
@@ -29,7 +29,7 @@ public enum RouteDetection {
         if(null != annotation) {
             Route route = new Route(
                     annotation.path(),
-                    FileUtils.load(annotation.file()),
+                    FragmentDetection.INSTANCE.prepFile(FileUtils.load(annotation.file())),
                     bean);
             detectedRoutes.put(route.generateHash(), route);
         }

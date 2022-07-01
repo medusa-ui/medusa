@@ -1,8 +1,8 @@
 package io.getmedusa.medusa.core.boot.hydra;
 
+import io.getmedusa.medusa.core.boot.Fragment;
 import io.getmedusa.medusa.core.boot.RefDetection;
 import io.getmedusa.medusa.core.boot.hydra.model.FragmentRequestWrapper;
-import io.getmedusa.medusa.core.boot.hydra.model.meta.FragmentRequest;
 import io.getmedusa.medusa.core.boot.hydra.model.meta.RenderedFragment;
 import io.getmedusa.medusa.core.render.Renderer;
 import io.getmedusa.medusa.core.util.FluxUtils;
@@ -13,11 +13,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -37,23 +37,25 @@ public class IncomingFragmentRequestController {
     }
 
     @PostMapping("/h/fragment/{publicKey}/requestFragment")
-    public Mono<List<RenderedFragment>> requestFragmentRender(FragmentRequestWrapper fragmentRequestWrapper,
+    public Mono<List<RenderedFragment>> requestFragmentRender(@RequestBody FragmentRequestWrapper fragmentRequestWrapper,
                                                               @PathVariable String publicKey,
                                                               ServerHttpResponse response) {
+        Flux<RenderedFragment> flux = Flux.empty();
         if(this.publicKey.equals(publicKey)) {
-            List<RenderedFragment> renderedFragments = new ArrayList<>();
-            for (FragmentRequest request : fragmentRequestWrapper.getRequests()) {
+            for (Fragment request : fragmentRequestWrapper.getRequests()) {
                 final String rawHTML = RefDetection.INSTANCE.findRef(request.getRef());
-                final RenderedFragment renderedFragment = new RenderedFragment(request);
                 final Flux<DataBuffer> bufferFlux = renderer.renderFragment(rawHTML, fragmentRequestWrapper.getAttributes());
-                renderedFragment.setRenderedHTML(FluxUtils.dataBufferFluxToString(bufferFlux));
-                renderedFragments.add(renderedFragment);
+                flux = flux.concatWith(bufferFlux.map(dataBuffer -> {
+                    final RenderedFragment renderedFragment = new RenderedFragment();
+                    renderedFragment.setId(request.getId());
+                    renderedFragment.setRenderedHTML(FluxUtils.dataBufferToString(dataBuffer));
+                    return renderedFragment;
+                }));
             }
-            return Mono.just(renderedFragments);
         } else {
             response.setStatusCode(HttpStatus.NOT_FOUND);
-            return Mono.empty();
         }
+        return flux.collectList();
     }
 
 }

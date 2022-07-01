@@ -3,12 +3,9 @@ package io.getmedusa.medusa.core.boot.hydra.model.meta;
 public class RenderedFragment {
 
     private String renderedHTML;
-    private String ref;
-    private String service;
+    private String id;
 
-    public RenderedFragment(FragmentRequest request) {
-        this.ref = request.getRef();
-        this.service = request.getService();
+    public RenderedFragment() {
     }
 
     public String getRenderedHTML() {
@@ -19,28 +16,19 @@ public class RenderedFragment {
         this.renderedHTML = renderedHTML;
     }
 
-    public String getRef() {
-        return ref;
+    public String getId() {
+        return id;
     }
 
-    public void setRef(String ref) {
-        this.ref = ref;
-    }
-
-    public String getService() {
-        return service;
-    }
-
-    public void setService(String service) {
-        this.service = service;
+    public void setId(String id) {
+        this.id = id;
     }
 
     @Override
     public String toString() {
         return "RenderedFragment{" +
                 "renderedHTML='" + renderedHTML + '\'' +
-                ", ref='" + ref + '\'' +
-                ", service='" + service + '\'' +
+                ", id='" + id + '\'' +
                 '}';
     }
 }
