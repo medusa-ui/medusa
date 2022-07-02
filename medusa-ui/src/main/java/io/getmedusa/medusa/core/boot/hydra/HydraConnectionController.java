@@ -20,7 +20,6 @@ import org.springframework.web.reactive.function.client.WebClient.RequestBodySpe
 import reactor.core.publisher.Mono;
 
 import java.net.InetAddress;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -72,7 +71,6 @@ public class HydraConnectionController {
         }
     }
 
-    //@PostConstruct
     public void enableHydraConnectivity() {
         this
                 .getActiveService()
@@ -100,15 +98,13 @@ public class HydraConnectionController {
             }
         })
         .doOnError(this::registrationFailure)
-        .onErrorReturn(new ArrayList())
-        .subscribe(l -> {
-            System.out.println(l);
-        });
+        .onErrorReturn(List.of())
+        .subscribe();
     }
 
     private void registrationFailure(Throwable e) {
         if (!hasShownConnectionError) {
-            logger.error("Connection to Hydra failed, retrying every second", e);
+            logger.error("Connection to Hydra failed, retrying every second");
             if(e != null) { aliveFailure(e); }
             hasShownConnectionError = true;
         }
@@ -166,6 +162,10 @@ public class HydraConnectionController {
                 .map(x -> Arrays.stream(x).toList())
                 .doOnError(err -> {})
                 .onErrorReturn(List.of());
+    }
+
+    public boolean isInactive() {
+        return !ConnectivityState.REGISTERED.equals(state);
     }
 
     private enum ConnectivityState {

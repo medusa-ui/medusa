@@ -65,7 +65,7 @@ public class Renderer {
         final Map<String, List<Fragment>> fragmentsToLoad = FragmentDetection.INSTANCE.detectWhichFragmentsArePresent(templateHTML);
         Mono<List<RenderedFragment>> mono;
 
-        if(hydraConnectionController == null) {
+        if(hydraConnectionController == null || hydraConnectionController.isInactive()) {
             mono = buildFallbackFlux(fragmentsToLoad);
         } else {
             mono = hydraConnectionController.askHydraForFragment(fragmentsToLoad, session.toLastParameterMap());
