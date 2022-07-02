@@ -8,7 +8,6 @@ import io.getmedusa.medusa.core.boot.hydra.model.meta.ActiveService;
 import io.getmedusa.medusa.core.boot.hydra.model.meta.RenderedFragment;
 import io.getmedusa.medusa.core.router.request.Route;
 import io.getmedusa.medusa.core.util.TimeUtils;
-import io.getmedusa.medusa.tags.action.HydraConnection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -28,7 +27,7 @@ import java.util.Map;
 
 @ConditionalOnProperty(name = "medusa.hydra.uri")
 @Component
-public class HydraConnectionController implements HydraConnection {
+public class HydraConnectionController {
 
     private final String privateKey;
 
@@ -149,12 +148,6 @@ public class HydraConnectionController implements HydraConnection {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-    }
-
-    @Override
-    @Deprecated
-    public Mono<String> askHydraForFragment(String service, String ref) {
-        return Mono.empty();
     }
 
     public Mono<List<RenderedFragment>> askHydraForFragment(Map<String, List<Fragment>> requests, Map<String, Object> attributes) {

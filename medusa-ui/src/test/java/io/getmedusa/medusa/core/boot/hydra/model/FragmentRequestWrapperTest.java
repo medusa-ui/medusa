@@ -1,11 +1,12 @@
 package io.getmedusa.medusa.core.boot.hydra.model;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.getmedusa.medusa.core.boot.hydra.model.meta.FragmentRequest;
+import io.getmedusa.medusa.core.boot.Fragment;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
+import java.util.List;
 
 class FragmentRequestWrapperTest {
 
@@ -14,10 +15,10 @@ class FragmentRequestWrapperTest {
     @Test
     void testSerializable() throws Exception {
         FragmentRequestWrapper wrapper = new FragmentRequestWrapper();
-        FragmentRequest request = new FragmentRequest();
+        Fragment request = new Fragment();
         request.setService("xyz");
         request.setRef("234");
-        //wrapper.setRequests(List.of(request));
+        wrapper.setRequests(List.of(request));
         wrapper.setAttributes(new HashMap<>());
 
         String value = objectMapper.writeValueAsString(wrapper);

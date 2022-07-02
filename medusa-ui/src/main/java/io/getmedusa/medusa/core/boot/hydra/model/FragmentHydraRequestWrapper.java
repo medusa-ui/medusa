@@ -4,7 +4,7 @@ import io.getmedusa.medusa.core.boot.Fragment;
 
 import java.util.List;
 import java.util.Map;
-
+//used to ask hydra for several fragments
 public class FragmentHydraRequestWrapper {
 
     private Map<String, Object> attributes;
