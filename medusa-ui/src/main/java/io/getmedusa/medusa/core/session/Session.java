@@ -19,13 +19,21 @@ public class Session {
     private String lastRenderedHTML;
     private List<Attribute> lastParameters = new ArrayList<>();
     private Map<String, String> tags = new HashMap<>();
+    private final String hydraPath;
 
     public Session() {
         this.id = RandomUtils.generateId();
+        this.hydraPath = null;
+    }
+
+    public Session(String hydraPath) {
+        this.id = RandomUtils.generateId();
+        this.hydraPath = hydraPath;
     }
 
     public Session(Route route, ServerRequest request) {
         this.id = RandomUtils.generateId();
+        this.hydraPath = findHydraPath(request.headers());
         setLastParameters(route.getSetupAttributes(request));
         setLastUsedTemplate(route.getTemplateHTML());
         setLastUsedHash(route.generateHash());
@@ -80,6 +88,10 @@ public class Session {
         return id;
     }
 
+    public String getHydraPath() {
+        return hydraPath;
+    }
+
     public Session merge(List<Attribute> newAttributes) {
         final Map<String, Object> map = toLastParameterMap();
         for(Attribute attribute : newAttributes) {
@@ -91,5 +103,12 @@ public class Session {
         }
 
         return this;
+    }
+
+    private String findHydraPath(ServerRequest.Headers headers) {
+        if(headers == null) return null;
+        List<String> relevantHeaders = headers.header("hydra-path");
+        if(relevantHeaders.isEmpty()) return null;
+        return relevantHeaders.get(0);
     }
 }

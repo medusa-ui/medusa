@@ -2,6 +2,7 @@ package io.getmedusa.medusa.core.render;
 
 import io.getmedusa.medusa.core.boot.Fragment;
 import io.getmedusa.medusa.core.boot.FragmentDetection;
+import io.getmedusa.medusa.core.boot.StaticResourcesDetection;
 import io.getmedusa.medusa.core.boot.hydra.HydraConnectionController;
 import io.getmedusa.medusa.core.boot.hydra.model.meta.RenderedFragment;
 import io.getmedusa.medusa.core.session.Session;
@@ -11,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DataBufferFactory;
 import org.springframework.core.io.buffer.DefaultDataBufferFactory;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.context.EngineContext;
@@ -24,6 +24,7 @@ import reactor.core.publisher.Mono;
 import java.util.*;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.springframework.http.MediaType.TEXT_HTML;
 
 /**
  * Thymeleaf renderer
@@ -38,6 +39,8 @@ public class Renderer {
 
     //see https://www.baeldung.com/spring-thymeleaf-fragments#markup-selector
     protected static final Set<String> MARKUP_SELECTORS = new HashSet<>();
+    protected static final HashMap<String, Object> TEMPLATE_RESOLUTION_ATTRIBUTES = new HashMap<>();
+    protected static final Locale LOCALE = Locale.getDefault();
 
     /**
      * Thymeleaf renderer
@@ -56,8 +59,11 @@ public class Renderer {
 
     public Flux<DataBuffer> render(String templateHTML, Session session) {
         return loadFragments(templateHTML, session).flatMapMany(html -> {
-            IContext context = new EngineContext(configuration, null, new HashMap<>(), Locale.getDefault(), session.toLastParameterMap());
-            return Flux.from(engine.processStream(appendRSocketScript(convertToXHTML(html), session), MARKUP_SELECTORS, context, bufferFactory, MediaType.TEXT_HTML, UTF_8));
+            IContext context = new EngineContext(configuration, null, TEMPLATE_RESOLUTION_ATTRIBUTES, LOCALE, session.toLastParameterMap());
+            return Flux.from(engine.processStream(
+                    appendRSocketScriptAndAddHydraPath(convertToXHTML(html), session),
+                    MARKUP_SELECTORS, context, bufferFactory, TEXT_HTML, UTF_8)
+            );
         });
     }
 
@@ -120,18 +126,18 @@ public class Renderer {
         return document.html();
     }
 
-    public String appendRSocketScript(String rawTemplate, Session session) {
-        return rawTemplate
-                .replace("</body>", "\t" +
-                        "<script src=\"/static/websocket.js\"></script>\n" +
-                        "<script>_M.controller = 'x'; _M.sessionId = 'y';</script>\n"
-                                .replace("x", session.getLastUsedHash())
-                                .replace("y", session.getId()) +
-                        "</body>");
+    public String appendRSocketScriptAndAddHydraPath(String rawTemplate, Session session) {
+        final String hydraPathToAdd = (session.getHydraPath() != null) ? "'" + session.getHydraPath() + "'" : "null";
+        return StaticResourcesDetection.INSTANCE.prependStatisUrlsWithHydraPath(rawTemplate
+                .replace("</body>", "\t<script src=\"/websocket.js\"></script>\n" +
+                        "<script>_M.controller = '" + session.getLastUsedHash() + "'; " +
+                        "_M.sessionId = '" + session.getId() + "'; " +
+                        "_M.hydraPath = " + hydraPathToAdd + ";" +
+                        "</script>\n" + "</body>"), session);
     }
 
     public Flux<DataBuffer> renderFragment(String html, Map<String, Object> attributes) {
-        IContext context = new EngineContext(configuration, null, new HashMap<>(), Locale.getDefault(), attributes);
-        return Flux.from(engine.processStream(convertToXHTML(html), MARKUP_SELECTORS, context, bufferFactory, MediaType.TEXT_HTML, UTF_8));
+        IContext context = new EngineContext(configuration, null, TEMPLATE_RESOLUTION_ATTRIBUTES, LOCALE, attributes);
+        return Flux.from(engine.processStream(convertToXHTML(html), MARKUP_SELECTORS, context, bufferFactory, TEXT_HTML, UTF_8));
     }
 }

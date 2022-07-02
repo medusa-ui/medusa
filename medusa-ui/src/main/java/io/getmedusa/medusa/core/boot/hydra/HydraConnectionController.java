@@ -147,6 +147,7 @@ public class HydraConnectionController {
     }
 
     public Mono<List<RenderedFragment>> askHydraForFragment(Map<String, List<Fragment>> requests, Map<String, Object> attributes) {
+        if(requests.isEmpty()) return Mono.just(List.of());
         FragmentHydraRequestWrapper wrapper = new FragmentHydraRequestWrapper();
         wrapper.setAttributes(attributes);
         wrapper.setRequests(requests);
