@@ -29,7 +29,7 @@ async function setupRouter() {
             metadataMimeType: WellKnownMimeType.MESSAGE_RSOCKET_COMPOSITE_METADATA.string,
         },
         transport: new WebsocketClientTransport({
-            url: 'ws://localhost:7000/socket'
+            url: (typeof _M.wsURL !== 'undefined') ? _M.wsURL : 'ws://localhost:7000/socket'
         }),
     });
     const rsocket = await connector.connect();

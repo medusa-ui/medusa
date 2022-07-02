@@ -33,13 +33,13 @@ class StaticResourceDetectionTest {
     void testReplaceScriptTag(String scriptTag, String staticResource, String expectedResult) {
         INSTANCE.testLoadStaticResource(staticResource);
         INSTANCE.detectUsedResources(scriptTag);
-        Assertions.assertEquals(expectedResult, INSTANCE.prependStatisUrlsWithHydraPath(scriptTag, session));
+        Assertions.assertEquals(expectedResult, INSTANCE.prependStaticUrlsWithHydraPath(scriptTag, session));
     }
 
     @Test
     void testReplaceWithWebsocketByDefault() {
         final String scriptTag = "<script src=\"/websocket.js\"></script>";
         INSTANCE.detectUsedResources(scriptTag);
-        Assertions.assertEquals("<script src=\"/123/websocket.js\"></script>", INSTANCE.prependStatisUrlsWithHydraPath(scriptTag, session));
+        Assertions.assertEquals("<script src=\"/123/websocket.js\"></script>", INSTANCE.prependStaticUrlsWithHydraPath(scriptTag, session));
     }
 }

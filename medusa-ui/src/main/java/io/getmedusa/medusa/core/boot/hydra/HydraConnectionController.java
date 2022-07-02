@@ -2,6 +2,7 @@ package io.getmedusa.medusa.core.boot.hydra;
 
 import io.getmedusa.medusa.core.boot.Fragment;
 import io.getmedusa.medusa.core.boot.RouteDetection;
+import io.getmedusa.medusa.core.boot.StaticResourcesDetection;
 import io.getmedusa.medusa.core.boot.hydra.config.MedusaConfigurationProperties;
 import io.getmedusa.medusa.core.boot.hydra.model.FragmentHydraRequestWrapper;
 import io.getmedusa.medusa.core.boot.hydra.model.meta.ActiveService;
@@ -39,6 +40,7 @@ public class HydraConnectionController {
     private ConnectivityState state = ConnectivityState.INITIALIZING;
     private boolean hasShownConnectionError = false;
     private long downtimeStart;
+    private final String wsUrl;
 
     private static final Logger logger = LoggerFactory.getLogger(HydraConnectionController.class);
 
@@ -51,6 +53,7 @@ public class HydraConnectionController {
         this.registrationURL = webClient.post().uri(configProps.getHydra().registrationURL());
         this.isAliveURL = webClient.post().uri(configProps.getHydra().isAliveURL());
         this.requestFragmentURL = webClient.post().uri(configProps.getHydra().requestFragmentURL());
+        this.wsUrl = configProps.getHydra().websocketUrl();
 
         activeService = new ActiveService();
         activeService.setName(configProps.getName());
@@ -79,6 +82,9 @@ public class HydraConnectionController {
                                 .stream()
                                 .map(Route::getPath)
                                 .toList());
+        this
+                .getActiveService()
+                .getStaticResources().addAll(StaticResourcesDetection.INSTANCE.getAllResources());
         this.state = ConnectivityState.NOT_REGISTERED;
     }
 
@@ -167,6 +173,10 @@ public class HydraConnectionController {
 
     public boolean isInactive() {
         return !ConnectivityState.REGISTERED.equals(state);
+    }
+
+    public String getWSUrl(String hydraPath) {
+        return wsUrl.replace("{hydrapath}", hydraPath);
     }
 
     private enum ConnectivityState {

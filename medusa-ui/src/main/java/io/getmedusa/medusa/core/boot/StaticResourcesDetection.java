@@ -9,10 +9,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.ResourcePatternResolver;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public enum StaticResourcesDetection {
 
@@ -41,14 +38,21 @@ public enum StaticResourcesDetection {
         Set<String> set = new HashSet<>();
         for (Resource r : resources) {
             String path = r.getURI().getPath();
-            if (path != null && path.contains("/static/")) {
+            if (path != null && path.contains("/static/") && !isPartOfStandardMedusaSetup(path)) {
                 set.add(path.substring(path.indexOf("/static/") + 8));
             }
         }
         return set;
     }
 
-    public String prependStatisUrlsWithHydraPath(String html, Session session) {
+    private boolean isPartOfStandardMedusaSetup(String path) {
+        return path.contains("/node_modules/") ||
+                path.endsWith("update_websocket.bat") ||
+                path.endsWith("package.json") ||
+                path.endsWith("package-lock.json") ;
+    }
+
+    public String prependStaticUrlsWithHydraPath(String html, Session session) {
         String hydraPath = session.getHydraPath();
         if(null == hydraPath) return html;
 
@@ -83,5 +87,9 @@ public enum StaticResourcesDetection {
                 staticResourcesToReplace.put(hrefAttribute.toString(), hrefAttribute.toString().replace(urlUsed, "/" + HYDRA_PATH + "/" + matchLookup));
             }
         }
+    }
+
+    public Set<String> getAllResources() {
+        return staticResourcesAvailable;
     }
 }

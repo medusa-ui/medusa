@@ -127,12 +127,15 @@ public class Renderer {
     }
 
     public String appendRSocketScriptAndAddHydraPath(String rawTemplate, Session session) {
-        final String hydraPathToAdd = (session.getHydraPath() != null) ? "'" + session.getHydraPath() + "'" : "null";
-        return StaticResourcesDetection.INSTANCE.prependStatisUrlsWithHydraPath(rawTemplate
+        String wsURL = "null";
+        if(!hydraConnectionController.isInactive()) {
+            wsURL = "\"" + hydraConnectionController.getWSUrl(session.getHydraPath()) + "\"";
+        }
+        return StaticResourcesDetection.INSTANCE.prependStaticUrlsWithHydraPath(rawTemplate
                 .replace("</body>", "\t<script src=\"/websocket.js\"></script>\n" +
                         "<script>_M.controller = '" + session.getLastUsedHash() + "'; " +
                         "_M.sessionId = '" + session.getId() + "'; " +
-                        "_M.hydraPath = " + hydraPathToAdd + ";" +
+                        "_M.wsURL = " + wsURL + ";" +
                         "</script>\n" + "</body>"), session);
     }
 

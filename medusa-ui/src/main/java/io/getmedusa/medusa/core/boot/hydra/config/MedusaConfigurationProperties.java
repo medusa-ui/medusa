@@ -80,6 +80,10 @@ public class MedusaConfigurationProperties {
                     secret.publicKey +
                     "/requestFragment";
         }
+
+        public String websocketUrl() {
+            return uri.replace("http://", "ws://") + "/{hydrapath}/socket";
+        }
     }
 
     public static class Secret {
