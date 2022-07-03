@@ -126,9 +126,9 @@ public class Renderer {
         return document.html();
     }
 
-    public String appendRSocketScriptAndAddHydraPath(String rawTemplate, Session session) {
+    private String appendRSocketScriptAndAddHydraPath(String rawTemplate, Session session) {
         String wsURL = "null";
-        if(!hydraConnectionController.isInactive()) {
+        if(hydraConnectionController != null && !hydraConnectionController.isInactive()) {
             wsURL = "\"" + hydraConnectionController.getWSUrl(session.getHydraPath()) + "\"";
         }
         return StaticResourcesDetection.INSTANCE.prependStaticUrlsWithHydraPath(rawTemplate
