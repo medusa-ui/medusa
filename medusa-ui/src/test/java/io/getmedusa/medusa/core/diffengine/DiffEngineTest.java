@@ -79,6 +79,30 @@ class DiffEngineTest {
                 })
                 .expectComplete()
                 .verify();
+    }
+
+    @Test
+    void testDiffGeneration_Edit_Attribute_Simple() {
+        final String oldHTML = "<p>Hello world</p>";
+        final String newHTML = "<p class=\"red\">Hello world</p>";
+
+        StepVerifier
+                .create(diffEngine.findDiffs(oldHTML, newHTML))
+                .assertNext(jsReadyDiffs -> {
+                    for(JSReadyDiff diff : jsReadyDiffs) {
+                        System.out.println(diff);
+                    }
+
+                    Assertions.assertEquals( 1, jsReadyDiffs.size(), "expected only 1 edit");
+
+                    final JSReadyDiff jsReadyDiff1 = jsReadyDiffs.get(0);
+                    Assertions.assertNotNull(jsReadyDiff1);
+                    Assertions.assertTrue(jsReadyDiff1.toString().contains("type=EDIT"));
+                    Assertions.assertEquals("/p[1]", jsReadyDiff1.getXpath());
+                    Assertions.assertEquals("<p class=\"red\">Hello world</p>", jsReadyDiff1.getContent());
+                })
+                .expectComplete()
+                .verify();
 
     }
 
@@ -186,7 +210,10 @@ class DiffEngineTest {
         StepVerifier
                 .create(diffEngine.findDiffs(oldHTML_BUG, newHTML_BUG))
                 .assertNext(jsReadyDiffs -> {
-                    System.out.println(jsReadyDiffs);
+                    for(JSReadyDiff diff : jsReadyDiffs) {
+                        System.out.println(diff);
+                    }
+
                     Assertions.assertEquals( 1, jsReadyDiffs.size(), "expected only 1 addition");
                 })
                 .expectComplete()

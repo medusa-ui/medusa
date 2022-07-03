@@ -6,10 +6,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.w3c.dom.Node;
 import org.xmlunit.builder.DiffBuilder;
-import org.xmlunit.diff.Comparison;
-import org.xmlunit.diff.ComparisonType;
-import org.xmlunit.diff.Diff;
-import org.xmlunit.diff.Difference;
+import org.xmlunit.diff.*;
 import reactor.core.publisher.Flux;
 
 import javax.xml.transform.TransformerFactory;
@@ -38,6 +35,7 @@ public class DiffEngine {
                     .withTest(newHTML)
                     .ignoreComments()
                     .ignoreWhitespace()
+                    .withNodeMatcher(new DefaultNodeMatcher(ElementSelectors.byName))
                     .build();
 
             for (Difference difference : differences.getDifferences()) {
@@ -62,17 +60,14 @@ public class DiffEngine {
         final Comparison.Detail oldDetail = comparison.getControlDetails();
         final Comparison.Detail newDetail = comparison.getTestDetails();
 
-        final Node lastDocumentNode = oldDetail.getTarget();
         final Node newDocumentNode = newDetail.getTarget();
 
         if(ELEMENT_TAG_NAME.equals(comparison.getType())) {
             //return buildNewEdit(oldDetail.getXPath(), nodeToContent(newDocumentNode));
             logger.debug("comparisonToDiff: no implementation for comparison: " + comparison + " of type ELEMENT_TAG_NAME");
-            return null; //TODO might add? but not right now
+            return null;
         } else if(ATTR_NAME_LOOKUP.equals(comparison.getType())){
-            //return buildNewEdit(oldDetail.getParentXPath(), nodeToContent(newDocumentNode));
-            logger.debug("comparisonToDiff: no implementation for comparison: " + comparison + " of type ATTR_NAME_LOOKUP");
-            return null; //TODO should do this, but not right now
+            return buildNewEdit(attrOwnerXPath(oldDetail, newDetail), nodeToContent(newDocumentNode));
         } else if(isAddition(comparison)) {
             return buildNewAddition(newDetail.getXPath(), nodeToContent(newDocumentNode));
         } else if(isRemoval(comparison)) {
@@ -84,6 +79,14 @@ public class DiffEngine {
         }
 
         return null;
+    }
+
+    private String attrOwnerXPath(Comparison.Detail oldDetail, Comparison.Detail newDetail) {
+        String attrXPath = newDetail.getParentXPath();
+        if(oldDetail.getXPath().length() > newDetail.getXPath().length()) {
+            attrXPath = oldDetail.getParentXPath();
+        }
+        return attrXPath;
     }
 
     private boolean isAddition(Comparison comparison) {

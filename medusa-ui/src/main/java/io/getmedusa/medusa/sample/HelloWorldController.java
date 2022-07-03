@@ -31,7 +31,6 @@ public class HelloWorldController {
 
     public List<Attribute> randomNewTable() {
         List<Person> people = generateListOfPeople();
-        System.out.println("Expected: " + people.size());
         return List.of(
                 new Attribute("counterValue", ++counter),
                 new Attribute("expectedTableCount", people.size()),
@@ -41,14 +40,14 @@ public class HelloWorldController {
     public List<Attribute> addPerson() {
         globalPeople.add(new Person(globalPeople.size() + 1, new Date().getTime()));
         return List.of(
-               // new Attribute("expectedTableCount", globalPeople.size()),
+                new Attribute("expectedTableCount", globalPeople.size()),
                 new Attribute("people", globalPeople));
     }
 
     public List<Attribute> removePerson() {
         globalPeople.remove(globalPeople.size()-1);
         return List.of(
-                //new Attribute("expectedTableCount", globalPeople.size()),
+                new Attribute("expectedTableCount", globalPeople.size()),
                 new Attribute("people", globalPeople));
     }
 

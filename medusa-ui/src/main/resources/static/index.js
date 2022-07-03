@@ -29,7 +29,7 @@ async function setupRouter() {
             metadataMimeType: WellKnownMimeType.MESSAGE_RSOCKET_COMPOSITE_METADATA.string,
         },
         transport: new WebsocketClientTransport({
-            url: (typeof _M.wsURL !== 'undefined') ? _M.wsURL : 'ws://localhost:7000/socket'
+            url: (typeof _M.wsURL !== 'undefined' && null !== _M.wsURL) ? _M.wsURL : 'ws://localhost:7000/socket'
         }),
     });
     const rsocket = await connector.connect();
@@ -142,13 +142,14 @@ handleIncomingAddition = function (obj) {
 
 handleMorph = function (obj) {
     let element = obj.element;
-    console.log("handleMorph: obj", obj);
-    console.log("handleMorph: element", element);
-    console.log("--");
+
     if(element !== null) {
         morphdom(element, obj.content);
     } else {
         console.error("failed to morphdom", obj.xpath);
+        console.log("handleMorph: obj", obj);
+        console.log("handleMorph: element", element);
+        console.log("--");
     }
 }
 

@@ -110,7 +110,7 @@ public class HydraConnectionController {
 
     private void registrationFailure(Throwable e) {
         if (!hasShownConnectionError) {
-            logger.error("Connection to Hydra failed, retrying every second");
+            logger.error("Connection to Hydra failed, retrying every second. In the meantime, the app will fallback to a non-connected state and continue working.");
             if(e != null) { aliveFailure(e); }
             hasShownConnectionError = true;
         }
