@@ -33,7 +33,7 @@ public class ServerToClient {
      * Send attribute updates from the server to the client via session tag.
      *
      * @param attributes Collection of {@link Attribute} to send
-     * @param sessionTag See StandardSessionTags or use a custom tag (Required)
+     * @param sessionTag See StandardSessionTagKeys or use a custom tag (Required)
      */
     public void sendAttributesToSessionTag(Collection<Attribute> attributes, String sessionTagKey, String sessionTagValue) {
         if(sessionTagKey == null) {

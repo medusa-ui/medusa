@@ -2,6 +2,11 @@ package io.getmedusa.medusa.sample;
 
 import io.getmedusa.medusa.core.annotation.UIEventPage;
 import io.getmedusa.medusa.core.attributes.Attribute;
+import io.getmedusa.medusa.core.bidirectional.ServerToClient;
+import io.getmedusa.medusa.core.session.StandardSessionTagKeys;
+import io.getmedusa.medusa.core.session.StandardSessionTagValues;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.reactive.function.server.ServerRequest;
 
 import java.security.SecureRandom;
@@ -15,6 +20,16 @@ public class HelloWorldController {
     private int counter = 0;
 
     private List<Person> globalPeople = new ArrayList<>();
+
+    @Autowired
+    private ServerToClient serverToClient;
+
+    @Scheduled(fixedDelay = 1000)
+    public void updateCounterFromServer() {
+        serverToClient.sendAttributesToSessionTag(List.of(new Attribute("counterValue", ++counter)),
+                StandardSessionTagKeys.ROUTE,
+                StandardSessionTagValues.ALL); //TODO gotta improve this somehow
+    }
 
     public List<Attribute> setupAttributes(ServerRequest serverRequest) {
         List<Person> people = new ArrayList<>();//generateListOfPeople();

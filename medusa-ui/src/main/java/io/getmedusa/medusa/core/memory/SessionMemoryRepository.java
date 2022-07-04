@@ -2,6 +2,7 @@ package io.getmedusa.medusa.core.memory;
 
 import io.getmedusa.medusa.core.router.request.Route;
 import io.getmedusa.medusa.core.session.Session;
+import io.getmedusa.medusa.core.session.StandardSessionTagValues;
 import org.springframework.stereotype.Repository;
 
 import java.util.Collection;
@@ -35,6 +36,10 @@ public class SessionMemoryRepository {
     }
 
     public List<Session> findSessionsByTag(String sessionTagKey, String sessionTagValue) {
-        return sessions.values().stream().filter(session -> sessionTagValue.equals(session.getTags().getOrDefault(sessionTagKey, null))).toList();
+        if(sessionTagValue.equals(StandardSessionTagValues.ALL)) {
+            return sessions.values().stream().toList();
+        } else {
+            return sessions.values().stream().filter(session -> sessionTagValue.equals(session.getTags().getOrDefault(sessionTagKey, null))).toList();
+        }
     }
 }
