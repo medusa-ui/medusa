@@ -129,7 +129,8 @@ public class Renderer {
     private String appendRSocketScriptAndAddHydraPath(String rawTemplate, Session session) {
         String wsURL = "null";
         if(hydraConnectionController != null && !hydraConnectionController.isInactive()) {
-            wsURL = "\"" + hydraConnectionController.getWSUrl(session.getHydraPath()) + "\"";
+            final String wsUrlReplacement = hydraConnectionController.getWSUrl(session.getHydraPath());
+            if(wsUrlReplacement != null) { wsURL = "\"" + wsUrlReplacement + "\""; }
         }
         return StaticResourcesDetection.INSTANCE.prependStaticUrlsWithHydraPath(rawTemplate
                 .replace("</body>", "\t<script src=\"/websocket.js\"></script>\n" +

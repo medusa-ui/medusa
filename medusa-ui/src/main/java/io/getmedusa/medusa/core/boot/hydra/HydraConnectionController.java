@@ -176,6 +176,7 @@ public class HydraConnectionController {
     }
 
     public String getWSUrl(String hydraPath) {
+        if(hydraPath == null) return null;
         return wsUrl.replace("{hydrapath}", hydraPath);
     }
 

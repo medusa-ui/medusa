@@ -17,10 +17,14 @@ import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DataBufferFactory;
 import org.springframework.core.io.buffer.DefaultDataBufferFactory;
 import reactor.core.publisher.Flux;
+import reactor.test.StepVerifier;
 
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 import java.util.HashMap;
 import java.util.List;
+
+import static org.mockito.ArgumentMatchers.*;
 
 class SocketHandlerTest {
 
@@ -53,17 +57,18 @@ class SocketHandlerTest {
 
         RouteDetection.INSTANCE.consider(new SampleController());
 
-        Mockito.when(actionHandler.executeAndMerge(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(new Session());
-        Mockito.when(renderer.render(Mockito.anyString(), Mockito.any())).thenReturn(createDataBuffer("test"));
-        Mockito.when(diffEngine.findDiffs(Mockito.nullable(String.class), Mockito.nullable(String.class))).thenReturn(List.of(new JSReadyDiff()));
+        Session session = new Session();
+        Mockito.when(sessionMemoryRepository.retrieve(anyString(), any())).thenReturn(session);
+        Mockito.when(actionHandler.executeAndMerge(any(), any(), any())).thenReturn(session);
+        Mockito.when(renderer.render(anyString(), any())).thenReturn(createDataBuffer("test"));
+        Mockito.when(diffEngine.findDiffs(nullable(String.class), nullable(String.class))).thenReturn(List.of(new JSReadyDiff()));
 
         final Flux<List<JSReadyDiff>> jsReadyDiffFlux = socketHandler.eventEmitter(new HashMap<>(),
                 Flux.just(socketAction),
                 findSampleHash(),
                 "sessionId");
 
-        List<JSReadyDiff> diff = jsReadyDiffFlux.blockLast();
-        Assertions.assertNotNull(diff);
+        StepVerifier.create(jsReadyDiffFlux).assertNext(Assertions::assertNotNull).verifyTimeout(Duration.ofSeconds(1));
     }
 
     private Flux<DataBuffer> createDataBuffer(String value) {

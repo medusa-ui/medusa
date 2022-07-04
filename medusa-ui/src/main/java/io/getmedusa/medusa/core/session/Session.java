@@ -1,5 +1,6 @@
 package io.getmedusa.medusa.core.session;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.getmedusa.medusa.core.attributes.Attribute;
 import io.getmedusa.medusa.core.router.action.SocketSink;
 import io.getmedusa.medusa.core.router.request.Route;
@@ -18,7 +19,7 @@ public class Session {
     private List<Attribute> lastParameters = new ArrayList<>();
     private Map<String, String> tags = new HashMap<>();
     private final String hydraPath;
-
+    @JsonIgnore
     private final SocketSink sink = new SocketSink();
 
     public Session() {
