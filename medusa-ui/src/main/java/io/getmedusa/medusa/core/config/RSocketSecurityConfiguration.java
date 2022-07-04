@@ -20,7 +20,6 @@ public class RSocketSecurityConfiguration {
 
     @Bean
     RSocketMessageHandler messageHandler(RSocketStrategies strategies) {
-
         RSocketMessageHandler handler = new RSocketMessageHandler();
         handler.getArgumentResolverConfigurer().addCustomResolver(new AuthenticationPrincipalArgumentResolver());
         handler.setRSocketStrategies(strategies);
@@ -44,7 +43,7 @@ public class RSocketSecurityConfiguration {
         security.authorizePayload(authorize ->
                 authorize
                         .anyExchange().permitAll() // all connections, exchanges.
-        ).simpleAuthentication(Customizer.withDefaults());
+        ).simpleAuthentication(Customizer.withDefaults()); //TODO JWT
         return security.build();
     }
 }

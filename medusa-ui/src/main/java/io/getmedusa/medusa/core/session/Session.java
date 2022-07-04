@@ -19,6 +19,7 @@ public class Session {
     private List<Attribute> lastParameters = new ArrayList<>();
     private Map<String, String> tags = new HashMap<>();
     private final String hydraPath;
+    private boolean matched = false;
     @JsonIgnore
     private final SocketSink sink = new SocketSink();
 
@@ -115,5 +116,13 @@ public class Session {
 
     public SocketSink getSink() {
         return sink;
+    }
+
+    public void setMatched() {
+        this.matched = true;
+    }
+
+    public boolean isMatched() {
+        return matched;
     }
 }

@@ -15,7 +15,7 @@ import java.util.Map;
 @Repository
 public class SessionMemoryRepository {
 
-    //TODO temp in memory
+    //TODO temp only in memory, eventually needs to make a call to hit redis or in-memory
     private Map<String, Session> sessions = new HashMap<>();
 
     public Session store(Session session) {
@@ -28,7 +28,12 @@ public class SessionMemoryRepository {
         if(session == null || !routeForValidation.generateHash().equals(session.getLastUsedHash())) {
             throw new SecurityException("Illegal request made: A session was attempted to be retrieved with a mismatching route");
         }
-        return session;
+        if(session.isMatched()) {
+            throw new SecurityException("Trying to match an already-matched session. Potential for session hijacking.");
+        } else {
+            session.setMatched();
+            return store(session);
+        }
     }
 
     public List<Session> findSessionsByIds(Collection<String> sessionIds) {
