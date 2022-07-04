@@ -7,7 +7,6 @@ import org.springframework.stereotype.Component;
 import org.w3c.dom.Node;
 import org.xmlunit.builder.DiffBuilder;
 import org.xmlunit.diff.*;
-import reactor.core.publisher.Flux;
 
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
@@ -26,7 +25,7 @@ public class DiffEngine {
     private static final String XML_VERSION = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
     private static final int XML_VERSION_LENGTH = XML_VERSION.length();
 
-    public Flux<List<JSReadyDiff>> findDiffs(String oldHTML, String newHTML) {
+    public List<JSReadyDiff> findDiffs(String oldHTML, String newHTML) {
         List<JSReadyDiff> diffs = new ArrayList<>();
 
         try {
@@ -53,7 +52,7 @@ public class DiffEngine {
             throw new RuntimeException(e);
         }
 
-        return Flux.just(diffs);
+        return diffs;
     }
 
     private JSReadyDiff comparisonToDiff(Comparison comparison) {

@@ -1,14 +1,12 @@
 package io.getmedusa.medusa.core.session;
 
 import io.getmedusa.medusa.core.attributes.Attribute;
+import io.getmedusa.medusa.core.router.action.SocketSink;
 import io.getmedusa.medusa.core.router.request.Route;
 import io.getmedusa.medusa.core.util.RandomUtils;
 import org.springframework.web.reactive.function.server.ServerRequest;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class Session {
@@ -20,6 +18,8 @@ public class Session {
     private List<Attribute> lastParameters = new ArrayList<>();
     private Map<String, String> tags = new HashMap<>();
     private final String hydraPath;
+
+    private final SocketSink sink = new SocketSink();
 
     public Session() {
         this.id = RandomUtils.generateId();
@@ -37,7 +37,7 @@ public class Session {
         setLastParameters(route.getSetupAttributes(request));
         setLastUsedTemplate(route.getTemplateHTML());
         setLastUsedHash(route.generateHash());
-        getTags().put(StandardSessionTags.CURRENT_ROUTE.name(), route.getPath());
+        getTags().put(StandardSessionTags.CURRENT_ROUTE, route.getPath());
     }
 
     public String getLastUsedTemplate() {
@@ -92,7 +92,7 @@ public class Session {
         return hydraPath;
     }
 
-    public Session merge(List<Attribute> newAttributes) {
+    public Session merge(Collection<Attribute> newAttributes) {
         final Map<String, Object> map = toLastParameterMap();
         for(Attribute attribute : newAttributes) {
             map.put(attribute.name(), attribute.value());
@@ -110,5 +110,9 @@ public class Session {
         List<String> relevantHeaders = headers.header("hydra-path");
         if(relevantHeaders.isEmpty()) return null;
         return relevantHeaders.get(0);
+    }
+
+    public SocketSink getSink() {
+        return sink;
     }
 }

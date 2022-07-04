@@ -4,7 +4,9 @@ import io.getmedusa.medusa.core.router.request.Route;
 import io.getmedusa.medusa.core.session.Session;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 //decides on redis or in-memory storage based on properties
@@ -28,4 +30,11 @@ public class SessionMemoryRepository {
         return session;
     }
 
+    public List<Session> findSessionsByIds(Collection<String> sessionIds) {
+        return sessionIds.stream().map(id -> sessions.get(id)).toList();
+    }
+
+    public List<Session> findSessionsByTag(String sessionTagKey, String sessionTagValue) {
+        return sessions.values().stream().filter(session -> sessionTagValue.equals(session.getTags().getOrDefault(sessionTagKey, null))).toList();
+    }
 }

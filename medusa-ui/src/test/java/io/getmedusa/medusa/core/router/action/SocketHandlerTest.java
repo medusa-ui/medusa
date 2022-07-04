@@ -55,7 +55,7 @@ class SocketHandlerTest {
 
         Mockito.when(actionHandler.executeAndMerge(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(new Session());
         Mockito.when(renderer.render(Mockito.anyString(), Mockito.any())).thenReturn(createDataBuffer("test"));
-        Mockito.when(diffEngine.findDiffs(Mockito.nullable(String.class), Mockito.nullable(String.class))).thenReturn(Flux.just(List.of(new JSReadyDiff())));
+        Mockito.when(diffEngine.findDiffs(Mockito.nullable(String.class), Mockito.nullable(String.class))).thenReturn(List.of(new JSReadyDiff()));
 
         final Flux<List<JSReadyDiff>> jsReadyDiffFlux = socketHandler.eventEmitter(new HashMap<>(),
                 Flux.just(socketAction),

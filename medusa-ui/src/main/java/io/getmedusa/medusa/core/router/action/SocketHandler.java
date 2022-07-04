@@ -52,7 +52,7 @@ public class SocketHandler {
         //TODO can this be done via metadata/a more secure way?
         final Session session = sessionMemoryRepository.retrieve(sessionId, route);
 
-        return request.flatMap(r -> {
+        request.onErrorReturn(new SocketAction()).subscribe(r -> {
             //execute action and combine attributes
             Session updatedSession = actionHandler.executeAndMerge(r, route, session);
 
@@ -64,8 +64,10 @@ public class SocketHandler {
             sessionMemoryRepository.store(updatedSession);
 
             //run diff engine old HTML vs new
-            return diffEngine.findDiffs(oldHTML, newHtml);
+            updatedSession.getSink().push(diffEngine.findDiffs(oldHTML, newHtml));
         });
+
+        return session.getSink().asFlux();
     }
 
 }
