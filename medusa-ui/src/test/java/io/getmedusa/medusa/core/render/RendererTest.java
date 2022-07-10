@@ -4,7 +4,7 @@ import io.getmedusa.medusa.core.boot.hydra.HydraConnectionController;
 import io.getmedusa.medusa.core.session.Session;
 import io.getmedusa.medusa.core.util.FluxUtils;
 import io.getmedusa.medusa.tags.MedusaDialect;
-import io.getmedusa.medusa.tags.action.MedusaActionOnClickAttribute;
+import io.getmedusa.medusa.tags.action.MedusaOnClick;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,7 +24,7 @@ import java.util.Set;
 class RendererTest {
 
     //as such, this does not need to be exhaustive, just representative
-    private static final Set<AbstractProcessorDialect> DIALECTS = Set.of(new MedusaDialect(List.of(new MedusaActionOnClickAttribute())));
+    private static final Set<AbstractProcessorDialect> DIALECTS = Set.of(new MedusaDialect(List.of(new MedusaOnClick())));
 
     @Mock
     private HydraConnectionController hydraConnectionController;

@@ -1,0 +1,173 @@
+body {
+    font-family: 'Jost', sans-serif;
+}
+
+#container {
+    margin-left: 7em;
+    margin-right: 7em;
+}
+
+@media (max-width: 800px) {
+    #container {
+        margin-left: 0.5em;
+        margin-right: 0.5em;
+    }
+}
+
+#hero h1 {
+    font-size: 3em;
+    font-weight: bold;
+    margin-bottom: 0;
+}
+
+@media (max-width: 800px) {
+    #hero h1 {
+        font-size: 2em;
+    }
+}
+
+#hero p {
+    padding-bottom: 1em;
+}
+
+#hero .button {
+    background: white;
+    color:black;
+    border:1px solid lightgray;
+    padding: 1em;
+    border-radius: 12px;
+    font-family: 'Jost', sans-serif;
+    font-weight: bold;
+    font-size: 1em;
+    cursor: pointer;
+    margin-bottom: 5px;
+    text-decoration: none;
+}
+
+#hero .button:hover {
+    border-color:gray;
+}
+
+#hero {
+    margin-bottom: 3em;
+}
+
+#hero #cta {
+    background: black;
+    color: white;
+    border-color:black;
+}
+
+#hero #cta:hover {
+    background: #242424;
+}
+
+#categories ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+#categories li {
+    display: inline;
+    font-weight: bold;
+    padding:0 1em 1em 0;
+
+}
+#categories a {
+    color:black;
+    text-decoration: none;
+}
+#categories a:hover {
+    text-decoration: underline;
+}
+
+div.category {
+    padding-top: 1em;
+    padding-bottom: 2em;
+}
+
+a.component {
+    display: inline-block;
+    border: 1px solid lightgray;
+    border-radius: 15px;
+    max-width: 300px;
+
+    color:#1e1e1e;
+    background: #f3f4f6;
+    text-decoration: none;
+    font-weight: normal;
+    margin-bottom: 5px;
+}
+
+@media (max-width: 800px) {
+    a.component {
+        margin-left:1em;
+    }
+}
+
+a.component:hover {
+    border-color: gray;
+}
+
+a.component img {
+    width: 300px;
+    border-radius: 15px;
+}
+
+a.component h3 {
+    width: 300px;
+    text-align: center;
+    margin: 0;
+    padding-bottom: 0.75em;
+    padding-top: 0.5em;
+    font-weight: normal;
+    font-size: 1em;
+}
+
+.example-in-practice, .code pre {
+    border: 1px solid lightgray;
+    padding: 3em;
+    border-radius: 5px;
+}
+
+.code pre {
+    padding: 0 0 0 1em;
+    margin: 0;
+}
+
+#variations p {
+    padding-left: 1em;
+    color: #3e3e3e;
+    max-width: 95%;
+}
+
+.variation h3, .code h3 {
+    font-weight: normal;
+    font-size: 1em;
+    margin: 0;
+    color: gray;
+    position: relative;
+    top: 1em;
+    background: white;
+    display: inline-block;
+}
+
+.example-in-practice button {
+    background: white;
+    color: black;
+    border: 1px solid lightgray;
+    padding: 1em;
+    border-radius: 12px;
+    font-family: 'Jost', sans-serif;
+    font-weight: bold;
+    font-size: 1em;
+    cursor: pointer;
+    margin-bottom: 5px;
+    text-decoration: none;
+}
+
+.example-in-practice button:disabled {
+    opacity: 0.5;
+    cursor: default;
+}

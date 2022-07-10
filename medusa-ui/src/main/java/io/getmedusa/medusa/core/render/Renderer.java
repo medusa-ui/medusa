@@ -59,6 +59,7 @@ public class Renderer {
 
     public Flux<DataBuffer> render(String templateHTML, Session session) {
         return loadFragments(templateHTML, session).flatMapMany(html -> {
+            //TODO try making this a SpringWebFluxEngineContext?
             IContext context = new EngineContext(configuration, null, TEMPLATE_RESOLUTION_ATTRIBUTES, LOCALE, session.toLastParameterMap());
             return Flux.from(engine.processStream(
                     appendRSocketScriptAndAddHydraPath(convertToXHTML(html), session),

@@ -21,6 +21,6 @@ jobs:
       - name: Build medusa-ui with tests
         working-directory: ./medusa-ui
         run: mvn clean install --no-transfer-progress -D"spring.profiles.active"=dev
-      - name: Build medusa-sample with tests
-        working-directory: ./medusa-sample-implementation
+      - name: Build medusa-showcase with tests
+        working-directory: ./medusa-showcase
         run: mvn -U clean install --no-transfer-progress -D"spring.profiles.active"=dev

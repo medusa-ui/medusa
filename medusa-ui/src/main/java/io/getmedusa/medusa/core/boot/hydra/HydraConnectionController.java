@@ -46,8 +46,8 @@ public class HydraConnectionController {
 
     public HydraConnectionController(WebClient webClient,
                                      MedusaConfigurationProperties configProps,
-                                     @Value("${spring.rsocket.server.port}") Integer socketPort,
-                                     @Value("${server.port}") Integer serverPort) {
+                                     @Value("${spring.rsocket.server.port:7000}") Integer socketPort,
+                                     @Value("${server.port:8080}") Integer serverPort) {
         this.privateKey = configProps.getHydra().getSecret().getPrivateKey();
 
         this.registrationURL = webClient.post().uri(configProps.getHydra().registrationURL());

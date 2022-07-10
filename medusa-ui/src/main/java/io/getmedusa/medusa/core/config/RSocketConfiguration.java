@@ -15,7 +15,7 @@ public class RSocketConfiguration {
     @Value("${spring.rsocket.server.port}")
     private int port;
 
-    @Value("${spring.rsocket.server.mapping-path}")
+    @Value("${spring.rsocket.server.mapping-path:/socket}")
     private String mappingPath;
 
     @Bean

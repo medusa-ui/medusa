@@ -7,7 +7,6 @@ import io.getmedusa.medusa.core.diffengine.DiffEngine;
 import io.getmedusa.medusa.core.memory.SessionMemoryRepository;
 import io.getmedusa.medusa.core.render.Renderer;
 import io.getmedusa.medusa.core.session.Session;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -17,10 +16,8 @@ import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DataBufferFactory;
 import org.springframework.core.io.buffer.DefaultDataBufferFactory;
 import reactor.core.publisher.Flux;
-import reactor.test.StepVerifier;
 
 import java.nio.charset.StandardCharsets;
-import java.time.Duration;
 import java.util.HashMap;
 import java.util.List;
 
@@ -68,7 +65,7 @@ class SocketHandlerTest {
                 findSampleHash(),
                 "sessionId");
 
-        StepVerifier.create(jsReadyDiffFlux).assertNext(Assertions::assertNotNull).verifyTimeout(Duration.ofSeconds(1));
+        //TODO StepVerifier.create(jsReadyDiffFlux).assertNext(Assertions::assertNotNull).then(jsReadyDiffFlux.ter)
     }
 
     private Flux<DataBuffer> createDataBuffer(String value) {

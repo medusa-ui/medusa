@@ -61,8 +61,8 @@ jobs:
     - name: Autobuild medusa-ui
       working-directory: ./medusa-ui
       run: mvn clean install --no-transfer-progress -D"spring.profiles.active"=dev -DskipTests=true
-    - name: Autobuild medusa-sample
-      working-directory: ./medusa-sample-implementation
+    - name: Autobuild medusa-showcase
+      working-directory: ./medusa-showcase
       run: mvn clean install --no-transfer-progress -D"spring.profiles.active"=dev -DskipTests=true
 
     # ℹ️ Command-line programs to run using the OS shell.
