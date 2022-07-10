@@ -6,7 +6,10 @@ const {
     WellKnownMimeType,
     encodeSimpleAuthMetadata,
 } = require("rsocket-composite-metadata");
-const morphdom = require('morphdom');
+const morphdom = require("morphdom");
+
+function Medusa() {}
+const _M = new Medusa();
 
 const MAX_REQUEST_N = 2147483647;
 
@@ -62,10 +65,10 @@ async function buildStream(rsocket) {
         onExtension(extendedType, content, canBeIgnored) {
         },
         request(requestN) {
-            console.log(`peer requested ${requestN}`)
+            console.log(`peer requested ${requestN}`);
         },
         cancel() {
-            console.log(`peer canceled`)
+            console.log(`peer canceled`);
         }
     });
 }
@@ -78,8 +81,6 @@ function sendMessage(payloadData) {
 
 document.addEventListener('DOMContentLoaded', setupRouter);
 
-const _M = new Medusa();
-function Medusa() {}
 Medusa.prototype.doAction = function(parentFragment, actionToExecute) {
     sendMessage({
         "fragment": null,
@@ -87,10 +88,9 @@ Medusa.prototype.doAction = function(parentFragment, actionToExecute) {
     });
 }
 
-handleIncomingChange = function (obj) {
-    const toApply = doLookups(obj);
-    applyAllChanges(toApply);
-};
+evalXPath = function(xpath) {
+    return document.evaluate(xpath, document, null, XPathResult.ANY_UNORDERED_NODE_TYPE, null ).singleNodeValue;
+}
 
 doLookups = function (listOfDiffs) {
     for(let diff of listOfDiffs) {
@@ -101,18 +101,6 @@ doLookups = function (listOfDiffs) {
         diff.element = evalXPath(diff.xpath);
     }
     return listOfDiffs;
-}
-
-applyAllChanges = function (listOfDiffs) {
-    for(let diff of listOfDiffs) {
-        if(diff.type === "ADDITION") {
-            handleIncomingAddition(diff);
-        } else if(diff.type === "EDIT") {
-            handleMorph(diff);
-        } else if(diff.type === "REMOVAL") {
-            handleRemoval(diff);
-        }
-    }
 }
 
 handleIncomingAddition = function (obj) {
@@ -164,9 +152,22 @@ handleRemoval = function(obj) {
     }
 }
 
-evalXPath = function(xpath) {
-    return document.evaluate(xpath, document, null, XPathResult.ANY_UNORDERED_NODE_TYPE, null ).singleNodeValue;
+applyAllChanges = function (listOfDiffs) {
+    for(let diff of listOfDiffs) {
+        if(diff.type === "ADDITION") {
+            handleIncomingAddition(diff);
+        } else if(diff.type === "EDIT") {
+            handleMorph(diff);
+        } else if(diff.type === "REMOVAL") {
+            handleRemoval(diff);
+        }
+    }
 }
+
+handleIncomingChange = function (obj) {
+    const toApply = doLookups(obj);
+    applyAllChanges(toApply);
+};
 
 const tempTemplate = document.createElement('template');
 htmlToElement = function (html) {

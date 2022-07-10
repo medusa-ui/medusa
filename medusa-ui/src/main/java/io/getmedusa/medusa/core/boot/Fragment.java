@@ -7,9 +7,6 @@ public class Fragment {
     private String ref;
     private String fallback;
 
-    public Fragment() {
-    }
-
     public String getId() {
         return id;
     }

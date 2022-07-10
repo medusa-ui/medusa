@@ -5,9 +5,6 @@ public class RenderedFragment {
     private String renderedHTML;
     private String id;
 
-    public RenderedFragment() {
-    }
-
     public String getRenderedHTML() {
         return renderedHTML;
     }

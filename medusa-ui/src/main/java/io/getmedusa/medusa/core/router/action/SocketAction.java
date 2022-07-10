@@ -9,8 +9,6 @@ public class SocketAction {
     private String action;
     private Map<String, Object> metadata;
 
-    public SocketAction() {}
-
     public String getFragment() {
         return fragment;
     }
