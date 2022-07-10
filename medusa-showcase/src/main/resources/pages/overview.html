@@ -20,65 +20,23 @@
 
     <section id="categories">
         <ul>
-            <li><a href="#">Text inputs</a></li>
-            <li><a href="#">Special inputs</a></li>
-            <li><a href="#">Live data</a></li>
-            <li><a href="#">Buttons</a></li>
-            <li><a href="#">Overlays</a></li>
-            <li><a href="#">Navigation</a></li>
-            <li><a href="#">Embedding</a></li>
+            <li th:each="categoryEntry : ${categoryMap}">
+                <a th:href="${#strings.toLowerCase(#strings.replace('#' + categoryEntry.key,' ','-'))}" th:text="${categoryEntry.key}"></a>
+            </li>
         </ul>
     </section>
 
-    <section id="components">
-        <div class="category">
-            <h2>Text inputs</h2>
-            <div class="components-per-category">
-                <a href="/detail/xyz" class="component">
-                    <img src="https://tailwindui.com/img/category-thumbnails/marketing/heroes.png" alt="Category image of 'Submit with reference'" />
-                    <h3>Submit with reference</h3>
-                </a>
-
-                <a href="/detail/xyz" class="component">
-                    <img src="https://tailwindui.com/img/category-thumbnails/marketing/heroes.png" alt="Category image of 'Form submit'" />
-                    <h3>Form submit</h3>
-                </a>
-
-                <a href="/detail/xyz" class="component">
-                    <img src="https://tailwindui.com/img/category-thumbnails/marketing/heroes.png" alt="Category image of 'Search'" />
-                    <h3>Search</h3>
-                </a>
-                <a href="/detail/xyz" class="component">
-                    <img src="https://tailwindui.com/img/category-thumbnails/marketing/heroes.png" alt="Category image of 'Validation'" />
-                    <h3>Validation</h3>
-                </a>
+        <section id="components">
+            <div class="category" th:each="categoryEntry : ${categoryMap}">
+                <h2><a th:id="${#strings.toLowerCase(#strings.replace(categoryEntry.key,' ','-'))}" th:text="${categoryEntry.key}">Category name</a></h2>
+                <div class="components-per-category">
+                    <a th:each="category : ${categoryEntry.value}" th:href="${'/detail/' + category.urlPart}" class="component">
+                        <img src="https://tailwindui.com/img/category-thumbnails/marketing/heroes.png" alt="Category image of 'Submit with reference'" />
+                        <h3 th:text="${category.label}">Submit with reference</h3>
+                    </a>
+                </div>
             </div>
-        </div>
-
-        <div class="category">
-            <h2>Special inputs</h2>
-            <div class="components-per-category">
-                <a href="/detail/xyz" class="component">
-                    <img src="https://tailwindui.com/img/category-thumbnails/marketing/heroes.png" alt="Category image of 'Submit with reference'" />
-                    <h3>Submit with reference</h3>
-                </a>
-
-                <a href="/detail/xyz" class="component">
-                    <img src="https://tailwindui.com/img/category-thumbnails/marketing/heroes.png" alt="Category image of 'Form submit'" />
-                    <h3>Form submit</h3>
-                </a>
-
-                <a href="/detail/xyz" class="component">
-                    <img src="https://tailwindui.com/img/category-thumbnails/marketing/heroes.png" alt="Category image of 'Search'" />
-                    <h3>Search</h3>
-                </a>
-                <a href="/detail/xyz" class="component">
-                    <img src="https://tailwindui.com/img/category-thumbnails/marketing/heroes.png" alt="Category image of 'Validation'" />
-                    <h3>Validation</h3>
-                </a>
-            </div>
-        </div>
-    </section>
-</div>
-</body>
+        </section>
+    </div>
+    </body>
 </html>

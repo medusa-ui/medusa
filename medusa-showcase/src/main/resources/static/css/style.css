@@ -98,6 +98,7 @@ a.component {
     text-decoration: none;
     font-weight: normal;
     margin-bottom: 5px;
+    margin-right: 1em;
 }
 
 @media (max-width: 800px) {
