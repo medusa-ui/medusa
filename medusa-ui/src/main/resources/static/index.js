@@ -64,7 +64,7 @@ Medusa.prototype.doAction = function(parentFragment, actionToExecute) {
 
 evalXPath = function(xpath) {
     return document.evaluate(xpath, document, null, XPathResult.ANY_UNORDERED_NODE_TYPE, null ).singleNodeValue;
-}
+};
 
 doLookups = function (listOfDiffs) {
     for(let diff of listOfDiffs) {
@@ -75,7 +75,7 @@ doLookups = function (listOfDiffs) {
         diff.element = evalXPath(diff.xpath);
     }
     return listOfDiffs;
-}
+};
 
 handleIncomingAddition = function (obj) {
     let existingNode = obj.element;
@@ -100,7 +100,7 @@ handleIncomingAddition = function (obj) {
         console.log("handleIncomingAddition: element", existingNode);
         console.log("handleIncomingAddition: nodeToAdd", nodeToAdd);
     }
-}
+};
 
 handleMorph = function (obj) {
     let element = obj.element;
@@ -113,7 +113,7 @@ handleMorph = function (obj) {
         console.log("handleMorph: element", element);
         console.log("--");
     }
-}
+};
 
 handleRemoval = function(obj) {
     let element = obj.element;
@@ -124,7 +124,7 @@ handleRemoval = function(obj) {
         console.log("handleRemoval: obj", obj);
         console.log("handleRemoval: element", element);
     }
-}
+};
 
 applyAllChanges = function (listOfDiffs) {
     for(let diff of listOfDiffs) {
@@ -136,7 +136,7 @@ applyAllChanges = function (listOfDiffs) {
             handleRemoval(diff);
         }
     }
-}
+};
 
 handleIncomingChange = function (obj) {
     const toApply = doLookups(obj);
@@ -174,7 +174,7 @@ async function buildStream(rsocket) {
         });
 }
 
-const tempTemplate = document.createElement('template');
+const tempTemplate = document.createElement("template");
 htmlToElement = function (html) {
     html = html.trim();
     tempTemplate.innerHTML = html;
