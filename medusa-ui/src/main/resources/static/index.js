@@ -21,6 +21,12 @@ async function setupRouter() {
     map.set(WellKnownMimeType.MESSAGE_RSOCKET_AUTHENTICATION, encodeSimpleAuthMetadata("user", "pass"));
     const compositeMetaData = encodeCompositeMetadata(map);
 
+    //determine socket url
+    const socketArray = window.location.href.split("://");
+    const socketProtocol = socketArray[0].replace("http", "ws");
+    const socketRootUrl = socketArray[1].split("/")[0];
+    const socketUrl = socketProtocol + "://" + socketRootUrl + "/socket";
+
     const connector = new RSocketConnector({
         setup: {
             payload: {
@@ -32,7 +38,7 @@ async function setupRouter() {
             metadataMimeType: WellKnownMimeType.MESSAGE_RSOCKET_COMPOSITE_METADATA.string,
         },
         transport: new WebsocketClientTransport({
-            url: (typeof _M.wsURL !== 'undefined' && null !== _M.wsURL) ? _M.wsURL : 'ws://localhost:7000/socket'
+            url: socketUrl
         }),
     });
     const rsocket = await connector.connect();
