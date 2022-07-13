@@ -20,7 +20,7 @@ public class MedusaDefaultPropertiesConfiguration implements ApplicationListener
         props.put("spring.main.lazy-initialization", false);
         props.put("logging.level.root", "INFO");
 
-        environment.getPropertySources().addFirst(new PropertiesPropertySource("default-medusa-properties", props));
+        environment.getPropertySources().addLast(new PropertiesPropertySource("default-medusa-properties", props));
     }
 
 }
