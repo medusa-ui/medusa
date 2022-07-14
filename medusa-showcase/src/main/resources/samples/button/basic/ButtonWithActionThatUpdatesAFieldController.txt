@@ -14,7 +14,7 @@ public class ButtonWithActionThatUpdatesAFieldController {
 
     //This method takes a single parameter. The Session object can optionally be added as first or last parameter. It will be autofilled.
     public List<Attribute> updateCounter(int amount, Session session) {
-        int counter = session.getAttribute("counter", Integer.class);
+        int counter = session.getAttribute("counter");
         counter += amount;
         return List.of(new Attribute("counter", counter));
     }

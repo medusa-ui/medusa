@@ -17,7 +17,7 @@ public class SessionVariableController {
     }
 
     public List<Attribute> updateCounter(Session session, int amount) {
-        int counter = session.getAttribute("counter", Integer.class);
+        int counter = session.getAttribute("counter");
         counter += amount;
         return of(new Attribute("counter", counter));
     }

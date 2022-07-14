@@ -19,7 +19,7 @@ public class ButtonWithActionThatUpdatesAFieldController extends AbstractSampleC
     }
 
     public List<Attribute> updateCounter(int amount, Session session) {
-        int counter = session.getAttribute(COUNTER, Integer.class);
+        int counter = session.getAttribute(COUNTER);
         counter += amount;
         return List.of(new Attribute(COUNTER, counter));
     }

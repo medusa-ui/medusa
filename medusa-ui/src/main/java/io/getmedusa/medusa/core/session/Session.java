@@ -126,11 +126,11 @@ public class Session {
         return matched;
     }
 
-    public <T> T getAttribute(String attributeKey, Class<T> clazz) {
-        return clazz.cast(lastParameters.stream()
+    public <T> T getAttribute(String attributeKey) {
+        return (T) lastParameters.stream()
                 .filter(a -> a.name().equals(attributeKey))
                 .findFirst()
                 .orElse(new Attribute())
-                .value());
+                .value();
     }
 }
