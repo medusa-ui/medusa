@@ -1,0 +1,27 @@
+import io.getmedusa.medusa.core.annotation.UIEventPage;
+import io.getmedusa.medusa.core.attributes.Attribute;
+import io.getmedusa.medusa.core.session.Session;
+
+import java.util.List;
+
+@UIEventPage(path = "/embed/basic-button", file = "/pages/sample/basic-button.html")
+public class ButtonWithActionThatUpdatesAFieldController {
+
+    //This method gets called on page load and sets the initial values of variables
+    public List<Attribute> setupAttributes() {
+        return List.of(new Attribute("counter", 0));
+    }
+
+    //This method takes a single parameter. The Session object can optionally be added as first or last parameter. It will be autofilled.
+    public List<Attribute> updateCounter(int amount, Session session) {
+        int counter = session.getAttribute("counter", Integer.class);
+        counter += amount;
+        return List.of(new Attribute("counter", counter));
+    }
+
+    //This method takes no parameters.
+    public List<Attribute> reset() {
+        return List.of(new Attribute("counter", 0));
+    }
+
+}

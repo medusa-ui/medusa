@@ -1,4 +1,4 @@
-package io.getmedusa.medusa.tags.meta;
+package io.getmedusa.medusa.core.tags.meta;
 
 import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.engine.AttributeName;
@@ -8,7 +8,7 @@ import org.thymeleaf.processor.element.IElementTagStructureHandler;
 
 import java.util.regex.Pattern;
 
-import static io.getmedusa.medusa.tags.annotation.MedusaTag.*;
+import static io.getmedusa.medusa.core.tags.annotation.MedusaTag.*;
 
 public abstract class JSEventAttributeProcessor extends AbstractAttributeTagProcessor {
     protected static final Pattern CTX_VALUE_REGEX = Pattern.compile("\\$\\{(.*)\\}");

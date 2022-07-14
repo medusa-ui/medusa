@@ -1,7 +1,7 @@
-package io.getmedusa.medusa.tags.action;
+package io.getmedusa.medusa.core.tags.action;
 
-import io.getmedusa.medusa.tags.annotation.MedusaTag;
-import io.getmedusa.medusa.tags.meta.JSEventAttributeProcessor;
+import io.getmedusa.medusa.core.tags.annotation.MedusaTag;
+import io.getmedusa.medusa.core.tags.meta.JSEventAttributeProcessor;
 import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.model.IProcessableElementTag;

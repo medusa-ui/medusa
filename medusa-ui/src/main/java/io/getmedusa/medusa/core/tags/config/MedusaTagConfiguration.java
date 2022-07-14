@@ -1,7 +1,7 @@
-package io.getmedusa.medusa.tags.config;
+package io.getmedusa.medusa.core.tags.config;
 
-import io.getmedusa.medusa.tags.MedusaDialect;
-import io.getmedusa.medusa.tags.annotation.MedusaTag;
+import io.getmedusa.medusa.core.tags.MedusaDialect;
+import io.getmedusa.medusa.core.tags.annotation.MedusaTag;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

@@ -1,4 +1,4 @@
-package io.getmedusa.medusa.tags.annotation;
+package io.getmedusa.medusa.core.tags.annotation;
 
 import org.springframework.stereotype.Component;
 import org.thymeleaf.templatemode.TemplateMode;

@@ -125,4 +125,12 @@ public class Session {
     public boolean isMatched() {
         return matched;
     }
+
+    public <T> T getAttribute(String attributeKey, Class<T> clazz) {
+        return clazz.cast(lastParameters.stream()
+                .filter(a -> a.name().equals(attributeKey))
+                .findFirst()
+                .orElse(new Attribute())
+                .value());
+    }
 }

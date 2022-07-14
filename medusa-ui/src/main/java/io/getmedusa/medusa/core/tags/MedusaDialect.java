@@ -1,6 +1,6 @@
-package io.getmedusa.medusa.tags;
+package io.getmedusa.medusa.core.tags;
 
-import io.getmedusa.medusa.tags.annotation.MedusaTag;
+import io.getmedusa.medusa.core.tags.annotation.MedusaTag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.thymeleaf.dialect.AbstractProcessorDialect;

@@ -168,7 +168,25 @@ a.component h3 {
     text-decoration: none;
 }
 
+.example-in-practice button:hover {
+    background: #f3f3f3;
+    border-color: #b9b9b9;
+}
+
+.example-in-practice button:active {
+    border-color: #5b5b5b;
+}
+
 .example-in-practice button:disabled {
     opacity: 0.5;
     cursor: default;
+}
+
+.example-in-practice .sample-counter {
+    display: block;
+    color: black;
+    padding: 5px;
+    width: 50px;
+    font-weight: bold;
+    font-size: 1.5em;
 }
