@@ -33,8 +33,8 @@ async function setupRouter() {
             payload: {
                 metadata: compositeMetaData
             },
-            keepAlive: 60000,
-            lifetime: 180000,
+            keepAlive: 10000, //determines how long between health checks - heroku kills connections at 30/55s, so should be earlier
+            lifetime: 11000, //determines how long we can 'miss' a health check before we determine connection is dead
             dataMimeType: WellKnownMimeType.APPLICATION_JSON.string,
             metadataMimeType: WellKnownMimeType.MESSAGE_RSOCKET_COMPOSITE_METADATA.string,
         },
