@@ -157,10 +157,10 @@ async function buildStream(rsocket) {
         false,
         {
             onError(error) {
-                console.error(error);
+                location.reload();
             },
             onComplete() {
-                console.error("peer stream complete");
+                location.reload();
             },
             onNext(payload, isComplete) {
                 handleIncomingChange(JSON.parse(payload.data.toString()));
@@ -169,7 +169,7 @@ async function buildStream(rsocket) {
             },
             request(requestN) { },
             cancel() {
-                console.log("peer canceled");
+                location.reload();
             }
         });
 }

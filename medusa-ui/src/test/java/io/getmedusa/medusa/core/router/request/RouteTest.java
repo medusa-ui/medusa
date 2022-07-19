@@ -2,7 +2,6 @@ package io.getmedusa.medusa.core.router.request;
 
 import io.getmedusa.medusa.core.annotation.UIEventPage;
 import io.getmedusa.medusa.core.attributes.Attribute;
-import io.getmedusa.medusa.core.router.request.Route;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -34,7 +33,7 @@ class RouteTest {
     @Test
     void testSetupAttributes() {
         Route route = new Route("/test", "", new EmbeddedSampleController());
-        List<Attribute> attributes = route.getSetupAttributes(null);
+        List<Attribute> attributes = route.getSetupAttributes(null, null);
         Assertions.assertNotNull(attributes);
         Assertions.assertEquals(1, attributes.size());
         Assertions.assertEquals(456, attributes.get(0).value());

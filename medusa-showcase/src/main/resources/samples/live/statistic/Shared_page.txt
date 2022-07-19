@@ -1,0 +1,2 @@
+Global, shared (updates every 2 seconds):
+<div th:text="${randomNumberShared}"></div>

@@ -2,6 +2,7 @@ package io.getmedusa.medusa.core.router.request;
 
 import io.getmedusa.medusa.core.annotation.UIEventPageCallWrapper;
 import io.getmedusa.medusa.core.attributes.Attribute;
+import io.getmedusa.medusa.core.session.Session;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.util.UriUtils;
 
@@ -36,8 +37,8 @@ public class Route {
         return controller.getController();
     }
 
-    public List<Attribute> getSetupAttributes(ServerRequest request) {
-        return controller.setupAttributes(request, null);
+    public List<Attribute> getSetupAttributes(ServerRequest request, Session session) {
+        return controller.setupAttributes(request, session);
     }
 
     public String generateHash() {

@@ -36,7 +36,7 @@ public class Session {
     public Session(Route route, ServerRequest request) {
         this.id = RandomUtils.generateId();
         this.hydraPath = findHydraPath(request.headers());
-        setLastParameters(route.getSetupAttributes(request));
+        setLastParameters(route.getSetupAttributes(request, this));
         setLastUsedTemplate(route.getTemplateHTML());
         setLastUsedHash(route.generateHash());
         getTags().put(StandardSessionTagKeys.ROUTE, route.getPath());
@@ -124,6 +124,14 @@ public class Session {
 
     public boolean isMatched() {
         return matched;
+    }
+
+    public void putTag(String tagKey, String tagValue) {
+        this.getTags().put(tagKey, tagValue);
+    }
+
+    public String getTag(String tagKey) {
+        return this.getTags().getOrDefault(tagKey, null);
     }
 
     public <T> T getAttribute(String attributeKey) {

@@ -1,0 +1,4 @@
+Unique per session:
+<div class="sample-counter" th:text="${randomNumberUniquePerSession}"></div>
+
+<button m:click="subscribe()">Subscribe to one update</button>

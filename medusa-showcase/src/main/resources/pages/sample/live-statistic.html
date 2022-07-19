@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:m="https://www.getmedusa.io/medusa.xsd">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medusa - Component detail</title>
+    <link rel="stylesheet" th:href="@{../../css/style.css}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Jost:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.1/styles/nnfx-light.min.css">
+</head>
+<body>
+
+<div id="container">
+    <section id="hero">
+        <h1>Live statistic</h1>
+        <p>An example of simple data being live updated without input from the user. It is a pure server to client call.</p>
+        <a href="/" class="button" id="cta">Back to overview</a>
+        <a href="https://github.com/medusa-ui/medusa/tree/main/medusa-showcase" target="_blank" class="button">Show example in github</a>
+    </section>
+
+    <section id="variations">
+        <h2>Global Live Statistic</h2>
+        <p>This illustrates a simple server to client call. Note that on the client side, there is nothing referring to this - there is no polling.</p>
+        <p>Here we show a global update, which is shared by all session. As such, if you'd open this page concurrently in two tabs, you'll see the shared number be the same across all tabs.</p>
+        <p>In this case, we send the update to all users who are on this page right now.</p>
+        <section class="variation">
+            <h3>Example</h3>
+            <section class="example-in-practice">
+
+                Global, shared (updates every 2 seconds):
+                <div class="sample-counter" th:text="${randomNumberShared}"></div>
+
+            </section>
+
+            <section class="code">
+                <h3>Client</h3>
+
+                <pre class="client">
+                    <code class="language-html" th:text="${pageCodeShared}"></code>
+                </pre>
+
+                <h3>Server</h3>
+                <pre class="server">
+                    <code class="language-java" th:text="${controllerCodeShared}"></code>
+                </pre>
+            </section> <!-- end .code -->
+
+            <p><a href="#">Back to top</a></p>
+
+        </section> <!-- end .variation -->
+
+        <h2>Unique per session Live Statistic</h2>
+        <p>Here, we demonstrate that we can send updates to specific sessions as well.</p>
+        <p>We can do this by creating a custom tag that identifies who we want to target, and then send the update to that tag.</p>
+        <p>In this case, we create that custom tag when you press the subscribe button. The scheduler then picks it up and sends you a unique random. We also do this at page load, to illustrate the Session is reachable in different areas.</p>
+        <section class="variation">
+            <h3>Example</h3>
+            <section class="example-in-practice">
+
+                Unique per session:
+                <div class="sample-counter" th:text="${randomNumberUniquePerSession}"></div>
+
+                <button m:click="subscribe()">Subscribe to one update</button>
+
+            </section>
+
+            <section class="code">
+                <h3>Client</h3>
+
+                <pre class="client">
+                    <code class="language-html" th:text="${pageCodePerSession}"></code>
+                </pre>
+
+                <h3>Server</h3>
+                <pre class="server">
+                    <code class="language-java" th:text="${controllerCodePerSession}"></code>
+                </pre>
+            </section> <!-- end .code -->
+
+            <p><a href="#">Back to top</a></p>
+
+        </section> <!-- end .variation -->
+
+        <h2>Group Live Statistic</h2>
+        <p>Finally, we also show that server to client pushes don't have to be all or nothing: You can send updates selectively to groups of users as well.</p>
+
+        <section class="variation">
+            <h3>Example</h3>
+            <section class="example-in-practice">
+
+                Unique per group:
+                <div class="sample-counter" th:text="${randomNumberUniquePerGroup}"></div>
+
+            </section>
+
+            <section class="code">
+                <h3>Client</h3>
+
+                <pre class="client">
+                    <code class="language-html" th:text="${pageCodePerGroup}"></code>
+                </pre>
+
+                <h3>Server</h3>
+                <pre class="server">
+                    <code class="language-java" th:text="${controllerCodePerGroup}"></code>
+                </pre>
+            </section> <!-- end .code -->
+
+            <p><a href="#">Back to top</a></p>
+
+        </section> <!-- end .variation -->
+
+    </section> <!-- end #variations -->
+
+</div>
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.1/highlight.min.js"></script>
+<script>hljs.highlightAll();</script>
+</body>
+</html>

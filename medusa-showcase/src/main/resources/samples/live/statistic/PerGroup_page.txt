@@ -1,0 +1,2 @@
+Unique per group:
+<div th:text="${randomNumberUniquePerGroup}"></div>

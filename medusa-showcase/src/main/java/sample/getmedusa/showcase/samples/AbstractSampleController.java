@@ -14,27 +14,35 @@ public abstract class AbstractSampleController {
 
     private final ResourceLoader resourceLoader = new DefaultResourceLoader();
 
-    public String controllerCodeAsString(Object controller) {
+    public String controllerCodeAsString(Object controller, String name) {
         Resource resource = resourceLoader
-                .getResource("classpath:" + controller.getClass().getName()
-                .replace("sample.getmedusa.showcase.", "")
-                .replace(".", "/") + ".txt");
+                .getResource("classpath:" + name
+                        .replace("sample.getmedusa.showcase.", "")
+                        .replace(".", "/") + ".txt");
         try (Reader reader = new InputStreamReader(resource.getInputStream(), StandardCharsets.UTF_8)) {
             return FileCopyUtils.copyToString(reader);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            return "No code found";
         }
     }
 
+    public String controllerCodeAsString(Object controller) {
+        return controllerCodeAsString(controller, controller.getClass().getName());
+    }
+
     public String pageCodeAsString(Object controller) {
+        return pageCodeAsString(controller, controller.getClass().getName());
+    }
+
+    public String pageCodeAsString(Object controller, String name) {
         Resource resource = resourceLoader
-                .getResource("classpath:" + controller.getClass().getName()
+                .getResource("classpath:" + name
                         .replace("sample.getmedusa.showcase.", "")
                         .replace(".", "/") + "_page.txt");
         try (Reader reader = new InputStreamReader(resource.getInputStream(), StandardCharsets.UTF_8)) {
             return FileCopyUtils.copyToString(reader);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            return "No code found";
         }
     }
 
