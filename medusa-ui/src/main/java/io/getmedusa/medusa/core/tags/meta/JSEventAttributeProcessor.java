@@ -11,7 +11,8 @@ import java.util.regex.Pattern;
 import static io.getmedusa.medusa.core.tags.annotation.MedusaTag.*;
 
 public abstract class JSEventAttributeProcessor extends AbstractAttributeTagProcessor {
-    protected static final Pattern CTX_VALUE_REGEX = Pattern.compile("\\$\\{(.*)\\}");
+    protected static final Pattern CTX_ATTRIBUTE_VALUE_REGEX = Pattern.compile("\\$\\{(.*)\\}");
+    protected static final Pattern CTX_ELEMENT_VALUE_REGEX = Pattern.compile("#(\\w*)");
     protected final String eventName;
     protected final String eventTemplate;
 
