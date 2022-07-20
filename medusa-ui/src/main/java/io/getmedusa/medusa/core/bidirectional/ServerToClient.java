@@ -12,6 +12,7 @@ import reactor.core.publisher.Flux;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Exposed the ability to easily send {@link Attribute} from server to client.
@@ -63,7 +64,7 @@ public class ServerToClient {
 
     //TODO more or less same as in socket handler
     private void sendAttributesToSession(Collection<Attribute> attributes, List<Session> sessions) {
-        sessions.parallelStream().forEach(session -> {
+        sessions.parallelStream().filter(Objects::nonNull).forEach(session -> {
             final Session updatedSession = session.merge(attributes);
             final Flux<DataBuffer> dataBufferFlux = renderer.render(session.getLastUsedTemplate(), updatedSession);
             final String oldHTML = updatedSession.getLastRenderedHTML();

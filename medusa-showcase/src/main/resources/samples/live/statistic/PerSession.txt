@@ -2,28 +2,28 @@ import io.getmedusa.medusa.core.annotation.UIEventPage;
 import io.getmedusa.medusa.core.attributes.Attribute;
 import io.getmedusa.medusa.core.bidirectional.ServerToClient;
 import io.getmedusa.medusa.core.session.Session;
-import io.getmedusa.medusa.core.session.StandardSessionTagKeys;
 import org.springframework.scheduling.annotation.Scheduled;
 import sample.getmedusa.showcase.samples.AbstractSampleController;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import java.util.UUID;
 
 @UIEventPage(path = "/detail/sample/live-statistic", file = "/pages/sample/live-statistic.html")
 public class LiveStatisticController extends AbstractSampleController {
 
+    protected static final Random RANDOM = new Random();
+
     private final ServerToClient serverToClient;
 
-    private final List<String> uniqueSessionsSubscribedForARandom = new ArrayList<>();
+    private final List<String> uniqueSessionsIdSubscribedForARandom = new ArrayList<>();
 
     public LiveStatisticController(ServerToClient serverToClient) {
         this.serverToClient = serverToClient;
     }
 
     public List<Attribute> setupAttributes(Session session) {
-        subscribe(session);
+        subscribeViaID(session);
 
         return List.of(
                 new Attribute("randomNumberUniquePerSession", 0)
@@ -31,20 +31,26 @@ public class LiveStatisticController extends AbstractSampleController {
 
     }
 
-    public void subscribe(Session session) {
-        session.putTag("uniqueTag", UUID.randomUUID().toString());
-        uniqueSessionsSubscribedForARandom.add(session.getTag("uniqueTag"));
+    public void subscribeViaID(Session session) {
+        uniqueSessionsIdSubscribedForARandom.add(session.getId());
     }
 
     //this process does not have to be a timer, but because timers run on a separate thread outside of context like, this perfect to kick off the serverside call
-    @Scheduled(fixedDelay = 2000)
+    @Scheduled(fixedDelay = 500)
     public void aServerProcess() {
-        for(String subscriberTagValue : uniqueSessionsSubscribedForARandom) {
-            serverToClient.sendAttributesToSessionTag(
-                    List.of(new Attribute("randomNumberUniquePerSession", new Random().nextInt(99999))),
-                    "uniqueTag",
-                    subscriberTagValue);
+        //unique per session
+        for(String sessionId : new ArrayList<>(uniqueSessionsIdSubscribedForARandom)) {
+            serverToClient.sendAttributesToSessionIDs(
+                    List.of(new Attribute("randomNumberUniquePerSession", randomInt())),
+                    List.of(sessionId)
+            );
         }
-        uniqueSessionsSubscribedForARandom.clear();
+
+        uniqueSessionsIdSubscribedForARandom.clear();
     }
+
+    private int randomInt() {
+        return RANDOM.nextInt(99999);
+    }
+
 }

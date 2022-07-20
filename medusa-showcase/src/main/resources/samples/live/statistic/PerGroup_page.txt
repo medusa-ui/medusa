@@ -1,2 +1,4 @@
 Unique per group:
-<div th:text="${randomNumberUniquePerGroup}"></div>
+<div class="sample-counter" th:text="${randomNumberUniquePerGroup}"></div>
+
+<button m:click="subscribeTag()">Subscribe to tag update</button>
