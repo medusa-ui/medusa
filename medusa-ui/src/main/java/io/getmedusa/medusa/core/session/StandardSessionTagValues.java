@@ -1,6 +1,6 @@
 package io.getmedusa.medusa.core.session;
 
-public class StandardSessionTagValues {
+public final class StandardSessionTagValues {
 
     private StandardSessionTagValues() {}
 

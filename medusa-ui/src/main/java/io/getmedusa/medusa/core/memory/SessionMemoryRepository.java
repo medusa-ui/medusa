@@ -37,7 +37,7 @@ public class SessionMemoryRepository {
     }
 
     public List<Session> findSessionsByIds(Collection<String> sessionIds) {
-        return sessionIds.stream().map(id -> sessions.get(id)).toList();
+        return sessionIds.stream().map(sessions::get).toList();
     }
 
     public List<Session> findSessionsByTag(String sessionTagKey, String sessionTagValue) {

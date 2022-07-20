@@ -105,7 +105,7 @@ public class DiffEngine {
     }
 
     private boolean isEmptyText(Comparison.Detail detail, String nodeToContent) {
-        return detail.getValue().toString().equals("#text") && nodeToContent.trim().isBlank();
+        return "#text".equals(detail.getValue().toString()) && nodeToContent.trim().isBlank();
     }
 
     private boolean matchIfNotEmptyText(Comparison.Detail oldDetail) {

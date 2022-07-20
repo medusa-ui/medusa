@@ -77,7 +77,9 @@ public class UIEventPageCallWrapper {
     }
 
     private Method determineSetupMethod(Object uiEventPageObject, UIEventPage uiEventPage) {
-        if(uiEventPage == null) return null;
+        if(uiEventPage == null) {
+            return null;
+        }
         String setupMethodName = uiEventPage.setup();
         for(Method method : uiEventPageObject.getClass().getMethods()) {
             if (method.getName().equals(setupMethodName)) {

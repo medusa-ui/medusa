@@ -3,7 +3,7 @@ package io.getmedusa.medusa.core.util;
 import java.time.Instant;
 import java.util.concurrent.TimeUnit;
 
-public class TimeUtils {
+public final class TimeUtils {
 
     private TimeUtils() {}
 

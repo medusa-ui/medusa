@@ -9,7 +9,7 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import java.io.IOException;
 import java.util.List;
 
-public class JSONUtils {
+public final class JSONUtils {
 
     private static final ObjectMapper OBJECT_MAPPER = buildObjectMapper();
 
@@ -44,7 +44,9 @@ public class JSONUtils {
     }
 
     public static <T> List<T> deserializeList(String json, Class<T> clazz) {
-        if(json.isBlank()) return List.of();
+        if(json.isBlank()) {
+            return List.of();
+        }
         try {
             return (List<T>) OBJECT_MAPPER.readValue(json, List.class);
         } catch (IOException e) {

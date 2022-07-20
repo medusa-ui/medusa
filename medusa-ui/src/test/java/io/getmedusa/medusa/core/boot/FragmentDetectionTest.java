@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 
 class FragmentDetectionTest {
 
-    private final String html_with_tags = """
+    private final String htmlWithTags = """
             <!DOCTYPE html>
             <html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:m="http://www.getmedusa.io/">
             <head>
@@ -32,7 +32,7 @@ class FragmentDetectionTest {
             </html>
             """;
 
-    private final String html_without_tags = """
+    private final String htmlWithoutTags = """
             <!DOCTYPE html>
             <html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:m="http://www.getmedusa.io/">
             <head>
@@ -78,12 +78,12 @@ class FragmentDetectionTest {
 
     @Test
     void testFindingFragments() {
-        String html = FragmentDetection.INSTANCE.prepFile(html_without_tags);
+        String html = FragmentDetection.INSTANCE.prepFile(htmlWithoutTags);
         Assertions.assertEquals(0, FragmentDetection.INSTANCE.getFragmentIds().size());
-        Assertions.assertEquals(html_without_tags, html);
+        Assertions.assertEquals(htmlWithoutTags, html);
         Assertions.assertEquals(0, FragmentDetection.INSTANCE.detectWhichFragmentsArePresent(html).size());
 
-        html = FragmentDetection.INSTANCE.prepFile(html_with_tags);
+        html = FragmentDetection.INSTANCE.prepFile(htmlWithTags);
         Assertions.assertEquals(2, FragmentDetection.INSTANCE.getFragmentIds().size());
         Assertions.assertFalse(html.contains(":fragment"));
 

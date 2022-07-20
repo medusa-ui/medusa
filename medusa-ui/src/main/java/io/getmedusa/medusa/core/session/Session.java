@@ -19,7 +19,7 @@ public class Session {
     private List<Attribute> lastParameters = new ArrayList<>();
     private Map<String, String> tags = new HashMap<>();
     private final String hydraPath;
-    private boolean matched = false;
+    private boolean matched;
     @JsonIgnore
     private final SocketSink sink = new SocketSink();
 
@@ -108,9 +108,13 @@ public class Session {
     }
 
     private String findHydraPath(ServerRequest.Headers headers) {
-        if(headers == null) return null;
+        if(headers == null) {
+            return null;
+        }
         List<String> relevantHeaders = headers.header("hydra-path");
-        if(relevantHeaders.isEmpty()) return null;
+        if(relevantHeaders.isEmpty()) {
+            return null;
+        }
         return relevantHeaders.get(0);
     }
 

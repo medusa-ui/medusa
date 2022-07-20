@@ -46,8 +46,8 @@ class SessionMemoryRepositoryTest {
         Session session = new Session();
         session.setLastUsedHash(route.generateHash());
         final Session storedSession = repository.store(session);
-        final Session retrievedSession_firstTime = repository.retrieve(storedSession.getId(), route);
-        Assertions.assertEquals(retrievedSession_firstTime.getId(), storedSession.getId());
+        final Session retrievedSessionFirstTime = repository.retrieve(storedSession.getId(), route);
+        Assertions.assertEquals(retrievedSessionFirstTime.getId(), storedSession.getId());
 
         Assertions.assertThrows(SecurityException.class, () -> {
             repository.retrieve(storedSession.getId(), route);

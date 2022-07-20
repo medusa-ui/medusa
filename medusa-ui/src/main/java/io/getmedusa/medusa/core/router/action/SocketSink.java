@@ -42,7 +42,7 @@ public class SocketSink {
 
         @Override
         public void processComplete() {
-            executor.schedule(() -> eventListener.processComplete(), 500, TimeUnit.MILLISECONDS);
+            executor.schedule(eventListener::processComplete, 500, TimeUnit.MILLISECONDS);
         }
     };
 

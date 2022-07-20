@@ -133,7 +133,7 @@ class DiffEngineTest {
     @Test
     void testDiffGeneration_Addition_Bug() {
         //This is OK
-        final String oldHTML_OK = """
+        final String oldHTMLOK = """
                 <div>
                     <div>
                         <p>Hello world</p>
@@ -143,7 +143,7 @@ class DiffEngineTest {
                     </div>
                 </div>
                 """;
-        final String newHTML_OK = """
+        final String newHTMLOK = """
                 <div>
                     <div>
                         <p>Hello world</p>
@@ -155,12 +155,12 @@ class DiffEngineTest {
                 </div>
                 """;
 
-        final List<JSReadyDiff> jsReadyDiffs = diffEngine.findDiffs(oldHTML_OK, newHTML_OK);
+        final List<JSReadyDiff> jsReadyDiffs = diffEngine.findDiffs(oldHTMLOK, newHTMLOK);
         System.out.println(jsReadyDiffs);
         Assertions.assertEquals( 1, jsReadyDiffs.size(), "expected only 1 addition");
 
         // Here there is bug
-        final String oldHTML_BUG = """
+        final String oldHTMLBUG = """
                 <div>
                     <div>
                         <p>Hello world</p>
@@ -168,7 +168,7 @@ class DiffEngineTest {
                     </div>
                 </div>
                 """;
-        final String newHTML_BUG = """
+        final String newHTMLBUG = """
                 <div>
                     <div>
                         <p>Hello world</p>
@@ -178,7 +178,7 @@ class DiffEngineTest {
                 </div>
                 """;
 
-        final List<JSReadyDiff> jsReadyDiffs2 = diffEngine.findDiffs(oldHTML_BUG, newHTML_BUG);
+        final List<JSReadyDiff> jsReadyDiffs2 = diffEngine.findDiffs(oldHTMLBUG, newHTMLBUG);
 
         for(JSReadyDiff diff : jsReadyDiffs2) {
             System.out.println(diff);

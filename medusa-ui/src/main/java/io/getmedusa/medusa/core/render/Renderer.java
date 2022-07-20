@@ -94,14 +94,18 @@ public class Renderer {
     }
 
     private String applyRenderedFragmentsToHTML(final String templateHTML, final Map<String, List<Fragment>> fragmentsToLoad, final List<RenderedFragment> renderedFragments) {
-        if(renderedFragments == null) return templateHTML;
+        if(renderedFragments == null) {
+            return templateHTML;
+        }
         String html = templateHTML;
         for(RenderedFragment renderedFragment : renderedFragments) {
             String renderedHtml = renderedFragment.getRenderedHTML();
 
             if(renderedHtml == null) {
                 Fragment relevantFragment = findRelevantFragment(renderedFragment.getId(), fragmentsToLoad);
-                if(relevantFragment == null) return templateHTML;
+                if(relevantFragment == null) {
+                    return templateHTML;
+                }
                 renderedHtml = relevantFragment.getFallback();
             }
 

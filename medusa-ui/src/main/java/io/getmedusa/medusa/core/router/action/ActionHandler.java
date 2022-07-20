@@ -57,12 +57,16 @@ public class ActionHandler {
                     .getValue(evaluationContext, bean);
         }
 
-        if(null == result) return new ArrayList<>();
+        if(null == result) {
+            return new ArrayList<>();
+        }
         return (List<Attribute>) result;
     }
 
     String escape(String raw) {
-        if(raw == null) return null;
+        if(raw == null) {
+            return null;
+        }
         try {
             return URLDecoder.decode(raw.replace("%27", "''"), Charset.defaultCharset().displayName());
         } catch (UnsupportedEncodingException e) {

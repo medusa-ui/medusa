@@ -8,7 +8,7 @@ import org.springframework.util.StreamUtils;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
-public class FileUtils {
+public final class FileUtils {
 
     private static final ResourceLoader resourceLoader = new DefaultResourceLoader();
 

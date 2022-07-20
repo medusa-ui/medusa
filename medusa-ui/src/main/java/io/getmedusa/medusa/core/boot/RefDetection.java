@@ -31,7 +31,9 @@ public enum RefDetection {
         if(fullTemplate.contains(":ref=")) {
             final Document document = Jsoup.parse(fullTemplate);
             final String prefix = findPrefix(document);
-            if(prefix == null) return refMap;
+            if(prefix == null) {
+                return refMap;
+            }
             final String refAttribute = prefix + ":ref";
             final Elements refElements = document.getElementsByAttribute(refAttribute);
 

@@ -54,7 +54,9 @@ public enum StaticResourcesDetection {
 
     public String prependStaticUrlsWithHydraPath(String html, Session session) {
         String hydraPath = session.getHydraPath();
-        if(null == hydraPath) return html;
+        if(null == hydraPath) {
+            return html;
+        }
 
         for(Map.Entry<String, String> staticResourceEntry : staticResourcesToReplace.entrySet()) {
             html = html.replace(staticResourceEntry.getKey(), staticResourceEntry.getValue().replace(HYDRA_PATH, hydraPath));

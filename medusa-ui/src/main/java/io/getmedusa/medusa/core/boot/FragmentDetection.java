@@ -35,7 +35,9 @@ public enum FragmentDetection {
             final Document document = Jsoup.parse(html);
             document.outputSettings().indentAmount(0).prettyPrint(false);
             final String prefix = findPrefix(document);
-            if(prefix == null) return html;
+            if(prefix == null) {
+                return html;
+            }
 
             final String refAttribute = prefix + ":fragment";
             final Elements refElements = document.getElementsByAttribute(refAttribute);
@@ -46,7 +48,9 @@ public enum FragmentDetection {
             Fragment fragment = new Fragment();
             final String attr = refElement.attr(refAttribute);
             final String[] fragmentRef = attr.split("#");
-            if(fragmentRef.length != 2) throw new IllegalStateException("Fragments should follow the format of service#reference. This was not the case for '" + attr + "'");
+            if(fragmentRef.length != 2) {
+                throw new IllegalStateException("Fragments should follow the format of service#reference. This was not the case for '" + attr + "'");
+            }
 
             fragment.setFallback(refElement.html());
             fragment.setService(fragmentRef[0]);

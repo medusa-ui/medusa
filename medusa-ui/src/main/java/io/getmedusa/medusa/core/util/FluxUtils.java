@@ -8,7 +8,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
-public class FluxUtils {
+public final class FluxUtils {
 
     private FluxUtils() {}
 

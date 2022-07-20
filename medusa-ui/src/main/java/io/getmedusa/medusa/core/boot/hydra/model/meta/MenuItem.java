@@ -25,8 +25,12 @@ public class MenuItem {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof MenuItem)) return false;
+        if(this == o) {
+            return true;
+        }
+        if(!(o instanceof MenuItem)) {
+            return false;
+        }
         MenuItem menuItem = (MenuItem) o;
         return getEndpoint().equals(menuItem.getEndpoint()) && Objects.equals(getLabel(), menuItem.getLabel());
     }

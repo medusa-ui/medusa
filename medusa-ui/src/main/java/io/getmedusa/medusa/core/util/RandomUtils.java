@@ -3,7 +3,7 @@ package io.getmedusa.medusa.core.util;
 import java.security.SecureRandom;
 import java.util.UUID;
 
-public class RandomUtils {
+public final class RandomUtils {
 
     private RandomUtils() {}
 

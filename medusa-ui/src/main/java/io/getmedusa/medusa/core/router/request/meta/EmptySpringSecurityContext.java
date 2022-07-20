@@ -7,6 +7,8 @@ import org.springframework.security.core.Authentication;
  */
 public class EmptySpringSecurityContext  implements org.springframework.security.core.context.SecurityContext {
 
+    private static final long serialVersionUID = 1;
+
     @Override
     public Authentication getAuthentication() { return null;}
 

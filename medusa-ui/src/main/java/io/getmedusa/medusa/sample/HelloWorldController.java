@@ -17,7 +17,7 @@ import java.util.List;
 @UIEventPage(path = "/", file = "/pages/hello-world")
 public class HelloWorldController {
 
-    private int counter = 0;
+    private int counter;
 
     private List<Person> globalPeople = new ArrayList<>();
 

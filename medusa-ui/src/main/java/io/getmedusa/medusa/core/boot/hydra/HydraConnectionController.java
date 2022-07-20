@@ -38,16 +38,16 @@ public class HydraConnectionController {
     private final RequestBodySpec requestFragmentURL;
 
     private ConnectivityState state = ConnectivityState.INITIALIZING;
-    private boolean hasShownConnectionError = false;
+    private boolean hasShownConnectionError;
     private long downtimeStart;
     private final String wsUrl;
 
     private static final Logger logger = LoggerFactory.getLogger(HydraConnectionController.class);
 
     public HydraConnectionController(WebClient webClient,
-                                     MedusaConfigurationProperties configProps,
-                                     @Value("${spring.rsocket.server.port:7000}") Integer socketPort,
-                                     @Value("${server.port:8080}") Integer serverPort) {
+            MedusaConfigurationProperties configProps,
+            @Value("${spring.rsocket.server.port:7000}") Integer socketPort,
+            @Value("${server.port:8080}") Integer serverPort) {
         this.privateKey = configProps.getHydra().getSecret().getPrivateKey();
 
         this.registrationURL = webClient.post().uri(configProps.getHydra().registrationURL());
@@ -78,10 +78,10 @@ public class HydraConnectionController {
         this
                 .getActiveService()
                 .getEndpoints().addAll(
-                        RouteDetection.INSTANCE.getDetectedRoutes()
-                                .stream()
-                                .map(Route::getPath)
-                                .toList());
+                RouteDetection.INSTANCE.getDetectedRoutes()
+                        .stream()
+                        .map(Route::getPath)
+                        .toList());
         this
                 .getActiveService()
                 .getStaticResources().addAll(StaticResourcesDetection.INSTANCE.getAllResources());
@@ -103,9 +103,9 @@ public class HydraConnectionController {
                 return Mono.empty();
             }
         })
-        .doOnError(this::registrationFailure)
-        .onErrorReturn(List.of())
-        .subscribe();
+                .doOnError(this::registrationFailure)
+                .onErrorReturn(List.of())
+                .subscribe();
     }
 
     private void registrationFailure(Throwable e) {
@@ -153,7 +153,9 @@ public class HydraConnectionController {
     }
 
     public Mono<List<RenderedFragment>> askHydraForFragment(Map<String, List<Fragment>> requests, Map<String, Object> attributes) {
-        if(requests.isEmpty()) return Mono.just(List.of());
+        if(requests.isEmpty()) {
+            return Mono.just(List.of());
+        }
         FragmentHydraRequestWrapper wrapper = new FragmentHydraRequestWrapper();
         wrapper.setAttributes(attributes);
         wrapper.setRequests(requests);
@@ -176,7 +178,9 @@ public class HydraConnectionController {
     }
 
     public String getWSUrl(String hydraPath) {
-        if(hydraPath == null) return null;
+        if(hydraPath == null) {
+            return null;
+        }
         return wsUrl.replace("{hydrapath}", hydraPath);
     }
 
