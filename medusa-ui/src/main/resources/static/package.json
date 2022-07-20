@@ -16,6 +16,6 @@
     "rsocket-types": "^0.0.27",
     "rsocket-websocket-client": "^1.0.0-alpha.1",
     "uglifyify": "^5.0.2",
-    "ws": "^5.2.1"
+    "ws": "^8.8.1"
   }
 }
