@@ -7,15 +7,14 @@ import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.processor.element.IElementTagStructureHandler;
 
-import java.util.regex.Matcher;
-
 @MedusaTag
-public class MedusaOnClick extends JSEventAttributeProcessor {
+public class MedusaOnChange extends JSEventAttributeProcessor {
 
-    //<button m:click="increment()">increment</button>
 
-    public MedusaOnClick() {
-        super("click", "onclick", "_M.doAction(null, '%s')");
+    //<input m:change="action(#this)">increment</button>
+
+    public MedusaOnChange() {
+        super("change", "onchange", EVENT_TEMPLATE_M_DO_ACTION, Integer.MAX_VALUE);
     }
 
     @Override
@@ -25,4 +24,5 @@ public class MedusaOnClick extends JSEventAttributeProcessor {
         String formatted = format(attributeValue);
         structureHandler.setAttribute(eventName, eventTemplate.formatted(formatted));
     }
+
 }
