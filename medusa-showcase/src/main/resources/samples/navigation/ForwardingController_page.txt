@@ -1,0 +1,2 @@
+<button m:click="forwardTo('basic-button')">Forward to 'basic button sample'</button>
+<button m:click="forwardTo('live-data')">Forward to 'live data sample'</button>

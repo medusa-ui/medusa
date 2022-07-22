@@ -68,11 +68,13 @@ evalXPath = function(xpath) {
 
 doLookups = function (listOfDiffs) {
     for(let diff of listOfDiffs) {
-        if(diff.xpath.endsWith("::first")) { //additions - no previous entry, so pick parent pom and mark as first entry
-            diff.firstEntry = true;
-            diff.xpath = diff.xpath.substring(0, diff.xpath.length - 8); //8 = '/::first'.length
+        if (diff.xpath !== null) {
+            if (diff.xpath.endsWith("::first")) { //additions - no previous entry, so pick parent pom and mark as first entry
+                diff.firstEntry = true;
+                diff.xpath = diff.xpath.substring(0, diff.xpath.length - 8); //8 = '/::first'.length
+            }
+            diff.element = evalXPath(diff.xpath);
         }
-        diff.element = evalXPath(diff.xpath);
     }
     return listOfDiffs;
 };
@@ -134,6 +136,8 @@ applyAllChanges = function (listOfDiffs) {
             handleMorph(diff);
         } else if(diff.type === "REMOVAL") {
             handleRemoval(diff);
+        } else if(diff.type === "REDIRECT") {
+            window.location.href = diff.content;
         }
     }
 };

@@ -30,7 +30,7 @@ public class Component {
         ));
 
         map.put("Live data", List.of(
-                new Component("Live statistic", "sample/live-statistic"),
+                new Component("Live data", "sample/live-data"),
                 new Component("Live table"),
                 new Component("Progress bar")
         ));
@@ -42,6 +42,7 @@ public class Component {
         ));
 
         map.put("Navigation", List.of(
+                new Component("Forwarding", "sample/forwarding"),
                 new Component("Menubar")
         ));
 

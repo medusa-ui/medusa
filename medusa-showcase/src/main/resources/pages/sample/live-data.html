@@ -14,14 +14,14 @@
 
 <div id="container">
     <section id="hero">
-        <h1>Live statistic</h1>
+        <h1>Live Data</h1>
         <p>An example of simple data being live updated without input from the user. It is a pure server to client call.</p>
         <a href="/" class="button" id="cta">Back to overview</a>
         <a href="https://github.com/medusa-ui/medusa/tree/main/medusa-showcase" target="_blank" class="button">Show example in github</a>
     </section>
 
     <section id="variations">
-        <h2>Global Live Statistic</h2>
+        <h2>Global Live Data</h2>
         <p>This illustrates a simple server to client call. Note that on the client side, there is nothing referring to this - there is no polling.</p>
         <p>Here we show a global update, which is shared by all session. As such, if you'd open this page concurrently in two tabs, you'll see the shared number be the same across all tabs.</p>
         <p>In this case, we send the update to all users who are on this page right now.</p>
@@ -51,7 +51,7 @@
 
         </section> <!-- end .variation -->
 
-        <h2>Unique per session Live Statistic</h2>
+        <h2>Unique per session Live Data</h2>
         <p>Here, we demonstrate that we can send updates to specific sessions as well.</p>
         <p>We can do this by creating a custom tag that identifies who we want to target, and then send the update to that tag.</p>
         <p>In this case, we create that custom tag when you press the subscribe button. The scheduler then picks it up and sends you a unique random. We also do this at page load, to illustrate the Session is reachable in different areas.</p>
@@ -83,7 +83,7 @@
 
         </section> <!-- end .variation -->
 
-        <h2>Group Live Statistic</h2>
+        <h2>Group Live Data</h2>
         <p>Finally, we also show that server to client pushes don't have to be all or nothing: You can send updates selectively to groups of users as well.</p>
 
         <section class="variation">

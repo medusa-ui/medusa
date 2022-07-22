@@ -9,7 +9,7 @@ import sample.getmedusa.showcase.samples.AbstractSampleController;
 import java.util.List;
 import java.util.Random;
 
-@UIEventPage(path = "/detail/sample/live-statistic", file = "/pages/sample/live-statistic.html")
+@UIEventPage(path = "/detail/sample/live-data", file = "/pages/sample/live-data.html")
 public class LiveStatisticController extends AbstractSampleController {
 
     protected static final Random RANDOM = new Random();
@@ -34,7 +34,7 @@ public class LiveStatisticController extends AbstractSampleController {
         serverToClient.sendAttributesToSessionTag(
                 List.of(new Attribute("randomNumberShared", randomInt())),
                 StandardSessionTagKeys.ROUTE,
-                "/detail/sample/live-statistic");
+                "/detail/sample/live-data");
     }
 
     private int randomInt() {

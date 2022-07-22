@@ -7,13 +7,17 @@ import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.util.UriUtils;
 
 import java.nio.charset.StandardCharsets;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class Route {
 
     private final String path;
     private final String templateHTML;
     private final UIEventPageCallWrapper controller;
+
+    public static final Set<String> URIs = new HashSet<>();
 
     public Route(String path, String templateHTML, Object controller) {
         this.path = path;
