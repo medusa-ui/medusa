@@ -1,6 +1,6 @@
 const { RSocketConnector } = require("rsocket-core");
 const { WebsocketClientTransport } = require("rsocket-websocket-client");
-const sanitizeUrl = require("@braintree/sanitize-url").sanitizeUrl;
+const escape = require("@braintree/sanitize-url").sanitizeUrl;
 const {
     encodeCompositeMetadata,
     encodeRoute,
@@ -138,7 +138,7 @@ applyAllChanges = function (listOfDiffs) {
         } else if(diff.type === "REMOVAL") {
             handleRemoval(diff);
         } else if(diff.type === "REDIRECT") {
-            window.location.href = sanitizeUrl(diff.content);
+            window.location.href = escape(diff.content);
         }
     }
 };
