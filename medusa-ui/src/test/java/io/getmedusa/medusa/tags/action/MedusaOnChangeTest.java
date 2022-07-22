@@ -30,7 +30,7 @@ public class MedusaOnChangeTest extends MedusaTagTest {
         System.out.println(template);
         Assertions.assertFalse(template.contains("th:text"), "Thymeleaf tags should be rendered");
         Assertions.assertFalse(template.contains("m:change"), "Medusa tags should be rendered");
-        Assertions.assertTrue(template.contains("onchange=\"_M.doAction(null, `action('${document.querySelector(\\'#cnt\\').value}')`)\""), "Medusa tag should be rendered with replacement JS");
+        Assertions.assertTrue(template.contains("onchange=\"_M.doAction(null, `action('${document.querySelector('#cnt').value}')`)\""), "Medusa tag should be rendered with replacement JS");
     }
 
 }

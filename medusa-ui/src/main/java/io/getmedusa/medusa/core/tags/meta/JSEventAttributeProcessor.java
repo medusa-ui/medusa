@@ -16,7 +16,7 @@ public abstract class JSEventAttributeProcessor extends AbstractAttributeTagProc
     //`search('${document.querySelector("input").value}')`
     protected static final String EVENT_TEMPLATE_M_DO_ACTION = "_M.doAction(null, `%s`)";
     protected static final Pattern CTX_ATTRIBUTE_VALUE_REGEX = Pattern.compile("\\$\\{(.*)\\}");
-    protected static final String QUERY_SELECTOR="'${document.querySelector(\\'%s\\').value}'";
+    protected static final String QUERY_SELECTOR="'${document.querySelector('%s').value}'";
 
     public static final String QUERY_SELECTOR_PREFIX = ":"; // avoid collisions with existing Thymeleaf Standard Expression Syntax
     protected static final Pattern CTX_QUERY_SELECTOR_VALUE_REGEX = Pattern.compile(QUERY_SELECTOR_PREFIX + "\\{(.*)\\}");
