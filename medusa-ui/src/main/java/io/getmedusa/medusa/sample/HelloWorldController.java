@@ -77,4 +77,8 @@ public class HelloWorldController {
         return people;
     }
 
+    public List<Attribute> search(String searchFor) {
+        return List.of(new Attribute("search", searchFor));
+    }
+
 }

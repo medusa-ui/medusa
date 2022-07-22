@@ -11,7 +11,7 @@ import org.thymeleaf.processor.element.IElementTagStructureHandler;
 public class MedusaOnChange extends JSEventAttributeProcessor {
 
 
-    //<input m:change="action(#this)">increment</button>
+    //<input id="msg" m:change="action(#msg)">hello world</button>
 
     public MedusaOnChange() {
         super("change", "onchange", EVENT_TEMPLATE_M_DO_ACTION, Integer.MAX_VALUE);
@@ -21,8 +21,7 @@ public class MedusaOnChange extends JSEventAttributeProcessor {
     protected void doProcess(ITemplateContext context, IProcessableElementTag tag, AttributeName attributeName, String attributeValue, IElementTagStructureHandler structureHandler) {
         attributeValue = replaceAttributeValues(context, tag, attributeValue);
         attributeValue = replaceElementValues(context, tag, attributeValue);
-        String formatted = format(attributeValue);
-        structureHandler.setAttribute(eventName, eventTemplate.formatted(formatted));
+        structureHandler.setAttribute(eventName, eventTemplate.formatted(attributeValue));
     }
 
 }

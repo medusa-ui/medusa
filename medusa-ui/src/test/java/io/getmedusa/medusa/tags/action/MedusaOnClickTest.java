@@ -43,7 +43,7 @@ class MedusaOnClickTest {
         System.out.println(template);
         Assertions.assertFalse(template.contains("th:text="), "Thymeleaf tags should be rendered");
         Assertions.assertFalse(template.contains("m:click="), "Medusa tags should be rendered");
-        Assertions.assertTrue(template.contains("onclick=\"_M.doAction(null, 'increment()')\""), "Medusa tag should be rendered with replacement JS");
+        Assertions.assertTrue(template.contains("onclick=\"_M.doAction(null, `increment()`)\""), "Medusa tag should be rendered with replacement JS");
     }
 
 }

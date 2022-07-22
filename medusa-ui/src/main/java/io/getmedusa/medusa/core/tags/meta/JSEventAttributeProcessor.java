@@ -1,16 +1,10 @@
 package io.getmedusa.medusa.core.tags.meta;
 
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.parser.Parser;
-import org.thymeleaf.context.EngineContext;
 import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.processor.element.AbstractAttributeTagProcessor;
 import org.thymeleaf.processor.element.IElementTagStructureHandler;
-import org.thymeleaf.standard.inline.StandardHTMLInliner;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -19,11 +13,14 @@ import static io.getmedusa.medusa.core.tags.annotation.MedusaTag.*;
 import static io.getmedusa.medusa.core.tags.annotation.MedusaTag.precedence;
 
 public abstract class JSEventAttributeProcessor extends AbstractAttributeTagProcessor {
-    protected static final String EVENT_TEMPLATE_M_DO_ACTION = "_M.doAction(null, '%s')";
-    protected static final Pattern CTX_VALUE_REGEX = Pattern.compile("\\$\\{(.*)\\}");
+    //`search('${document.querySelector("input").value}')`
+    protected static final String EVENT_TEMPLATE_M_DO_ACTION = "_M.doAction(null, `%s`)";
     protected static final Pattern CTX_ATTRIBUTE_VALUE_REGEX = Pattern.compile("\\$\\{(.*)\\}");
+    protected static final String QUERY_SELECTOR="'${document.querySelector(\\'%s\\').value}'";
 
-    protected static final Pattern CTX_ELEMENT_VALUE_REGEX = Pattern.compile("#(\\w*)");
+    public static final String QUERY_SELECTOR_PREFIX = ":"; // avoid collisions with existing Thymeleaf Standard Expression Syntax
+    protected static final Pattern CTX_QUERY_SELECTOR_VALUE_REGEX = Pattern.compile(QUERY_SELECTOR_PREFIX + "\\{(.*)\\}");
+
     protected final String eventName;
     protected final String eventTemplate;
 
@@ -58,24 +55,11 @@ public abstract class JSEventAttributeProcessor extends AbstractAttributeTagProc
     protected abstract void doProcess(ITemplateContext context, IProcessableElementTag tag, AttributeName attributeName, String attributeValue, IElementTagStructureHandler structureHandler);
 
     protected String replaceElementValues(ITemplateContext context, IProcessableElementTag tag, String attributeValue) {
-        if(attributeValue.contains("#")) {
-            Matcher elementValueMatcher = CTX_ELEMENT_VALUE_REGEX.matcher(attributeValue);
-            context.getConfiguration();
-            Document document = Jsoup.parse(context.getTemplateData().getTemplate());
+        if(attributeValue.contains(QUERY_SELECTOR_PREFIX)) {
+            Matcher elementValueMatcher = CTX_QUERY_SELECTOR_VALUE_REGEX.matcher(attributeValue);
             while (elementValueMatcher.find()) {
-                String id = elementValueMatcher.group(1);
-                Element element = null;
-                String replaceValue = "";
-                if(id.equals("this")) {
-                    replaceValue = tag.getAttributeMap().getOrDefault("value","");
-                } else {
-                    element = document.getElementById(id);
-                    if (element.hasAttr("value")) {
-                        replaceValue = element.attr("value");
-                    } else {
-                        replaceValue = element.text();
-                    }
-                }
+                String querySelector = elementValueMatcher.group(1);
+                String replaceValue = QUERY_SELECTOR.formatted(querySelector);
                 attributeValue = attributeValue.replace(elementValueMatcher.group(), replaceValue);
             }
         }
@@ -89,9 +73,5 @@ public abstract class JSEventAttributeProcessor extends AbstractAttributeTagProc
             attributeValue = attributeValue.replace(matcher.group(), context.getVariable(replaceValue).toString());
         }
         return attributeValue;
-    }
-
-    protected String format(String source) {
-        return source.replace("'","\\'");
     }
 }

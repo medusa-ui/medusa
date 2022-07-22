@@ -36,6 +36,18 @@
     <button m:click="addPerson()">Add person</button>
     <button m:click="removePerson()">Remove person</button>
 
-    <h2>The end</h2>
+    <h2>Search</h2>
+
+    <p>Searching for <i th:text="search"></i>...</p>
+    <div>
+        <input id="srch" type="text" />
+        <button m:click="search(:{#srch})">Search</button>
+    </div>
+
+   <script>
+       doActionQuery = function(target) {
+           return "_M.doAction(null, ``)"
+       }
+   </script>
 </body>
 </html>

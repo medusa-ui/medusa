@@ -7,22 +7,19 @@ import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.processor.element.IElementTagStructureHandler;
 
-import java.util.regex.Matcher;
-
 @MedusaTag
 public class MedusaOnClick extends JSEventAttributeProcessor {
 
     //<button m:click="increment()">increment</button>
 
     public MedusaOnClick() {
-        super("click", "onclick", "_M.doAction(null, '%s')");
+        super("click", "onclick", EVENT_TEMPLATE_M_DO_ACTION);
     }
 
     @Override
     protected void doProcess(ITemplateContext context, IProcessableElementTag tag, AttributeName attributeName, String attributeValue, IElementTagStructureHandler structureHandler) {
         attributeValue = replaceAttributeValues(context, tag, attributeValue);
         attributeValue = replaceElementValues(context, tag, attributeValue);
-        String formatted = format(attributeValue);
-        structureHandler.setAttribute(eventName, eventTemplate.formatted(formatted));
+        structureHandler.setAttribute(eventName, eventTemplate.formatted(attributeValue));
     }
 }
