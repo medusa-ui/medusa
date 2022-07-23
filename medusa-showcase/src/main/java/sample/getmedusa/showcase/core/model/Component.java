@@ -25,7 +25,7 @@ public class Component {
 
         map.put("Special inputs", List.of(
                 new Component("File uploads"),
-                new Component("Option list"),
+                new Component("Option list", "sample/option-list"),
                 new Component("Multiple selection list")
         ));
 
