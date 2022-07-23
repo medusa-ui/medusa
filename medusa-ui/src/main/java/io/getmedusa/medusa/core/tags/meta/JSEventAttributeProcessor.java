@@ -14,12 +14,14 @@ import static io.getmedusa.medusa.core.tags.annotation.MedusaTag.precedence;
 
 public abstract class JSEventAttributeProcessor extends AbstractAttributeTagProcessor {
     //`search('${document.querySelector("input").value}')`
-    protected static final String EVENT_TEMPLATE_M_DO_ACTION = "_M.doAction(null, `%s`)";
-    protected static final Pattern CTX_ATTRIBUTE_VALUE_REGEX = Pattern.compile("\\$\\{(.*)\\}");
-    protected static final String QUERY_SELECTOR="'${document.querySelector('%s').value}'";
 
     public static final String QUERY_SELECTOR_PREFIX = ":"; // avoid collisions with existing Thymeleaf Standard Expression Syntax
-    protected static final Pattern CTX_QUERY_SELECTOR_VALUE_REGEX = Pattern.compile(QUERY_SELECTOR_PREFIX + "\\{(.*)\\}");
+    public static final String VARIABLE_PREFIX = "\\$"; // Thymeleaf Standard Expression Syntax for Variable
+    private static final String BASIC_EXPRESSION = "\\{(.*?)\\}";
+    protected static final String EVENT_TEMPLATE_M_DO_ACTION = "_M.doAction(null, `%s`)";
+    protected static final String QUERY_SELECTOR="'${document.querySelector('%s').value}'";
+    protected static final Pattern CTX_ATTRIBUTE_VALUE_REGEX = Pattern.compile(VARIABLE_PREFIX + BASIC_EXPRESSION);
+    protected static final Pattern CTX_QUERY_SELECTOR_VALUE_REGEX = Pattern.compile(QUERY_SELECTOR_PREFIX + BASIC_EXPRESSION);
 
     protected final String eventName;
     protected final String eventTemplate;

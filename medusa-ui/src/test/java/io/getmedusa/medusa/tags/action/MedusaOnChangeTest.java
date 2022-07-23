@@ -19,18 +19,32 @@ public class MedusaOnChangeTest extends MedusaTagTest {
             <!DOCTYPE html>
             <html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:m="https://www.getmedusa.io/medusa.xsd">
             <body>
-                <div><input id="cnt" m:change="action(:{#cnt})" value="42"></div>
+                <div>
+                    <select name="search" id="search-select" m:change="search(:{#search-select})">
+                        <option value="Hello World">Search for 'Hello World'</option>
+                        <option value="Hello Medusa">Search for 'Hello Medusa'</option>
+                    </select>
+                </div>
             </body>
             </html>
             """;
 
     @Test
-    void testRender() {
+    void basicRenderTest() {
         String template = FluxUtils.dataBufferFluxToString(renderer.render(basicTemplateHTML, session));
         System.out.println(template);
         Assertions.assertFalse(template.contains("th:text"), "Thymeleaf tags should be rendered");
         Assertions.assertFalse(template.contains("m:change"), "Medusa tags should be rendered");
         Assertions.assertTrue(template.contains("onchange=\"_M.doAction(null, `action('${document.querySelector('#cnt').value}')`)\""), "Medusa tag should be rendered with replacement JS");
+    }
+
+    @Test
+    void selectRenderTest() {
+        String template = FluxUtils.dataBufferFluxToString(renderer.render(selectTemplateHTML, session));
+        System.out.println(template);
+        Assertions.assertFalse(template.contains("th:text"), "Thymeleaf tags should be rendered");
+        Assertions.assertFalse(template.contains("m:change"), "Medusa tags should be rendered");
+        Assertions.assertTrue(template.contains("onchange=\"_M.doAction(null, `search('${document.querySelector('#search-select').value}')`)\""), "Medusa tag should be rendered with replacement JS");
     }
 
 }
