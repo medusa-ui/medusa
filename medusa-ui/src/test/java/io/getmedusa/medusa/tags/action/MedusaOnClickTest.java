@@ -2,15 +2,12 @@ package io.getmedusa.medusa.tags.action;
 
 import io.getmedusa.medusa.core.attributes.Attribute;
 import io.getmedusa.medusa.core.render.Renderer;
-import io.getmedusa.medusa.core.session.Session;
 import io.getmedusa.medusa.core.tags.action.MedusaOnClick;
 import io.getmedusa.medusa.core.util.FluxUtils;
 import io.getmedusa.medusa.core.tags.MedusaDialect;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Set;

@@ -12,7 +12,7 @@ import java.util.Map;
 @UIEventPage(path = "/detail/sample/option-list", file = "/pages/sample/option-list.html")
 public class OptionListController extends AbstractSampleController {
 
-        private Map<String, List<String>> drinks =
+        private final Map<String, List<String>> drinks =
                 Map.of("Waters", List.of(" ", "Plain water", "Sparkling water", "Flavored water"),
                        "Hot Drinks", List.of(" ", "Coffee", "Thee", "Hot chocolate"),
                        "Beers", List.of(" ","Dark ale", "IPA")
