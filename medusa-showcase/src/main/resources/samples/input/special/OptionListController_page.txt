@@ -1,7 +1,0 @@
-<p> What is you favorite fruit?
-
-    <select id="favorite-fruit" m:change="favorite(:{#favorite-fruit})">  <!-- use :{query-selector} to extract the current value of an element -->
-        <option th:each="fruit: ${fruits}" th:value="${fruit}" th:text="${fruit}"></option>
-    </select>
-</p>
-<p>Your favorite fruit is: <b th:text="${favorite}"></b></p>

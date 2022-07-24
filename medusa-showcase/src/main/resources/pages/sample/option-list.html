@@ -21,16 +21,16 @@
     </section>
 
     <section id="variations">
-        <h2>Select - Option List</h2>
-        <p>Selects that show the direct link with the controller. The selected option is sand to the controller on a change event.
+        <h2>Basic Select - Option List</h2>
+        <p>The selected option is sent to the controller on a change event.
             Since a bean is a singleton instance, storing a variable in the controller itself would mean it is shared across all users.
             Instead, we can use the Session object to get the specific variables for the active user.</p>
         <section class="variation">
             <h3>Example</h3>
             <section class="example-in-practice">
-                <p> What is you favorite fruit?
-                    <select id="favorite-fruit" m:change="favorite(:{#favorite-fruit})">
-                        <option th:each="fruit: ${fruits}" th:value="${fruit}" th:text="${fruit}"></option>
+                <p> I really like an Orange, but what is your favorite fruit?
+                    <select name="favorite" id="select-fruit" m:change="favorite(:{#select-fruit})" >
+                        <option th:each="fruit: ${fruits}" th:text="${fruit}" th:selected="(${fruit} == ${favorite})"></option>
                     </select>
                 </p>
                 <p>Your favorite fruit is: <b th:text="${favorite}"></b></p>
@@ -40,18 +40,58 @@
                 <h3>Client</h3>
 
                 <pre class="client">
-                        <code class="language-html" th:text="${pageCode}"></code>
+                        <code class="language-html" th:text="${select_basic_page}"></code>
                     </pre>
 
                 <h3>Server</h3>
                 <pre class="server">
-                        <code class="language-java" th:text="${controllerCode}"></code>
+                        <code class="language-java" th:text="${select_basic_controller}"></code>
                     </pre>
             </section> <!-- end .code -->
 
             <p><a href="#">Back to top</a></p>
 
         </section> <!-- end .variation -->
+
+        <h2>Linked Select - Option List</h2>
+        <p>A selected option in the first select trigger a changes of the content of the second select.
+            The selected option is sent to the controller on a change event.</p>
+        <section class="variation">
+            <h3>Example</h3>
+            <section class="example-in-practice">
+                <p class="drinks"> Select your drink
+                    <select m:change="drinks(:{.drinks select:nth-child(1)})">
+                        <option th:each="type: ${drinksType}" th:text="${type}"></option>
+                    </select>
+
+                    <select m:change="order(:{.drinks select:nth-child(2)})">
+                        <option th:each="drink: ${drinksList}" th:text="${drink}"></option>
+                    </select>
+                </p>
+                <p> Your Order:
+                    <ul>
+                        <li th:each="item:${order}" th:text="${item}"></li>
+                    </ul>
+                </p>
+            </section>
+
+            <section class="code">
+                <h3>Client</h3>
+
+                <pre class="client">
+                        <code class="language-html" th:text="${select_linked_page}"></code>
+                    </pre>
+
+                <h3>Server</h3>
+                <pre class="server">
+                        <code class="language-java" th:text="${select_linked_controller}"></code>
+                    </pre>
+            </section> <!-- end .code -->
+
+            <p><a href="#">Back to top</a></p>
+
+        </section> <!-- end .variation -->
+
 
     </section> <!-- end #variations -->
 
