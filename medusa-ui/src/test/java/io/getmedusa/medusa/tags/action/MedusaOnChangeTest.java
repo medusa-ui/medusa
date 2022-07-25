@@ -32,7 +32,7 @@ public class MedusaOnChangeTest extends MedusaTagTest {
     @Test
     void basicRenderTest() {
         String template = FluxUtils.dataBufferFluxToString(renderer.render(basicTemplateHTML, session));
-        System.out.println(template);
+        logger.debug(template);
         Assertions.assertFalse(template.contains("th:text"), "Thymeleaf tags should be rendered");
         Assertions.assertFalse(template.contains("m:change"), "Medusa tags should be rendered");
         Assertions.assertTrue(template.contains("onchange=\"_M.doAction(null, `action('${document.querySelector('#cnt').value}')`)\""), "Medusa tag should be rendered with replacement JS");
@@ -41,7 +41,7 @@ public class MedusaOnChangeTest extends MedusaTagTest {
     @Test
     void selectRenderTest() {
         String template = FluxUtils.dataBufferFluxToString(renderer.render(selectTemplateHTML, session));
-        System.out.println(template);
+        logger.debug(template);
         Assertions.assertFalse(template.contains("th:text"), "Thymeleaf tags should be rendered");
         Assertions.assertFalse(template.contains("m:change"), "Medusa tags should be rendered");
         Assertions.assertTrue(template.contains("onchange=\"_M.doAction(null, `search('${document.querySelector('#search-select').value}')`)\""), "Medusa tag should be rendered with replacement JS");
