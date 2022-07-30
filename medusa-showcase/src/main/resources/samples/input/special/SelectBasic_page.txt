@@ -1,0 +1,8 @@
+ <section>
+    <p> I really like an Orange, but what is your favorite fruit?
+        <select name="favorite" id="select-fruit" m:change="favorite(:{#select-fruit})" > <!-- use :{querySelector} to select current value of an Element -->
+            <option th:each="fruit: ${fruits}" th:text="${fruit}" th:selected="(${fruit} == ${favorite})"></option>
+        </select>
+    </p>
+    <p>Your favorite fruit is: <b th:text="${favorite}"></b></p>
+</section>

@@ -12,6 +12,8 @@ const morphdom = require("morphdom");
 function Medusa() {}
 const _M = new Medusa();
 
+const debugMode = true;
+
 const MAX_REQUEST_N = 2147483647;
 let stream;
 
@@ -144,8 +146,15 @@ applyAllChanges = function (listOfDiffs) {
 };
 
 handleIncomingChange = function (obj) {
+    debugLog(obj);
     const toApply = doLookups(obj);
     applyAllChanges(toApply);
+};
+
+debugLog = function (objToLog) {
+    if(debugMode) {
+        console.log(objToLog);
+    }
 };
 
 async function buildStream(rsocket) {
@@ -162,10 +171,16 @@ async function buildStream(rsocket) {
         false,
         {
             onError(error) {
-                location.reload();
+                if(!debugMode) {
+                    location.reload();
+                } else {
+                    console.error(error);
+                }
             },
             onComplete() {
-                location.reload();
+                if(!debugMode) {
+                    location.reload();
+                }
             },
             onNext(payload, isComplete) {
                 handleIncomingChange(JSON.parse(payload.data.toString()));
@@ -174,7 +189,9 @@ async function buildStream(rsocket) {
             },
             request(requestN) { },
             cancel() {
-                location.reload();
+                if(!debugMode) {
+                    location.reload();
+                }
             }
         });
 }

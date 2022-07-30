@@ -182,6 +182,13 @@ a.component h3 {
     cursor: default;
 }
 
+.example-in-practice select {
+    padding: 0.25em;
+    font-family: 'Jost', sans-serif;
+    font-size: 1em;
+    margin-left: 0.25em;
+}
+
 .example-in-practice .sample-counter {
     display: block;
     color: black;

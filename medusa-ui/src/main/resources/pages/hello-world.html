@@ -36,6 +36,19 @@
     <button m:click="addPerson()">Add person</button>
     <button m:click="removePerson()">Remove person</button>
 
-    <h2>The end</h2>
+    <h2>Search</h2>
+
+    <p>Searching for <i th:text="${search}"></i>...</p>
+    <div>
+        <input id="search-input" type="text" />
+        <button m:click="search(:{#search-input})">Search</button>
+        <div>
+            <select name="search" id="search-select" m:change="search(:{#search-select})">
+                <option value="Hello World">Search for 'Hello World'</option>
+                <option value="Hello Medusa">Search for 'Hello Medusa'</option>
+            </select>
+        </div>
+    </div>
+
 </body>
 </html>

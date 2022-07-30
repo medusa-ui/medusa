@@ -8,16 +8,15 @@ import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.processor.element.IElementTagStructureHandler;
 
 @MedusaTag
-public class MedusaOnClick extends JSEventAttributeProcessor {
+public class MedusaOnSelect extends JSEventAttributeProcessor {
 
-    //<button m:click="increment()">increment</button>
-
-    public MedusaOnClick() {
-        super("click", "onclick", EVENT_TEMPLATE_M_DO_ACTION);
+    public MedusaOnSelect() {
+            super("select", "onselect", EVENT_TEMPLATE_M_DO_ACTION, Integer.MAX_VALUE);
     }
 
     @Override
-    protected void doProcess(ITemplateContext context, IProcessableElementTag tag, AttributeName attributeName, String attributeValue, IElementTagStructureHandler structureHandler) {
+    protected void doProcess(ITemplateContext context, IProcessableElementTag tag, AttributeName attributeName, String attributeValue, IElementTagStructureHandler
+    structureHandler) {
         attributeValue = replaceAttributeValues(context, tag, attributeValue);
         attributeValue = replaceElementValues(context, tag, attributeValue);
         structureHandler.setAttribute(eventName, eventTemplate.formatted(attributeValue));

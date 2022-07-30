@@ -74,6 +74,10 @@ public class JSReadyDiff {
         REDIRECT
     }
 
+    public boolean isEdit() {
+        return DiffType.EDIT.equals(this.type);
+    }
+
     @Override
     public String toString() {
         return "JSReadyDiff{" +

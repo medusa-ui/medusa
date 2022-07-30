@@ -77,4 +77,9 @@ public class HelloWorldController {
         return people;
     }
 
+    /* test m:click & m:select */
+    public List<Attribute> search(String searchFor) {
+        return List.of(new Attribute("search", searchFor));
+    }
+
 }
