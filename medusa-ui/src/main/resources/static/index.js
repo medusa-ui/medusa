@@ -155,7 +155,7 @@ debugLog = function (objToLog) {
     if(debugMode) {
         console.log(objToLog);
     }
-}
+};
 
 async function buildStream(rsocket) {
     const encodedRoute = encodeRoute("event-emitter/" + _M.controller + "/" + _M.sessionId);
