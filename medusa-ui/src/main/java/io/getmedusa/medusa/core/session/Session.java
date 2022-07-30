@@ -2,6 +2,7 @@ package io.getmedusa.medusa.core.session;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.getmedusa.medusa.core.attributes.Attribute;
+import io.getmedusa.medusa.core.attributes.StandardAttributeKeys;
 import io.getmedusa.medusa.core.router.action.SocketSink;
 import io.getmedusa.medusa.core.router.request.Route;
 import io.getmedusa.medusa.core.util.RandomUtils;
@@ -144,5 +145,13 @@ public class Session {
                 .findFirst()
                 .orElse(new Attribute())
                 .value();
+    }
+
+    public List<Attribute> findPassThroughAttributes() {
+        List<Attribute> passThrough = this.lastParameters.stream()
+                .filter(p -> StandardAttributeKeys.findAllPassThroughKeys().contains(p.name()))
+                .toList();
+        lastParameters.removeAll(passThrough);
+        return passThrough;
     }
 }

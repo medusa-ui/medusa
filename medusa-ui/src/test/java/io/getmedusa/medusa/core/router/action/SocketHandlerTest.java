@@ -42,7 +42,7 @@ class SocketHandlerTest {
     @BeforeEach
     public void setup() {
         MockitoAnnotations.openMocks(this);
-        socketHandler = new SocketHandler(sessionMemoryRepository, actionHandler, renderer, diffEngine);
+        socketHandler = new SocketHandler(sessionMemoryRepository, actionHandler, renderer, diffEngine, false);
     }
 
     @Test

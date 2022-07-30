@@ -14,6 +14,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 
+import static io.getmedusa.medusa.core.util.AttributeUtils.mergeDiffs;
+
 /**
  * Exposed the ability to easily send {@link Attribute} from server to client.
  */
@@ -66,12 +68,13 @@ public class ServerToClient {
     private void sendAttributesToSession(Collection<Attribute> attributes, List<Session> sessions) {
         sessions.parallelStream().filter(Objects::nonNull).forEach(session -> {
             final Session updatedSession = session.merge(attributes);
+            List<Attribute> passThroughAttributes = updatedSession.findPassThroughAttributes();
             final Flux<DataBuffer> dataBufferFlux = renderer.render(session.getLastUsedTemplate(), updatedSession);
             final String oldHTML = updatedSession.getLastRenderedHTML();
             final String newHtml = FluxUtils.dataBufferFluxToString(dataBufferFlux);
             updatedSession.setLastRenderedHTML(newHtml);
             sessionMemoryRepository.store(updatedSession);
-            updatedSession.getSink().push(diffEngine.findDiffs(oldHTML, newHtml));
+            updatedSession.getSink().push(mergeDiffs(diffEngine.findDiffs(oldHTML, newHtml), passThroughAttributes));
         });
     }
 }

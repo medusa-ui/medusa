@@ -24,7 +24,7 @@ public interface IRequestStreamHandler {
                                                SecurityContext securityContext,
                                                Renderer renderer,
                                                SessionMemoryRepository sessionMemoryRepository) {
-
+        Route.URIs.add(request.uri().getScheme() + "://" + request.uri().getAuthority());
         return ok()
                 .contentType(MediaType.TEXT_HTML)
                 .body(renderWithSession(request, route, renderer, sessionMemoryRepository), DataBuffer.class);

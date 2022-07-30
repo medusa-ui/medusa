@@ -27,6 +27,10 @@ public class JSReadyDiff {
         return new JSReadyDiff(content, determinePreviousNode(xPath), DiffType.ADDITION);
     }
 
+    public static JSReadyDiff buildNewRedirect(String url) {
+        return new JSReadyDiff(url, null, DiffType.REDIRECT);
+    }
+
     static String determinePreviousNode(String xPath) {
         final int beginIndex = xPath.lastIndexOf("[") + 1;
         final int endIndex = xPath.length() - 1;
@@ -66,7 +70,8 @@ public class JSReadyDiff {
         ADDITION,
         EDIT,
         REMOVAL,
-        TAG_CHANGE
+        TAG_CHANGE,
+        REDIRECT
     }
 
     public boolean isEdit() {

@@ -1,12 +1,15 @@
 package io.getmedusa.medusa.core.router.action;
 
+import io.getmedusa.medusa.core.attributes.Attribute;
 import io.getmedusa.medusa.core.boot.RouteDetection;
 import io.getmedusa.medusa.core.diffengine.DiffEngine;
 import io.getmedusa.medusa.core.memory.SessionMemoryRepository;
 import io.getmedusa.medusa.core.render.Renderer;
 import io.getmedusa.medusa.core.router.request.Route;
 import io.getmedusa.medusa.core.session.Session;
+import io.getmedusa.medusa.core.util.AttributeUtils;
 import io.getmedusa.medusa.core.util.FluxUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.Headers;
@@ -18,6 +21,8 @@ import reactor.core.publisher.Flux;
 
 import java.util.List;
 import java.util.Map;
+
+import static io.getmedusa.medusa.core.util.AttributeUtils.mergeDiffs;
 
 //event emitter endpoint that rsocket can connect to
 
@@ -32,11 +37,13 @@ public class SocketHandler {
     public SocketHandler(SessionMemoryRepository sessionMemoryRepository,
                          ActionHandler actionHandler,
                          Renderer renderer,
-                         DiffEngine diffEngine){
+                         DiffEngine diffEngine,
+                         @Value("${medusa.allow-external-redirect:false}") boolean allowExternalRedirect){
         this.sessionMemoryRepository = sessionMemoryRepository;
         this.actionHandler = actionHandler;
         this.renderer = renderer;
         this.diffEngine = diffEngine;
+        AttributeUtils.setAllowExternalRedirect(allowExternalRedirect);
     }
 
     @PreAuthorize("hasRole('USER')")
@@ -56,6 +63,10 @@ public class SocketHandler {
             //execute action and combine attributes
             Session updatedSession = actionHandler.executeAndMerge(r, route, session);
 
+            //not all attributes are used for rendering - some are pass-through, like redirections.
+            //these get filtered out first
+            List<Attribute> passThroughAttributes = updatedSession.findPassThroughAttributes();
+
             //render new HTML w/ new attributes
             final Flux<DataBuffer> dataBufferFlux = renderer.render(route.getTemplateHTML(), updatedSession);
             final String oldHTML = updatedSession.getLastRenderedHTML();
@@ -64,10 +75,9 @@ public class SocketHandler {
             sessionMemoryRepository.store(updatedSession);
 
             //run diff engine old HTML vs new
-            updatedSession.getSink().push(diffEngine.findDiffs(oldHTML, newHtml));
+            updatedSession.getSink().push(mergeDiffs(diffEngine.findDiffs(oldHTML, newHtml), passThroughAttributes));
         });
 
         return session.getSink().asFlux();
     }
-
 }

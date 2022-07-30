@@ -13,8 +13,8 @@ import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 
-@UIEventPage(path = "/detail/sample/live-statistic", file = "/pages/sample/live-statistic.html")
-public class LiveStatisticController extends AbstractSampleController {
+@UIEventPage(path = "/detail/sample/live-data", file = "/pages/sample/live-data.html")
+public class LiveDataController extends AbstractSampleController {
 
     protected static final Random RANDOM = new Random();
     private final ServerToClient serverToClient;
@@ -22,7 +22,7 @@ public class LiveStatisticController extends AbstractSampleController {
     private final List<String> uniqueSessionsTagSubscribedForARandom = new ArrayList<>();
     private final List<String> uniqueSessionsIdSubscribedForARandom = new ArrayList<>();
 
-    public LiveStatisticController(ServerToClient serverToClient) {
+    public LiveDataController(ServerToClient serverToClient) {
         this.serverToClient = serverToClient;
     }
 
@@ -63,7 +63,7 @@ public class LiveStatisticController extends AbstractSampleController {
         serverToClient.sendAttributesToSessionTag(
                 List.of(new Attribute("randomNumberShared", randomInt())),
                 StandardSessionTagKeys.ROUTE,
-                "/detail/sample/live-statistic");
+                "/detail/sample/live-data");
 
         //unique per session
         for(String sessionId : new ArrayList<>(uniqueSessionsIdSubscribedForARandom)) {
