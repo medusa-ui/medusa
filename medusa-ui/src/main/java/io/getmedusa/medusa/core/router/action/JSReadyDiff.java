@@ -69,6 +69,10 @@ public class JSReadyDiff {
         TAG_CHANGE
     }
 
+    public boolean isEdit() {
+        return DiffType.EDIT.equals(this.type);
+    }
+
     @Override
     public String toString() {
         return "JSReadyDiff{" +
