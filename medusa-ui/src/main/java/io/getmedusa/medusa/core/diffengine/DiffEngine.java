@@ -24,6 +24,7 @@ public class DiffEngine {
     private static final TransformerFactory T_FACTORY = TransformerFactory.newInstance();
     private static final String XML_VERSION = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
     private static final int XML_VERSION_LENGTH = XML_VERSION.length();
+    private static final DiffComparator DIFF_COMPARATOR = new DiffComparator();
 
     public List<JSReadyDiff> findDiffs(String oldHTML, String newHTML) {
         List<JSReadyDiff> diffs = new ArrayList<>();
@@ -40,7 +41,7 @@ public class DiffEngine {
             for (Difference difference : differences.getDifferences()) {
                 final Comparison comparison = difference.getComparison();
 
-                if (!ComparisonType.CHILD_NODELIST_LENGTH.equals(comparison.getType())) {
+                if (!isOfIgnorableType(comparison.getType())) {
                     final JSReadyDiff diff = comparisonToDiff(comparison);
                     if (null != diff) {
                         diffs.add(diff);
@@ -52,7 +53,14 @@ public class DiffEngine {
             throw new RuntimeException(e);
         }
 
+        diffs.sort(DIFF_COMPARATOR);
+
         return diffs;
+    }
+
+    private boolean isOfIgnorableType(ComparisonType type) {
+        return CHILD_NODELIST_LENGTH.equals(type) ||
+               ELEMENT_NUM_ATTRIBUTES.equals(type);
     }
 
     private JSReadyDiff comparisonToDiff(Comparison comparison) {
