@@ -44,6 +44,11 @@ public class HelloWorldController {
         return List.of(new Attribute("counterValue", ++counter));
     }
 
+    public List<Attribute> increaseCounterWith(Integer increaseWith) {
+        this.counter += increaseWith;
+        return List.of(new Attribute("counterValue", counter));
+    }
+
     public List<Attribute> randomNewTable() {
         List<Person> people = generateListOfPeople();
         return List.of(

@@ -9,6 +9,7 @@
 
     <div th:text="${counterValue}"></div>
     <button m:click="increaseCounter()">Increase counter</button>
+    <button m:click="increaseCounterWith(${counterValue})">Diff bug?</button>
 
     <table>
         <thead>
@@ -49,6 +50,5 @@
             </select>
         </div>
     </div>
-
 </body>
 </html>
