@@ -14,7 +14,7 @@ public class MedusaOnChange extends JSEventAttributeProcessor {
     //<input id="msg" m:change="action(#msg)">hello world</button>
 
     public MedusaOnChange() {
-        super("change", "onchange", EVENT_TEMPLATE_M_DO_ACTION, Integer.MAX_VALUE);
+        super("change", "onchange", EVENT_TEMPLATE_M_DO_ACTION);
     }
 
     @Override
