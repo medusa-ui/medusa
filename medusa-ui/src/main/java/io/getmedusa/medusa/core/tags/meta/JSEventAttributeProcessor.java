@@ -6,8 +6,6 @@ import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.processor.element.AbstractAttributeTagProcessor;
 import org.thymeleaf.processor.element.IElementTagStructureHandler;
-import org.thymeleaf.standard.expression.IStandardExpressionParser;
-import org.thymeleaf.standard.expression.StandardExpressions;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -60,7 +58,6 @@ public abstract class JSEventAttributeProcessor extends AbstractAttributeTagProc
 
     protected String replaceAttributeValues(ITemplateContext context, IProcessableElementTag tag, String attributeValue){
         Matcher matcher = CTX_ATTRIBUTE_VALUE_REGEX.matcher(attributeValue);
-        final IStandardExpressionParser parser = StandardExpressions.getExpressionParser(context.getConfiguration());
         while (matcher.find()) {
             String replaceValue = matcher.group(1);
             attributeValue = attributeValue.replace(matcher.group(), valueOf(context, replaceValue));
