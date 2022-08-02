@@ -4,6 +4,7 @@ package io.getmedusa.medusa.core.router.action;
 public class JSReadyDiff {
 
     private String content;
+    private String attribute;
     private String xpath;
     private DiffType type;
 
@@ -23,6 +24,12 @@ public class JSReadyDiff {
         return new JSReadyDiff(content, xPath, DiffType.EDIT);
     }
 
+    public static JSReadyDiff buildAttrChange(String xPath, String attribute, String content) {
+        final JSReadyDiff diff = new JSReadyDiff(content, xPath, DiffType.ATTR_CHANGE);
+        diff.setAttribute(attribute);
+        return diff;
+    }
+
     public static JSReadyDiff buildNewAddition(String xPath, String content) {
         return new JSReadyDiff(content, determinePreviousNode(xPath), DiffType.ADDITION);
     }
@@ -40,6 +47,14 @@ public class JSReadyDiff {
         } else {
             return xPath.substring(0, beginIndex) + (index-1) + "]";
         }
+    }
+
+    public void setAttribute(String attribute) {
+        this.attribute = attribute;
+    }
+
+    public String getAttribute() {
+        return attribute;
     }
 
     public String getContent() {
@@ -70,6 +85,7 @@ public class JSReadyDiff {
         ADDITION,
         EDIT,
         REMOVAL,
+        ATTR_CHANGE,
         TAG_CHANGE,
         REDIRECT
     }

@@ -81,6 +81,8 @@ public class DiffEngine {
             return buildNewRemoval(oldDetail.getXPath());
         } else if(TEXT_VALUE.equals(comparison.getType())) {
             return buildNewEdit(newDetail.getParentXPath(), nodeToContent(newDocumentNode.getParentNode()));
+        } else if(ATTR_VALUE.equals(comparison.getType())) {
+            return buildAttrChange(attrOwnerXPath(oldDetail, newDetail), newDocumentNode.getNodeName(), newDocumentNode.getNodeValue());
         } else {
             logger.warn("comparisonToDiff: no match for comparison: " + comparison);
         }
