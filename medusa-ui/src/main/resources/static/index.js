@@ -111,7 +111,7 @@ handleAttrChange = function (obj) {
     let element = obj.element;
 
     if(element !== null) {
-        element.setAttribute(obj.attribute, obj.content)
+        element.setAttribute(obj.attribute, obj.content);
     } else {
         console.error("failed to attr value change", obj.xpath);
         console.log("handleAttrChange: obj", obj);
