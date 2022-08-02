@@ -1,5 +1,6 @@
 package io.getmedusa.medusa.core.tags.meta;
 
+import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.model.IProcessableElementTag;
@@ -14,7 +15,7 @@ import static io.getmedusa.medusa.core.tags.annotation.MedusaTag.precedence;
 
 public abstract class JSEventAttributeProcessor extends AbstractAttributeTagProcessor {
     //`search('${document.querySelector("input").value}')`
-
+    private final SpelExpressionParser SPEL_EXPRESSION_PARSER = new SpelExpressionParser();
     public static final String QUERY_SELECTOR_PREFIX = ":"; // avoid collisions with existing Thymeleaf Standard Expression Syntax
     public static final String VARIABLE_PREFIX = "\\$"; // Thymeleaf Standard Expression Syntax for Variable
     private static final String BASIC_EXPRESSION = "\\{(.*?)\\}";
@@ -26,19 +27,6 @@ public abstract class JSEventAttributeProcessor extends AbstractAttributeTagProc
     protected final String eventName;
     protected final String eventTemplate;
 
-    protected JSEventAttributeProcessor(String attributeName, String eventName, String eventTemplate, int precedence) {
-        super(
-                templateMode,   // This processor will apply only to this template mode (ie HTML)
-                prefix,         // Prefix to be applied to name for matching
-                null,           // No tag name: match any tag name
-                false,          // No prefix to be applied to tag name
-                attributeName,  // Name of the attribute that will be matched
-                true,           // Apply dialect prefix to attribute name
-                precedence,     // Precedence (inside dialect's precedence)
-                true);          // Remove the matched attribute afterwards
-        this.eventName = eventName;
-        this.eventTemplate = eventTemplate;
-    }
     protected JSEventAttributeProcessor(String attributeName, String eventName, String eventTemplate) {
         super(
                 templateMode,   // This processor will apply only to this template mode (ie HTML)
@@ -72,8 +60,18 @@ public abstract class JSEventAttributeProcessor extends AbstractAttributeTagProc
         Matcher matcher = CTX_ATTRIBUTE_VALUE_REGEX.matcher(attributeValue);
         while (matcher.find()) {
             String replaceValue = matcher.group(1);
-            attributeValue = attributeValue.replace(matcher.group(), context.getVariable(replaceValue).toString());
+            attributeValue = attributeValue.replace(matcher.group(), valueOf(context, replaceValue));
         }
         return attributeValue;
+    }
+
+    protected String valueOf(ITemplateContext context, String replaceValue){
+        if(replaceValue.contains(".")) {
+            String expression = replaceValue.substring(replaceValue.indexOf(".") + 1);
+            String target = replaceValue.substring(0, replaceValue.indexOf("."));
+            return "" + SPEL_EXPRESSION_PARSER.parseExpression(expression).getValue(context.getVariable(target));
+        } else {
+            return context.getVariable(replaceValue).toString();
+        }
     }
 }

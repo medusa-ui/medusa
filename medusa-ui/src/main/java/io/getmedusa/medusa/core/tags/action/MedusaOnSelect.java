@@ -11,7 +11,7 @@ import org.thymeleaf.processor.element.IElementTagStructureHandler;
 public class MedusaOnSelect extends JSEventAttributeProcessor {
 
     public MedusaOnSelect() {
-            super("select", "onselect", EVENT_TEMPLATE_M_DO_ACTION, Integer.MAX_VALUE);
+            super("select", "onselect", EVENT_TEMPLATE_M_DO_ACTION);
     }
 
     @Override

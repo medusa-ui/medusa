@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:m="https://www.getmedusa.io/medusa.xsd">
+<head>
+    <meta charset="UTF-8" />
+    <title>Clicks</title>
+</head>
+<body>
+<h1>Clicks</h1>
+    <p>
+        <span>Press a button to see the executed action. </span>
+        <span th:if="${action != null}">
+            Last executed Action: <b th:text="${action}"></b>
+        </span>
+        <span th:if="${value != null}">
+            , with Value: <b th:text="${value}"></b>
+        </span>
+    </p>
+    <div><button m:click="action()">action()</button></div>
+    <div><button m:click="action(1)">action(1)</button></div>
+    <div><button m:click="action('text')">action('text')</button></div>
+    <div><button m:click="action('${text}')">action('${text}')</button></div>
+    <div><button m:click="action(${number})">action(${number})</button></div>
+    <div><button m:click="action('${one.name}')">action('${one.name}')</button></div>
+    <div><button m:click="action(${one.target})">action(${one.number})</button></div>
+    <div><button m:click="action(${one.target}, '${two.target.name}')">action(${one.target}, '${two.target.name}')</button></div>
+</body>
+</html>

@@ -107,6 +107,19 @@ handleIncomingAddition = function (obj) {
     }
 };
 
+handleAttrChange = function (obj) {
+    let element = obj.element;
+
+    if(element !== null) {
+        element.setAttribute(obj.attribute, obj.content);
+    } else {
+        console.error("failed to attr value change", obj.xpath);
+        console.log("handleAttrChange: obj", obj);
+        console.log("handleAttrChange: element", element);
+        console.log("--");
+    }
+};
+
 handleMorph = function (obj) {
     let element = obj.element;
 
@@ -139,6 +152,8 @@ applyAllChanges = function (listOfDiffs) {
             handleMorph(diff);
         } else if(diff.type === "REMOVAL") {
             handleRemoval(diff);
+        } else if(diff.type === "ATTR_CHANGE") {
+            handleAttrChange(diff);
         } else if(diff.type === "REDIRECT") {
             window.location.href = escape(diff.content);
         }
