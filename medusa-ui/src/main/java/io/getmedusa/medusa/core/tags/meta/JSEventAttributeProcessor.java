@@ -11,7 +11,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static io.getmedusa.medusa.core.tags.annotation.MedusaTag.*;
-import static io.getmedusa.medusa.core.tags.annotation.MedusaTag.precedence;
 
 public abstract class JSEventAttributeProcessor extends AbstractAttributeTagProcessor {
     //`search('${document.querySelector("input").value}')`
