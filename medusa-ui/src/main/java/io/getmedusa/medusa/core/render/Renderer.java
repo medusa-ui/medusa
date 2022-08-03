@@ -22,6 +22,8 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.springframework.http.MediaType.TEXT_HTML;
@@ -31,6 +33,10 @@ import static org.springframework.http.MediaType.TEXT_HTML;
  */
 @Component
 public class Renderer {
+
+    public static final String CDATA_START = "//<![CDATA[ ";
+    public static final String CDATA_END = "//]]>";
+    private static Pattern scriptPattern = Pattern.compile("<script[^>]*>(.+?)</script>", Pattern.DOTALL | Pattern.MULTILINE);
 
     private final SpringWebFluxTemplateEngine engine;
     private final DataBufferFactory bufferFactory;
@@ -126,9 +132,19 @@ public class Renderer {
     }
 
     private String convertToXHTML(String source) {
-        final Document document = Jsoup.parse(source);
+        String html = wrapScriptContentInCDATA(source);
+        final Document document = Jsoup.parse(html);
         document.outputSettings().syntax(Document.OutputSettings.Syntax.xml);
         return document.html();
+    }
+
+    private String wrapScriptContentInCDATA(String html) {
+        Matcher matcher = scriptPattern.matcher(html);
+        while(matcher.find()) {
+            String script = matcher.group(1);
+            html = html.replace(script, CDATA_START  + script + CDATA_END );
+        }
+        return html;
     }
 
     private String appendRSocketScriptAndAddHydraPath(String rawTemplate, Session session) {
