@@ -12,6 +12,7 @@ public class Component {
         final Map<String, List<Component>> map = new LinkedHashMap<>();
 
         map.put("Button", List.of(
+                new Component("Temp - Sample new UI", "test"),
                 new Component("Basic button", "sample/basic-button"),
                 new Component("Conditional button")
         ));
@@ -23,14 +24,14 @@ public class Component {
                 new Component("Validation")
         ));
 
-        map.put("Special inputs", List.of(
+        map.put("Var inputs", List.of(
                 new Component("File uploads"),
                 new Component("Option list", "sample/option-list"),
                 new Component("Multiple selection list")
         ));
 
         map.put("Live data", List.of(
-                new Component("Live data", "sample/live-data"),
+                new Component("Serverside live data", "sample/live-data"),
                 new Component("Live table"),
                 new Component("Progress bar")
         ));
@@ -66,17 +67,18 @@ public class Component {
 
     private final String label;
     private final String urlPart;
+    private final boolean comingSoon;
 
     public Component(String label, String urlPart) {
         this.label = label;
         this.urlPart = urlPart;
+        this.comingSoon = false;
     }
 
     public Component(String label) {
         this.label = label;
-        this.urlPart = label.toLowerCase()
-                .replace(" / ", " ")
-                .replace(" ", "-");
+        this.urlPart = "";
+        this.comingSoon = true;
     }
 
     public String getLabel() {
@@ -85,5 +87,9 @@ public class Component {
 
     public String getUrlPart() {
         return urlPart;
+    }
+
+    public boolean isComingSoon() {
+        return comingSoon;
     }
 }

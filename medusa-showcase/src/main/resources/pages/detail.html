@@ -1,151 +1,69 @@
+
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:m="https://www.getmedusa.io/medusa.xsd">
+<html lang="en" xmlns:m="https://www.getmedusa.io/medusa.xsd">
 <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Medusa - Component detail</title>
-    <link rel="stylesheet" th:href="@{../../css/style.css}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Medusa - Component overview</title>
+    <link rel="stylesheet" href="/css/style-light.css" />
+    <link rel="stylesheet" href="/css/style-dark.css" />
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Jost:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.1/styles/nnfx-light.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono&family=Karla:wght@300;500&display=swap" rel="stylesheet">
+
+    <link id="dark-code" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.6.0/styles/stackoverflow-dark.min.css">
+    <link id="light-code" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.6.0/styles/stackoverflow-light.min.css" disabled="disabled">
 </head>
-<body>
+<body class="dark">
+
+<button id="darkmode" onclick="toggleDarkMode()"><svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7.5 0C7.77614 0 8 0.223858 8 0.5V2.5C8 2.77614 7.77614 3 7.5 3C7.22386 3 7 2.77614 7 2.5V0.5C7 0.223858 7.22386 0 7.5 0ZM2.1967 2.1967C2.39196 2.00144 2.70854 2.00144 2.90381 2.1967L4.31802 3.61091C4.51328 3.80617 4.51328 4.12276 4.31802 4.31802C4.12276 4.51328 3.80617 4.51328 3.61091 4.31802L2.1967 2.90381C2.00144 2.70854 2.00144 2.39196 2.1967 2.1967ZM0.5 7C0.223858 7 0 7.22386 0 7.5C0 7.77614 0.223858 8 0.5 8H2.5C2.77614 8 3 7.77614 3 7.5C3 7.22386 2.77614 7 2.5 7H0.5ZM2.1967 12.8033C2.00144 12.608 2.00144 12.2915 2.1967 12.0962L3.61091 10.682C3.80617 10.4867 4.12276 10.4867 4.31802 10.682C4.51328 10.8772 4.51328 11.1938 4.31802 11.3891L2.90381 12.8033C2.70854 12.9986 2.39196 12.9986 2.1967 12.8033ZM12.5 7C12.2239 7 12 7.22386 12 7.5C12 7.77614 12.2239 8 12.5 8H14.5C14.7761 8 15 7.77614 15 7.5C15 7.22386 14.7761 7 14.5 7H12.5ZM10.682 4.31802C10.4867 4.12276 10.4867 3.80617 10.682 3.61091L12.0962 2.1967C12.2915 2.00144 12.608 2.00144 12.8033 2.1967C12.9986 2.39196 12.9986 2.70854 12.8033 2.90381L11.3891 4.31802C11.1938 4.51328 10.8772 4.51328 10.682 4.31802ZM8 12.5C8 12.2239 7.77614 12 7.5 12C7.22386 12 7 12.2239 7 12.5V14.5C7 14.7761 7.22386 15 7.5 15C7.77614 15 8 14.7761 8 14.5V12.5ZM10.682 10.682C10.8772 10.4867 11.1938 10.4867 11.3891 10.682L12.8033 12.0962C12.9986 12.2915 12.9986 12.608 12.8033 12.8033C12.608 12.9986 12.2915 12.9986 12.0962 12.8033L10.682 11.3891C10.4867 11.1938 10.4867 10.8772 10.682 10.682ZM5.5 7.5C5.5 6.39543 6.39543 5.5 7.5 5.5C8.60457 5.5 9.5 6.39543 9.5 7.5C9.5 8.60457 8.60457 9.5 7.5 9.5C6.39543 9.5 5.5 8.60457 5.5 7.5ZM7.5 4.5C5.84315 4.5 4.5 5.84315 4.5 7.5C4.5 9.15685 5.84315 10.5 7.5 10.5C9.15685 10.5 10.5 9.15685 10.5 7.5C10.5 5.84315 9.15685 4.5 7.5 4.5Z" fill="currentColor" fill-rule="evenodd" clip-rule="evenodd"></path></svg></button>
 
 <div id="container">
-    <section id="hero">
-        <h1 th:text="${title}">Conditional button</h1>
-        <p>An example of a button that is not always visible or active based on a variable on the Controller side.</p>
-        <a href="/" class="button" id="cta">Back to overview</a>
-        <a href="https://github.com/medusa-ui/medusa/tree/main/medusa-showcase" target="_blank" class="button">Show example in github</a>
+    <h1>Button - Basic button</h1>
+    <p class="lead">An example of a simple button that triggers an action on the Controller side</p>
+
+    <a id="back-to-overview" href="/">Back to overview</a>
+
+    <h2>Basic button</h2>
+    <p>These buttons illustrate actions with and without parameters. They immediately get executed on the controller. Since a bean is a singleton instance, storing a variable in the controller itself would mean it is shared across all users. Instead, we can use the Session object to get the specific variables for the active user.</p>
+
+    <section class="example">
+        <span>0</span>
+        <button>Increase counter</button> <button>Reset counter</button>
+        <footer>JDK18 w/ Medusa 0.9.0</footer>
     </section>
 
-    <section id="variations">
-        <h2>Dynamically disabled</h2>
-        <p>Disable a button based on a variable in the Controller. In this example, initial render value is set to disabled=true. Every 2 seconds, the server will toggle this back and forth between disabled and enabled.</p>
-        <section class="variation">
-            <h3>Example</h3>
-            <section class="example-in-practice">
+    <section class="client">
+        <h3>Client</h3>
+        <pre><code class="language-html hljs" th:text="${clientCode}"></code></pre>
+    </section>
 
-                <button disabled>This button is disabled</button>
-
-            </section>
-
-            <section class="code">
-                <h3>Client</h3>
-
-                <pre class="client">
-                    <code class="language-html">
-&lt;!DOCTYPE html&gt;
-&lt;title&gt;Title&lt;/title&gt;
-
-&lt;style&gt;body {width: 500px;}&lt;/style&gt;
-
-&lt;script type=&quot;application/javascript&quot;&gt;
-  function $init() {return true;}
-&lt;/script&gt;
-
-&lt;body&gt;
-  &lt;p checked class=&quot;title&quot; id='title'&gt;Title&lt;/p&gt;
-  &lt;!-- here goes the rest of the page --&gt;
-&lt;/body&gt;
-                    </code>
-                </pre>
-
-                <h3>Server</h3>
-                <pre class="server">
-                    <code class="language-java">
-import io.getmedusa.medusa.core.annotation.UIEventPage;
-import io.getmedusa.medusa.core.attributes.Attribute;
-import io.getmedusa.medusa.core.bidirectional.ServerToClient;
-import io.getmedusa.medusa.core.session.StandardSessionTagKeys;
-import io.getmedusa.medusa.core.session.StandardSessionTagValues;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.web.reactive.function.server.ServerRequest;
-
-import java.security.SecureRandom;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
-@UIEventPage(path = &quot;/&quot;, file = &quot;/pages/hello-world&quot;)
-public class HelloWorldController {
-
-    private int counter = 0;
-
-    private List&lt;Person&gt; globalPeople = new ArrayList&lt;&gt;();
-
-    @Autowired
-    private ServerToClient serverToClient;
-
-    @Scheduled(fixedDelay = 1000)
-    public void updateCounterFromServer() {
-        serverToClient.sendAttributesToSessionTag(List.of(new Attribute(&quot;counterValue&quot;, ++counter)),
-                StandardSessionTagKeys.ROUTE,
-                StandardSessionTagValues.ALL); //TODO gotta improve this somehow
-    }
-
-    public List&lt;Attribute&gt; setupAttributes(ServerRequest serverRequest) {
-        List&lt;Person&gt; people = new ArrayList&lt;&gt;();//generateListOfPeople();
-        return List.of(
-                //new Attribute(&quot;counterValue&quot;, Integer.parseInt(serverRequest.pathVariable(&quot;samplePathVariable&quot;))),
-                new Attribute(&quot;counterValue&quot;, 0),
-                new Attribute(&quot;expectedTableCount&quot;, people.size()),
-                new Attribute(&quot;people&quot;, people));
-    }
-
-    public List&lt;Attribute&gt; increaseCounter() {
-        return List.of(new Attribute(&quot;counterValue&quot;, ++counter));
-    }
-
-    public List&lt;Attribute&gt; randomNewTable() {
-        List&lt;Person&gt; people = generateListOfPeople();
-        return List.of(
-                new Attribute(&quot;counterValue&quot;, ++counter),
-                new Attribute(&quot;expectedTableCount&quot;, people.size()),
-                new Attribute(&quot;people&quot;, people));
-    }
-
-    public List&lt;Attribute&gt; addPerson() {
-        globalPeople.add(new Person(globalPeople.size() + 1, new Date().getTime()));
-        return List.of(
-                new Attribute(&quot;expectedTableCount&quot;, globalPeople.size()),
-                new Attribute(&quot;people&quot;, globalPeople));
-    }
-
-    public List&lt;Attribute&gt; removePerson() {
-        globalPeople.remove(globalPeople.size()-1);
-        return List.of(
-                new Attribute(&quot;expectedTableCount&quot;, globalPeople.size()),
-                new Attribute(&quot;people&quot;, globalPeople));
-    }
-
-    private List&lt;Person&gt; generateListOfPeople() {
-        List&lt;Person&gt; people = new ArrayList&lt;&gt;();
-        int amount = new SecureRandom().nextInt(3, 15);
-        long timestamp = new Date().getTime();
-        for (int i = 0; i &lt; amount; i++) {
-            people.add(new Person(i+1, timestamp));
-        }
-        globalPeople = people;
-        return people;
-    }
-
-}
-</code>
-                </pre>
-            </section> <!-- end .code -->
-
-            <p><a href="#">Back to top</a></p>
-
-        </section> <!-- end .variation -->
-
-    </section> <!-- end #variations -->
-
-
+    <section class="server">
+        <h3>Server</h3>
+        <pre><code class="language-java hljs" th:text="${serverCode}"></code></pre>
+    </section>
 </div>
-<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.1/highlight.min.js"></script>
-<script>hljs.highlightAll();</script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.6.0/highlight.min.js"></script>
+<script type="text/javascript">
+    function toggleDarkMode() {
+        document.body.classList.toggle('dark');
+        const isDarkMode = document.body.classList.contains("dark");
+        if(isDarkMode) {
+            document.getElementById("dark-code").removeAttribute("disabled");
+            document.getElementById("light-code").setAttribute("disabled", "disabled");
+        } else {
+            document.getElementById("dark-code").setAttribute("disabled", "disabled");
+            document.getElementById("light-code").removeAttribute("disabled");
+        }
+    }
+
+    if(!window.matchMedia || !window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        toggleDarkMode();
+    }
+
+    hljs.highlightAll();
+</script>
 </body>
 </html>

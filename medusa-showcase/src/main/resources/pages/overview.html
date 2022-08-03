@@ -1,42 +1,73 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:m="https://www.getmedusa.io/medusa.xsd">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Medusa - Component overview</title>
-    <link rel="stylesheet" th:href="@{css/style.css}">
+    <link rel="stylesheet" href="/css/style-light.css" />
+    <link rel="stylesheet" href="/css/style-dark.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Jost:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Karla:wght@300;500&display=swap" rel="stylesheet">
 </head>
-<body>
-<div id="container">
-    <section id="hero">
-        <h1>Medusa UI component showcase</h1>
-        <p>This library showcases a series of ready-to-use, bidirectional component examples you can immediately use in your next Java project.</p>
-        <a href="https://github.com/medusa-ui/medusa" target="_blank" class="button" id="cta">Get started</a>
-        <a href="https://medusa-ui.github.io/documentation/" target="_blank" class="button">Documentation</a>
-    </section>
+<body class="dark">
 
-    <section id="categories">
-        <ul>
-            <li th:each="categoryEntry : ${categoryMap}">
-                <a th:href="${#strings.toLowerCase(#strings.replace('#' + categoryEntry.key,' ','-'))}" th:text="${categoryEntry.key}"></a>
-            </li>
+<button id="darkmode" onclick="toggleDarkMode()"><svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7.5 0C7.77614 0 8 0.223858 8 0.5V2.5C8 2.77614 7.77614 3 7.5 3C7.22386 3 7 2.77614 7 2.5V0.5C7 0.223858 7.22386 0 7.5 0ZM2.1967 2.1967C2.39196 2.00144 2.70854 2.00144 2.90381 2.1967L4.31802 3.61091C4.51328 3.80617 4.51328 4.12276 4.31802 4.31802C4.12276 4.51328 3.80617 4.51328 3.61091 4.31802L2.1967 2.90381C2.00144 2.70854 2.00144 2.39196 2.1967 2.1967ZM0.5 7C0.223858 7 0 7.22386 0 7.5C0 7.77614 0.223858 8 0.5 8H2.5C2.77614 8 3 7.77614 3 7.5C3 7.22386 2.77614 7 2.5 7H0.5ZM2.1967 12.8033C2.00144 12.608 2.00144 12.2915 2.1967 12.0962L3.61091 10.682C3.80617 10.4867 4.12276 10.4867 4.31802 10.682C4.51328 10.8772 4.51328 11.1938 4.31802 11.3891L2.90381 12.8033C2.70854 12.9986 2.39196 12.9986 2.1967 12.8033ZM12.5 7C12.2239 7 12 7.22386 12 7.5C12 7.77614 12.2239 8 12.5 8H14.5C14.7761 8 15 7.77614 15 7.5C15 7.22386 14.7761 7 14.5 7H12.5ZM10.682 4.31802C10.4867 4.12276 10.4867 3.80617 10.682 3.61091L12.0962 2.1967C12.2915 2.00144 12.608 2.00144 12.8033 2.1967C12.9986 2.39196 12.9986 2.70854 12.8033 2.90381L11.3891 4.31802C11.1938 4.51328 10.8772 4.51328 10.682 4.31802ZM8 12.5C8 12.2239 7.77614 12 7.5 12C7.22386 12 7 12.2239 7 12.5V14.5C7 14.7761 7.22386 15 7.5 15C7.77614 15 8 14.7761 8 14.5V12.5ZM10.682 10.682C10.8772 10.4867 11.1938 10.4867 11.3891 10.682L12.8033 12.0962C12.9986 12.2915 12.9986 12.608 12.8033 12.8033C12.608 12.9986 12.2915 12.9986 12.0962 12.8033L10.682 11.3891C10.4867 11.1938 10.4867 10.8772 10.682 10.682ZM5.5 7.5C5.5 6.39543 6.39543 5.5 7.5 5.5C8.60457 5.5 9.5 6.39543 9.5 7.5C9.5 8.60457 8.60457 9.5 7.5 9.5C6.39543 9.5 5.5 8.60457 5.5 7.5ZM7.5 4.5C5.84315 4.5 4.5 5.84315 4.5 7.5C4.5 9.15685 5.84315 10.5 7.5 10.5C9.15685 10.5 10.5 9.15685 10.5 7.5C10.5 5.84315 9.15685 4.5 7.5 4.5Z" fill="currentColor" fill-rule="evenodd" clip-rule="evenodd"></path></svg></button>
+
+<div id="container">
+    <h1>Medusa UI component showcase</h1>
+
+    <p class="lead">
+        This library showcases a series of ready-to-use, bidirectional component examples you can immediately use in your next Java project.
+    </p>
+    <p>
+        Medusa is an open-source bidirectional micro-frontend framework built in Java, on top of
+        <a target="_blank" href="https://spring.io/reactive">Spring Reactive</a> and <a href="https://www.thymeleaf.org/">Thymeleaf</a>.
+        More details on the internal workings of the framework are provided in the
+        <a target="_blank" href="https://medusa-ui.github.io/documentation/docs/internals/at-startup-initialization">documentation</a>.
+    </p>
+    <p>
+        Our major goals are to dramatically close the distance between front-end and back-end,
+        remove the need for Javascript for standard usecases,
+        and use bi-directionality to provide an enhanced development and users experience.
+    </p>
+
+    <h2>Getting started</h2>
+
+    <p>
+        After <a href="install.html">installing Medusa</a> in your app, you can just write Thymeleaf, extend it with Medusa tags,
+        and you'll see your components interacting directly with the controller. You only write Java and HTML.
+    </p>
+    <p>
+        To better illustrate the framework's capabilities and get you up and running faster,
+        we've listed up several common usecases and how to implement them in Medusa.
+        All examples are also available in the respective <a href="https://github.com/medusa-ui/medusa">GitHub</a> repository.
+    </p>
+
+    <section class="listing" th:each="categoryEntry : ${categoryMap}">
+        <section class="category" th:text="${categoryEntry.key}">Category name</section>
+
+        <ul class="listings">
+            <th:block  th:each="category : ${categoryEntry.value}">
+                <th:block th:if="${!category.comingSoon}">
+                    <li><a th:href="${'/detail/' + category.urlPart}" th:text="${category.label}">Label</a></li>
+                </th:block>
+
+                <th:block th:if="${category.comingSoon}">
+                    <li><a class="soon" th:text="${category.label}">Label</a> <span class="coming-soon">Coming soon</span></li>
+                </th:block>
+            </th:block>
         </ul>
     </section>
+</div>
 
-        <section id="components">
-            <div class="category" th:each="categoryEntry : ${categoryMap}">
-                <h2><a th:id="${#strings.toLowerCase(#strings.replace(categoryEntry.key,' ','-'))}" th:text="${categoryEntry.key}">Category name</a></h2>
-                <div class="components-per-category">
-                    <a th:each="category : ${categoryEntry.value}" th:href="${'/detail/' + category.urlPart}" class="component">
-                        <img src="https://tailwindui.com/img/category-thumbnails/marketing/heroes.png" alt="Category image of 'Submit with reference'" />
-                        <h3 th:text="${category.label}">Submit with reference</h3>
-                    </a>
-                </div>
-            </div>
-        </section>
-    </div>
-    </body>
+<script type="text/javascript">
+    function toggleDarkMode() {
+        document.body.classList.toggle('dark');
+    }
+    if(!window.matchMedia || !window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        toggleDarkMode();
+    }
+</script>
+</body>
 </html>

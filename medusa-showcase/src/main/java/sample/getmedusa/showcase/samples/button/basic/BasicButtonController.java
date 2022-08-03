@@ -8,7 +8,7 @@ import sample.getmedusa.showcase.samples.AbstractSampleController;
 import java.util.List;
 
 @UIEventPage(path = "/detail/sample/basic-button", file = "/pages/sample/basic-button.html")
-public class ButtonWithActionThatUpdatesAFieldController extends AbstractSampleController {
+public class BasicButtonController extends AbstractSampleController {
 
     protected static final String COUNTER = "counter";
 

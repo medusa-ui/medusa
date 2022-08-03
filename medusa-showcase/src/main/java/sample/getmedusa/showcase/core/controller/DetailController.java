@@ -13,7 +13,9 @@ public class DetailController {
     public List<Attribute> setupAttributes(ServerRequest request) {
         final Component component = Component.findComponent(request.pathVariable("type"));
         final String title = component.getLabel();
-        return List.of(new Attribute("title", title));
+        return List.of(new Attribute("title", title),
+                new Attribute("serverCode", "public class HelloServerCode {}"),
+                new Attribute("clientCode", "<html>Hello client code</html>"));
     }
 
 }
