@@ -1,0 +1,19 @@
+
+<section>
+    <p class="drinks"> Select your drink
+        <!-- use :{querySelector} to get the current value of Element
+             Select by #id is the safest, but you can use complex selectors  -->
+        <select m:change="drinks(:{.drinks select:nth-child(1)})">
+            <option th:each="type: ${drinksType}" th:text="${type}"></option>
+        </select>
+
+        <select m:change="order(:{.drinks select:nth-child(2)})">
+            <option th:each="drink: ${drinksList}" th:text="${drink}"></option>
+        </select>
+    </p>
+    <p> Your Order:
+        <ul>
+            <li th:each="item:${order}" th:text="${item}"></li>
+        </ul>
+    </p>
+</section>

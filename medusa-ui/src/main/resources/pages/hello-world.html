@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:m="https://www.getmedusa.io/medusa.xsd">
+<head>
+    <meta charset="UTF-8" />
+    <title>Hello world</title>
+</head>
+<body>
+    <h1>Hello world</h1>
+
+    <div th:text="${counterValue}"></div>
+    <button m:click="increaseCounter()">Increase counter</button>
+    <button m:click="increaseCounterWith(${counterValue})">Diff bug?</button>
+
+    <table>
+        <thead>
+            <tr>
+                <td>Random text</td>
+                <td>Conditional button</td>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="person: ${people}">
+                <td th:text="${person.name}"></td>
+                <td>
+                    <th:block th:if="${person.number > 5}">
+                        <button m:click="randomNewTable()">Regenerate table</button>
+                    </th:block>
+                    <th:block th:if="${person.number <= 5}">
+                        <button disabled="disabled">Cannot remove</button>
+                    </th:block>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <div>total = <span th:text="${expectedTableCount}"></span></div>
+
+    <button m:click="addPerson()">Add person</button>
+    <button m:click="removePerson()">Remove person</button>
+
+    <h2>Search</h2>
+
+    <p>Searching for <i th:text="${search}"></i>...</p>
+    <div>
+        <input id="search-input" type="text" />
+        <button m:click="search(:{#search-input})">Search</button>
+        <div>
+            <select name="search" id="search-select" m:change="search(:{#search-select})">
+                <option value="Hello World">Search for 'Hello World'</option>
+                <option value="Hello Medusa">Search for 'Hello Medusa'</option>
+            </select>
+        </div>
+    </div>
+</body>
+</html>

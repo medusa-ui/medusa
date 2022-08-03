@@ -1,0 +1,1 @@
+<button m:click="registerMeForAForward()">Register me for a forward</button>

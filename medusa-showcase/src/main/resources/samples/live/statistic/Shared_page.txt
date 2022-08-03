@@ -1,0 +1,2 @@
+Global, shared (0.5 second delay between updates):
+<div class="sample-counter" th:text="${randomNumberShared}"></div>

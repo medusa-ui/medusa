@@ -1,1 +1,2 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=io.getmedusa.medusa.core.config.MedusaAutoConfiguration
+org.springframework.context.ApplicationListener=io.getmedusa.medusa.core.config.MedusaDefaultPropertiesConfiguration

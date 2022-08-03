@@ -1,0 +1,33 @@
+body.dark {
+  background: #161618;
+  color: #ecedee;
+}
+
+.dark p.lead {
+  color: #9ba1a6;
+}
+
+.dark #darkmode {
+  color: white;
+}
+
+.dark #darkmode:hover {
+  color: white;
+  background: #2a2c2e;
+}
+
+.dark a {
+  color: #a9a1f9;
+}
+.dark a:hover {
+  color: #8b7fff;
+}
+
+.dark span.coming-soon {
+  color: #7c7c7c;
+  background: #242424;
+}
+
+.dark pre, .dark pre code, .dark pre code span {
+  background: #161618;
+}
