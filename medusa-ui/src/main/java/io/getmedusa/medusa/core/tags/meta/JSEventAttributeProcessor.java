@@ -20,6 +20,7 @@ public abstract class JSEventAttributeProcessor extends AbstractAttributeTagProc
     private static final String BASIC_EXPRESSION = "\\{(.*?)\\}";
     protected static final String EVENT_TEMPLATE_M_DO_ACTION = "_M.doAction(null, `%s`)";
     protected static final String QUERY_SELECTOR="'${document.querySelector('%s').value}'";
+    protected static final String THIS_REFERENCE="'${%s}'";
     protected static final Pattern CTX_ATTRIBUTE_VALUE_REGEX = Pattern.compile(VARIABLE_PREFIX + BASIC_EXPRESSION);
     protected static final Pattern CTX_QUERY_SELECTOR_VALUE_REGEX = Pattern.compile(QUERY_SELECTOR_PREFIX + BASIC_EXPRESSION);
 
@@ -47,8 +48,13 @@ public abstract class JSEventAttributeProcessor extends AbstractAttributeTagProc
         if(attributeValue.contains(QUERY_SELECTOR_PREFIX)) {
             Matcher elementValueMatcher = CTX_QUERY_SELECTOR_VALUE_REGEX.matcher(attributeValue);
             while (elementValueMatcher.find()) {
+                String replaceValue = "";
                 String querySelector = elementValueMatcher.group(1);
-                String replaceValue = QUERY_SELECTOR.formatted(querySelector);
+                if(querySelector.startsWith("this")) {
+                    replaceValue = THIS_REFERENCE.formatted(querySelector);
+                } else {
+                    replaceValue = QUERY_SELECTOR.formatted(querySelector);
+                }
                 attributeValue = attributeValue.replace(elementValueMatcher.group(), replaceValue);
             }
         }

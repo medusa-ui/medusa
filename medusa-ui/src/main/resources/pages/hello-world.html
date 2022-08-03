@@ -11,7 +11,7 @@
     <button m:click="increaseCounter()">Increase counter</button>
     <!-- test DiffEngine attribute changes -->
     <button m:click="increaseCounterWith(${counterValue})">Double counter</button>
-
+    <input type="number" m:change="increaseCounterWith(:{this.value})" /> <i>change value to add</i>
     <table>
         <thead>
             <tr>
@@ -50,7 +50,11 @@
                 <option value="Hello Medusa">Search for 'Hello Medusa'</option>
             </select>
         </div>
+        <div>
+            <input type="text" m:change="search(:{this.value})" /> <i>press enter to search</i>
+        </div>
     </div>
+
     <script type="text/javascript">
         function test() {
             const number = 123 && 42;
