@@ -29,6 +29,15 @@ public class MedusaOnChangeTest extends MedusaTagTest {
             </html>
             """;
 
+    private final String thisTemplateHTML = """
+            <!DOCTYPE html>
+            <html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:m="https://www.getmedusa.io/medusa.xsd">
+            <body>
+                <div><input m:change="action(:{this.value})" value="42"></div>
+            </body>
+            </html>
+            """;
+
     @Test
     void basicRenderTest() {
         String template = FluxUtils.dataBufferFluxToString(renderer.render(basicTemplateHTML, session));
@@ -47,4 +56,11 @@ public class MedusaOnChangeTest extends MedusaTagTest {
         Assertions.assertTrue(template.contains("onchange=\"_M.doAction(null, `search('${document.querySelector('#search-select').value}')`)\""), "Medusa tag should be rendered with replacement JS");
     }
 
+    @Test
+    void thisRenderTest() {
+        String template = FluxUtils.dataBufferFluxToString(renderer.render(thisTemplateHTML, session));
+        System.out.println(template);
+        Assertions.assertFalse(template.contains("m:change"), "Medusa tags should be rendered");
+        Assertions.assertTrue(template.contains("onchange=\"_M.doAction(null, `action('${this.value}')`)\""), "Medusa tag should be rendered with replacement JS");
+    }
 }
