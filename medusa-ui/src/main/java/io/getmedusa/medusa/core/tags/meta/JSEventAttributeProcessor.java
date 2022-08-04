@@ -19,8 +19,10 @@ public abstract class JSEventAttributeProcessor extends AbstractAttributeTagProc
     public static final String VARIABLE_PREFIX = "\\$"; // Thymeleaf Standard Expression Syntax for Variable
     private static final String BASIC_EXPRESSION = "\\{(.*?)\\}";
     protected static final String EVENT_TEMPLATE_M_DO_ACTION = "_M.doAction(null, `%s`)";
-    protected static final String QUERY_SELECTOR="'${document.querySelector('%s').value}'";
-    protected static final String THIS_REFERENCE="'${%s}'";
+    protected static final String SELECTOR_QUERY ="'${document.querySelector('%s').%s}'";
+    protected static final String SELECTOR_THIS_REFERENCE ="'${%s.%s}'";
+    protected static final String SELECTOR_DEFAULT_ATTRIBUTE ="value";
+    protected static final String SELECTOR_ALLOWED_ATTRIBUTES ="accept alt checked class cols data dir disabled for href id lang list max media min multiple name open placeholder readonly rel required rows rowspan selected span target title type value width wrap";
     protected static final Pattern CTX_ATTRIBUTE_VALUE_REGEX = Pattern.compile(VARIABLE_PREFIX + BASIC_EXPRESSION);
     protected static final Pattern CTX_QUERY_SELECTOR_VALUE_REGEX = Pattern.compile(QUERY_SELECTOR_PREFIX + BASIC_EXPRESSION);
 
@@ -48,12 +50,19 @@ public abstract class JSEventAttributeProcessor extends AbstractAttributeTagProc
         if(attributeValue.contains(QUERY_SELECTOR_PREFIX)) {
             Matcher elementValueMatcher = CTX_QUERY_SELECTOR_VALUE_REGEX.matcher(attributeValue);
             while (elementValueMatcher.find()) {
+                String select = SELECTOR_DEFAULT_ATTRIBUTE;
                 String replaceValue = "";
                 String querySelector = elementValueMatcher.group(1);
+                int index = querySelector.lastIndexOf(".");
+                // index == -1 => not found, index == 0 => class querySelector
+                if(index > 0 && SELECTOR_ALLOWED_ATTRIBUTES.contains(querySelector.substring(index + 1))) {
+                    select = querySelector.substring(index + 1);
+                    querySelector = querySelector.substring(0, index);
+                }
                 if(querySelector.startsWith("this")) {
-                    replaceValue = THIS_REFERENCE.formatted(querySelector);
+                    replaceValue = SELECTOR_THIS_REFERENCE.formatted(querySelector, select);
                 } else {
-                    replaceValue = QUERY_SELECTOR.formatted(querySelector);
+                    replaceValue = SELECTOR_QUERY.formatted(querySelector, select);
                 }
                 attributeValue = attributeValue.replace(elementValueMatcher.group(), replaceValue);
             }

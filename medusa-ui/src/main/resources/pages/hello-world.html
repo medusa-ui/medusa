@@ -11,7 +11,7 @@
     <button m:click="increaseCounter()">Increase counter</button>
     <!-- test DiffEngine attribute changes -->
     <button m:click="increaseCounterWith(${counterValue})">Double counter</button>
-    <input type="number" m:change="increaseCounterWith(:{this.value})" /> <i>change value to add</i>
+    <input type="number" m:change="increaseCounterWith(:{this})" /> <i>change value to add</i>
     <table>
         <thead>
             <tr>
@@ -45,13 +45,13 @@
         <input id="search-input" type="text" />
         <button m:click="search(:{#search-input})">Search</button>
         <div>
-            <select name="search" id="search-select" m:change="search(:{#search-select})">
+            <select name="search" m:change="search(:{this.value})">
                 <option value="Hello World">Search for 'Hello World'</option>
                 <option value="Hello Medusa">Search for 'Hello Medusa'</option>
             </select>
         </div>
         <div>
-            <input type="text" m:change="search(:{this.value})" /> <i>press enter to search</i>
+            <input type="text" class="search search-by-class" m:change="search(:{.search.search-by-class})" /> <i>press enter to search</i>
         </div>
     </div>
 
