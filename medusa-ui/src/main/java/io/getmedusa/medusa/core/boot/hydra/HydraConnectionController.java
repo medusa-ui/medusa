@@ -18,6 +18,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClient.RequestBodySpec;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.net.InetAddress;
@@ -152,14 +153,15 @@ public class HydraConnectionController {
         }
     }
 
-    public Mono<List<RenderedFragment>> askHydraForFragment(Map<String, List<Fragment>> requests, Map<String, Object> attributes) {
+    public Mono<List<RenderedFragment>> askHydraForFragment(Mono<List<RenderedFragment>> selfFragments, Map<String, List<Fragment>> requests, Map<String, Object> attributes) {
         if(requests.isEmpty()) {
-            return Mono.just(List.of());
+            return selfFragments;
         }
         FragmentHydraRequestWrapper wrapper = new FragmentHydraRequestWrapper();
         wrapper.setAttributes(attributes);
         wrapper.setRequests(requests);
-        return requestFragmentURL
+
+        return Flux.merge(selfFragments.flatMapMany(Flux::fromIterable), requestFragmentURL
                 .bodyValue(wrapper)
                 .exchangeToMono(response -> {
                     if (response.statusCode().equals(HttpStatus.OK)) {
@@ -170,7 +172,8 @@ public class HydraConnectionController {
                 })
                 .map(x -> Arrays.stream(x).toList())
                 .doOnError(err -> {})
-                .onErrorReturn(List.of());
+                .onErrorReturn(List.of())
+                .flatMapMany(Flux::fromIterable)).collectList();
     }
 
     public boolean isInactive() {

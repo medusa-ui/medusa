@@ -36,9 +36,9 @@ class RendererTest {
     @BeforeEach
     public void init() {
         MockitoAnnotations.openMocks(this);
-        Mockito.when(hydraConnectionController.askHydraForFragment(Mockito.anyMap(), Mockito.anyMap())).thenReturn(Mono.just(List.of()));
-        rendererWithoutHydra = new Renderer(DIALECTS, null);
-        rendererWithHydra = new Renderer(DIALECTS, hydraConnectionController);
+        Mockito.when(hydraConnectionController.askHydraForFragment(Mockito.any(), Mockito.anyMap(), Mockito.any())).thenReturn(Mono.just(List.of()));
+        rendererWithoutHydra = new Renderer(DIALECTS, null, "self");
+        rendererWithHydra = new Renderer(DIALECTS, hydraConnectionController,  "self");
     }
 
     @Test

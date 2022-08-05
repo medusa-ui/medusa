@@ -81,4 +81,8 @@ public enum FragmentDetection {
 
         return result;
     }
+
+    public void clear() {
+        detectedFragments.clear();
+    }
 }

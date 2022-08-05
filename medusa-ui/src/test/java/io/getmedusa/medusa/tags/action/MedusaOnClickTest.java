@@ -16,7 +16,7 @@ class MedusaOnClickTest extends MedusaTagTest {
 
     @BeforeEach
     public void init() {
-        this.renderer = new Renderer(Set.of(new MedusaDialect(Set.of(new MedusaOnClick()))), null);
+        this.renderer = new Renderer(Set.of(new MedusaDialect(Set.of(new MedusaOnClick()))), null, "self");
     }
 
     private final String basicTemplateHTML = """

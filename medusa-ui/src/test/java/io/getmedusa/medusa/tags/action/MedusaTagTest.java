@@ -25,7 +25,7 @@ public abstract class MedusaTagTest {
 
     @BeforeEach
     public void init() {
-        this.renderer = new Renderer(Set.of(new MedusaDialect(Set.of(new MedusaOnClick(), new MedusaOnChange()))), null);
+        this.renderer = new Renderer(Set.of(new MedusaDialect(Set.of(new MedusaOnClick(), new MedusaOnChange()))), null,  "self");
     }
 
 }

@@ -2,13 +2,16 @@ package io.getmedusa.medusa.core.render;
 
 import io.getmedusa.medusa.core.boot.Fragment;
 import io.getmedusa.medusa.core.boot.FragmentDetection;
+import io.getmedusa.medusa.core.boot.RefDetection;
 import io.getmedusa.medusa.core.boot.StaticResourcesDetection;
 import io.getmedusa.medusa.core.boot.hydra.HydraConnectionController;
 import io.getmedusa.medusa.core.boot.hydra.model.meta.RenderedFragment;
 import io.getmedusa.medusa.core.session.Session;
+import io.getmedusa.medusa.core.util.FluxUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DataBufferFactory;
 import org.springframework.core.io.buffer.DefaultDataBufferFactory;
@@ -48,11 +51,15 @@ public class Renderer {
     protected static final HashMap<String, Object> TEMPLATE_RESOLUTION_ATTRIBUTES = new HashMap<>();
     protected static final Locale LOCALE = Locale.getDefault();
 
+    private final String selfName;
+
     /**
      * Thymeleaf renderer
      * @param dialects a set of additional custom Thymeleaf-dialects
      */
-    public Renderer(Set<AbstractProcessorDialect> dialects, @Autowired(required = false) HydraConnectionController hydraConnectionController) {
+    public Renderer(Set<AbstractProcessorDialect> dialects,
+                    @Autowired(required = false) HydraConnectionController hydraConnectionController,
+                    @Value("${medusa.name:self}") String selfName) {
         this.bufferFactory = new DefaultDataBufferFactory();
 
         SpringWebFluxTemplateEngine templateEngine = new SpringWebFluxTemplateEngine();
@@ -61,6 +68,8 @@ public class Renderer {
         this.engine = templateEngine;
         this.configuration = engine.getConfiguration();
         this.hydraConnectionController = hydraConnectionController;
+
+        this.selfName = selfName;
     }
 
     public Flux<DataBuffer> render(String templateHTML, Session session) {
@@ -78,15 +87,42 @@ public class Renderer {
         final Map<String, List<Fragment>> fragmentsToLoad = FragmentDetection.INSTANCE.detectWhichFragmentsArePresent(templateHTML);
         Mono<List<RenderedFragment>> mono;
 
+        final List<Fragment> localFragmentsToRender = fragmentsToLoad.getOrDefault(selfName, new ArrayList<>());
+        localFragmentsToRender.addAll(fragmentsToLoad.getOrDefault("self", new ArrayList<>()));
+
+        mono = renderLocalFragments(localFragmentsToRender, session);
+
+        fragmentsToLoad.remove(selfName);
+        fragmentsToLoad.remove("self");
+
         if(hydraConnectionController == null || hydraConnectionController.isInactive()) {
-            mono = buildFallbackFlux(fragmentsToLoad);
+            mono = buildFallbackFlux(mono, fragmentsToLoad);
         } else {
-            mono = hydraConnectionController.askHydraForFragment(fragmentsToLoad, session.toLastParameterMap());
+            mono = hydraConnectionController.askHydraForFragment(mono, fragmentsToLoad, session.toLastParameterMap());
         }
         return mono.map(renderedFragments -> applyRenderedFragmentsToHTML(templateHTML, fragmentsToLoad, renderedFragments));
     }
 
-    private Mono<List<RenderedFragment>> buildFallbackFlux(Map<String, List<Fragment>> fragmentsToLoad) {
+    private Mono<List<RenderedFragment>> renderLocalFragments(List<Fragment> localFragmentsToRender, Session session) {
+        Flux<RenderedFragment> flux = Flux.empty();
+        for (Fragment localFragment : localFragmentsToRender) {
+            flux = flux.concatWith(renderLocalFragment(localFragment, session));
+        }
+        return flux.collectList();
+    }
+
+    private Flux<RenderedFragment> renderLocalFragment(Fragment fragment, Session session) {
+        String rawHTML = RefDetection.INSTANCE.findRef(fragment.getRef());
+        if(rawHTML == null) { rawHTML = fragment.getFallback(); }
+        return renderFragment(rawHTML, session.toLastParameterMap()).map(dataBuffer -> {
+            final RenderedFragment renderedFragment = new RenderedFragment();
+            renderedFragment.setId(fragment.getId());
+            renderedFragment.setRenderedHTML(FluxUtils.dataBufferToString(dataBuffer));
+            return renderedFragment;
+        });
+    }
+
+    private Mono<List<RenderedFragment>> buildFallbackFlux(Mono<List<RenderedFragment>> selfLoadedFragments, Map<String, List<Fragment>> fragmentsToLoad) {
         List<RenderedFragment> fallbackFragments = new ArrayList<>();
         for(List<Fragment> fragmentList : fragmentsToLoad.values()) {
             for(Fragment fragment : fragmentList) {
@@ -96,7 +132,10 @@ public class Renderer {
                 fallbackFragments.add(fallbackFragment);
             }
         }
-        return Mono.just(fallbackFragments);
+        return selfLoadedFragments.map(fragments -> {
+            fragments.addAll(fallbackFragments);
+            return fragments;
+        });
     }
 
     private String applyRenderedFragmentsToHTML(final String templateHTML, final Map<String, List<Fragment>> fragmentsToLoad, final List<RenderedFragment> renderedFragments) {
