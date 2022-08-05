@@ -59,7 +59,7 @@ public class Renderer {
      */
     public Renderer(Set<AbstractProcessorDialect> dialects,
                     @Autowired(required = false) HydraConnectionController hydraConnectionController,
-                    @Value("${medusa.name:this}") String selfName) {
+                    @Value("${medusa.name:self}") String selfName) {
         this.bufferFactory = new DefaultDataBufferFactory();
 
         SpringWebFluxTemplateEngine templateEngine = new SpringWebFluxTemplateEngine();
