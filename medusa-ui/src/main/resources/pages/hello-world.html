@@ -9,7 +9,8 @@
 
     <div th:text="${counterValue}"></div>
     <button m:click="increaseCounter()">Increase counter</button>
-    <button m:click="increaseCounterWith(${counterValue})">Diff bug?</button>
+    <!-- test DiffEngine attribute changes -->
+    <button m:click="increaseCounterWith(${counterValue})">Double counter</button>
 
     <th:block m:fragment="sample-impl#header">
         <p>Fallback for local header fragment</p>
