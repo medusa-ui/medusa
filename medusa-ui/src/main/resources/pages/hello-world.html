@@ -11,6 +11,14 @@
     <button m:click="increaseCounter()">Increase counter</button>
     <button m:click="increaseCounterWith(${counterValue})">Diff bug?</button>
 
+    <th:block m:fragment="sample-impl#header">
+        <p>Fallback for local header fragment</p>
+    </th:block>
+
+    <th:block m:fragment="self#header">
+        <p>Fallback for local header fragment (w/ self)</p>
+    </th:block>
+
     <table>
         <thead>
             <tr>
