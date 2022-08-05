@@ -1,6 +1,7 @@
 package io.getmedusa.medusa.core.boot;
 
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 class FragmentDetectionTest {
@@ -75,6 +76,11 @@ class FragmentDetectionTest {
             </body>
             </html>
             """;
+
+    @BeforeEach
+    void cleanSetup() {
+        FragmentDetection.INSTANCE.clear();
+    }
 
     @Test
     void testFindingFragments() {
