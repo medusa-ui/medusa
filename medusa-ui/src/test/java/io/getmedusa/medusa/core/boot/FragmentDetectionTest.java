@@ -17,15 +17,15 @@ class FragmentDetectionTest {
                         
             <h1>Hello, this is a core page</h1>
                         
-            <th:block m:fragment="sample-impl#search-bar">
+            <m:fragment service="sample-impl" ref="search-bar">
                 <p>Fallback for search-bar</p>
-            </th:block>
+            </m:fragment>
                         
             <p>Mid content</p>
             
-            <th:block m:fragment="sample-2#input-field">
+            <m:fragment service="sample-2" ref="input-field">
                 <p>Fallback for input-field</p>
-            </th:block>
+            </m:fragment>
             
             <p>End of content</p>
                         
