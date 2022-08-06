@@ -84,9 +84,8 @@ public class Renderer {
     }
 
     private Mono<String> loadFragments(final String templateHTML, Session session) {
-        final Map<String, List<Fragment>> fragmentsToLoad = FragmentDetection.INSTANCE.detectWhichFragmentsArePresent(templateHTML);
+        final Map<String, List<Fragment>> fragmentsToLoad = FragmentDetection.INSTANCE.detectWhichFragmentsArePresent(templateHTML, session);
         Mono<List<RenderedFragment>> mono;
-
         final List<Fragment> localFragmentsToRender = fragmentsToLoad.getOrDefault(selfName, new ArrayList<>());
         localFragmentsToRender.addAll(fragmentsToLoad.getOrDefault("self", new ArrayList<>()));
 

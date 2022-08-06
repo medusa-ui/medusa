@@ -87,7 +87,7 @@ class FragmentDetectionTest {
         String html = FragmentDetection.INSTANCE.prepFile(htmlWithoutTags);
         Assertions.assertEquals(0, FragmentDetection.INSTANCE.getFragmentIds().size());
         Assertions.assertEquals(htmlWithoutTags, html);
-        Assertions.assertEquals(0, FragmentDetection.INSTANCE.detectWhichFragmentsArePresent(html).size());
+        Assertions.assertEquals(0, FragmentDetection.INSTANCE.detectWhichFragmentsArePresent(html, null).size());
 
         html = FragmentDetection.INSTANCE.prepFile(htmlWithTags);
         Assertions.assertEquals(2, FragmentDetection.INSTANCE.getFragmentIds().size());
@@ -97,6 +97,6 @@ class FragmentDetectionTest {
             Assertions.assertTrue(html.contains(id));
         }
 
-        Assertions.assertEquals(2, FragmentDetection.INSTANCE.detectWhichFragmentsArePresent(html).size());
+        Assertions.assertEquals(2, FragmentDetection.INSTANCE.detectWhichFragmentsArePresent(html, null).size());
     }
 }

@@ -8,9 +8,18 @@
 
 <h1>Hello, this is a core page</h1>
 
-<th:block m:fragment="sample-impl#search-bar">
-    <p>Fallback for search-bar</p>
-</th:block>
+<ul>
+    <li th:text="${service}"></li>
+    <li th:text="${ref}"></li>
+</ul>
+
+<m:fragment service="${service}" ref="${ref}">
+   <p>Fallback info for search bar w/ m:fragment</p>
+</m:fragment>
+
+<m:fragment ref="${ref}">
+    <p>Fallback info for search bar w/ m:fragment, auto self</p>
+</m:fragment>
 
 <p>End of content</p>
 
