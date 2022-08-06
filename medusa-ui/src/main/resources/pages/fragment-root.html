@@ -13,13 +13,18 @@
     <li th:text="${ref}"></li>
 </ul>
 
-<m:fragment service="${service}" ref="${ref}">
-   <p>Fallback info for search bar w/ m:fragment</p>
+<m:fragment service="self" ref="${ref}">
+    <p>Fallback info for search bar w/ m:fragment, manual self</p>
 </m:fragment>
 
 <m:fragment ref="${ref}">
     <p>Fallback info for search bar w/ m:fragment, auto self</p>
 </m:fragment>
+
+<m:fragment service="${service}" ref="${ref}">
+   <p>Fallback info for search bar w/ m:fragment</p>
+</m:fragment>
+
 
 <p>End of content</p>
 

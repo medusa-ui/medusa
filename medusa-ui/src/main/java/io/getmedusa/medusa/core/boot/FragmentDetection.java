@@ -61,7 +61,7 @@ public enum FragmentDetection {
     }
 
     private String orSelfAsDefault(String service) {
-        if(null == service) {
+        if(null == service || service.isEmpty()) {
             return "self";
         }
         return service;
