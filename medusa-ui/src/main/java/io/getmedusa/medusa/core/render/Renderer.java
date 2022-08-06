@@ -10,6 +10,7 @@ import io.getmedusa.medusa.core.session.Session;
 import io.getmedusa.medusa.core.util.FluxUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.buffer.DataBuffer;
@@ -25,8 +26,6 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.springframework.http.MediaType.TEXT_HTML;
@@ -39,7 +38,6 @@ public class Renderer {
 
     public static final String CDATA_START = "//<![CDATA[ ";
     public static final String CDATA_END = "//]]>";
-    private static Pattern scriptPattern = Pattern.compile("<script[^>]*>(.+?)</script>", Pattern.DOTALL | Pattern.MULTILINE);
 
     private final SpringWebFluxTemplateEngine engine;
     private final DataBufferFactory bufferFactory;
@@ -169,20 +167,19 @@ public class Renderer {
         return null;
     }
 
-    private String convertToXHTML(String source) {
-        String html = wrapScriptContentInCDATA(source);
+    private String convertToXHTML(String html) {
         final Document document = Jsoup.parse(html);
         document.outputSettings().syntax(Document.OutputSettings.Syntax.xml);
-        return document.html();
+        return wrapScriptContentInCDATA(document).html();
     }
 
-    private String wrapScriptContentInCDATA(String html) {
-        Matcher matcher = scriptPattern.matcher(html);
-        while(matcher.find()) {
-            String script = matcher.group(1);
-            html = html.replace(script, CDATA_START  + script + CDATA_END );
+    Document wrapScriptContentInCDATA(Document document) {
+        for(Element scriptElement : document.getElementsByTag("script")) {
+            if(!scriptElement.html().isEmpty() && !scriptElement.html().contains(CDATA_START)) {
+                scriptElement.prepend(CDATA_START).append(CDATA_END);
+            }
         }
-        return html;
+        return document;
     }
 
     private String appendRSocketScriptAndAddHydraPath(String rawTemplate, Session session) {

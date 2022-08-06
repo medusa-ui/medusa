@@ -21,7 +21,29 @@
 <m:fragment ref="darkmode"></m:fragment>
 
 <div id="container">
-    <m:fragment ref="${type}"></m:fragment>
+    <h1>Button - Basic button</h1>
+    <p class="lead">An example of a simple button that triggers an action on the Controller side</p>
+
+    <a id="back-to-overview" href="/">Back to overview</a>
+
+    <h2>Basic button</h2>
+    <p>These buttons illustrate actions with and without parameters. They immediately get executed on the controller. Since a bean is a singleton instance, storing a variable in the controller itself would mean it is shared across all users. Instead, we can use the Session object to get the specific variables for the active user.</p>
+
+    <section class="example">
+        <span>0</span>
+        <button>Increase counter</button> <button>Reset counter</button>
+        <footer>JDK18 w/ Medusa 0.9.0</footer>
+    </section>
+
+    <section class="client">
+        <h3>Client</h3>
+        <pre><code class="language-html hljs" th:text="${clientCode}"></code></pre>
+    </section>
+
+    <section class="server">
+        <h3>Server</h3>
+        <pre><code class="language-java hljs" th:text="${serverCode}"></code></pre>
+    </section>
 </div>
 
 </body>

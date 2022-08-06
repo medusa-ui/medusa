@@ -5,6 +5,7 @@ import io.getmedusa.medusa.core.session.Session;
 import io.getmedusa.medusa.core.util.FluxUtils;
 import io.getmedusa.medusa.core.tags.MedusaDialect;
 import io.getmedusa.medusa.core.tags.action.MedusaOnClick;
+import org.jsoup.Jsoup;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -75,6 +76,46 @@ class RendererTest {
         System.out.println(render);
         Assertions.assertFalse(render.contains("<script src=\"/websocket.js\"></script>"), "Fragment should not contain script");
         Assertions.assertTrue(render.contains("<p>Hello world</p>"));
+    }
+
+    @Test
+    void testCDATAWrap() {
+        final String htmlWithScript = """
+                <!DOCTYPE html>
+                <html lang="en">
+                 <body>
+                  <script src="/webjars/highlightjs/highlight.min.js"></script>
+                  <script type="text/javascript">
+                    function helloWorld() {}
+                   </script>
+                   <script type="text/javascript">
+                     //<![CDATA[ function helloWorld() {}
+                     //]]>
+                   </script>
+                  <div id="container"></div>
+                """;
+
+        final String html = rendererWithoutHydra.wrapScriptContentInCDATA(Jsoup.parse(htmlWithScript)).html();
+        System.out.println(html);
+        Assertions.assertEquals(2, countOccurences(html, "//<![CDATA["));
+        Assertions.assertEquals(2, countOccurences(html, "//]]>"));
+    }
+
+    private int countOccurences(String str, String findStr) {
+        int lastIndex = 0;
+        int count = 0;
+
+        while(lastIndex != -1){
+
+            lastIndex = str.indexOf(findStr,lastIndex);
+
+            if(lastIndex != -1){
+                count ++;
+                lastIndex += findStr.length();
+            }
+        }
+
+        return count;
     }
 
 }

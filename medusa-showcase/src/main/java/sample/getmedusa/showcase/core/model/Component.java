@@ -12,7 +12,7 @@ public class Component {
         final Map<String, List<Component>> map = new LinkedHashMap<>();
 
         map.put("Button", List.of(
-                new Component("Temp - Sample new UI", "test"),
+                new Component("Temp - Sample new UI", "basic-button"),
                 new Component("Basic button", "sample/basic-button"),
                 new Component("Conditional button")
         ));
