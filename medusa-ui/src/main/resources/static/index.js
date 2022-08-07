@@ -60,7 +60,7 @@ document.addEventListener("DOMContentLoaded", setupRouter);
 
 Medusa.prototype.doAction = function(parentFragment, actionToExecute) {
     sendMessage({
-        "fragment": null,
+        "fragment": parentFragment,
         "action": actionToExecute
     });
 };

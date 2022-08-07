@@ -1,5 +1,7 @@
 package io.getmedusa.medusa.core.render;
 
+import io.getmedusa.medusa.core.annotation.UIEventPageCallWrapper;
+import io.getmedusa.medusa.core.attributes.Attribute;
 import io.getmedusa.medusa.core.boot.Fragment;
 import io.getmedusa.medusa.core.boot.FragmentDetection;
 import io.getmedusa.medusa.core.boot.RefDetection;
@@ -8,6 +10,7 @@ import io.getmedusa.medusa.core.boot.hydra.HydraConnectionController;
 import io.getmedusa.medusa.core.boot.hydra.model.meta.RenderedFragment;
 import io.getmedusa.medusa.core.session.Session;
 import io.getmedusa.medusa.core.util.FluxUtils;
+import io.getmedusa.medusa.core.util.FragmentUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -110,11 +113,24 @@ public class Renderer {
 
     private Flux<RenderedFragment> renderLocalFragment(Fragment fragment, Session session) {
         String rawHTML = RefDetection.INSTANCE.findRef(fragment.getRef());
-        if(rawHTML == null) { rawHTML = fragment.getFallback(); }
+
+        if(rawHTML == null) {
+            rawHTML = fragment.getFallback();
+        } else {
+            UIEventPageCallWrapper bean = RefDetection.INSTANCE.findBeanByRef(fragment.getRef());
+            if(session.isInitialRender()) { //TODO ? what happens 'on action'?
+                //call controller startup and use for render (add to session? separate?)
+                List<Attribute> attributes = bean.setupAttributes(null, session);
+                session = session.merge(attributes);
+            }
+        }
+
+        //TODO deal with the export/imports here as well later on
+
         return renderFragment(rawHTML, session.toLastParameterMap()).map(dataBuffer -> {
             final RenderedFragment renderedFragment = new RenderedFragment();
             renderedFragment.setId(fragment.getId());
-            renderedFragment.setRenderedHTML(FluxUtils.dataBufferToString(dataBuffer));
+            renderedFragment.setRenderedHTML(FragmentUtils.addFragmentRefToHTML(FluxUtils.dataBufferToString(dataBuffer), fragment.getRef()));
             return renderedFragment;
         });
     }

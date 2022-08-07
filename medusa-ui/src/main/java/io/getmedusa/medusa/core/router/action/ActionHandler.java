@@ -1,7 +1,9 @@
 package io.getmedusa.medusa.core.router.action;
 
+import io.getmedusa.medusa.core.annotation.UIEventPageCallWrapper;
 import io.getmedusa.medusa.core.attributes.Attribute;
 import io.getmedusa.medusa.core.boot.MethodDetection;
+import io.getmedusa.medusa.core.boot.RefDetection;
 import io.getmedusa.medusa.core.router.request.Route;
 import io.getmedusa.medusa.core.session.Session;
 import org.springframework.expression.EvaluationContext;
@@ -35,9 +37,15 @@ public class ActionHandler {
         Object result = null;
 
         if(socketAction.getAction() != null) {
+            if(null != socketAction.getFragment()) {
+                final UIEventPageCallWrapper beanByRef = RefDetection.INSTANCE.findBeanByRef(socketAction.getFragment());
+                if(null != beanByRef) {
+                    bean = beanByRef.getController();
+                }
+            }
+
             final String methodName = socketAction.getAction().substring(0, socketAction.getAction().indexOf("("));
             final String clazz = bean.getClass().getName();
-
 
             EvaluationContext evaluationContext = new StandardEvaluationContext();
             evaluationContext.setVariable("session", session);

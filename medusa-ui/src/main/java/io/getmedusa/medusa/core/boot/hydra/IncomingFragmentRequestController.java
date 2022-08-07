@@ -6,6 +6,7 @@ import io.getmedusa.medusa.core.boot.hydra.model.FragmentRequestWrapper;
 import io.getmedusa.medusa.core.boot.hydra.model.meta.RenderedFragment;
 import io.getmedusa.medusa.core.render.Renderer;
 import io.getmedusa.medusa.core.util.FluxUtils;
+import io.getmedusa.medusa.core.util.FragmentUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.core.io.buffer.DataBuffer;
@@ -48,7 +49,7 @@ public class IncomingFragmentRequestController {
                 flux = flux.concatWith(bufferFlux.map(dataBuffer -> {
                     final RenderedFragment renderedFragment = new RenderedFragment();
                     renderedFragment.setId(request.getId());
-                    renderedFragment.setRenderedHTML(FluxUtils.dataBufferToString(dataBuffer));
+                    renderedFragment.setRenderedHTML(FragmentUtils.addFragmentRefToHTML(FluxUtils.dataBufferToString(dataBuffer), request.getRef()));
                     return renderedFragment;
                 }));
             }

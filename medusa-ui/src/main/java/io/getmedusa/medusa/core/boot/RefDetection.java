@@ -1,6 +1,7 @@
 package io.getmedusa.medusa.core.boot;
 
 import io.getmedusa.medusa.core.annotation.UIEventPage;
+import io.getmedusa.medusa.core.annotation.UIEventPageCallWrapper;
 import io.getmedusa.medusa.core.util.FileUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Attribute;
@@ -16,12 +17,21 @@ public enum RefDetection {
     INSTANCE;
 
     private final Map<String, String> detectedRefs = new HashMap<>();
+    private final Map<String, UIEventPageCallWrapper> refToBeanMap = new HashMap<>();
 
     public void consider(Object bean) {
         final UIEventPage annotation = retrieveAnnotation(bean);
         if(null != annotation) {
             String fullTemplate = FileUtils.load(annotation.file());
+
             Map<String, String> refsInPage = findRefs(fullTemplate);
+
+            //in addition to storing refs in the page and their html, we also need to remember the beans
+            if(!refsInPage.isEmpty()) {
+                for(String ref: refsInPage.keySet()) {
+                    refToBeanMap.put(ref, new UIEventPageCallWrapper(bean));
+                }
+            }
             detectedRefs.putAll(refsInPage);
         }
     }
@@ -63,6 +73,8 @@ public enum RefDetection {
     public String findRef(String key) {
         return detectedRefs.getOrDefault(key, null);
     }
+
+    public UIEventPageCallWrapper findBeanByRef(String key) { return refToBeanMap.getOrDefault(key, null); }
 
     private UIEventPage retrieveAnnotation(Object bean) {
         return bean.getClass().getAnnotation(UIEventPage.class);

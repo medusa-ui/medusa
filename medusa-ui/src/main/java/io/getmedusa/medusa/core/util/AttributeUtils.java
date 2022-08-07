@@ -7,6 +7,8 @@ import io.getmedusa.medusa.core.router.request.Route;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public final class AttributeUtils {
 
@@ -50,5 +52,9 @@ public final class AttributeUtils {
 
     private static boolean isRelativeUrl(String url) {
         return url.startsWith(".") || url.startsWith("/");
+    }
+
+    public static Map<String, Object> toLastParameterMap(List<Attribute> attributes) {
+        return attributes.stream().collect(Collectors.toMap(Attribute::name, Attribute::value, (a, b) -> b));
     }
 }

@@ -15,10 +15,12 @@ import static io.getmedusa.medusa.core.tags.annotation.MedusaTag.*;
 public abstract class JSEventAttributeProcessor extends AbstractAttributeTagProcessor {
     //`search('${document.querySelector("input").value}')`
     private final SpelExpressionParser SPEL_EXPRESSION_PARSER = new SpelExpressionParser();
+
+    public static final String FRAGMENT_REPLACEMENT = "'__FRAGMENT__'";
     public static final String QUERY_SELECTOR_PREFIX = ":"; // avoid collisions with existing Thymeleaf Standard Expression Syntax
     public static final String VARIABLE_PREFIX = "\\$"; // Thymeleaf Standard Expression Syntax for Variable
     private static final String BASIC_EXPRESSION = "\\{(.*?)\\}";
-    protected static final String EVENT_TEMPLATE_M_DO_ACTION = "_M.doAction(null, `%s`)";
+    protected static final String EVENT_TEMPLATE_M_DO_ACTION = "_M.doAction(" + FRAGMENT_REPLACEMENT + ", `%s`)";
     protected static final String SELECTOR_QUERY ="'${document.querySelector('%s').%s}'";
     protected static final String SELECTOR_THIS_REFERENCE ="'${%s.%s}'";
     protected static final String SELECTOR_DEFAULT_ATTRIBUTE ="value";

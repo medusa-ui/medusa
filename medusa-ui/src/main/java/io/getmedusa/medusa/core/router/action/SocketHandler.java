@@ -58,6 +58,7 @@ public class SocketHandler {
         //retrieve session
         //TODO can this be done via metadata/a more secure way?
         final Session session = sessionMemoryRepository.retrieve(sessionId, route);
+        session.setInitialRender(false);
 
         request.onErrorReturn(new SocketAction()).subscribe(r -> {
             //execute action and combine attributes

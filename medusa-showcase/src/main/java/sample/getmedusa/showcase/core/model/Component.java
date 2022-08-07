@@ -12,8 +12,7 @@ public class Component {
         final Map<String, List<Component>> map = new LinkedHashMap<>();
 
         map.put("Button", List.of(
-                new Component("Temp - Sample new UI", "basic-button"),
-                new Component("Basic button", "sample/basic-button"),
+                new Component("Basic button", "basic-button", "/samples/button/basic/page.txt", "/samples/button/basic/controller.txt"),
                 new Component("Conditional button")
         ));
 
@@ -69,16 +68,31 @@ public class Component {
     private final String urlPart;
     private final boolean comingSoon;
 
+    private final String serverCode;
+    private final String clientCode;
+
+    public Component(String label, String urlPart, String clientCode, String serverCode) {
+        this.label = label;
+        this.urlPart = urlPart;
+        this.comingSoon = false;
+        this.serverCode = serverCode;
+        this.clientCode = clientCode;
+    }
+
     public Component(String label, String urlPart) {
         this.label = label;
         this.urlPart = urlPart;
         this.comingSoon = false;
+        this.serverCode = "";
+        this.clientCode = "";
     }
 
     public Component(String label) {
         this.label = label;
         this.urlPart = "";
         this.comingSoon = true;
+        this.serverCode = "";
+        this.clientCode = "";
     }
 
     public String getLabel() {
@@ -91,5 +105,13 @@ public class Component {
 
     public boolean isComingSoon() {
         return comingSoon;
+    }
+
+    public String getClientCode() {
+        return clientCode;
+    }
+
+    public String getServerCode() {
+        return serverCode;
     }
 }

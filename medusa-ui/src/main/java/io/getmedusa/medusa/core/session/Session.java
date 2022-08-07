@@ -5,11 +5,11 @@ import io.getmedusa.medusa.core.attributes.Attribute;
 import io.getmedusa.medusa.core.attributes.StandardAttributeKeys;
 import io.getmedusa.medusa.core.router.action.SocketSink;
 import io.getmedusa.medusa.core.router.request.Route;
+import io.getmedusa.medusa.core.util.AttributeUtils;
 import io.getmedusa.medusa.core.util.RandomUtils;
 import org.springframework.web.reactive.function.server.ServerRequest;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class Session {
 
@@ -21,6 +21,7 @@ public class Session {
     private Map<String, String> tags = new HashMap<>();
     private final String hydraPath;
     private boolean matched;
+    private boolean initialRender = true;
     @JsonIgnore
     private final SocketSink sink = new SocketSink();
 
@@ -76,7 +77,7 @@ public class Session {
     }
 
     public Map<String, Object> toLastParameterMap() {
-        return this.lastParameters.stream().collect(Collectors.toMap(Attribute::name, Attribute::value, (a, b) -> b));
+        return AttributeUtils.toLastParameterMap(this.lastParameters);
     }
 
     public Map<String, String> getTags() {
@@ -93,6 +94,14 @@ public class Session {
 
     public String getHydraPath() {
         return hydraPath;
+    }
+
+    public void setInitialRender(boolean initialRender) {
+        this.initialRender = initialRender;
+    }
+
+    public boolean isInitialRender() {
+        return initialRender;
     }
 
     public Session merge(Collection<Attribute> newAttributes) {
