@@ -4,20 +4,16 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Medusa - Component detail</title>
-    <link rel="stylesheet" th:href="@{../../css/style.css}">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Jost:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/webjars/highlightjs/styles/nnfx-light.min.css">
 </head>
 <body>
 
-<div id="container">
+<div id="container" m:ref="option-list">
     <section id="hero">
         <h1>Select - Option List</h1>
-        <p>An example of a simple select that triggers an action on the Controller side.</p>
-        <a href="/" class="button" id="cta">Back to overview</a>
-        <a href="https://github.com/medusa-ui/medusa/tree/main/medusa-showcase" target="_blank" class="button">Show example in github</a>
+
+        <p class="lead">An example of a simple select that triggers an action on the Controller side.</p>
+
+        <a id="back-to-overview" href="/">Back to overview</a>
     </section>
 
     <section id="variations">
@@ -25,40 +21,34 @@
         <p>The selected option is sent to the controller on a change event.
             Since a bean is a singleton instance, storing a variable in the controller itself would mean it is shared across all users.
             Instead, we can use the Session object to get the specific variables for the active user.</p>
-        <section class="variation">
-            <h3>Example</h3>
-            <section class="example-in-practice">
-                <p> I really like an Orange, but what is your favorite fruit?
-                    <select name="favorite" id="select-fruit" m:change="favorite(:{#select-fruit})" >
-                        <option th:each="fruit: ${fruits}" th:text="${fruit}" th:selected="(${fruit} == ${favorite})"></option>
-                    </select>
-                </p>
-                <p>Your favorite fruit is: <b th:text="${favorite}"></b></p>
-            </section>
 
-            <section class="code">
-                <h3>Client</h3>
 
-                <pre class="client">
-                        <code class="language-html" th:text="${select_basic_page}"></code>
-                    </pre>
+        <section class="example">
+            <p> I really like an Orange, but what is your favorite fruit?
+                <select name="favorite" id="select-fruit" m:change="favorite(:{#select-fruit})" >
+                    <option th:each="fruit: ${fruits}" th:text="${fruit}" th:selected="(${fruit} == ${favorite})"></option>
+                </select>
+            </p>
+            <p>Your favorite fruit is: <b th:text="${favorite}"></b></p>
 
-                <h3>Server</h3>
-                <pre class="server">
-                        <code class="language-java" th:text="${select_basic_controller}"></code>
-                    </pre>
-            </section> <!-- end .code -->
+            <footer>JDK18 w/ Medusa 0.9.0</footer>
+        </section>
 
-            <p><a href="#">Back to top</a></p>
+        <section class="client">
+            <h3>Client</h3>
+            <pre><code class="language-html hljs" th:text="${clientCode[0]}"></code></pre>
+        </section>
 
-        </section> <!-- end .variation -->
+        <section class="server">
+            <h3>Server</h3>
+            <pre><code class="language-java hljs" th:text="${serverCode[0]}"></code></pre>
+        </section>
 
         <h2>Linked Select - Option List</h2>
         <p>A selected option in the first select trigger a changes of the content of the second select.
             The selected option is sent to the controller on a change event.</p>
-        <section class="variation">
-            <h3>Example</h3>
-            <section class="example-in-practice">
+
+            <section class="example">
                 <p class="drinks"> Select your drink
                     <select m:change="drinks(:{.drinks select:nth-child(1)})">
                         <option th:each="type: ${drinksType}" th:text="${type}"></option>
@@ -68,35 +58,26 @@
                         <option th:each="drink: ${drinksList}" th:text="${drink}"></option>
                     </select>
                 </p>
-                <p> Your Order:
-                    <ul>
-                        <li th:each="item:${order}" th:text="${item}"></li>
-                    </ul>
-                </p>
+                <p> Your Order:</p>
+                <ul>
+                    <li th:each="item:${order}" th:text="${item}"></li>
+                </ul>
+
+                <footer>JDK18 w/ Medusa 0.9.0</footer>
             </section>
 
-            <section class="code">
+            <section class="client">
                 <h3>Client</h3>
+                <pre><code class="language-html hljs" th:text="${clientCode[1]}"></code></pre>
+            </section>
 
-                <pre class="client">
-                        <code class="language-html" th:text="${select_linked_page}"></code>
-                    </pre>
-
+            <section class="server">
                 <h3>Server</h3>
-                <pre class="server">
-                        <code class="language-java" th:text="${select_linked_controller}"></code>
-                    </pre>
-            </section> <!-- end .code -->
-
-            <p><a href="#">Back to top</a></p>
-
-        </section> <!-- end .variation -->
-
+                <pre><code class="language-java hljs" th:text="${serverCode[1]}"></code></pre>
+            </section>
 
     </section> <!-- end #variations -->
 
 </div>
-<script src="/webjars/highlightjs/highlight.min.js"></script>
-<script>hljs.highlightAll();</script>
 </body>
 </html>

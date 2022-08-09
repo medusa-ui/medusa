@@ -12,7 +12,9 @@ public class Component {
         final Map<String, List<Component>> map = new LinkedHashMap<>();
 
         map.put("Button", List.of(
-                new Component("Basic button", "basic-button", "/samples/button/basic/page.txt", "/samples/button/basic/controller.txt"),
+                new Component("Basic button", "basic-button",
+                        new String[]{"/samples/button/basic/page.txt"},
+                        new String[]{"/samples/button/basic/controller.txt"}),
                 new Component("Conditional button")
         ));
 
@@ -25,7 +27,9 @@ public class Component {
 
         map.put("Var inputs", List.of(
                 new Component("File uploads"),
-                new Component("Option list", "sample/option-list"),
+                new Component("Option list", "option-list",
+                        new String[]{"/samples/input/special/SelectBasic_page.txt", "/samples/input/special/SelectLinked_page.txt"},
+                        new String[]{"/samples/input/special/SelectBasic.txt", "/samples/input/special/SelectLinked.txt"}),
                 new Component("Multiple selection list")
         ));
 
@@ -68,10 +72,10 @@ public class Component {
     private final String urlPart;
     private final boolean comingSoon;
 
-    private final String serverCode;
-    private final String clientCode;
+    private final String[] serverCode;
+    private final String[] clientCode;
 
-    public Component(String label, String urlPart, String clientCode, String serverCode) {
+    public Component(String label, String urlPart, String[] clientCode, String[] serverCode) {
         this.label = label;
         this.urlPart = urlPart;
         this.comingSoon = false;
@@ -83,16 +87,16 @@ public class Component {
         this.label = label;
         this.urlPart = urlPart;
         this.comingSoon = false;
-        this.serverCode = "";
-        this.clientCode = "";
+        this.serverCode = new String[0];
+        this.clientCode = new String[0];
     }
 
     public Component(String label) {
         this.label = label;
         this.urlPart = "";
         this.comingSoon = true;
-        this.serverCode = "";
-        this.clientCode = "";
+        this.serverCode = new String[0];
+        this.clientCode = new String[0];
     }
 
     public String getLabel() {
@@ -107,11 +111,11 @@ public class Component {
         return comingSoon;
     }
 
-    public String getClientCode() {
+    public String[] getClientCode() {
         return clientCode;
     }
 
-    public String getServerCode() {
+    public String[] getServerCode() {
         return serverCode;
     }
 }

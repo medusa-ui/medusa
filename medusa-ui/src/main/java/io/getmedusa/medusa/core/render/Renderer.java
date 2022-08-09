@@ -112,12 +112,13 @@ public class Renderer {
     }
 
     private Flux<RenderedFragment> renderLocalFragment(Fragment fragment, Session session) {
-        String rawHTML = RefDetection.INSTANCE.findRef(fragment.getRef());
+        final String ref = fragment.getResolvedRef();
+        String rawHTML = RefDetection.INSTANCE.findRef(ref);
 
         if(rawHTML == null) {
             rawHTML = fragment.getFallback();
         } else {
-            UIEventPageCallWrapper bean = RefDetection.INSTANCE.findBeanByRef(fragment.getRef());
+            UIEventPageCallWrapper bean = RefDetection.INSTANCE.findBeanByRef(ref);
             if(session.isInitialRender()) { //TODO ? what happens 'on action'?
                 //call controller startup and use for render (add to session? separate?)
                 List<Attribute> attributes = bean.setupAttributes(null, session);
@@ -130,7 +131,7 @@ public class Renderer {
         return renderFragment(rawHTML, session.toLastParameterMap()).map(dataBuffer -> {
             final RenderedFragment renderedFragment = new RenderedFragment();
             renderedFragment.setId(fragment.getId());
-            renderedFragment.setRenderedHTML(FragmentUtils.addFragmentRefToHTML(FluxUtils.dataBufferToString(dataBuffer), fragment.getRef()));
+            renderedFragment.setRenderedHTML(FragmentUtils.addFragmentRefToHTML(FluxUtils.dataBufferToString(dataBuffer), ref));
             return renderedFragment;
         });
     }

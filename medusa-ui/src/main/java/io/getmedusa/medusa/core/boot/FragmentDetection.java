@@ -93,7 +93,7 @@ public enum FragmentDetection {
                 service = "self";
             }
             fragment.setService(service);
-            fragment.setRef(SpELUtils.parseExpression(fragment.getRef(), session));
+            fragment.setResolvedRef(SpELUtils.parseExpression(fragment.getRef(), session));
         }
         return fragments;
     }

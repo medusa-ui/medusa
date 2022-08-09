@@ -5,6 +5,8 @@ public class Fragment {
     private String id;
     private String service;
     private String ref;
+
+    private String resolvedRef;
     private String fallback;
 
     public String getId() {
@@ -37,5 +39,13 @@ public class Fragment {
 
     public void setFallback(String fallback) {
         this.fallback = fallback;
+    }
+
+    public void setResolvedRef(String resolvedRef) {
+        this.resolvedRef = resolvedRef;
+    }
+
+    public String getResolvedRef() {
+        return resolvedRef;
     }
 }
