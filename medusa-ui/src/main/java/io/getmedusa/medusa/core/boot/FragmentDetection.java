@@ -87,15 +87,18 @@ public enum FragmentDetection {
     }
 
     private List<Fragment> resolveFragments(List<Fragment> fragments, Session session) {
+        final List<Fragment> newFragments = new ArrayList<>();
         for(Fragment fragment : fragments) {
             String service = SpELUtils.parseExpression(fragment.getService(), session);
             if(service == null || service.isEmpty()) {
                 service = "self";
             }
-            fragment.setService(service);
-            fragment.setResolvedRef(SpELUtils.parseExpression(fragment.getRef(), session));
+            final Fragment clonedFragment = fragment.clone();
+            clonedFragment.setService(service);
+            clonedFragment.setRef(SpELUtils.parseExpression(fragment.getRef(), session));
+            newFragments.add(clonedFragment);
         }
-        return fragments;
+        return newFragments;
     }
 
     public void clear() {

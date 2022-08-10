@@ -6,7 +6,6 @@ public class Fragment {
     private String service;
     private String ref;
 
-    private String resolvedRef;
     private String fallback;
 
     public String getId() {
@@ -41,11 +40,13 @@ public class Fragment {
         this.fallback = fallback;
     }
 
-    public void setResolvedRef(String resolvedRef) {
-        this.resolvedRef = resolvedRef;
+    public Fragment clone() {
+        Fragment f = new Fragment();
+        f.id = this.id;
+        f.service = this.service;
+        f.ref = this.ref;
+        f.fallback = this.fallback;
+        return f;
     }
 
-    public String getResolvedRef() {
-        return resolvedRef;
-    }
 }

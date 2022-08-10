@@ -112,7 +112,7 @@ public class Renderer {
     }
 
     private Flux<RenderedFragment> renderLocalFragment(Fragment fragment, Session session) {
-        final String ref = fragment.getResolvedRef();
+        final String ref = fragment.getRef();
         String rawHTML = RefDetection.INSTANCE.findRef(ref);
 
         if(rawHTML == null) {
