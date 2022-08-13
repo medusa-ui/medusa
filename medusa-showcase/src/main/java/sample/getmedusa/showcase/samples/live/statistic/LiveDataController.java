@@ -5,6 +5,7 @@ import io.getmedusa.medusa.core.attributes.Attribute;
 import io.getmedusa.medusa.core.bidirectional.ServerToClient;
 import io.getmedusa.medusa.core.session.Session;
 import io.getmedusa.medusa.core.session.StandardSessionTagKeys;
+import org.springframework.scheduling.annotation.Scheduled;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,7 +46,7 @@ public class LiveDataController {
     }
 
     //this process does not have to be a timer, but because timers run on a separate thread outside of context like, this perfect to kick off the serverside call
-    //@Scheduled(fixedDelay = 500)
+    @Scheduled(fixedDelay = 500)
     public void aServerProcess() {
         //global
         serverToClient.sendAttributesToSessionTag(

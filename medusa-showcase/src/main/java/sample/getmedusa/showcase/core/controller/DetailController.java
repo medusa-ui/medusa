@@ -2,13 +2,9 @@ package sample.getmedusa.showcase.core.controller;
 
 import io.getmedusa.medusa.core.annotation.UIEventPage;
 import io.getmedusa.medusa.core.attributes.Attribute;
-import io.getmedusa.medusa.core.bidirectional.ServerToClient;
-import io.getmedusa.medusa.core.session.StandardSessionTagKeys;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import sample.getmedusa.showcase.core.model.Component;
@@ -19,7 +15,6 @@ import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 @UIEventPage(path = "/detail/{type}", file = "/pages/detail")
 public class DetailController {
@@ -46,23 +41,6 @@ public class DetailController {
             }
         }
         return code.toArray(new String[0]);
-    }
-
-    @Autowired
-    private ServerToClient serverToClient;
-
-    @Scheduled(fixedDelay = 500)
-    public void aServerProcess() {
-        //global
-        serverToClient.sendAttributesToSessionTag(
-                List.of(new Attribute("randomNumberShared", randomInt())),
-                StandardSessionTagKeys.ROUTE,
-                "/detail/live-data");
-
-    }
-
-    private int randomInt() {
-        return new Random().nextInt(99999);
     }
 
 }

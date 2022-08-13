@@ -24,8 +24,8 @@
         <p>In this case, we send the update to all users who are on this page right now.</p>
 
         <section class="example">
-            Global, shared (0.5 second delay between updates):
-            <div class="sample-counter" th:text="${randomNumberShared}"></div>
+            Global, shared (0.5-second delay between updates):
+            <span class="sample-counter" th:text="${randomNumberShared}"></span>
 
             <footer>JDK18 w/ Medusa 0.9.0</footer>
         </section>
@@ -49,7 +49,7 @@
         <section class="example">
 
             Unique per session:
-            <div class="sample-counter" th:text="${randomNumberUniquePerSession}"></div>
+            <span class="sample-counter" th:text="${randomNumberUniquePerSession}"></span>
 
             <button m:click="subscribeViaID()">Subscribe to a sessionID update</button>
 
@@ -70,7 +70,7 @@
 
         <section class="example">
             Unique per group:
-            <div class="sample-counter" th:text="${randomNumberUniquePerGroup}"></div>
+            <span class="sample-counter" th:text="${randomNumberUniquePerGroup}"></span>
 
             <button m:click="subscribeTag()">Subscribe to tag update</button>
         </section>
