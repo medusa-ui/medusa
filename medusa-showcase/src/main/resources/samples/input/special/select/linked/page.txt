@@ -1,7 +1,7 @@
 <section>
     <p> Select your drink
 
-    <!-- :{selector} allows to refer to 'this' as being the Element itself -->
+    <!-- with :{selector} you can refer to 'this' as being the Element itself -->
     <select m:change="drinks(:{this})" style="width: 156px">
         <option th:each="type: ${drinksType}"
                 th:text="${type}"

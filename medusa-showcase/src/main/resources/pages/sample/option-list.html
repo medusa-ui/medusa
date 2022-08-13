@@ -45,13 +45,13 @@
         </section>
 
         <h2>Linked Select - Option List</h2>
-        <p>A selected option in the first select trigger a changes of the content of the second select.
+        <p>A selected option in the first select, triggers a change of the content of the second select.
             The selected option is sent to the controller on a change event.</p>
 
         <section class="example">
             <p> Select your drink
 
-                <!-- :{selector} allows to refer to 'this' as being the Element itself -->
+                <!-- with :{selector} you can refer to 'this' as being the Element itself -->
                 <select m:change="drinks(:{this})" style="width: 156px">
                     <option th:each="type: ${drinksType}"
                             th:text="${type}"
