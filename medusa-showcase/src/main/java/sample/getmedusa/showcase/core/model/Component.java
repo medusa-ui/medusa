@@ -28,8 +28,9 @@ public class Component {
         map.put("Var inputs", List.of(
                 new Component("File uploads"),
                 new Component("Option list", "option-list",
-                        new String[]{"/samples/input/special/SelectBasic_page.txt", "/samples/input/special/SelectLinked_page.txt"},
-                        new String[]{"/samples/input/special/SelectBasic.txt", "/samples/input/special/SelectLinked.txt"}),
+                        new String[]{"/samples/input/special/select/basic/page.txt","/samples/input/special/select/linked/page.txt"},
+                        new String[]{ "/samples/input/special/select/basic/controller.txt", "/samples/input/special/select/linked/controller.txt"}
+                ),
                 new Component("Multiple selection list")
         ));
 

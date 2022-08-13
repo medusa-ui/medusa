@@ -48,33 +48,44 @@
         <p>A selected option in the first select trigger a changes of the content of the second select.
             The selected option is sent to the controller on a change event.</p>
 
-            <section class="example">
-                <p class="drinks"> Select your drink
-                    <select m:change="drinks(:{.drinks select:nth-child(1)})">
-                        <option th:each="type: ${drinksType}" th:text="${type}"></option>
-                    </select>
+        <section class="example">
+            <p> Select your drink
 
-                    <select m:change="order(:{.drinks select:nth-child(2)})">
-                        <option th:each="drink: ${drinksList}" th:text="${drink}"></option>
-                    </select>
-                </p>
-                <p> Your Order:</p>
-                <ul>
-                    <li th:each="item:${order}" th:text="${item}"></li>
-                </ul>
+                <!-- :{selector} allows to refer to 'this' as being the Element itself -->
+                <select m:change="drinks(:{this})" style="width: 156px">
+                    <option th:each="type: ${drinksType}"
+                            th:text="${type}"
+                            th:selected="${type} == ${selectedType}">
+                        Drink Type
+                    </option>
+                </select>
 
-                <footer>JDK18 w/ Medusa 0.9.0</footer>
-            </section>
+                <select m:change="order(:{this})" style="width: 156px">
+                    <option th:each="drinkType: ${drinksList}"
+                            th:text="${drinkType}"
+                            th:selected="${drinkType} == ${type}">
+                        Selected Drink
+                    </option>
+                </select>
+            </p>
 
-            <section class="client">
-                <h3>Client</h3>
-                <pre><code class="language-html hljs" th:text="${clientCode[1]}"></code></pre>
-            </section>
+            <p> Your Order:</p>
 
-            <section class="server">
-                <h3>Server</h3>
-                <pre><code class="language-java hljs" th:text="${serverCode[1]}"></code></pre>
-            </section>
+            <ul>
+                <li th:each="item:${order}" th:text="${item}"></li>
+            </ul>
+            <footer>JDK18 w/ Medusa 0.9.0</footer>
+        </section>
+
+        <section class="client">
+            <h3>Client</h3>
+            <pre><code class="language-html hljs" th:text="${clientCode[1]}"></code></pre>
+        </section>
+
+        <section class="server">
+            <h3>Server</h3>
+            <pre><code class="language-java hljs" th:text="${serverCode[1]}"></code></pre>
+        </section>
 
     </section> <!-- end #variations -->
 
