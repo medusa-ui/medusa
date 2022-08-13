@@ -1,7 +1,6 @@
 import io.getmedusa.medusa.core.annotation.UIEventPage;
 import io.getmedusa.medusa.core.attributes.Attribute;
 import io.getmedusa.medusa.core.attributes.StandardAttributeKeys;
-import sample.getmedusa.showcase.samples.AbstractSampleController;
 
 import java.util.List;
 

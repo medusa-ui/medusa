@@ -4,7 +4,6 @@ import io.getmedusa.medusa.core.attributes.StandardAttributeKeys;
 import io.getmedusa.medusa.core.bidirectional.ServerToClient;
 import io.getmedusa.medusa.core.session.Session;
 import org.springframework.scheduling.annotation.Scheduled;
-import sample.getmedusa.showcase.samples.AbstractSampleController;
 
 import java.util.ArrayList;
 import java.util.List;

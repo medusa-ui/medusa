@@ -3,7 +3,6 @@ import io.getmedusa.medusa.core.attributes.Attribute;
 import io.getmedusa.medusa.core.bidirectional.ServerToClient;
 import io.getmedusa.medusa.core.session.Session;
 import org.springframework.scheduling.annotation.Scheduled;
-import sample.getmedusa.showcase.samples.AbstractSampleController;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,8 +10,6 @@ import java.util.Random;
 
 @UIEventPage(path = "/detail/live-data", file = "/pages/live-data.html")
 public class LiveStatisticController {
-
-    protected static final Random RANDOM = new Random();
 
     private final ServerToClient serverToClient;
 
@@ -35,11 +32,8 @@ public class LiveStatisticController {
         uniqueSessionsIdSubscribedForARandom.add(session.getId());
     }
 
-    //this process does not have to be a timer, but because timers run on a separate thread
-    //outside of context like, this perfect to kick off the serverside call
     @Scheduled(fixedDelay = 500)
-    public void aServerProcess() {
-        //unique per session
+    public void someServerProcess() {
         for(String sessionId : new ArrayList<>(uniqueSessionsIdSubscribedForARandom)) {
             serverToClient.sendAttributesToSessionIDs(
                     List.of(new Attribute("randomNumberUniquePerSession", randomInt())),
@@ -51,7 +45,7 @@ public class LiveStatisticController {
     }
 
     private int randomInt() {
-        return RANDOM.nextInt(99999);
+        return new Random().nextInt(99999);
     }
 
 }
