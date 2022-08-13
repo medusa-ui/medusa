@@ -41,7 +41,7 @@ public class Session {
         setLastParameters(route.getSetupAttributes(request, this));
         setLastUsedTemplate(route.getTemplateHTML());
         setLastUsedHash(route.generateHash());
-        getTags().put(StandardSessionTagKeys.ROUTE, route.getPath());
+        getTags().put(StandardSessionTagKeys.ROUTE, request.path());
     }
 
     public String getLastUsedTemplate() {

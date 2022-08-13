@@ -5,8 +5,6 @@ import io.getmedusa.medusa.core.attributes.Attribute;
 import io.getmedusa.medusa.core.bidirectional.ServerToClient;
 import io.getmedusa.medusa.core.session.Session;
 import io.getmedusa.medusa.core.session.StandardSessionTagKeys;
-import org.springframework.scheduling.annotation.Scheduled;
-import sample.getmedusa.showcase.samples.AbstractSampleController;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,7 +12,7 @@ import java.util.Random;
 import java.util.UUID;
 
 @UIEventPage(path = "/detail/sample/live-data", file = "/pages/sample/live-data.html")
-public class LiveDataController extends AbstractSampleController {
+public class LiveDataController {
 
     protected static final Random RANDOM = new Random();
     private final ServerToClient serverToClient;
@@ -31,20 +29,10 @@ public class LiveDataController extends AbstractSampleController {
         subscribeViaID(session);
 
         return List.of(
-                new Attribute("pageCodeShared", pageCodeAsString(this, "samples.live.statistic.Shared")),
-                new Attribute("controllerCodeShared", controllerCodeAsString(this, "samples.live.statistic.Shared")),
-
-                new Attribute("pageCodePerSession", pageCodeAsString(this, "samples.live.statistic.PerSession")),
-                new Attribute("controllerCodePerSession", controllerCodeAsString(this, "samples.live.statistic.PerSession")),
-
-                new Attribute("pageCodePerGroup", pageCodeAsString(this, "samples.live.statistic.PerGroup")),
-                new Attribute("controllerCodePerGroup", controllerCodeAsString(this, "samples.live.statistic.PerGroup")),
-
-                new Attribute("randomNumberShared", 0),
-                new Attribute("randomNumberUniquePerSession", 0),
-                new Attribute("randomNumberUniquePerGroup", 0)
-            );
-
+            new Attribute("randomNumberShared", 0),
+            new Attribute("randomNumberUniquePerSession", 0),
+            new Attribute("randomNumberUniquePerGroup", 0)
+        );
     }
 
     public void subscribeTag(Session session) {
@@ -57,13 +45,13 @@ public class LiveDataController extends AbstractSampleController {
     }
 
     //this process does not have to be a timer, but because timers run on a separate thread outside of context like, this perfect to kick off the serverside call
-    @Scheduled(fixedDelay = 500)
+    //@Scheduled(fixedDelay = 500)
     public void aServerProcess() {
         //global
         serverToClient.sendAttributesToSessionTag(
                 List.of(new Attribute("randomNumberShared", randomInt())),
                 StandardSessionTagKeys.ROUTE,
-                "/detail/sample/live-data");
+                "/detail/live-data");
 
         //unique per session
         for(String sessionId : new ArrayList<>(uniqueSessionsIdSubscribedForARandom)) {

@@ -35,7 +35,9 @@ public class Component {
         ));
 
         map.put("Live data", List.of(
-                new Component("Serverside live data", "sample/live-data"),
+                new Component("Serverside live data", "live-data",
+                        new String[]{"/samples/live/statistic/Shared_page.txt", "/samples/live/statistic/PerSession_page.txt", "/samples/live/statistic/PerGroup_page.txt"},
+                        new String[]{"/samples/live/statistic/Shared.txt", "/samples/live/statistic/PerSession.txt", "/samples/live/statistic/PerGroup.txt"}),
                 new Component("Live table"),
                 new Component("Progress bar")
         ));
