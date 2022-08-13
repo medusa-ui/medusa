@@ -49,7 +49,9 @@ public class Component {
         ));
 
         map.put("Navigation", List.of(
-                new Component("Forwarding", "sample/forwarding"),
+                new Component("Forwarding", "forwarding",
+                        new String[]{"/samples/navigation/ForwardingController_page.txt", "/samples/navigation/ForwardingServerInitController_page.txt"},
+                        new String[]{"/samples/navigation/ForwardingController.txt", "/samples/navigation/ForwardingServerInitController.txt"}),
                 new Component("Menubar")
         ));
 

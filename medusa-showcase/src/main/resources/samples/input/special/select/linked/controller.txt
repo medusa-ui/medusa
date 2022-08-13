@@ -4,7 +4,7 @@ import io.getmedusa.medusa.core.attributes.Attribute;
 import java.util.List;
 import java.util.Map;
 
-@UIEventPage(path = "/detail/sample/option-list", file = "/pages/sample/option-list.html")
+@UIEventPage(path = "/detail/option-list", file = "/pages/option-list.html")
 public class OptionListController {
 
     private Map<String, List<String>> drinks =

@@ -6,13 +6,12 @@ import io.getmedusa.medusa.core.attributes.StandardAttributeKeys;
 import io.getmedusa.medusa.core.bidirectional.ServerToClient;
 import io.getmedusa.medusa.core.session.Session;
 import org.springframework.scheduling.annotation.Scheduled;
-import sample.getmedusa.showcase.samples.AbstractSampleController;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @UIEventPage(path = "/detail/sample/forwarding", file = "/pages/sample/forwarding.html")
-public class ForwardingController extends AbstractSampleController {
+public class ForwardingController {
 
     private final ServerToClient serverToClient;
 
@@ -20,17 +19,8 @@ public class ForwardingController extends AbstractSampleController {
         this.serverToClient = serverToClient;
     }
 
-    public List<Attribute> setupAttributes() {
-        return List.of(
-                new Attribute("pageCode", pageCodeAsString(this)),
-                new Attribute("controllerCode", controllerCodeAsString(this)),
-                new Attribute("pageCodeServerInit", pageCodeAsString(this, "samples.navigation.ForwardingServerInitController")),
-                new Attribute("controllerCodeServerInit", controllerCodeAsString(this, "samples.navigation.ForwardingServerInitController"))
-            );
-    }
-
     public List<Attribute> forwardTo(String pathToForwardTo) {
-        return List.of(new Attribute(StandardAttributeKeys.FORWARD, "/detail/sample/" + pathToForwardTo));
+        return List.of(new Attribute(StandardAttributeKeys.FORWARD, "/detail/" + pathToForwardTo));
     }
 
     public void registerMeForAForward(Session session) {
@@ -42,7 +32,7 @@ public class ForwardingController extends AbstractSampleController {
     @Scheduled(fixedDelay = 500)
     public void triggerForwardFromSchedule() {
         for(String sessionId : sessionIds) {
-            serverToClient.sendAttributesToSessionIDs(List.of(new Attribute(StandardAttributeKeys.FORWARD, "/detail/sample/basic-button")), List.of(sessionId));
+            serverToClient.sendAttributesToSessionIDs(List.of(new Attribute(StandardAttributeKeys.FORWARD, "/detail/basic-button")), List.of(sessionId));
         }
         sessionIds.clear();
     }

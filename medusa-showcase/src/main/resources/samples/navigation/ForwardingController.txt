@@ -5,11 +5,13 @@ import sample.getmedusa.showcase.samples.AbstractSampleController;
 
 import java.util.List;
 
-@UIEventPage(path = "/detail/sample/forwarding", file = "/pages/sample/forwarding.html")
-public class ForwardingController extends AbstractSampleController {
+@UIEventPage(path = "/detail/forwarding", file = "/pages/forwarding.html")
+public class ForwardingController {
 
     public List<Attribute> forwardTo(String pathToForwardTo) {
-        return List.of(new Attribute(StandardAttributeKeys.REDIRECT, "/detail/sample/" + pathToForwardTo));
+        return List.of(
+            new Attribute(StandardAttributeKeys.REDIRECT, "/detail/" + pathToForwardTo)
+        );
     }
 
 }

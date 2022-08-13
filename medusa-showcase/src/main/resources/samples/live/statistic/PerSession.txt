@@ -9,8 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-@UIEventPage(path = "/detail/sample/live-statistic", file = "/pages/sample/live-statistic.html")
-public class LiveStatisticController extends AbstractSampleController {
+@UIEventPage(path = "/detail/live-data", file = "/pages/live-data.html")
+public class LiveStatisticController {
 
     protected static final Random RANDOM = new Random();
 
@@ -35,7 +35,8 @@ public class LiveStatisticController extends AbstractSampleController {
         uniqueSessionsIdSubscribedForARandom.add(session.getId());
     }
 
-    //this process does not have to be a timer, but because timers run on a separate thread outside of context like, this perfect to kick off the serverside call
+    //this process does not have to be a timer, but because timers run on a separate thread
+    //outside of context like, this perfect to kick off the serverside call
     @Scheduled(fixedDelay = 500)
     public void aServerProcess() {
         //unique per session

@@ -3,7 +3,7 @@ import io.getmedusa.medusa.core.attributes.Attribute;
 
 import java.util.List;
 
-@UIEventPage(path = "/detail/sample/option-list", file = "/pages/sample/option-list.html")
+@UIEventPage(path = "/detail/option-list", file = "/pages/option-list.html")
 public class OptionListController {
 
     List<String> fruits= List.of("Apple", "Banana", "Lemon", "Orange", "Strawberry" );
