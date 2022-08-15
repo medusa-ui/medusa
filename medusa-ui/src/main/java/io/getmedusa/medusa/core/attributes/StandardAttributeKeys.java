@@ -7,8 +7,9 @@ public final class StandardAttributeKeys {
     private StandardAttributeKeys() {}
 
     public static final String FORWARD = "#$forward:";
+    public static final String JS_FUNCTION = "#$js_function:";
 
     public static List<String> findAllPassThroughKeys() {
-        return List.of(FORWARD);
+        return List.of(FORWARD, JS_FUNCTION);
     }
 }

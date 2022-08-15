@@ -30,6 +30,8 @@ public final class AttributeUtils {
                         throw new IllegalArgumentException("Not allowed to redirect externally unless explicitly configured via 'medusa.allow-external-redirect', to prevent Server Side Request Forgery. This is currently not the case, hence this error. Relative URLS ('/hello', '../hello') are also allowed but must either start with a '.' or a '/'");
                     }
                     extraDiffs.add(JSReadyDiff.buildNewRedirect(url));
+                } else if(attribute.name().equalsIgnoreCase(StandardAttributeKeys.JS_FUNCTION)) {
+                    extraDiffs.add(JSReadyDiff.buildNewJSFunction(attribute.value().toString()));
                 }
             }
             diffs.addAll(extraDiffs);

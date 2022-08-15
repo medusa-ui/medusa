@@ -156,8 +156,18 @@ applyAllChanges = function (listOfDiffs) {
             handleAttrChange(diff);
         } else if(diff.type === "REDIRECT") {
             window.location.href = escape(diff.content);
+        } else if(diff.type === "JS_FUNCTION") {
+            runFunction(escape(diff.content), []);
         }
     }
+};
+
+runFunction = function(name, arguments) {
+    const fn = window[name];
+    if(typeof fn !== 'function')
+        return;
+
+    fn.apply(window, arguments);
 };
 
 handleIncomingChange = function (obj) {

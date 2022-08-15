@@ -38,6 +38,10 @@ public class JSReadyDiff {
         return new JSReadyDiff(url, null, DiffType.REDIRECT);
     }
 
+    public static JSReadyDiff buildNewJSFunction(String jsFunctionCall) {
+        return new JSReadyDiff(jsFunctionCall, null, DiffType.JS_FUNCTION);
+    }
+
     static String determinePreviousNode(String xPath) {
         final int beginIndex = xPath.lastIndexOf("[") + 1;
         final int endIndex = xPath.length() - 1;
@@ -87,7 +91,8 @@ public class JSReadyDiff {
         REMOVAL,
         ATTR_CHANGE,
         TAG_CHANGE,
-        REDIRECT
+        REDIRECT,
+        JS_FUNCTION
     }
 
     public boolean isEdit() {
