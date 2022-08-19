@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:m="https://www.getmedusa.io/medusa.xsd">
+<head>
+    <meta charset="UTF-8" />
+    <title>Conditional</title>
+    <style>
+        * {
+            margin: .5rem;
+        }
+        .fibo {
+            padding: .25rem;
+            background-color: #a280ff;
+            border: solid #6043ff 1px;
+            color: #fff;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Give a number &lt; 17710 and we show the sum with Fibonacci numbers</h1>
+    <div>Your number: <input id="number" th:value="${number}"><button m:click="fibo(:{#number})">Fibonacci sum</button></div>
+    <div>
+        <!-- 0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610, 987, 1597, 2584, 4181, 6765 -->
+        <!-- hard coded to trigger bug conditional, and here are a lot of if-checks :) -->
+        <span class="fibo" th:if="${#lists.contains(fibo,0)}">0</span>
+        <span class="fibo" th:if="${#lists.contains(fibo,1)}">1</span>
+        <span class="fibo" th:if="${#lists.contains(fibo,2)}">2</span>
+        <span class="fibo" th:if="${#lists.contains(fibo,3)}">3</span>
+        <span class="fibo" th:if="${#lists.contains(fibo,5)}">5</span>
+        <span class="fibo" th:if="${#lists.contains(fibo,8)}">8</span>
+        <span class="fibo" th:if="${#lists.contains(fibo,13)}">13</span>
+        <span class="fibo" th:if="${#lists.contains(fibo,21)}">21</span>
+        <span class="fibo" th:if="${#lists.contains(fibo,34)}">34</span>
+        <span class="fibo" th:if="${#lists.contains(fibo,55)}">55</span>
+        <span class="fibo" th:if="${#lists.contains(fibo,89)}">89</span>
+        <span class="fibo" th:if="${#lists.contains(fibo,144)}">144</span>
+        <span class="fibo" th:if="${#lists.contains(fibo,233)}">233</span>
+        <span class="fibo" th:if="${#lists.contains(fibo,377)}">377</span>
+        <span class="fibo" th:if="${#lists.contains(fibo,610)}">610</span>
+        <span class="fibo" th:if="${#lists.contains(fibo,987)}">987</span>
+        <span class="fibo" th:if="${#lists.contains(fibo,1597)}">1597</span>
+        <span class="fibo" th:if="${#lists.contains(fibo,2584)}">2584</span>
+        <span class="fibo" th:if="${#lists.contains(fibo,4181)}">4181</span>
+        <span class="fibo" th:if="${#lists.contains(fibo,6765)}">6765</span>
+    </div>
+    <div>
+        <p th:if="${!#lists.contains(fibo,0)}">You score is<span th:text="${#lists.size(fibo)}">0</span></p>
+        <p th:if="${#lists.contains(fibo,0)}">You failed!</p>
+    </div>
+</body>
+</html>
