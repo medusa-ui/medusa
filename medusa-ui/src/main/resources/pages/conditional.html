@@ -18,9 +18,8 @@
 </head>
 <body>
     <h1>Give a number &lt; 17710 and we show the sum with Fibonacci numbers</h1>
-    <div>Your number: <input id="number" th:value="${number}"><button m:click="fibo(:{#number})">Fibonacci sum</button></div>
+    <div>Your number: <input id="number" th:value="${number}" m:change="fibo(:{#number})"><button m:click="fibo(:{#number})">Fibonacci sum</button></div>
     <div>
-        <!-- 0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610, 987, 1597, 2584, 4181, 6765 -->
         <!-- hard coded to trigger bug conditional, and here are a lot of if-checks :) -->
         <span class="fibo" th:if="${#lists.contains(fibo,0)}">0</span>
         <span class="fibo" th:if="${#lists.contains(fibo,1)}">1</span>
@@ -46,6 +45,11 @@
     <div>
         <p th:if="${!#lists.contains(fibo,0)}">You score is<span th:text="${#lists.size(fibo)}">0</span></p>
         <p th:if="${#lists.contains(fibo,0)}">You failed!</p>
+    </div>
+    <div>
+        <p th:if="${!show}"><span th:text="${message}">Nothing</span></p>
+        <p th:if="${show}"><span th:text="${message}">Something</span></p>
+        <button m:click="toggleShow()">Toggle show</button>
     </div>
 </body>
 </html>
