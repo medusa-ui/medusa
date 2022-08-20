@@ -25,6 +25,15 @@ public class DiffComparator implements Comparator<JSReadyDiff> {
             o2Value = 1;
         }
 
+        //does xpath of o1 fit in o2? if so, then run o2 first
+        if(o2.getXpath().contains(o1.getXpath())) {
+            o2Value = 0;
+            o1Value = 1;
+        } else if(o1.getXpath().contains(o2.getXpath())) {
+            o2Value = 1;
+            o1Value = 0;
+        }
+
         return o1Value - o2Value;
     }
 
