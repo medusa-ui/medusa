@@ -129,7 +129,7 @@ span.coming-soon {
   color: white;
 }
 
-.example button {
+.example button, .example input[type='submit'] {
   background-color: white;
   color: rgb(87, 70, 175);
   line-height: 15px;
@@ -147,13 +147,39 @@ span.coming-soon {
   transition-duration: 0.2s;
 }
 
-.example button:hover {
+.example button:hover, .example input[type='submit']:hover {
   background-color: #d6e7ff;
   cursor: pointer;
 }
 
-.example button:active {
+.example button:active, .example input[type='submit']:active {
   border: 2px solid black;
+}
+
+.example input[type='submit'] {
+  margin-top: 0.5em;
+}
+
+.example label {
+  display: block;
+  margin-top: 0.5em;
+}
+
+.example input[type='text'] {
+  background: #0000001f;
+  display: block;
+  padding-left: 10px;
+  padding-right: 10px;
+  color: white;
+  margin-top: 5px;
+  line-height: 30px;
+  border-radius: 5px;
+  width: 20em;
+  border: 1px solid #000000c2;
+}
+
+.example input[type='text']:focus {
+  border-color: #ffc800;
 }
 
 .example select {
@@ -179,6 +205,15 @@ span.coming-soon {
   color: #ecedee;
 }
 
+.example-result {
+  margin-left: auto;
+  display: block;
+  letter-spacing: -1px;
+  font-size: 36px;
+  padding-bottom: 0.2em;
+  color: white;
+}
+
 pre, pre code, pre code span {
   padding: 0;
   margin: 0;
@@ -189,3 +224,4 @@ pre, pre code, pre code span {
 .hljs-variable {
     color: #b0a0e2 !important;
 }
+
