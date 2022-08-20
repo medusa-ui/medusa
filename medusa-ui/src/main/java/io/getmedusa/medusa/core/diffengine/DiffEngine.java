@@ -60,6 +60,7 @@ public class DiffEngine {
 
     private boolean isOfIgnorableType(ComparisonType type) {
         return CHILD_NODELIST_LENGTH.equals(type) ||
+               CHILD_NODELIST_SEQUENCE.equals(type) ||
                ELEMENT_NUM_ATTRIBUTES.equals(type);
     }
 
