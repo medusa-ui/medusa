@@ -21,8 +21,8 @@ public class Component {
         map.put("Text inputs", List.of(
                 new Component("Submit with reference"),
                 new Component("Form submit tag", "form-submit",
-                        new String[]{"/samples/button/basic/page.txt"},
-                        new String[]{"/samples/button/basic/controller.txt"}),
+                        new String[]{"/samples/textinputs/formsubmit/page_map.txt"},
+                        new String[]{"/samples/textinputs/formsubmit/controller_map.txt"}),
                 new Component("Search"),
                 new Component("Validation")
         ));

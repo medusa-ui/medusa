@@ -58,11 +58,21 @@ function sendMessage(payloadData) {
 
 document.addEventListener("DOMContentLoaded", setupRouter);
 
-Medusa.prototype.doAction = function(parentFragment, actionToExecute) {
+Medusa.prototype.doFormAction = function(event, parentFragment, actionToExecute) {
+    const formData = new FormData(event.target);
+    const formProps = Object.fromEntries(formData);
+    _M.doAction(event, parentFragment, actionToExecute.replace(":{form}", JSON.stringify(formProps)));
+}
+
+Medusa.prototype.doAction = function(event, parentFragment, actionToExecute) {
+    if(typeof event !== "undefined") {
+        event.preventDefault();
+    }
     sendMessage({
         "fragment": parentFragment,
         "action": actionToExecute
     });
+    return false;
 };
 
 evalXPath = function(xpath) {

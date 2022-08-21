@@ -20,7 +20,7 @@ public abstract class JSEventAttributeProcessor extends AbstractAttributeTagProc
     public static final String QUERY_SELECTOR_PREFIX = ":"; // avoid collisions with existing Thymeleaf Standard Expression Syntax
     public static final String VARIABLE_PREFIX = "\\$"; // Thymeleaf Standard Expression Syntax for Variable
     private static final String BASIC_EXPRESSION = "\\{(.*?)\\}";
-    protected static final String EVENT_TEMPLATE_M_DO_ACTION = "_M.doAction(" + FRAGMENT_REPLACEMENT + ", `%s`)";
+    protected static final String EVENT_TEMPLATE_M_DO_ACTION = "_M.doAction(event, " + FRAGMENT_REPLACEMENT + ", `%s`)";
     protected static final String SELECTOR_QUERY ="'${document.querySelector('%s').%s}'";
     protected static final String SELECTOR_THIS_REFERENCE ="'${%s.%s}'";
     protected static final String SELECTOR_DEFAULT_ATTRIBUTE ="value";

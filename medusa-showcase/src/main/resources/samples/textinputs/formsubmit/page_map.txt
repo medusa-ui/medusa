@@ -1,0 +1,11 @@
+<form m:submit="displayName(123, :{form}, 'sample')">
+    <label for="firstName">First name: </label>
+    <input type="text" id="firstName" name="firstName" />
+
+    <label for="lastName">Last name: </label>
+    <input type="text" id="lastName" name="lastName" />
+
+    <input type="submit" value="Submit">
+</form>
+
+<div class="example-result" th:text="${result}"></div>
