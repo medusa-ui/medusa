@@ -4,7 +4,7 @@ import io.getmedusa.medusa.core.util.FluxUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-public class MEventQuerySelectorTest extends MedusaTagTest {
+class MEventQuerySelectorTest extends MedusaTagTest {
 
     private final String thisTemplateHTML = """
             <!DOCTYPE html>
@@ -114,76 +114,76 @@ public class MEventQuerySelectorTest extends MedusaTagTest {
     void thisTemplateHTMLTest() {
         String template = FluxUtils.dataBufferFluxToString(renderer.render(thisTemplateHTML, session));
         logger.debug(template);
-        Assertions.assertTrue(template.contains("onchange=\"_M.doAction('__FRAGMENT__', `action('${this.value}')`)\""), "Medusa tag should be able to find element values");
+        Assertions.assertTrue(template.contains("onchange=\"_M.doAction(event, '__FRAGMENT__', `action('${this.value}')`)\""), "Medusa tag should be able to find element values");
     }
 
     @Test
     void thisValueTemplateHTMLTest() {
         String template = FluxUtils.dataBufferFluxToString(renderer.render(thisValueTemplateHTML, session));
         logger.debug(template);
-        Assertions.assertTrue(template.contains("onchange=\"_M.doAction('__FRAGMENT__', `action('${this.value}')`)\""), "Medusa tag should be able to find element values");
+        Assertions.assertTrue(template.contains("onchange=\"_M.doAction(event, '__FRAGMENT__', `action('${this.value}')`)\""), "Medusa tag should be able to find element values");
     }
 
     @Test
     void thisAttributeTemplateHTMLTest() {
         String template = FluxUtils.dataBufferFluxToString(renderer.render(thisAttributeTemplateHTML, session));
         logger.debug(template);
-        Assertions.assertTrue(template.contains("onchange=\"_M.doAction('__FRAGMENT__', `action('${this.type}')`)\""), "Medusa tag should be able to find element values");
+        Assertions.assertTrue(template.contains("onchange=\"_M.doAction(event, '__FRAGMENT__', `action('${this.type}')`)\""), "Medusa tag should be able to find element values");
     }
 
     @Test
     void elementIDTemplateHTMLTest() {
         String template = FluxUtils.dataBufferFluxToString(renderer.render(elementIDTemplateHTML, session));
         logger.debug(template);
-        Assertions.assertTrue(template.contains("onclick=\"_M.doAction('__FRAGMENT__', `action('${document.querySelector('#my-id').value}')`)\""), "Medusa tag should be able to find element values");
+        Assertions.assertTrue(template.contains("onclick=\"_M.doAction(event, '__FRAGMENT__', `action('${document.querySelector('#my-id').value}')`)\""), "Medusa tag should be able to find element values");
     }
 
     @Test
     void elementIDValueTemplateHTMLTest() {
         String template = FluxUtils.dataBufferFluxToString(renderer.render(elementIDValueTemplateHTML, session));
         logger.debug(template);
-        Assertions.assertTrue(template.contains("onclick=\"_M.doAction('__FRAGMENT__', `action('${document.querySelector('#my-id').value}')`)\""), "Medusa tag should be able to find element values");
+        Assertions.assertTrue(template.contains("onclick=\"_M.doAction(event, '__FRAGMENT__', `action('${document.querySelector('#my-id').value}')`)\""), "Medusa tag should be able to find element values");
     }
 
     @Test
     void elementIDAttributeTemplateHTMLTest() {
         String template = FluxUtils.dataBufferFluxToString(renderer.render(elementIDAttributeTemplateHTML, session));
         logger.debug(template);
-        Assertions.assertTrue(template.contains("onclick=\"_M.doAction('__FRAGMENT__', `action('${document.querySelector('#my-id').value}', '${document.querySelector('#my-id').type}')`)\""), "Medusa tag should be able to find element values");
+        Assertions.assertTrue(template.contains("onclick=\"_M.doAction(event, '__FRAGMENT__', `action('${document.querySelector('#my-id').value}', '${document.querySelector('#my-id').type}')`)\""), "Medusa tag should be able to find element values");
     }
 
     @Test
     void classTemplateHTMLTest() {
         String template = FluxUtils.dataBufferFluxToString(renderer.render(classTemplateHTML, session));
         logger.debug(template);
-        Assertions.assertTrue(template.contains("onclick=\"_M.doAction('__FRAGMENT__', `action('${document.querySelector('.my-class').value}')`)\""), "Medusa tag should be able to find element values");
+        Assertions.assertTrue(template.contains("onclick=\"_M.doAction(event, '__FRAGMENT__', `action('${document.querySelector('.my-class').value}')`)\""), "Medusa tag should be able to find element values");
     }
 
     @Test
     void classValueTemplateHTMLTest() {
         String template = FluxUtils.dataBufferFluxToString(renderer.render(classValueTemplateHTML, session));
         logger.debug(template);
-        Assertions.assertTrue(template.contains("onclick=\"_M.doAction('__FRAGMENT__', `action('${document.querySelector('.my-class').value}')`)\""), "Medusa tag should be able to find element values");
+        Assertions.assertTrue(template.contains("onclick=\"_M.doAction(event, '__FRAGMENT__', `action('${document.querySelector('.my-class').value}')`)\""), "Medusa tag should be able to find element values");
     }
 
     @Test
     void classAttributeTemplateHTMLTest() {
         String template = FluxUtils.dataBufferFluxToString(renderer.render(classAttributeTemplateHTML, session));
         logger.debug(template);
-        Assertions.assertTrue(template.contains("onclick=\"_M.doAction('__FRAGMENT__', `action('${document.querySelector('.my-class').value}','${document.querySelector('.my-class').type}')`)\""), "Medusa tag should be able to find element values");
+        Assertions.assertTrue(template.contains("onclick=\"_M.doAction(event, '__FRAGMENT__', `action('${document.querySelector('.my-class').value}','${document.querySelector('.my-class').type}')`)\""), "Medusa tag should be able to find element values");
     }
 
     @Test
     void multiclassAttributeTemplateHTMLTest() {
         String template = FluxUtils.dataBufferFluxToString(renderer.render(multiClassTemplateHTML, session));
         logger.info(template);
-        Assertions.assertTrue(template.contains("onclick=\"_M.doAction('__FRAGMENT__', `action('${document.querySelector('.my-class.my-sub-class').value}')`)\""), "Medusa tag should be able to find element values");
+        Assertions.assertTrue(template.contains("onclick=\"_M.doAction(event, '__FRAGMENT__', `action('${document.querySelector('.my-class.my-sub-class').value}')`)\""), "Medusa tag should be able to find element values");
     }
 
     @Test
     void multiclassTemplateHTMLTest() {
         String template = FluxUtils.dataBufferFluxToString(renderer.render(multiClassAttributeTemplateHTML, session));
         logger.debug(template);
-        Assertions.assertTrue(template.contains("onclick=\"_M.doAction('__FRAGMENT__', `action('${document.querySelector('.my-class.my-sub-class').type}')`)\""), "Medusa tag should be able to find element values");
+        Assertions.assertTrue(template.contains("onclick=\"_M.doAction(event, '__FRAGMENT__', `action('${document.querySelector('.my-class.my-sub-class').type}')`)\""), "Medusa tag should be able to find element values");
     }
 }

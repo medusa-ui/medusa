@@ -77,7 +77,7 @@ class MedusaOnClickTest extends MedusaTagTest {
         logger.debug(template);
         Assertions.assertFalse(template.contains("th:text="), "Thymeleaf tags should be rendered");
         Assertions.assertFalse(template.contains("m:click="), "Medusa tags should be rendered");
-        Assertions.assertTrue(template.contains("onclick=\"_M.doAction('__FRAGMENT__', `increment()`)\""), "Medusa tag should be rendered with replacement JS");
+        Assertions.assertTrue(template.contains("onclick=\"_M.doAction(event, '__FRAGMENT__', `increment()`)\""), "Medusa tag should be rendered with replacement JS");
     }
 
     @Test
@@ -86,7 +86,7 @@ class MedusaOnClickTest extends MedusaTagTest {
         logger.debug(template);
         Assertions.assertFalse(template.contains("th:text="), "Thymeleaf tags should be rendered");
         Assertions.assertFalse(template.contains("m:click="), "Medusa tags should be rendered");
-        Assertions.assertTrue(template.contains("onclick=\"_M.doAction('__FRAGMENT__', `increment(2,'some text')`)\""), "Medusa tag should be rendered with replacement JS");
+        Assertions.assertTrue(template.contains("onclick=\"_M.doAction(event, '__FRAGMENT__', `increment(2,'some text')`)\""), "Medusa tag should be rendered with replacement JS");
     }
 
     @Test
@@ -96,7 +96,7 @@ class MedusaOnClickTest extends MedusaTagTest {
         logger.debug(template);
         Assertions.assertFalse(template.contains("th:text="), "Thymeleaf tags should be rendered");
         Assertions.assertFalse(template.contains("m:click="), "Medusa tags should be rendered");
-        Assertions.assertTrue(template.contains("onclick=\"_M.doAction('__FRAGMENT__', `action(1,2)`)\""), "Medusa tag should be able to find element values");
+        Assertions.assertTrue(template.contains("onclick=\"_M.doAction(event, '__FRAGMENT__', `action(1,2)`)\""), "Medusa tag should be able to find element values");
     }
 
     @Test
@@ -105,7 +105,7 @@ class MedusaOnClickTest extends MedusaTagTest {
         logger.debug(template);
         Assertions.assertFalse(template.contains("th:text="), "Thymeleaf tags should be rendered");
         Assertions.assertFalse(template.contains("m:click="), "Medusa tags should be rendered");
-        Assertions.assertTrue(template.contains("onclick=\"_M.doAction('__FRAGMENT__', `action('${document.querySelector('#elm_1').value}', '${document.querySelector('#elm_2').value}')`)\""), "Medusa tag should be able to find element values");
+        Assertions.assertTrue(template.contains("onclick=\"_M.doAction(event, '__FRAGMENT__', `action('${document.querySelector('#elm_1').value}', '${document.querySelector('#elm_2').value}')`)\""), "Medusa tag should be able to find element values");
     }
     @Test
     void complexValueRenderTest() {
@@ -114,6 +114,6 @@ class MedusaOnClickTest extends MedusaTagTest {
         logger.debug(template);
         Assertions.assertFalse(template.contains("th:text="), "Thymeleaf tags should be rendered");
         Assertions.assertFalse(template.contains("m:click="), "Medusa tags should be rendered");
-        Assertions.assertTrue(template.contains("onclick=\"_M.doAction('__FRAGMENT__', `action('4', 3, 2, '${document.querySelector('#elm_1').value}')`)\""), "Medusa tag should be able to find element values");
+        Assertions.assertTrue(template.contains("onclick=\"_M.doAction(event, '__FRAGMENT__', `action('4', 3, 2, '${document.querySelector('#elm_1').value}')`)\""), "Medusa tag should be able to find element values");
     }
 }

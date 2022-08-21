@@ -44,7 +44,7 @@ public class MedusaOnChangeTest extends MedusaTagTest {
         System.out.println(template);
         Assertions.assertFalse(template.contains("th:text"), "Thymeleaf tags should be rendered");
         Assertions.assertFalse(template.contains("m:change"), "Medusa tags should be rendered");
-        Assertions.assertTrue(template.contains("onchange=\"_M.doAction('__FRAGMENT__', `action('${document.querySelector('#cnt').value}')`)\""), "Medusa tag should be rendered with replacement JS");
+        Assertions.assertTrue(template.contains("onchange=\"_M.doAction(event, '__FRAGMENT__', `action('${document.querySelector('#cnt').value}')`)\""), "Medusa tag should be rendered with replacement JS");
     }
 
     @Test
@@ -53,7 +53,7 @@ public class MedusaOnChangeTest extends MedusaTagTest {
         System.out.println(template);
         Assertions.assertFalse(template.contains("th:text"), "Thymeleaf tags should be rendered");
         Assertions.assertFalse(template.contains("m:change"), "Medusa tags should be rendered");
-        Assertions.assertTrue(template.contains("onchange=\"_M.doAction('__FRAGMENT__', `search('${document.querySelector('#search-select').value}')`)\""), "Medusa tag should be rendered with replacement JS");
+        Assertions.assertTrue(template.contains("onchange=\"_M.doAction(event, '__FRAGMENT__', `search('${document.querySelector('#search-select').value}')`)\""), "Medusa tag should be rendered with replacement JS");
     }
 
     @Test
@@ -61,6 +61,6 @@ public class MedusaOnChangeTest extends MedusaTagTest {
         String template = FluxUtils.dataBufferFluxToString(renderer.render(thisTemplateHTML, session));
         System.out.println(template);
         Assertions.assertFalse(template.contains("m:change"), "Medusa tags should be rendered");
-        Assertions.assertTrue(template.contains("onchange=\"_M.doAction('__FRAGMENT__', `action('${this.value}')`)\""), "Medusa tag should be rendered with replacement JS");
+        Assertions.assertTrue(template.contains("onchange=\"_M.doAction(event, '__FRAGMENT__', `action('${this.value}')`)\""), "Medusa tag should be rendered with replacement JS");
     }
 }
