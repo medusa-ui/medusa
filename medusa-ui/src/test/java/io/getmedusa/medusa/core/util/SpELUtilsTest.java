@@ -28,4 +28,5 @@ class SpELUtilsTest {
         Assertions.assertEquals("hello-123", SpELUtils.parseExpression("${'hello-' + xyz}", SESSION));
     }
 
+
 }

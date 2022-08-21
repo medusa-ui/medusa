@@ -9,6 +9,7 @@ import io.getmedusa.medusa.core.boot.StaticResourcesDetection;
 import io.getmedusa.medusa.core.boot.hydra.HydraConnectionController;
 import io.getmedusa.medusa.core.boot.hydra.model.meta.RenderedFragment;
 import io.getmedusa.medusa.core.session.Session;
+import io.getmedusa.medusa.core.tags.action.MedusaOnSubmit;
 import io.getmedusa.medusa.core.util.FluxUtils;
 import io.getmedusa.medusa.core.util.FragmentUtils;
 import org.jsoup.Jsoup;
@@ -54,13 +55,16 @@ public class Renderer {
 
     private final String selfName;
 
+    private final MedusaOnSubmit medusaOnSubmit;
+
     /**
      * Thymeleaf renderer
      * @param dialects a set of additional custom Thymeleaf-dialects
      */
     public Renderer(Set<AbstractProcessorDialect> dialects,
                     @Autowired(required = false) HydraConnectionController hydraConnectionController,
-                    @Value("${medusa.name:self}") String selfName) {
+                    @Value("${medusa.name:self}") String selfName,
+                    MedusaOnSubmit medusaOnSubmit) {
         this.bufferFactory = new DefaultDataBufferFactory();
 
         SpringWebFluxTemplateEngine templateEngine = new SpringWebFluxTemplateEngine();
@@ -71,10 +75,15 @@ public class Renderer {
         this.hydraConnectionController = hydraConnectionController;
 
         this.selfName = selfName;
+        this.medusaOnSubmit = medusaOnSubmit;
     }
 
     public Flux<DataBuffer> render(String templateHTML, Session session) {
-        return loadFragments(templateHTML, session).flatMapMany(html -> {
+        return loadFragments(templateHTML, session)
+                .map(html -> (medusaOnSubmit.handleSubmit(html, session))) //TODO this is problematic, maybe use onsubmit instead?
+                    //const formData = new FormData(e.target);
+                    //const formProps = Object.fromEntries(formData);
+                .flatMapMany(html -> {
             //TODO try making this a SpringWebFluxEngineContext?
             IContext context = new EngineContext(configuration, null, TEMPLATE_RESOLUTION_ATTRIBUTES, LOCALE, session.toLastParameterMap());
             return Flux.from(engine.processStream(

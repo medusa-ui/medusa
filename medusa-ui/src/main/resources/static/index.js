@@ -63,6 +63,7 @@ Medusa.prototype.doAction = function(parentFragment, actionToExecute) {
         "fragment": parentFragment,
         "action": actionToExecute
     });
+    return false;
 };
 
 evalXPath = function(xpath) {

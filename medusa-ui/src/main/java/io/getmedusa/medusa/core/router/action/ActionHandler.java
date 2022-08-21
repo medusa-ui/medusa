@@ -50,6 +50,10 @@ public class ActionHandler {
             EvaluationContext evaluationContext = new StandardEvaluationContext();
             evaluationContext.setVariable("session", session);
 
+            session.getLastParameters().stream().filter(a -> a.name().startsWith("form000")).forEach(form ->
+                    evaluationContext.setVariable(form.name(), form.value())
+            );
+
             String expression = escape(socketAction.getAction());
             if(MethodDetection.INSTANCE.shouldBeginWithSession(clazz, methodName)) {
                 expression = expression

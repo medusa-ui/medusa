@@ -2,6 +2,7 @@ package io.getmedusa.medusa.core.render;
 
 import io.getmedusa.medusa.core.boot.hydra.HydraConnectionController;
 import io.getmedusa.medusa.core.session.Session;
+import io.getmedusa.medusa.core.tags.action.MedusaOnSubmit;
 import io.getmedusa.medusa.core.util.FluxUtils;
 import io.getmedusa.medusa.core.tags.MedusaDialect;
 import io.getmedusa.medusa.core.tags.action.MedusaOnClick;
@@ -38,8 +39,8 @@ class RendererTest {
     public void init() {
         MockitoAnnotations.openMocks(this);
         Mockito.when(hydraConnectionController.askHydraForFragment(Mockito.any(), Mockito.anyMap(), Mockito.any())).thenReturn(Mono.just(List.of()));
-        rendererWithoutHydra = new Renderer(DIALECTS, null, "self");
-        rendererWithHydra = new Renderer(DIALECTS, hydraConnectionController,  "self");
+        rendererWithoutHydra = new Renderer(DIALECTS, null, "self", new MedusaOnSubmit());
+        rendererWithHydra = new Renderer(DIALECTS, hydraConnectionController,  "self", new MedusaOnSubmit());
     }
 
     @Test

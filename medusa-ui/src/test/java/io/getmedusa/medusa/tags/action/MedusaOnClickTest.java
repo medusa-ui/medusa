@@ -3,6 +3,7 @@ package io.getmedusa.medusa.tags.action;
 import io.getmedusa.medusa.core.attributes.Attribute;
 import io.getmedusa.medusa.core.render.Renderer;
 import io.getmedusa.medusa.core.tags.action.MedusaOnClick;
+import io.getmedusa.medusa.core.tags.action.MedusaOnSubmit;
 import io.getmedusa.medusa.core.util.FluxUtils;
 import io.getmedusa.medusa.core.tags.MedusaDialect;
 import org.junit.jupiter.api.Assertions;
@@ -16,7 +17,7 @@ class MedusaOnClickTest extends MedusaTagTest {
 
     @BeforeEach
     public void init() {
-        this.renderer = new Renderer(Set.of(new MedusaDialect(Set.of(new MedusaOnClick()))), null, "self");
+        this.renderer = new Renderer(Set.of(new MedusaDialect(Set.of(new MedusaOnClick()))), null, "self", new MedusaOnSubmit());
     }
 
     private final String basicTemplateHTML = """
