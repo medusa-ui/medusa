@@ -21,8 +21,8 @@ public class Component {
         map.put("Text inputs", List.of(
                 new Component("Submit with reference"),
                 new Component("Form submit tag", "form-submit",
-                        new String[]{"/samples/textinputs/formsubmit/page_map.txt"},
-                        new String[]{"/samples/textinputs/formsubmit/controller_map.txt"}),
+                        new String[]{"/samples/textinputs/formsubmit/page_map.txt", "/samples/textinputs/formsubmit/page_form.txt"},
+                        new String[]{"/samples/textinputs/formsubmit/controller_map.txt", "/samples/textinputs/formsubmit/controller_form.txt"}),
                 new Component("Search"),
                 new Component("Validation")
         ));
@@ -31,7 +31,7 @@ public class Component {
                 new Component("File uploads"),
                 new Component("Option list", "option-list",
                         new String[]{"/samples/input/special/select/basic/page.txt","/samples/input/special/select/linked/page.txt"},
-                        new String[]{ "/samples/input/special/select/basic/controller.txt", "/samples/input/special/select/linked/controller.txt"}
+                        new String[]{"/samples/input/special/select/basic/controller.txt", "/samples/input/special/select/linked/controller.txt"}
                 ),
                 new Component("Multiple selection list")
         ));

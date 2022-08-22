@@ -2,11 +2,13 @@ package io.getmedusa.medusa.core.router.action;
 
 import io.getmedusa.medusa.core.annotation.UIEventPageCallWrapper;
 import io.getmedusa.medusa.core.attributes.Attribute;
+import io.getmedusa.medusa.core.boot.FormDetection;
 import io.getmedusa.medusa.core.boot.MethodDetection;
 import io.getmedusa.medusa.core.boot.RefDetection;
+import io.getmedusa.medusa.core.router.action.converter.PojoTypeConverter;
 import io.getmedusa.medusa.core.router.request.Route;
 import io.getmedusa.medusa.core.session.Session;
-import org.springframework.expression.EvaluationContext;
+import org.springframework.context.expression.MapAccessor;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
 import org.springframework.stereotype.Component;
@@ -47,7 +49,14 @@ public class ActionHandler {
             final String methodName = socketAction.getAction().substring(0, socketAction.getAction().indexOf("("));
             final String clazz = bean.getClass().getName();
 
-            EvaluationContext evaluationContext = new StandardEvaluationContext();
+            StandardEvaluationContext evaluationContext = new StandardEvaluationContext();
+            evaluationContext.addPropertyAccessor(new MapAccessor());
+
+            Class<Object> formClass = FormDetection.INSTANCE.getFormClass(clazz, methodName);
+            if(formClass != null) {
+                evaluationContext.setTypeConverter(new PojoTypeConverter(formClass).getConverter());
+            }
+
             evaluationContext.setVariable("session", session);
 
             String expression = escape(socketAction.getAction());
