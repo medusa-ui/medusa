@@ -201,7 +201,7 @@ public class Renderer {
 
     private String appendRSocketScriptAndAddHydraPath(String rawTemplate, Session session) {
         String wsURL = "'/socket'";
-        if(hydraConnectionController != null && !hydraConnectionController.isInactive()) {
+        if(hydraConnectionController != null && !hydraConnectionController.isInactive() && null != session.getHydraPath()) {
             wsURL = "'/" + session.getHydraPath() + "/socket'";
         }
         return StaticResourcesDetection.INSTANCE.prependStaticUrlsWithHydraPath(rawTemplate

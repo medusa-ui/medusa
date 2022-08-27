@@ -41,7 +41,6 @@ public class HydraConnectionController {
     private ConnectivityState state = ConnectivityState.INITIALIZING;
     private boolean hasShownConnectionError;
     private long downtimeStart;
-    private final String wsUrl;
 
     private static final Logger logger = LoggerFactory.getLogger(HydraConnectionController.class);
 
@@ -54,7 +53,6 @@ public class HydraConnectionController {
         this.registrationURL = webClient.post().uri(configProps.getHydra().registrationURL());
         this.isAliveURL = webClient.post().uri(configProps.getHydra().isAliveURL());
         this.requestFragmentURL = webClient.post().uri(configProps.getHydra().requestFragmentURL());
-        this.wsUrl = configProps.getHydra().websocketUrl();
 
         activeService = new ActiveService();
         activeService.setName(configProps.getName());
@@ -178,13 +176,6 @@ public class HydraConnectionController {
 
     public boolean isInactive() {
         return !ConnectivityState.REGISTERED.equals(state);
-    }
-
-    public String getWSUrl(String hydraPath) {
-        if(hydraPath == null) {
-            return null;
-        }
-        return wsUrl.replace("{hydrapath}", hydraPath);
     }
 
     private enum ConnectivityState {
