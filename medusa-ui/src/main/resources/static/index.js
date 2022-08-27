@@ -29,7 +29,7 @@ async function setupRouter() {
     const socketArray = window.location.href.split("://");
     const socketProtocol = socketArray[0].replace("http", "ws");
     const socketRootUrl = socketArray[1].split("/")[0];
-    const socketUrl = socketProtocol + "://" + socketRootUrl + "/socket";
+    const socketUrl = socketProtocol + "://" + socketRootUrl + _M.wsURL;
 
     const connector = new RSocketConnector({
         setup: {

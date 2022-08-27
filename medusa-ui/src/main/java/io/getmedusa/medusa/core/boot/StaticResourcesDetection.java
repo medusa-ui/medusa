@@ -21,7 +21,7 @@ public enum StaticResourcesDetection {
 
     private Map<String, String> buildWithDefaults() {
         final Map<String, String> map = new HashMap<>();
-        map.put("<script src=\"/websocket.js\"></script>", "<script src=\"/"+ HYDRA_PATH +"/websocket.js\"></script>");
+        map.put("script src=\"/websocket.js\"", "script src=\"/"+ HYDRA_PATH +"/websocket.js\"");
         return map;
     }
 
@@ -42,6 +42,7 @@ public enum StaticResourcesDetection {
                 set.add(path.substring(path.indexOf("/static/") + 8));
             }
         }
+        set.add("websocket.js");
         return set;
     }
 
@@ -86,7 +87,9 @@ public enum StaticResourcesDetection {
                 matchLookup = matchLookup.substring(1);
             }
             if(staticResourcesAvailable.contains(matchLookup)) {
-                staticResourcesToReplace.put(hrefAttribute.toString(), hrefAttribute.toString().replace(urlUsed, "/" + HYDRA_PATH + "/" + matchLookup));
+                String reference = hrefAttribute.toString();
+                reference = reference.substring(reference.indexOf("<") + 1, reference.indexOf(">"));
+                staticResourcesToReplace.put(reference, reference.replace(urlUsed, "/" + HYDRA_PATH + "/" + matchLookup));
             }
         }
     }
