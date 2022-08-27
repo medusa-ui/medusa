@@ -1,5 +1,6 @@
 package io.getmedusa.medusa.core.boot;
 
+import io.getmedusa.medusa.core.session.Session;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -34,7 +35,11 @@ public enum FormDetection {
     private Class findArgInMethod(ParsedOperation parsedOperation, Object bean) {
         for(Method method : bean.getClass().getMethods()) {
             if(method.getName().equals(parsedOperation.operation)) {
-                return method.getParameterTypes()[parsedOperation.argIndex];
+                int indexCorrectionWithSession = 0;
+                if(Session.class.getName().equals(method.getParameterTypes()[0].getName())) {
+                    indexCorrectionWithSession = 1;
+                }
+                return method.getParameterTypes()[parsedOperation.argIndex + indexCorrectionWithSession];
             }
         }
         return null;
