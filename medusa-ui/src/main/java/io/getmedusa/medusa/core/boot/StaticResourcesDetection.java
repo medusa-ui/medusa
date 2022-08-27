@@ -6,10 +6,14 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.core.io.Resource;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternResolver;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 public enum StaticResourcesDetection {
 
@@ -25,16 +29,19 @@ public enum StaticResourcesDetection {
         return map;
     }
 
-    public void detectAvailableStaticResources(ResourcePatternResolver resourceResolver) {
+    public void detectAvailableStaticResources() {
         try {
-            staticResourcesAvailable = determineListOfStaticResources(resourceResolver);
+            staticResourcesAvailable = determineListOfStaticResources();
         } catch (IOException e) {
             throw new IllegalStateException("Could not detect static resources", e);
         }
     }
 
-    private Set<String> determineListOfStaticResources(ResourcePatternResolver resourceResolver) throws IOException {
-        Resource[] resources = resourceResolver.getResources("classpath:**/**.*");
+    private Set<String> determineListOfStaticResources() throws IOException {
+        ClassLoader cl = this.getClass().getClassLoader();
+        ResourcePatternResolver resourceResolver = new PathMatchingResourcePatternResolver(cl);
+        Resource[] resources = resourceResolver.getResources("/static/**/**.*");
+
         Set<String> set = new HashSet<>();
         for (Resource r : resources) {
             String path = r.getURI().getPath();
