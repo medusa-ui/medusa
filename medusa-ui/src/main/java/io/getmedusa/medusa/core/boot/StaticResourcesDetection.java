@@ -7,7 +7,6 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
-import org.springframework.core.io.support.ResourcePatternResolver;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -20,6 +19,7 @@ public enum StaticResourcesDetection {
     INSTANCE;
 
     private static final String HYDRA_PATH = "{hydrapath}";
+    protected static final String STATIC = "static";
     private Set<String> staticResourcesAvailable = new HashSet<>();
     private final Map<String, String> staticResourcesToReplace = buildWithDefaults();
 
@@ -38,15 +38,18 @@ public enum StaticResourcesDetection {
     }
 
     private Set<String> determineListOfStaticResources() throws IOException {
-        ClassLoader cl = this.getClass().getClassLoader();
-        ResourcePatternResolver resourceResolver = new PathMatchingResourcePatternResolver(cl);
-        Resource[] resources = resourceResolver.getResources("/static/**/**.*");
-
         Set<String> set = new HashSet<>();
-        for (Resource r : resources) {
-            String path = r.getURI().getPath();
-            if (path != null && path.contains("/static/") && !isPartOfStandardMedusaSetup(path)) {
-                set.add(path.substring(path.indexOf("/static/") + 8));
+
+        PathMatchingResourcePatternResolver resourcePatternResolver = new PathMatchingResourcePatternResolver(this.getClass().getClassLoader());
+        Resource[] resources = resourcePatternResolver.getResources("**");
+
+        for (Resource resource : resources) {
+            final String path = resource.getURI().toString();
+            if (path != null && path.contains(STATIC) && !isPartOfStandardMedusaSetup(path)) {
+                final String finalPath = path.substring(path.indexOf(STATIC) + 7);
+                if(!finalPath.isBlank()) {
+                    set.add(finalPath);
+                }
             }
         }
         set.add("websocket.js");
