@@ -46,19 +46,19 @@ public class MethodDetectionTest {
 @UIEventPage(path = "", file = "")
 class CorrectTestController {
 
-    public List<Attribute> sessionFirst(Session session, String data){
-        return session(session, data);
+    public List<Attribute> sessionFirst(Session session, String something){
+        return session(session, something);
     }
 
-    public List<Attribute> sessionLast(String data, Session session ){
-        return session(session, data);
+    public List<Attribute> sessionLast(String something, Session session ){
+        return session(session, something);
     }
 
     public List<Attribute> session(Session session ){
         return session(session, "");
     }
     /* private methods are not taken in consideration */
-    private List<Attribute> session(Session session, String data){
+    private List<Attribute> session(Session session, String something){
         return List.of();
     }
 }
@@ -66,15 +66,15 @@ class CorrectTestController {
 @UIEventPage(path = "", file = "")
 class BadTestController {
 
-    public List<Attribute> callable(String data, Session session ){
-        return callable(session, data);
+    public List<Attribute> callable(String something, Session session ){
+        return callable(session, something);
     }
 
     public List<Attribute> callable(Session session ){
         return callable(session, "");
     }
 
-    private List<Attribute> callable(Session session, String data){
+    private List<Attribute> callable(Session session, String something){
         return List.of();
     }
 }
