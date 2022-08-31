@@ -58,8 +58,8 @@ class CorrectTestController {
         return session(session, "");
     }
     /* private methods are not taken in consideration */
-    private List<Attribute> session(Session session, String something){
-        return List.of();
+    private List<Attribute> session(Session session, String data){
+        return List.of(new Attribute("something",data), new Attribute("id", session.getId()));
     }
 }
 
@@ -74,7 +74,7 @@ class BadTestController {
         return callable(session, "");
     }
 
-    private List<Attribute> callable(Session session, String something){
-        return List.of();
+    private List<Attribute> callable(Session session, String data){
+        return List.of(new Attribute("something",data), new Attribute("id", session.getId()));
     }
 }
