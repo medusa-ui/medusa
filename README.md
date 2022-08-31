@@ -1,5 +1,5 @@
 # 🦑 Medusa
-[![Documentation Badge](https://img.shields.io/badge/Documentation-medusa--ui.gitbook.io%2Fdocs-informational)](https://medusa-ui.gitbook.io/docs/) [![Codacy Badge](https://app.codacy.com/project/badge/Grade/c59176d4e2a34a50924afa14165071ba)](https://www.codacy.com/gh/medusa-ui/medusa/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=medusa-ui/medusa&amp;utm_campaign=Badge_Grade)
+[![Documentation Badge](https://img.shields.io/badge/Documentation-medusa--ui.gitbook.io%2Fdocs-informational)](https://medusa-ui.gitbook.io/docs/) [![Codacy Badge](https://app.codacy.com/project/badge/Grade/c59176d4e2a34a50924afa14165071ba?branch=rewrite-1.0.0)](https://www.codacy.com/gh/medusa-ui/medusa/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=medusa-ui/medusa&amp;utm_campaign=Badge_Grade)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.getmedusa/medusa-ui/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.getmedusa/medusa-ui)
 
 Medusa is a next-generation, easy-to-use, enterprise-ready micro-frontend UI framework in HTML/CSS and Java. Blazingly fast, modern feel and simple to write.
