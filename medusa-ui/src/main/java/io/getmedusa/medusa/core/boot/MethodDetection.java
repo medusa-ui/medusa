@@ -4,10 +4,7 @@ import io.getmedusa.medusa.core.annotation.UIEventPage;
 import io.getmedusa.medusa.core.session.Session;
 
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public enum MethodDetection {
 
@@ -16,22 +13,32 @@ public enum MethodDetection {
     private static final String LIST_OF_ATTRIBUTES = "java.util.List<io.getmedusa.medusa.core.attributes.Attribute>";
     private static final String VOID = "void";
 
-    private final Map<String, List<String>> methodsStartWithSession = new HashMap<>();
-    private final Map<String, List<String>> methodsEndWithSession = new HashMap<>();
+    private static final String ERROR_MESSAGE = "'%s' has multiple callable methods named '%s' that could be mapped to a Medusa action. All callable method names must be unique.";
+
+    private final Map<String, Set<String>> methodsStartWithSession = new HashMap<>();
+    private final Map<String, Set<String>> methodsEndWithSession = new HashMap<>();
 
     public void consider(Object bean) {
         final UIEventPage annotation = retrieveAnnotation(bean);
+        Set<String> callableMethods = new HashSet<>();
         if(null != annotation) {
-            for(Method method : bean.getClass().getMethods()) {
-                if(method.getDeclaringClass().equals(bean.getClass()) && isMethodRelevant(annotation, method) && method.getParameterCount() > 0) {
+            Class beanClass = bean.getClass();
+            for(Method method : beanClass.getMethods()) {
+                if(method.getDeclaringClass().equals(beanClass) && isMethodRelevant(annotation, method) && method.getParameterCount() > 0) {
+                    String beanClassName = beanClass.getName();
+                    String methodName = method.getName();
+                    if(callableMethods.contains(methodName)) {
+                        throw new IllegalArgumentException(ERROR_MESSAGE.formatted(beanClassName, methodName));
+                    }
+                    callableMethods.add(methodName);
                     if(firstMethodParamIsSession(method)) {
-                        List<String> methods = methodsStartWithSession.getOrDefault(bean.getClass().getName(), new ArrayList<>());
-                        methods.add(method.getName());
-                        methodsStartWithSession.put(bean.getClass().getName(), methods);
+                        Set<String> methods = methodsStartWithSession.getOrDefault(beanClassName, new HashSet<>());
+                        methods.add(methodName);
+                        methodsStartWithSession.put(beanClassName, methods);
                     } else if(lastMethodParamIsSession(method)) {
-                        List<String> methods = methodsEndWithSession.getOrDefault(bean.getClass().getName(), new ArrayList<>());
-                        methods.add(method.getName());
-                        methodsEndWithSession.put(bean.getClass().getName(), methods);
+                        Set<String> methods = methodsEndWithSession.getOrDefault(beanClassName, new HashSet<>());
+                        methods.add(methodName);
+                        methodsEndWithSession.put(beanClassName, methods);
                     }
                 }
             }
@@ -39,11 +46,11 @@ public enum MethodDetection {
     }
 
     public boolean shouldBeginWithSession(String clazz, String method) {
-        return methodsStartWithSession.getOrDefault(clazz, new ArrayList<>()).contains(method);
+        return methodsStartWithSession.getOrDefault(clazz, new HashSet<>()).contains(method);
     }
 
     public boolean shouldEndWithSession(String clazz, String method) {
-        return methodsEndWithSession.getOrDefault(clazz, new ArrayList<>()).contains(method);
+        return methodsEndWithSession.getOrDefault(clazz, new HashSet<>()).contains(method);
     }
 
     private boolean firstMethodParamIsSession(Method method) {
