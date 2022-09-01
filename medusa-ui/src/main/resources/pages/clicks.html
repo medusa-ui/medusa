@@ -16,12 +16,12 @@
         </span>
     </p>
     <div><button m:click="action()">action()</button></div>
-    <div><button m:click="action(1)">action(1)</button></div>
-    <div><button m:click="action('text')">action('text')</button></div>
-    <div><button m:click="action('${text}')">action('${text}')</button></div>
-    <div><button m:click="action(${number})">action(${number})</button></div>
-    <div><button m:click="action('${one.name}')">action('${one.name}')</button></div>
-    <div><button m:click="action(${one.target})">action(${one.number})</button></div>
-    <div><button m:click="action(${one.target}, '${two.target.name}')">action(${one.target}, '${two.target.name}')</button></div>
+    <div><button m:click="actionNumber(1)">actionNumber(1)</button></div>
+    <div><button m:click="actionString('text')">actionString('text')</button></div>
+    <div><button m:click="actionString('${text}')">actionString('${text}')</button></div>
+    <div><button m:click="actionNumber(${number})">actionNumber(${number})</button></div>
+    <div><button m:click="actionString('${one.name}')">actionString('${one.name}')</button></div>
+    <div><button m:click="actionNumber(${one.target})">actionNumber(${one.number})</button></div>
+    <div><button m:click="actionNumberString(${one.target}, '${two.target.name}')">actionNumberString(${one.target}, '${two.target.name}')</button></div>
 </body>
 </html>

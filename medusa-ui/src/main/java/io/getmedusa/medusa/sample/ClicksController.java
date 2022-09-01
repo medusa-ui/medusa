@@ -29,26 +29,26 @@ public class ClicksController {
         );
     }
 
-    public List<Attribute> action(Integer number) {
+    public List<Attribute> actionNumber(Integer number) {
         logger.info("action(Integer number)");
         return List.of(
-                new Attribute("action", "action(Integer number)"),
+                new Attribute("action", "actionNumber(Integer number)"),
                 new Attribute("value", number)
         );
     }
 
-    public List<Attribute> action(String text) {
+    public List<Attribute> actionString(String text) {
         logger.info("action(String text) ");
         return List.of(
-                new Attribute("action", "action(String text)"),
+                new Attribute("action", "actionString(String text)"),
                 new Attribute("value", text)
         );
     }
 
-    public List<Attribute> action(Integer number, String text) {
+    public List<Attribute> actionNumberString(Integer number, String text) {
         logger.info("action(Integer number, String text)");
         return List.of(
-                new Attribute("action", "action(Integer number, String text)"),
+                new Attribute("action", "actionNumberString(Integer number, String text)"),
                 new Attribute("value", number + " and " + text)
         );
     }
