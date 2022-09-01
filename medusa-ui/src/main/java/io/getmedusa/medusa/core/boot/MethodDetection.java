@@ -13,8 +13,7 @@ public enum MethodDetection {
     private static final String LIST_OF_ATTRIBUTES = "java.util.List<io.getmedusa.medusa.core.attributes.Attribute>";
     private static final String VOID = "void";
 
-    private static String ERROR_MESSAGE = "UIEventPage '%s' has multiple callable methods named '%s' " +
-            "that could be mapped to a Medusa action. All callable methods must be unique.";
+    private static final String ERROR_MESSAGE = "'%s' has multiple callable methods named '%s' that could be mapped to a Medusa action. All callable method names must be unique.";
 
     private final Map<String, Set<String>> methodsStartWithSession = new HashMap<>();
     private final Map<String, Set<String>> methodsEndWithSession = new HashMap<>();

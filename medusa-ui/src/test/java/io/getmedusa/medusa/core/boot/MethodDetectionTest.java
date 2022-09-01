@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-public class MethodDetectionTest {
+class MethodDetectionTest {
     MethodDetection methodDetection = MethodDetection.INSTANCE;
 
     @Test
@@ -34,9 +34,9 @@ public class MethodDetectionTest {
                             () -> methodDetection.consider(new BadTestController()));
 
         Assertions.assertEquals(
-                "UIEventPage 'io.getmedusa.medusa.core.boot.BadTestController' " +
+                "'io.getmedusa.medusa.core.boot.BadTestController' " +
                         "has multiple callable methods named 'callable' that could be mapped to a Medusa action. " +
-                        "All callable methods must be unique.",
+                        "All callable method names must be unique.",
                 ex.getMessage());
     }
 
