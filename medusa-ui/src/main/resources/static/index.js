@@ -60,8 +60,18 @@ document.addEventListener("DOMContentLoaded", setupRouter);
 
 Medusa.prototype.doFormAction = function(event, parentFragment, actionToExecute) {
     const formData = new FormData(event.target);
-    const formProps = Object.fromEntries(formData);
-    _M.doAction(event, parentFragment, actionToExecute.replace(":{form}", JSON.stringify(formProps)));
+    const formProps = {};
+    for (const [key, value] of formData) {
+        if(typeof formProps[key] !== "undefined") { //existing value
+            if(!Array.isArray(formProps[key])) {
+                formProps[key] = [formProps[key]];
+            }
+            formProps[key].push(value);
+        } else {
+            formProps[key] = value;
+        }
+    }
+    _M.doAction(event, parentFragment, actionToExecute.replace(":{form}", JSON.stringify(formProps) ));
 }
 
 Medusa.prototype.doAction = function(event, parentFragment, actionToExecute) {

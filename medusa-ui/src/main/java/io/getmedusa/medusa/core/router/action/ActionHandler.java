@@ -18,6 +18,8 @@ import java.net.URLDecoder;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Component
 public class ActionHandler {
@@ -60,6 +62,8 @@ public class ActionHandler {
             evaluationContext.setVariable("session", session);
 
             String expression = escape(socketAction.getAction());
+            expression = handleArrayParsing(expression);
+
             if(MethodDetection.INSTANCE.shouldBeginWithSession(clazz, methodName)) {
                 expression = expression
                         .replace("(", "(#session,");
@@ -78,6 +82,16 @@ public class ActionHandler {
             return new ArrayList<>();
         }
         return (List<Attribute>) result;
+    }
+
+    private static String handleArrayParsing(String expression) {
+        Pattern pattern = Pattern.compile("\\[.*?]");
+        Matcher matcher = pattern.matcher(expression);
+        while(matcher.find()) {
+            final String part = matcher.group();
+            expression = expression.replace(part, "new Object[]{" + part.substring(1, part.length() -1) + "}");
+        }
+        return expression;
     }
 
     String escape(String raw) {
