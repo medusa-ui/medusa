@@ -128,7 +128,7 @@ public class Renderer {
 
         //TODO deal with the export/imports here as well later on
 
-        return renderFragment(rawHTML, session.toLastParameterMap()).map(dataBuffer -> {
+        return renderFragment(rawHTML, session).map(dataBuffer -> {
             final RenderedFragment renderedFragment = new RenderedFragment();
             renderedFragment.setId(fragment.getId());
             renderedFragment.setRenderedHTML(FragmentUtils.addFragmentRefToHTML(FluxUtils.dataBufferToString(dataBuffer), ref));
@@ -212,8 +212,16 @@ public class Renderer {
                         "</script>\n" + "</body>"), session);
     }
 
+    @Deprecated
     public Flux<DataBuffer> renderFragment(String html, Map<String, Object> attributes) {
         IContext context = new EngineContext(configuration, null, TEMPLATE_RESOLUTION_ATTRIBUTES, LOCALE, attributes);
         return Flux.from(engine.processStream(convertToXHTML(html), MARKUP_SELECTORS, context, bufferFactory, TEXT_HTML, UTF_8));
+    }
+
+    public Flux<DataBuffer> renderFragment(String html, Session session) {
+        return loadFragments(html, session).flatMapMany(parsedHTML -> {
+            IContext context = new EngineContext(configuration, null, TEMPLATE_RESOLUTION_ATTRIBUTES, LOCALE, session.toLastParameterMap());
+            return Flux.from(engine.processStream(convertToXHTML(parsedHTML), MARKUP_SELECTORS, context, bufferFactory, TEXT_HTML, UTF_8));
+        });
     }
 }

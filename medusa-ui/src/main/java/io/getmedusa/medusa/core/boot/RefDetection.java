@@ -79,4 +79,15 @@ public enum RefDetection {
     private UIEventPage retrieveAnnotation(Object bean) {
         return bean.getClass().getAnnotation(UIEventPage.class);
     }
+
+    public void updateAllRefsWithNestedFragments() {
+        Map<String, String> updatesToRefs = new HashMap<>();
+        for(Map.Entry<String, String> refEntry : detectedRefs.entrySet()) {
+            final String html = refEntry.getValue();
+            if(html.contains(":fragment>")) {
+                updatesToRefs.put(refEntry.getKey(), FragmentDetection.INSTANCE.prepFile(html));
+            }
+        }
+        detectedRefs.putAll(updatesToRefs);
+    }
 }

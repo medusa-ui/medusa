@@ -25,6 +25,15 @@ public enum FragmentDetection {
                     return attribute.getKey().split(":")[1];
                 }
             }
+
+            Elements refs = document.getElementsByAttribute("ref");
+            if(!refs.isEmpty()) {
+                Element ref = refs.get(0);
+                if(ref.tagName().contains(":fragment")) {
+                    return ref.tagName().replace(":fragment", "");
+                }
+            }
+
             return null;
         } catch (Exception e) {
             return null;
@@ -33,7 +42,7 @@ public enum FragmentDetection {
 
     //this method detects fragments and registers them, within the rendering process we can then easily check for the presence of these fragments and replace them as needed
     String prepFile(final String html) {
-        if(html.contains(":fragment ")) {
+        if(html.contains(":fragment>")) {
             final Document document = Jsoup.parse(html);
             document.outputSettings().indentAmount(0).prettyPrint(false);
             final String prefix = findPrefix(document);
@@ -47,17 +56,27 @@ public enum FragmentDetection {
                 return html;
             }
             Element refElement = refElements.get(0);
-            Fragment fragment = new Fragment();
-            fragment.setFallback(refElement.html());
-            fragment.setService(orSelfAsDefault(refElement.attributes().get("service")));
-            fragment.setRef(refElement.attributes().get("ref"));
-            fragment.setId("$#FRGM-" + RandomUtils.generateId());
+            Fragment fragment = findExistingRef(refElement).orElse(null);
 
-            detectedFragments.put(fragment.getId(), fragment);
+            if(fragment == null) {
+                fragment = new Fragment();
+                fragment.setFallback(refElement.html());
+                fragment.setService(orSelfAsDefault(refElement.attributes().get("service")));
+                fragment.setRef(refElement.attributes().get("ref"));
+                fragment.setId("$#FRGM-" + RandomUtils.generateId());
+
+                detectedFragments.put(fragment.getId(), fragment);
+            }
 
             return prepFile(document.outerHtml().replace(refElement.outerHtml(), fragment.getId()));
         }
         return html;
+    }
+
+    private Optional<Fragment> findExistingRef(Element refElement) {
+        return detectedFragments.values().stream()
+                .filter(f -> f.getRef().equals(refElement.attributes().get("ref")))
+                .findFirst();
     }
 
     private String orSelfAsDefault(String service) {

@@ -6,18 +6,22 @@
 </head>
 <body>
 
-<div m:ref="search-bar">
-    <p style="color:red">This piece of code can be used in another app.
-    <span>Search bar</span>
-    End of code.</p>
+<div m:ref="first-fragment">
+    <p style="color:blue; padding-left: 3em;">This is the first fragment. It includes another fragment.</p>
+
+    <p style="padding-left: 3em;">Second fragment (in first fragment) starts here:</p>
+
+    <m:fragment service="self" ref="second-fragment">
+        <p style="color:red; padding-left: 5em;">Fallback info for second m:fragment, manual self</p>
+    </m:fragment>
+
+    <p style="padding-left: 3em;">Second fragment ends here</p>
 </div>
 
-<section m:ref="checkout2">
-    This piece of code can be used in another app.
-    <p>Value: <span th:text="${counter}"></span></p>
-    End of code.
+<section m:ref="second-fragment">
+    <p style="color:green; padding-left: 5em;">This is the second fragment content. This means the fragment logic is complete and correct.</p>
+    <!-- TODO: RECURSE INTO SELF TO TEST LIMIT -->
 </section>
-
 
 </body>
 </html>

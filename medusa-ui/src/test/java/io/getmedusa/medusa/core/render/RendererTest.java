@@ -2,9 +2,9 @@ package io.getmedusa.medusa.core.render;
 
 import io.getmedusa.medusa.core.boot.hydra.HydraConnectionController;
 import io.getmedusa.medusa.core.session.Session;
-import io.getmedusa.medusa.core.util.FluxUtils;
 import io.getmedusa.medusa.core.tags.MedusaDialect;
 import io.getmedusa.medusa.core.tags.action.MedusaOnClick;
+import io.getmedusa.medusa.core.util.FluxUtils;
 import org.jsoup.Jsoup;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,7 +17,6 @@ import org.thymeleaf.dialect.AbstractProcessorDialect;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
@@ -53,7 +52,7 @@ class RendererTest {
 
     @Test
     void testRenderFragmentSimple() {
-        final Flux<DataBuffer> dataBufferFlux = rendererWithoutHydra.renderFragment("<p>Hello world</p>", new HashMap<>());
+        final Flux<DataBuffer> dataBufferFlux = rendererWithoutHydra.renderFragment("<p>Hello world</p>", new Session());
         String render = FluxUtils.dataBufferFluxToString(dataBufferFlux);
         System.out.println(render);
         Assertions.assertFalse(render.contains("<script src=\"/websocket.js\"></script>"), "Fragment should not contain script");
@@ -71,7 +70,7 @@ class RendererTest {
 
     @Test
     void testRenderFragmentSimpleWHydra() {
-        final Flux<DataBuffer> dataBufferFlux = rendererWithHydra.renderFragment("<p>Hello world</p>", new HashMap<>());
+        final Flux<DataBuffer> dataBufferFlux = rendererWithHydra.renderFragment("<p>Hello world</p>", new Session());
         String render = FluxUtils.dataBufferFluxToString(dataBufferFlux);
         System.out.println(render);
         Assertions.assertFalse(render.contains("<script src=\"/websocket.js\"></script>"), "Fragment should not contain script");

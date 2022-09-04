@@ -6,24 +6,26 @@
 </head>
 <body>
 
-<h1>Hello, this is a core page</h1>
-
+<h1>Hello, this is a root page. This is rendered outside of any fragment.</h1>
 <ul>
     <li th:text="${service}"></li>
     <li th:text="${ref}"></li>
 </ul>
 
+<p>First fragment (in root) starts here:</p>
+
 <m:fragment service="self" ref="${ref}">
-    <p>Fallback info for search bar w/ m:fragment, manual self</p>
+    <p>Fallback info for first m:fragment, manual self</p>
 </m:fragment>
 
-<m:fragment ref="${ref}">
+<p>First fragment ends here</p>
+<!--m:fragment ref="${ref}">
     <p>Fallback info for search bar w/ m:fragment, auto self</p>
 </m:fragment>
 
 <m:fragment service="${service}" ref="${ref}">
    <p>Fallback info for search bar w/ m:fragment</p>
-</m:fragment>
+</m:fragment-->
 
 <p>End of content</p>
 

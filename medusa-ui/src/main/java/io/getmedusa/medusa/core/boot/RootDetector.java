@@ -29,9 +29,13 @@ public class RootDetector implements BeanPostProcessor {
 
     @Override
     public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
-        if(beanName.equalsIgnoreCase(MedusaAutoConfiguration.class.getName()) && hydraConnectionController != null) { //execute post init, as last
-            //hydra should execute last, because it depends on routes being initialized
-            hydraConnectionController.enableHydraConnectivity();
+        if(beanName.equalsIgnoreCase(MedusaAutoConfiguration.class.getName())){ //execute post init, as last
+            RefDetection.INSTANCE.updateAllRefsWithNestedFragments();
+
+            if(hydraConnectionController != null) {
+                //hydra should execute last, because it depends on routes being initialized
+                hydraConnectionController.enableHydraConnectivity();
+            }
         }
         return BeanPostProcessor.super.postProcessAfterInitialization(bean, beanName);
     }

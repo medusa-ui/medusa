@@ -12,7 +12,7 @@ public class FragmentRootController {
     public List<Attribute> setupAttributes(ServerRequest serverRequest) {
         return List.of(
                 new Attribute("service", "self"),
-                new Attribute("ref", "search-bar")
+                new Attribute("ref", "first-fragment")
         );
     }
 
