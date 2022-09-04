@@ -219,6 +219,10 @@ public class Renderer {
     }
 
     public Flux<DataBuffer> renderFragment(String html, Session session) {
+        session.setDepth(session.getDepth() + 1);
+        if(session.getDepth() > 100) {
+            return Flux.just(FluxUtils.stringToDataBuffer(html));
+        }
         return loadFragments(html, session).flatMapMany(parsedHTML -> {
             IContext context = new EngineContext(configuration, null, TEMPLATE_RESOLUTION_ATTRIBUTES, LOCALE, session.toLastParameterMap());
             return Flux.from(engine.processStream(convertToXHTML(parsedHTML), MARKUP_SELECTORS, context, bufferFactory, TEXT_HTML, UTF_8));

@@ -22,6 +22,8 @@ public class Session {
     private final String hydraPath;
     private boolean matched;
     private boolean initialRender = true;
+
+    private int depth = 0;
     @JsonIgnore
     private final SocketSink sink = new SocketSink();
 
@@ -162,5 +164,13 @@ public class Session {
                 .toList();
         lastParameters.removeAll(passThrough);
         return passThrough;
+    }
+
+    public void setDepth(int depth) {
+        this.depth = depth;
+    }
+
+    public int getDepth() {
+        return depth;
     }
 }
