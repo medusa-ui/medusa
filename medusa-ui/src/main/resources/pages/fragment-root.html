@@ -14,9 +14,14 @@
 
 <p>First fragment (in root) starts here:</p>
 
-<m:fragment service="self" ref="${ref}">
-    <p>Fallback info for first m:fragment, manual self</p>
-</m:fragment>
+<section class="example" style="border:1px solid red;">
+    <m:fragment service="self" ref="third-fragment">
+        <p>Fallback info for first m:fragment, manual self</p>
+    </m:fragment>
+    <m:fragment service="self" ref="third-fragment">
+        <p>Fallback info for first m:fragment, manual self</p>
+    </m:fragment>
+</section>
 
 <p>First fragment ends here</p>
 <!--m:fragment ref="${ref}">

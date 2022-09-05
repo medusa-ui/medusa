@@ -187,7 +187,13 @@ public class Renderer {
     private String convertToXHTML(String html) {
         final Document document = Jsoup.parse(html);
         document.outputSettings().syntax(Document.OutputSettings.Syntax.xml);
-        return wrapScriptContentInCDATA(document).html();
+        final Document wrappedDoc = wrapScriptContentInCDATA(document);
+        boolean isFragment = FragmentUtils.determineIfFragment(wrappedDoc);
+        String outerHtml = document.outerHtml();
+        if(isFragment) {
+            outerHtml = document.body().html();
+        }
+        return outerHtml;
     }
 
     Document wrapScriptContentInCDATA(Document document) {

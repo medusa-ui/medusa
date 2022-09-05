@@ -29,7 +29,10 @@
 
 <section m:ref="third-fragment">
     <p style="color:green; padding-left: 7em;">This is the third fragment content. This means the fragment logic is complete and correct.</p>
-    <!-- TODO: RECURSE INTO SELF TO TEST LIMIT -->
+
+    <!--m:fragment service="self" ref="first-fragment">
+        <p style="color:red; padding-left: 7em;">Fallback info for fourth (recursive source) m:fragment, manual self</p>
+    </m:fragment-->
 </section>
 
 </body>

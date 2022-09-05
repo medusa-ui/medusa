@@ -1,6 +1,7 @@
 package io.getmedusa.medusa.core.boot;
 
 import io.getmedusa.medusa.core.session.Session;
+import io.getmedusa.medusa.core.util.FragmentUtils;
 import io.getmedusa.medusa.core.util.RandomUtils;
 import io.getmedusa.medusa.core.util.SpELUtils;
 import org.jsoup.Jsoup;
@@ -68,10 +69,17 @@ public enum FragmentDetection {
                 detectedFragments.put(fragment.getId(), fragment);
             }
 
-            return prepFile(document.outerHtml().replace(refElement.outerHtml(), fragment.getId()));
+            boolean isFragment = FragmentUtils.determineIfFragment(document);
+            String outerHtml = document.outerHtml();
+            if(isFragment) {
+                outerHtml = document.body().html();
+            }
+            return prepFile(outerHtml.replace(refElement.outerHtml(), fragment.getId()));
         }
         return html;
     }
+
+
 
     private Optional<Fragment> findExistingRef(Element refElement) {
         return detectedFragments.values().stream()
