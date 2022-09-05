@@ -1,3 +1,11 @@
+<!-- ref definition page (/fragments/sample-fragments.html) -->
+<div m:ref="a-sample-ref">
+    <p>Hello world</p>
+</div>
+
+<!-- root file (/sample/fragments.html) -->
+<p>The following are all fragments loaded in dynamically: </p>
+
 <m:fragment ref="a-sample-ref">
     <p>This is a fallback that triggers if a-sample-ref does not exist.</p>
 </m:fragment>
@@ -11,9 +19,3 @@
     <p>This is a fallback that triggers if
     <th:block th:text="${nonExistentRef}"></th:block> does not exist.</p>
 </m:fragment>
-
-<!-- different file -->
-
-<div m:ref="a-sample-ref">
-    <p>Hello world</p>
-</div>

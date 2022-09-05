@@ -14,10 +14,7 @@ public class FragmentController {
 
 }
 
-<!-- different file -->
-
-package sample.getmedusa.showcase.samples.embedding.fragment;
-
+/** different file **/
 import io.getmedusa.medusa.core.annotation.UIEventPage;
 
 @UIEventPage(path = "/fragment/sample", file = "/pages/fragments/sample-fragments.html")
