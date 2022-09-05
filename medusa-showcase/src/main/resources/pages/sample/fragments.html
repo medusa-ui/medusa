@@ -18,20 +18,22 @@
     </section>
 
     <h2>Local fragments</h2>
-    <p>This illustrates a fragment from the same server. They cannot be on the same page ?</p>
+    <p>This illustrates a fragment from the same server.</p>
+    <p>Fragments work by defining an <span class="code-snippet">m:ref=""</span> element on a page and exposing that page with a controller (in this example: SampleFragmentPartController).</p>
+    <p>That wrapper can then be referenced via an <span class="code-snippet">m:fragment=""</span>. The fragment's contents serve as a fallback in case the data cannot be loaded.</p>
 
     <section class="example">
-            <m:fragment ref="a-sample-ref">
-                <p>This is a fallback that triggers if a-sample-ref does not exist.</p>
-            </m:fragment>
+        <m:fragment ref="a-sample-ref">
+            <p>This is a fallback that triggers if a-sample-ref does not exist.</p>
+        </m:fragment>
 
-            <m:fragment ref="${myRefName}">
-                <p>This is a fallback that triggers if <th:block th:text="${myRefName}"></th:block> does not exist.</p>
-            </m:fragment>
+        <m:fragment ref="${myRefName}">
+            <p>This is a fallback that triggers if <th:block th:text="${myRefName}"></th:block> does not exist.</p>
+        </m:fragment>
 
-            <m:fragment ref="${nonExistentRef}">
-                <p>This is a fallback that triggers if <th:block th:text="${nonExistentRef}"></th:block> does not exist.</p>
-            </m:fragment>
+        <m:fragment ref="${nonExistentRef}">
+            <p>This is a fallback that triggers if <th:block th:text="${nonExistentRef}"></th:block> does not exist.</p>
+        </m:fragment>
     </section>
 
     <section class="client">

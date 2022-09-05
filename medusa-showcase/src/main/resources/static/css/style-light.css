@@ -225,3 +225,8 @@ pre, pre code, pre code span {
     color: #b0a0e2 !important;
 }
 
+span.code-snippet {
+  font-family: 'JetBrains Mono', monospace;
+  color: #e28d3e;
+  font-size: 0.87em;
+}

@@ -59,8 +59,8 @@ public class Component {
 
         map.put("Embedding", List.of(
                 new Component("Fragment", "fragments",
-                        new String[]{"/samples/navigation/ForwardingController_page.txt", "/samples/navigation/ForwardingServerInitController_page.txt"},
-                        new String[]{"/samples/navigation/ForwardingController.txt", "/samples/navigation/ForwardingServerInitController.txt"})
+                        new String[]{"/samples/embedding/fragment/page.txt"},
+                        new String[]{"/samples/embedding/fragment/controller.txt"})
         ));
 
         return map;
