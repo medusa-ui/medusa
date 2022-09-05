@@ -14,6 +14,7 @@ public class MedusaDefaultPropertiesConfiguration implements ApplicationListener
         Properties props = new Properties();
 
         props.put("server.port", 8080);
+        props.put("spring.thymeleaf.prefix", "classpath:/");
         props.put("spring.rsocket.server.port", 7000);
         props.put("spring.rsocket.server.mapping-path", "/socket");
         props.put("spring.rsocket.server.transport", "websocket");
