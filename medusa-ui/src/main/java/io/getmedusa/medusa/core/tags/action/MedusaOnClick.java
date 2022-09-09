@@ -18,8 +18,8 @@ public class MedusaOnClick extends JSEventAttributeProcessor {
 
     @Override
     protected void doProcess(ITemplateContext context, IProcessableElementTag tag, AttributeName attributeName, String attributeValue, IElementTagStructureHandler structureHandler) {
-        attributeValue = replaceAttributeValues(context, tag, attributeValue);
-        attributeValue = replaceElementValues(context, tag, attributeValue);
+        attributeValue = replaceAttributeValues(context, attributeValue);
+        attributeValue = replaceElementValues(attributeValue);
         structureHandler.setAttribute(eventName, eventTemplate.formatted(attributeValue));
     }
 }

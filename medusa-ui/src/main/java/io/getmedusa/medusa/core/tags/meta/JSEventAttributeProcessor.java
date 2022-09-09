@@ -19,8 +19,9 @@ public abstract class JSEventAttributeProcessor extends AbstractAttributeTagProc
     public static final String FRAGMENT_REPLACEMENT = "'__FRAGMENT__'";
     public static final String QUERY_SELECTOR_PREFIX = ":"; // avoid collisions with existing Thymeleaf Standard Expression Syntax
     public static final String VARIABLE_PREFIX = "\\$"; // Thymeleaf Standard Expression Syntax for Variable
-    private static final String BASIC_EXPRESSION = "\\{(.*?)\\}";
+    private static final String BASIC_EXPRESSION = "\\{(.*?)}";
     protected static final String EVENT_TEMPLATE_M_DO_ACTION = "_M.doAction(event, " + FRAGMENT_REPLACEMENT + ", `%s`)";
+    protected static final String EVENT_TEMPLATE_M_DO_ACTION_ONKEYUP = "_M.doActionOnKeyUp(%s, event, " + FRAGMENT_REPLACEMENT + ", `%s`)";
     protected static final String SELECTOR_QUERY ="'${document.querySelector('%s').%s}'";
     protected static final String SELECTOR_THIS_REFERENCE ="'${%s.%s}'";
     protected static final String SELECTOR_DEFAULT_ATTRIBUTE ="value";
@@ -48,12 +49,12 @@ public abstract class JSEventAttributeProcessor extends AbstractAttributeTagProc
     @Override
     protected abstract void doProcess(ITemplateContext context, IProcessableElementTag tag, AttributeName attributeName, String attributeValue, IElementTagStructureHandler structureHandler);
 
-    protected String replaceElementValues(ITemplateContext context, IProcessableElementTag tag, String attributeValue) {
+    protected String replaceElementValues(String attributeValue) {
         if(attributeValue.contains(QUERY_SELECTOR_PREFIX)) {
             Matcher elementValueMatcher = CTX_QUERY_SELECTOR_VALUE_REGEX.matcher(attributeValue);
             while (elementValueMatcher.find()) {
                 String select = SELECTOR_DEFAULT_ATTRIBUTE;
-                String replaceValue = "";
+                String replaceValue;
                 String querySelector = elementValueMatcher.group(1);
                 int index = querySelector.lastIndexOf(".");
                 // index == -1 => not found, index == 0 => class querySelector
@@ -72,7 +73,7 @@ public abstract class JSEventAttributeProcessor extends AbstractAttributeTagProc
         return attributeValue;
     }
 
-    protected String replaceAttributeValues(ITemplateContext context, IProcessableElementTag tag, String attributeValue){
+    protected String replaceAttributeValues(ITemplateContext context, String attributeValue){
         Matcher matcher = CTX_ATTRIBUTE_VALUE_REGEX.matcher(attributeValue);
         while (matcher.find()) {
             String replaceValue = matcher.group(1);
