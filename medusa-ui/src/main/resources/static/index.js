@@ -85,6 +85,12 @@ Medusa.prototype.doAction = function(event, parentFragment, actionToExecute) {
     return false;
 };
 
+Medusa.prototype.doActionOnKeyUp = function(key, event, parentFragment, actionToExecute) {
+    if(event.key === key || event.keyCode === key) {
+        _M.doAction(event, parentFragment, actionToExecute);
+    }
+};
+
 evalXPath = function(xpath) {
     return document.evaluate(xpath, document, null, XPathResult.ANY_UNORDERED_NODE_TYPE, null ).singleNodeValue;
 };

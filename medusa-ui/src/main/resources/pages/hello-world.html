@@ -56,8 +56,26 @@
 
     <p>Searching for <i th:text="${search}"></i>...</p>
     <div>
-        <input id="search-input" type="text" />
-        <button m:click="search(:{#search-input})">Search</button>
+        <div>
+            <input type="text" m:key="32" m:keyup="search(:{this.value})" /> ... triggered when space pressed with m:key="32" (keycode)
+            <br>
+            <input type="text" m:key=" " m:keyup="search(:{this.value})" />  ... triggered when space pressed with m:key=" " (key)
+            <br>
+            <input type="text" m:keyup="search(:{this.value})" /> ... no m:key defaults to enter
+            <!-- does it break -->
+            <!--
+            <br>
+            <input type="text" m:key="" m:keyup="search(:{this.value})" /> ... no m:key empty?
+            <br>
+            <input type="text" m:key="fake" m:keyup="search(:{this.value})" /> ... no m:key invalid key?
+            <br>
+            <input type="text" m:key="257" m:keyup="search(:{this.value})" /> ... no m:key invalid keycode?
+            -->
+        </div>
+        <div>
+            <input id="search-input" type="text" m:enter="search(:{this.value})" />
+            <button m:click="search(:{#search-input})">Search</button>
+        </div>
         <div>
             <select name="search" m:change="search(:{this.value})">
                 <option value="Hello World">Search for 'Hello World'</option>
@@ -65,7 +83,9 @@
             </select>
         </div>
         <div>
-            <input type="text" class="search search-by-class" m:change="search(:{.search.search-by-class})" /> <i>press enter to search</i>
+            <input type="text" class="search search-by-class" m:change="search(:{.search.search-by-class})" />... m:change reacts to a change after enter or tab
+            <br>
+            <input type="text" m:enter="search(:{this})" />... m:enter reacts to enter
         </div>
     </div>
 

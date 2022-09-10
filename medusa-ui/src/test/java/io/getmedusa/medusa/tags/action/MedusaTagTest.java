@@ -5,6 +5,8 @@ import io.getmedusa.medusa.core.session.Session;
 import io.getmedusa.medusa.core.tags.MedusaDialect;
 import io.getmedusa.medusa.core.tags.action.MedusaOnChange;
 import io.getmedusa.medusa.core.tags.action.MedusaOnClick;
+import io.getmedusa.medusa.core.tags.action.MedusaOnEnter;
+import io.getmedusa.medusa.core.tags.action.MedusaOnKeyUp;
 import io.getmedusa.medusa.core.tags.action.MedusaOnSelect;
 import io.getmedusa.medusa.core.tags.action.MedusaOnSubmit;
 import org.junit.jupiter.api.BeforeEach;
@@ -25,9 +27,19 @@ public abstract class MedusaTagTest {
         return s;
     }
 
+    final MedusaDialect medusaDialect = new MedusaDialect(
+            Set.of(new MedusaOnClick(),
+                    new MedusaOnChange(),
+                    new MedusaOnSelect(),
+                    new MedusaOnSubmit(),
+                    new MedusaOnEnter(),
+                    new MedusaOnKeyUp()
+            )
+    );
+
     @BeforeEach
     public void init() {
-        this.renderer = new Renderer(Set.of(new MedusaDialect(Set.of(new MedusaOnClick(), new MedusaOnChange(), new MedusaOnSelect(), new MedusaOnSubmit()))), null,  "self");
+        this.renderer = new Renderer(Set.of(medusaDialect), null,  "self");
     }
 
 }
