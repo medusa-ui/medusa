@@ -2,6 +2,7 @@ package io.getmedusa.medusa.core.router.action;
 
 import reactor.core.publisher.Flux;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -63,6 +64,10 @@ public class SocketSink {
 
     public Flux<List<JSReadyDiff>> asFlux() {
         return eventFlux;
+    }
+
+    public SocketSink() {
+        this.eventProcessor.dataChunk(new ArrayList<>());
     }
 
 }
