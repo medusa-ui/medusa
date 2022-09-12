@@ -215,6 +215,7 @@ public class Renderer {
                         "<script>_M.controller = '" + session.getLastUsedHash() + "'; " +
                         "_M.sessionId = '" + session.getId() + "'; " +
                         "_M.wsURL = " + wsURL + ";" +
+                        "_M.wsP = '" + session.getPassword() + "';" +
                         "</script>\n" + "</body>"), session);
     }
 

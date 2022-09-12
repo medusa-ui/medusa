@@ -14,6 +14,7 @@ import java.util.*;
 public class Session {
 
     private final String id;
+    private final String password;
     private String lastUsedTemplate;
     private String lastUsedHash;
     private String lastRenderedHTML;
@@ -29,16 +30,19 @@ public class Session {
 
     public Session() {
         this.id = RandomUtils.generateId();
+        this.password = RandomUtils.generatePassword(id);
         this.hydraPath = null;
     }
 
     public Session(String hydraPath) {
         this.id = RandomUtils.generateId();
+        this.password = RandomUtils.generatePassword(id);
         this.hydraPath = hydraPath;
     }
 
     public Session(Route route, ServerRequest request) {
         this.id = RandomUtils.generateId();
+        this.password = RandomUtils.generatePassword(id);
         this.hydraPath = findHydraPath(request.headers());
         setLastParameters(route.getSetupAttributes(request, this));
         setLastUsedTemplate(route.getTemplateHTML());
@@ -172,5 +176,13 @@ public class Session {
 
     public int getDepth() {
         return depth;
+    }
+
+    public String getUsername() {
+        return id;
+    }
+
+    public String getPassword() {
+        return password;
     }
 }
