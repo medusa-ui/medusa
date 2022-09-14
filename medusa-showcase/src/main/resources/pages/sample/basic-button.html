@@ -22,24 +22,25 @@
         Instead, we can use the Session object to get the specific variables for the active user.</p>
 
 
-        <section class="example">
-            <span class="sample-counter" th:text="${counter}"></span>
+    <section class="example">
+        <span id="counter_value" class="sample-counter" th:text="${counter}"></span>
 
-            <button m:click="updateCounter(1)">Increase counter</button>
-            <button m:click="reset()">Reset counter</button>
+        <button id="btn_update"  m:click="updateCounter(1)">Increase counter</button>
+        <button id="btn_reset" m:click="reset()">Reset counter</button>
 
-            <footer>JDK18 w/ Medusa 0.9.0</footer>
-        </section>
+        <footer>JDK18 w/ Medusa 0.9.0</footer>
+    </section>
 
-        <section class="client">
-            <h3>Client</h3>
-            <pre><code class="language-html hljs" th:text="${clientCode[0]}"></code></pre>
-        </section>
+    <section class="client">
+        <h3>Client</h3>
+        <pre><code class="language-html hljs" th:text="${clientCode[0]}"></code></pre>
+    </section>
 
-        <section class="server">
-            <h3>Server</h3>
-            <pre><code class="language-java hljs" th:text="${serverCode[0]}"></code></pre>
-        </section>
+    <section class="server">
+        <h3>Server</h3>
+        <pre><code class="language-java hljs" th:text="${serverCode[0]}"></code></pre>
+    </section>
+
 
 </div>
 </body>
