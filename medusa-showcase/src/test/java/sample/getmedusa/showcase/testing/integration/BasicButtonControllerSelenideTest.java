@@ -9,7 +9,7 @@ import static com.codeborne.selenide.Selenide.$;
 import static org.openqa.selenium.By.id;
 
 public class BasicButtonControllerSelenideTest extends SelenideIntegrationTest {
-    
+
     @BeforeEach
     void openPage(){
         openPage("basic-button");
