@@ -11,9 +11,7 @@ import reactor.core.publisher.Mono;
 @Service
 public class SessionUserRepository implements ReactiveUserDetailsService, ReactiveUserDetailsPasswordService {
 
-    private final SessionMemoryRepository sessionMemoryRepository;
-    public SessionUserRepository(SessionMemoryRepository sessionMemoryRepository) {
-        this.sessionMemoryRepository = sessionMemoryRepository;
+    public SessionUserRepository() {
     }
 
     @Override
