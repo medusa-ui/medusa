@@ -10,10 +10,7 @@ import reactor.core.publisher.Mono;
 
 @Service
 public class SessionUserRepository implements ReactiveUserDetailsService, ReactiveUserDetailsPasswordService {
-
-    public SessionUserRepository() {
-    }
-
+    
     @Override
     public Mono<UserDetails> findByUsername(String sessionId) {
         //TODO ensure this is the right session (ie only used once)
