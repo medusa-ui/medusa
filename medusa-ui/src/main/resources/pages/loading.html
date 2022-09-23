@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:m="https://www.getmedusa.io/medusa.xsd">
 <head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+    <meta charset="UTF-8" />
+    <title>Hello world</title>
     <style>
         .loading {
             display: inline-block;
@@ -98,6 +98,10 @@
 
 <p>
 
+    <button m:click="loadingLogic()" m:loading-until="loading-done">Loading full page (default)</button>
+    <button m:click="loadingLogic()" m:loading-until="loading-done" m:loading-style="full">Loading full page (explicit)</button>
+    <button m:click="loadingLogic()" m:loading-until="loading-done" m:loading-style="top">Loading top</button>
+    <button m:click="loadingLogic()" m:loading-until="loading-done" m:loading-style="button">Loading button (TODO)</button>
 
 <button disabled="disabled">
     <span class="loading"><span></span><span></span><span></span><span></span></span> Clicking this starts loading just for this button

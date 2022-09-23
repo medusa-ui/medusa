@@ -32,6 +32,8 @@ public final class AttributeUtils {
                     extraDiffs.add(JSReadyDiff.buildNewRedirect(url));
                 } else if(attribute.name().equalsIgnoreCase(StandardAttributeKeys.JS_FUNCTION)) {
                     extraDiffs.add(JSReadyDiff.buildNewJSFunction(attribute.value().toString()));
+                } else if(attribute.name().equalsIgnoreCase(StandardAttributeKeys.LOADING)) {
+                    extraDiffs.add(JSReadyDiff.buildNewLoading(attribute.value().toString()));
                 }
             }
             diffs.addAll(extraDiffs);

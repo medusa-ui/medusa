@@ -78,11 +78,39 @@ Medusa.prototype.doAction = function(event, parentFragment, actionToExecute) {
     if(typeof event !== "undefined") {
         event.preventDefault();
     }
+    if(typeof event.target.attributes['m:loading-until'] !== 'undefined') {
+        const waitFor = getTargetAttributeIfExists(event,'m:loading-until');
+        const loadingStyle = getTargetAttributeIfExists(event,'m:loading-style');
+
+        let loader;
+        if(loadingStyle === 'top') {
+            loader = document.getElementById("m-top-load-bar");
+        } else if(loadingStyle === 'button') {
+            loader = document.getElementById("m-full-loader");
+        } else {
+            loader = document.getElementById("m-full-loader");
+        }
+
+        if(typeof loader !== "undefined") {
+            loader.setAttribute("waiting-for", waitFor);
+            loader.removeAttribute("style");
+        }
+    }
+
     sendMessage({
         "fragment": parentFragment,
         "action": actionToExecute
     });
     return false;
+};
+
+getTargetAttributeIfExists = function(event, attribute) {
+    const a = event.target.attributes[attribute];
+    if(typeof a !== 'undefined') {
+        return a.value;
+    } else {
+        return null;
+    }
 };
 
 Medusa.prototype.doActionOnKeyUp = function(key, event, parentFragment, actionToExecute) {
@@ -184,9 +212,21 @@ applyAllChanges = function (listOfDiffs) {
             window.location.href = escape(diff.content);
         } else if(diff.type === "JS_FUNCTION") {
             runFunction(escape(diff.content), []);
+        } else if(diff.type === "LOADING") {
+            applyLoadingUpdate(escape(diff.content));
         }
     }
 };
+
+applyLoadingUpdate = function(loadingName) {
+    for(const elem of document.querySelectorAll("[waiting-for='"+loadingName+"']")) {
+        if(elem.id === "m-top-load-bar" || elem.id === "m-full-loader") {
+            elem.setAttribute("style", "display: none;");
+        } else {
+            elem.removeAttribute("disabled");
+        }
+    }
+}
 
 runFunction = function(name, arguments) {
     const fn = window[name];

@@ -42,6 +42,10 @@ public class JSReadyDiff {
         return new JSReadyDiff(jsFunctionCall, null, DiffType.JS_FUNCTION);
     }
 
+    public static JSReadyDiff buildNewLoading(String value) {
+        return new JSReadyDiff(value, null, DiffType.LOADING);
+    }
+
     static String determinePreviousNode(String xPath) {
         final int beginIndex = xPath.lastIndexOf("[") + 1;
         final int endIndex = xPath.length() - 1;
@@ -92,7 +96,8 @@ public class JSReadyDiff {
         ATTR_CHANGE,
         TAG_CHANGE,
         REDIRECT,
-        JS_FUNCTION
+        JS_FUNCTION,
+        LOADING
     }
 
     public boolean isEdit() {
