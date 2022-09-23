@@ -89,7 +89,7 @@ public class ActionHandler {
         Matcher matcher = pattern.matcher(expression);
         while(matcher.find()) {
             final String part = matcher.group();
-            expression = expression.replace(part, "new Object[]{" + part.substring(1, part.length() -1) + "}");
+            expression = expression.replace(part, "{" + part.substring(1, part.length() -1) + "}");
         }
         return expression;
     }
