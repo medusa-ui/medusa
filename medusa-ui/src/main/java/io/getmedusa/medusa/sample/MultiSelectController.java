@@ -22,7 +22,7 @@ public class MultiSelectController {
 
     /* use map */
     public List<Attribute> favoritesMap(Map<String, Object> form) {
-        logger.info("Map: " + form);
+        logger.info("favorite fruits: " + form.get("favoriteFruits"));  /* single selection != is not a list with one option */
         return List.of(
                 new Attribute("favoriteFruits", List.of("Banana"))
         );
@@ -30,7 +30,7 @@ public class MultiSelectController {
 
     /* use FormObject */
     public List<Attribute> favoritesFormObject(FormObject form) {
-        logger.info("FormObject: " + form);
+        logger.info("With formObject: " + form.favoriteFruits()); /* ERROR when a single option was selected */
         return List.of(
                 new Attribute("favoriteFruits", List.of("Banana"))
         );
