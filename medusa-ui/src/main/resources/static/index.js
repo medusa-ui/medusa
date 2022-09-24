@@ -59,16 +59,25 @@ function sendMessage(payloadData) {
 document.addEventListener("DOMContentLoaded", setupRouter);
 
 Medusa.prototype.doFormAction = function(event, parentFragment, actionToExecute) {
+    const multiElems = [];
+    for(const multiElem of event.target.querySelectorAll("[multiple]")) {
+        multiElems.push(multiElem.name);
+    }
+
     const formData = new FormData(event.target);
     const formProps = {};
     for (const [key, value] of formData) {
+        let v = value;
         if(typeof formProps[key] !== "undefined") { //existing value
             if(!Array.isArray(formProps[key])) {
                 formProps[key] = [formProps[key]];
             }
-            formProps[key].push(value);
+            formProps[key].push(v);
         } else {
-            formProps[key] = value;
+            if(multiElems.includes(key) && !Array.isArray(value)) {
+                v = [value];
+            }
+            formProps[key] = v;
         }
     }
     _M.doAction(event, parentFragment, actionToExecute.replace(":{form}", JSON.stringify(formProps) ));
