@@ -211,6 +211,8 @@ public class Renderer {
             wsURL = "'/" + session.getHydraPath() + "/socket'";
         }
         return StaticResourcesDetection.INSTANCE.prependStaticUrlsWithHydraPath(rawTemplate
+                .replace("<body>", "<body><div id=\"m-top-load-bar\" class=\"progress-line\" style=\"display:none;\"></div>\n" +
+                                "<div id=\"m-full-loader\" style=\"display:none;\">Loading ...</div>")
                 .replace("</body>", "\t<script src=\"/websocket.js\"></script>\n" +
                         "<script>_M.controller = '" + session.getLastUsedHash() + "'; " +
                         "_M.sessionId = '" + session.getId() + "'; " +

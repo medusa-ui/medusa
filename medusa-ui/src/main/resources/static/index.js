@@ -87,7 +87,8 @@ Medusa.prototype.doAction = function(event, parentFragment, actionToExecute) {
     if(typeof event !== "undefined") {
         event.preventDefault();
     }
-    if(typeof event.target.attributes['m:loading-until'] !== 'undefined') {
+    const target = event.target;
+    if(typeof target.attributes['m:loading-until'] !== 'undefined') {
         const waitFor = getTargetAttributeIfExists(event,'m:loading-until');
         const loadingStyle = getTargetAttributeIfExists(event,'m:loading-style');
 
@@ -95,15 +96,19 @@ Medusa.prototype.doAction = function(event, parentFragment, actionToExecute) {
         if(loadingStyle === 'top') {
             loader = document.getElementById("m-top-load-bar");
         } else if(loadingStyle === 'button') {
-            loader = document.getElementById("m-full-loader");
+            loader = null;
         } else {
             loader = document.getElementById("m-full-loader");
         }
 
-        if(typeof loader !== "undefined") {
+        if(typeof loader !== "undefined" && null != loader) {
             loader.setAttribute("waiting-for", waitFor);
             loader.removeAttribute("style");
         }
+
+        target.setAttribute("waiting-for", waitFor);
+        target.setAttribute("disabled", true);
+        target.innerHTML = "<span class=\"loading\"><span></span><span></span><span></span><span></span></span>&nbsp;" + target.innerHTML;
     }
 
     sendMessage({
@@ -233,6 +238,10 @@ applyLoadingUpdate = function(loadingName) {
             elem.setAttribute("style", "display: none;");
         } else {
             elem.removeAttribute("disabled");
+            let loadingSpan = elem.querySelector("span[class='loading']");
+            if(null != loadingSpan) {
+                loadingSpan.remove();
+            }
         }
     }
 }

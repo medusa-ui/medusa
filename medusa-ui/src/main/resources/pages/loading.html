@@ -90,8 +90,7 @@
     </style>
 </head>
 <body>
-<div id="m-top-load-bar" class="progress-line"></div>
-
+<div id="m-top-load-bar" class="progress-line" style="display:none;"></div>
 <div id="m-full-loader" style="display:none;">Loading ...</div>
 
 <h1>Loading</h1>
@@ -102,11 +101,6 @@
     <button m:click="loadingLogic()" m:loading-until="loading-done" m:loading-style="full">Loading full page (explicit)</button>
     <button m:click="loadingLogic()" m:loading-until="loading-done" m:loading-style="top">Loading top</button>
     <button m:click="loadingLogic()" m:loading-until="loading-done" m:loading-style="button">Loading button (TODO)</button>
-
-<button disabled="disabled">
-    <span class="loading"><span></span><span></span><span></span><span></span></span> Clicking this starts loading just for this button
-</button>
-
 
 </p><p>
 
