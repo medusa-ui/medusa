@@ -22,8 +22,8 @@
     <p>If you want to refer to a location on another URL, you must explicitly set the property 'medusa.allow-external-redirect' to <i>true</i>.</p>
 
     <section class="example">
-        <button m:click="forwardTo('basic-button')">Forward to 'basic button sample'</button>
-        <button m:click="forwardTo('live-data')">Forward to 'live data sample'</button>
+        <button id="btn_basic-button" m:click="forwardTo('basic-button')">Forward to 'basic button sample'</button>
+        <button id="btn_live-data" m:click="forwardTo('live-data')">Forward to 'live data sample'</button>
     </section>
 
     <section class="client">
@@ -40,7 +40,7 @@
     <p>This same forwarding concept can also be triggered outside the scope of an action, via ServerToClient.</p>
 
     <section class="example">
-        <button m:click="registerMeForAForward()">Register me for a forward</button>
+        <button id="btn_register" m:click="registerMeForAForward()">Register me for a forward</button>
     </section>
 
     <section class="client">

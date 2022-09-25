@@ -26,7 +26,7 @@
             <form m:submit="displayName(123, :{form}, 'sample')">
                 <label for="firstName">First name: </label> <input type="text" id="firstName" name="firstName" value="도윤" />
                 <label for="lastName">Last name: </label> <input type="text" id="lastName" name="lastName" value="김" />
-                <input type="submit" value="Submit">
+                <input id="btn_displayName" type="submit" value="Submit">
             </form>
 
             <div class="example-result" th:text="${result}"></div>
@@ -55,7 +55,7 @@
             <form m:submit="displayNameAsForm(567, :{form}, 'hi')">
                 <label for="firstName2">First name: </label> <input type="text" id="firstName2" name="firstName" value="hello" />
                 <label for="lastName2">Last name: </label> <input type="text" id="lastName2" name="lastName" value="world" />
-                <input type="submit" value="Submit">
+                <input id="btn_displayNameAsForm"  type="submit" value="Submit">
             </form>
 
             <div class="example-result" th:text="${resultFromForm}"></div>

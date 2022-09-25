@@ -29,7 +29,7 @@
                     <option th:each="fruit: ${fruits}" th:text="${fruit}" th:selected="(${fruit} == ${favorite})"></option>
                 </select>
             </p>
-            <p>Your favorite fruit is: <b th:text="${favorite}"></b></p>
+            <p>Your favorite fruit is: <b id="favorite-fruit" th:text="${favorite}"></b></p>
 
             <footer>JDK18 w/ Medusa 0.9.0</footer>
         </section>
@@ -52,7 +52,7 @@
             <p> Select your drink
 
                 <!-- with :{selector} you can refer to 'this' as being the Element itself -->
-                <select m:change="drinks(:{this})" style="width: 156px">
+                <select id="slc_drinks" m:change="drinks(:{this})" style="width: 156px">
                     <option th:each="type: ${drinksType}"
                             th:text="${type}"
                             th:selected="${type} == ${selectedType}">
@@ -60,7 +60,7 @@
                     </option>
                 </select>
 
-                <select m:change="order(:{this})" style="width: 156px">
+                <select id="slc_order" m:change="order(:{this})" style="width: 156px">
                     <option th:each="drinkType: ${drinksList}"
                             th:text="${drinkType}"
                             th:selected="${drinkType} == ${type}">
@@ -72,7 +72,7 @@
             <p> Your Order:</p>
 
             <ul>
-                <li th:each="item:${order}" th:text="${item}"></li>
+                <li class="order" th:each="item:${order}" th:text="${item}"></li>
             </ul>
             <footer>JDK18 w/ Medusa 0.9.0</footer>
         </section>
