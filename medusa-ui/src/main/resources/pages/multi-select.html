@@ -36,6 +36,15 @@
                     th:selected="${#lists.contains(favoriteFruits,fruit)}"
             > a fruit</option>
         </select>
+        <br>
+        <label>How do you drink your coffee?</label>
+        <br>
+        <input id="form_milk" type="checkbox" name="coffeeSupplements" value="milk">
+        <label for="form_milk"> Milk</label>
+        <br>
+        <input id="form_sugar" type="checkbox" name="coffeeSupplements" value="sugar">
+        <label for="form_sugar"> Sugar</label>
+        <br>
     </div>
     <button type="submit">Submit</button>
 </form>
