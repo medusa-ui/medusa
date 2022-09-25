@@ -41,6 +41,94 @@ public class Renderer {
 
     public static final String CDATA_START = "//<![CDATA[ ";
     public static final String CDATA_END = "//]]>";
+    protected static final String TOP_LOADER = "<div id=\"m-top-load-bar\" class=\"progress-line\" style=\"display:none;\"></div>\n";
+    protected static final String FULL_LOADER = "<div id=\"m-full-loader\" style=\"display:none;\">Loading ...</div>";
+    protected static final String LOADING_STYLE = """
+            <style>
+                    .loading {
+                        display: inline-block;
+                        position: relative;
+                        width: 1em;
+                        height: 1em;
+                        -webkit-font-smoothing: antialiased;
+                        -moz-osx-font-smoothing: grayscale;
+                        opacity: 0.6;
+                    }
+                    .loading span {
+                        box-sizing: border-box;
+                        display: block;
+                        position: absolute;
+                        width: 1em;
+                        height: 1em;
+                        border: 0.15em solid;
+                        border-radius: 50%;
+                        animation: loading-spin 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+                        border-color: gray transparent transparent transparent;
+                    }
+                    .loading span:nth-child(1) {
+                        animation-delay: -0.45s;
+                    }
+                    .loading span:nth-child(2) {
+                        animation-delay: -0.3s;
+                    }
+                    .loading span:nth-child(3) {
+                        animation-delay: -0.15s;
+                    }
+                    @keyframes loading-spin {
+                        0% {
+                            transform: rotate(0deg);
+                        }
+                        100% {
+                            transform: rotate(360deg);
+                        }
+                    }
+                    div#m-top-load-bar {
+                        position: fixed;
+                        top: 0;
+                        left: 0;
+                        right: 0;
+                        width: 100%;
+                    }
+                    .progress-line, .progress-line:before {
+                        height: 3px;
+                        width: 100%;
+                        margin: 0;
+                    }
+                    .progress-line {
+                        background-color: #7a00ff;
+                        display: -webkit-flex;
+                        display: flex;
+                    }
+                    .progress-line:before {
+                        background-color: #f4abba;
+                        content: '';
+                        -webkit-animation: running-progress 2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+                        animation: running-progress 2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+                    }
+                    @-webkit-keyframes running-progress {
+                        0% { margin-left: 0px; margin-right: 100%; }
+                        50% { margin-left: 25%; margin-right: 0%; }
+                        100% { margin-left: 100%; margin-right: 0; }
+                    }
+                    @keyframes running-progress {
+                        0% { margin-left: 0px; margin-right: 100%; }
+                        50% { margin-left: 25%; margin-right: 0%; }
+                        100% { margin-left: 100%; margin-right: 0; }
+                    }
+                                            
+                    div#m-full-loader {
+                        background: #0000006e;
+                        position: fixed;
+                        top: 0;
+                        left: 0;
+                        width: 100%;
+                        height: 100%;
+                        text-align: center;
+                        padding-top: 15%;
+                    }
+                </style></body>
+            """;
+    protected static final String END_OF_BODY = "</body>";
 
     private final SpringWebFluxTemplateEngine engine;
     private final DataBufferFactory bufferFactory;
@@ -211,14 +299,13 @@ public class Renderer {
             wsURL = "'/" + session.getHydraPath() + "/socket'";
         }
         return StaticResourcesDetection.INSTANCE.prependStaticUrlsWithHydraPath(rawTemplate
-                .replace("<body>", "<body><div id=\"m-top-load-bar\" class=\"progress-line\" style=\"display:none;\"></div>\n" +
-                                "<div id=\"m-full-loader\" style=\"display:none;\">Loading ...</div>")
-                .replace("</body>", "\t<script src=\"/websocket.js\"></script>\n" +
+                .replace(END_OF_BODY, TOP_LOADER + FULL_LOADER + LOADING_STYLE)
+                .replace(END_OF_BODY, "\t<script src=\"/websocket.js\"></script>\n" +
                         "<script>_M.controller = '" + session.getLastUsedHash() + "'; " +
                         "_M.sessionId = '" + session.getId() + "'; " +
                         "_M.wsURL = " + wsURL + ";" +
                         "_M.wsP = '" + session.getPassword() + "';" +
-                        "</script>\n" + "</body>"), session);
+                        "</script>\n" + END_OF_BODY), session);
     }
 
     @Deprecated

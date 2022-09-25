@@ -230,3 +230,9 @@ span.code-snippet {
   color: #e28d3e;
   font-size: 0.87em;
 }
+
+button:disabled {
+  opacity: 0.5;
+  color: gray;
+  pointer-events: none;
+}

@@ -108,7 +108,7 @@ Medusa.prototype.doAction = function(event, parentFragment, actionToExecute) {
 
         target.setAttribute("waiting-for", waitFor);
         target.setAttribute("disabled", true);
-        target.innerHTML = "<span class=\"loading\"><span></span><span></span><span></span><span></span></span>&nbsp;" + target.innerHTML;
+        target.innerHTML = "<span class=\"loading\"><span></span><span></span><span></span><span></span></span>" + target.innerHTML;
     }
 
     sendMessage({

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:m="https://www.getmedusa.io/medusa.xsd">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medusa - Component detail</title>
+</head>
+<body>
+
+<div id="container" m:ref="loading">
+    <section id="hero">
+        <h1>Loading</h1>
+
+        <p class="lead">An example of a simple button that triggers an action on the Controller side</p>
+
+        <a id="back-to-overview" href="/">Back to overview</a>
+    </section>
+
+    <h2>Loading</h2>
+    <p>When you do any action, it might take time for the websocket to respond (depending on network time, CPU speed, etc.)
+        As such it can feel awkward if you press a button and nothing happens.
+        This is not a problem unique to websockets, of course - the same would happen with an AJAX call.
+        A typical solution is a 'loader'. Medusa comes with a built-in loader for all of our actions.
+    </p>
+
+        <section class="example">
+            <p><button m:click="loadingLogic()" m:loading-until="loading-done">Loading full page (default)</button></p>
+            <p><button m:click="loadingLogic()" m:loading-until="loading-done" m:loading-style="full">Loading full page (explicit)</button></p>
+            <p><button m:click="loadingLogic()" m:loading-until="loading-done" m:loading-style="top">Loading top</button></p>
+            <p><button m:click="loadingLogic()" m:loading-until="loading-done" m:loading-style="button">Loading button only</button></p>
+
+            <footer>JDK18 w/ Medusa 0.9.0</footer>
+        </section>
+
+        <section class="client">
+            <h3>Client</h3>
+            <pre><code class="language-html hljs" th:text="${clientCode[0]}"></code></pre>
+        </section>
+
+        <section class="server">
+            <h3>Server</h3>
+            <pre><code class="language-java hljs" th:text="${serverCode[0]}"></code></pre>
+        </section>
+
+</div>
+</body>
+</html>
