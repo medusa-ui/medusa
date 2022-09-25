@@ -60,11 +60,24 @@ document.addEventListener("DOMContentLoaded", setupRouter);
 
 Medusa.prototype.doFormAction = function(event, parentFragment, actionToExecute) {
     const multiElems = [];
-    for(const multiElem of event.target.querySelectorAll("[multiple]")) {
+    const form = event.target;
+
+    for(const multiElem of form.querySelectorAll("[multiple]")) {
         multiElems.push(multiElem.name);
     }
 
-    const formData = new FormData(event.target);
+    // multiple inputs with same name should be considered as an array
+    const names = [];
+    for(const named of form.querySelectorAll("[name]")) {
+        let name = named.name;
+        if(names.includes(name)) { // same name more the once
+            multiElems.push(name);
+        } else {
+            names.push(name);
+        }
+    }
+
+    const formData = new FormData(form);
     const formProps = {};
     for (const [key, value] of formData) {
         let v = value;
