@@ -66,9 +66,9 @@ Medusa.prototype.doFormAction = function(event, parentFragment, actionToExecute)
         multiElems.push(multiElem.name);
     }
 
-    // multiple inputs with same name should be considered as an array
+    // output multiple checkboxes with same name should be an array
     const names = [];
-    for(const named of form.querySelectorAll("[name]")) {
+    for(const named of form.querySelectorAll("input[type='checkbox'][name]")) {
         let name = named.name;
         if(names.includes(name)) { // same name more the once
             multiElems.push(name);
