@@ -1,0 +1,27 @@
+<section >
+    <div style="display: flex">
+
+        <form m:submit="favoriteFruits(:{form})">
+            <label for="m_select">Select your favorite fruit(s)</label>
+            <br>
+            <select id="m_select"
+                    name="favorites"
+                    multiple
+                    th:size="${#lists.size(fruits)}">
+
+              <option th:each="fruit : ${fruits}"
+                      th:value="${fruit}"
+                      th:text="${fruit}">a fruit</option>
+            </select>
+            <br>
+            <input id="m_submit" type="submit" value="Submit">
+        </form>
+
+        <div class="example-result">
+            <ul>
+                <li th:each="fav : ${favoritesMap}"
+                    th:text="${fav}">a favorite fruit</li>
+            </ul>
+        </div>
+    </div>
+</section>

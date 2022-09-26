@@ -1,0 +1,25 @@
+import io.getmedusa.medusa.core.annotation.UIEventPage;
+import io.getmedusa.medusa.core.attributes.Attribute;
+
+import java.util.List;
+
+@UIEventPage(path="/detail/sample/multi-select", file="/pages/sample/multi-select.html")
+public class MultiSelectController {
+
+    List<String> fruits= List.of("Apple", "Banana", "Lemon", "Orange", "Strawberry" );
+
+    public List<Attribute> setupAttributes(){
+        return List.of(
+                new Attribute("fruits", fruits)
+        );
+    }
+
+    /* Using a FormObject */
+    public List<Attribute> favorites(FormObject formObject) {
+        System.out.println("favorites : " + formObject);
+        if(null == formObject) return List.of();
+        return List.of(new Attribute("favoritesForm", formObject.favoriteFruits));
+    }
+
+    public record FormObject(List<String> favoriteFruits){}
+}
