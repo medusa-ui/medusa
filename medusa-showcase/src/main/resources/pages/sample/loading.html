@@ -42,6 +42,11 @@
             <pre><code class="language-java hljs" th:text="${serverCode[0]}"></code></pre>
         </section>
 
+    <h2>Custom loaders</h2>
+    <p>By default, Medusa comes with pre-defined loaders. If you want to customize those, you will have to create a new file in a /fragments folder. </p>
+    <p>You can define a custom global loader via a <span class="code-snippet">/fragments/_global_loader.html</span>. Make sure there is a wrapper element with id "m-full-loader" present. </p>
+    <p>You can define a custom button loader via a <span class="code-snippet">/fragments/_button_loader.html</span>. Make sure there is a wrapper element with class "m-button-loader" present.</p>
+
 </div>
 </body>
 </html>
