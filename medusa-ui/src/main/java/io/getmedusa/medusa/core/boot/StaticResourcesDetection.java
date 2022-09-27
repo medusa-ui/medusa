@@ -1,6 +1,7 @@
 package io.getmedusa.medusa.core.boot;
 
 import io.getmedusa.medusa.core.session.Session;
+import io.getmedusa.medusa.core.util.LoaderUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -19,7 +20,11 @@ public enum StaticResourcesDetection {
     INSTANCE;
 
     private static final String HYDRA_PATH = "{hydrapath}";
-    protected static final String STATIC = "static";
+    private static final String STATIC = "static";
+
+    public static String LOADER_GLOBAL = null;
+    public static String LOADER_BUTTON = null;
+
     private Set<String> staticResourcesAvailable = new HashSet<>();
     private final Map<String, String> staticResourcesToReplace = buildWithDefaults();
 
@@ -45,7 +50,12 @@ public enum StaticResourcesDetection {
 
         for (Resource resource : resources) {
             final String path = resource.getURI().toString();
-            if (path != null && path.contains(STATIC) && !isPartOfStandardMedusaSetup(path)) {
+
+            if(LoaderUtils.isPathGlobalLoader(path)) {
+                LOADER_GLOBAL = LoaderUtils.loadGlobalLoader(path);
+            } else if(LoaderUtils.isPathButtonLoader(path)) {
+                LOADER_BUTTON = LoaderUtils.loadPathButtonLoader(path);
+            } else if (path != null && path.contains(STATIC) && !isPartOfStandardMedusaSetup(path)) {
                 final String finalPath = path.substring(path.indexOf(STATIC) + 7);
                 if(!finalPath.isBlank()) {
                     set.add(finalPath);

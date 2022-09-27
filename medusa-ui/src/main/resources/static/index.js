@@ -96,6 +96,8 @@ Medusa.prototype.doFormAction = function(event, parentFragment, actionToExecute)
     _M.doAction(event, parentFragment, actionToExecute.replace(":{form}", JSON.stringify(formProps) ));
 }
 
+const buttonLoader = document.getElementById("m-template-button-load").content.firstElementChild.outerHTML;
+
 Medusa.prototype.doAction = function(event, parentFragment, actionToExecute) {
     if(typeof event !== "undefined") {
         event.preventDefault();
@@ -121,7 +123,7 @@ Medusa.prototype.doAction = function(event, parentFragment, actionToExecute) {
 
         target.setAttribute("waiting-for", waitFor);
         target.setAttribute("disabled", true);
-        target.innerHTML = "<span class=\"loading\"><span></span><span></span><span></span><span></span></span>" + target.innerHTML;
+        target.innerHTML = buttonLoader + target.innerHTML;
     }
 
     sendMessage({
@@ -251,7 +253,7 @@ applyLoadingUpdate = function(loadingName) {
             elem.setAttribute("style", "display: none;");
         } else {
             elem.removeAttribute("disabled");
-            let loadingSpan = elem.querySelector("span[class='loading']");
+            let loadingSpan = elem.querySelector("span[class='m-button-loader']");
             if(null != loadingSpan) {
                 loadingSpan.remove();
             }
