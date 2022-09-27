@@ -69,10 +69,9 @@
                 <label for="m_select">Select your favorite fruit(s)</label>
                 <br>
                 <div th:each="fruit : ${fruits}">
-                    <input type="checkbox"
-                           name="favoriteFruits"
-                           th:value="${fruit}"/>
-                    <label th:text="${fruit}" style="display: inline-block;"></label>
+                    <input type="checkbox" name="favoriteFruits"
+                           th:value="${fruit}" th:id="${'check-' + fruit}"/>
+                    <label th:text="${fruit}" th:for="${'check-' + fruit}" style="display: inline-block; cursor: pointer;"></label>
                 </div>
                 <br>
                 <input id="submit_form" type="submit" value="Submit">
