@@ -11,8 +11,9 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.7.4</version>
-		<relativePath/> <!-- lookup parent from repository -->
+		<version>3.0.0-M3</version>
+		<relativePath/>
+		<!-- lookup parent from repository -->
 	</parent>
 
 	<properties>
@@ -73,7 +74,6 @@
 		<dependency>
 			<groupId>org.xmlunit</groupId>
 			<artifactId>xmlunit-matchers</artifactId>
-			<version>2.9.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.jsoup</groupId>
@@ -102,10 +102,21 @@
 		<dependency>
 			<groupId>io.projectreactor</groupId>
 			<artifactId>reactor-tools</artifactId>
-			<version>3.4.23</version>
 		</dependency>
 
 	</dependencies>
+	<repositories>
+		<repository>
+			<id>spring-milestone</id>
+			<url>https://repo.spring.io/milestone</url>
+		</repository>
+	</repositories>
+	<pluginRepositories>
+		<pluginRepository>
+			<id>spring-milestone</id>
+			<url>https://repo.spring.io/milestone</url>
+		</pluginRepository>
+	</pluginRepositories>
 
 	<build>
 		<plugins>
