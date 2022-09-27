@@ -33,7 +33,10 @@ public class Component {
                         new String[]{"/samples/input/special/select/basic/page.txt","/samples/input/special/select/linked/page.txt"},
                         new String[]{"/samples/input/special/select/basic/controller.txt", "/samples/input/special/select/linked/controller.txt"}
                 ),
-                new Component("Multiple selection list")
+                new Component("Multiple selection list", "multi-select",
+                        new String[]{"/samples/input/special/select/multi/page.txt","/samples/input/special/select/checkboxes/page.txt"},
+                        new String[]{"/samples/input/special/select/multi/controller.txt","/samples/input/special/select/checkboxes/controller.txt"}
+                )
         ));
 
         map.put("Live data", List.of(
