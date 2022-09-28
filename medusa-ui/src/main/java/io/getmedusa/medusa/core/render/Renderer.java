@@ -25,7 +25,7 @@ import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.context.EngineContext;
 import org.thymeleaf.context.IContext;
 import org.thymeleaf.dialect.AbstractProcessorDialect;
-import org.thymeleaf.spring5.SpringWebFluxTemplateEngine;
+import org.thymeleaf.spring6.SpringWebFluxTemplateEngine;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
