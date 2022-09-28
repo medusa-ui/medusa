@@ -21,8 +21,11 @@ public class HelloWorldController {
 
     private List<Person> globalPeople = new ArrayList<>();
 
-    @Autowired
-    private ServerToClient serverToClient;
+    private final ServerToClient serverToClient;
+
+    public HelloWorldController(ServerToClient serverToClient) {
+        this.serverToClient = serverToClient;
+    }
 
     //@Scheduled(fixedDelay = 1000)
     public void updateCounterFromServer() {

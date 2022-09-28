@@ -28,10 +28,9 @@ public class MenuItem {
         if(this == o) {
             return true;
         }
-        if(!(o instanceof MenuItem)) {
+        if(!(o instanceof MenuItem menuItem)) {
             return false;
         }
-        MenuItem menuItem = (MenuItem) o;
         return getEndpoint().equals(menuItem.getEndpoint()) && Objects.equals(getLabel(), menuItem.getLabel());
     }
 
