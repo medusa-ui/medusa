@@ -6,7 +6,6 @@ import io.getmedusa.medusa.core.bidirectional.ServerToClient;
 import io.getmedusa.medusa.core.session.Session;
 import io.getmedusa.medusa.core.session.StandardSessionTagKeys;
 import io.getmedusa.medusa.core.session.StandardSessionTagValues;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.reactive.function.server.ServerRequest;
 
 import java.security.SecureRandom;
