@@ -103,9 +103,9 @@ Medusa.prototype.doAction = function(event, parentFragment, actionToExecute) {
         event.preventDefault();
     }
     const target = event.target;
-    if(typeof target.attributes['m:loading-until'] !== 'undefined') {
-        const waitFor = getTargetAttributeIfExists(event,'m:loading-until');
-        const loadingStyle = getTargetAttributeIfExists(event,'m:loading-style');
+    if(typeof target.attributes['data-loading-until'] !== 'undefined') {
+        const waitFor = getTargetAttributeIfExists(event,'data-loading-until');
+        const loadingStyle = getTargetAttributeIfExists(event,'data-loading-style');
 
         let loader;
         if(loadingStyle === 'top') {

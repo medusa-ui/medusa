@@ -15,4 +15,5 @@ public @interface MedusaTag {
     int precedence = 99999;
     TemplateMode templateMode = TemplateMode.HTML;
     String prefix = "m";
+    String namespace= "https://www.getmedusa.io";
 }

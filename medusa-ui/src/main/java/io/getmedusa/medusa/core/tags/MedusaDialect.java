@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.thymeleaf.dialect.AbstractProcessorDialect;
 import org.thymeleaf.processor.IProcessor;
+import org.thymeleaf.standard.processor.StandardXmlNsTagProcessor;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -21,8 +22,9 @@ public class MedusaDialect extends AbstractProcessorDialect {
     private final Set<IProcessor> medusaTags = new HashSet<>();
 
     public MedusaDialect(Collection<IProcessor> iProcessors ) {
-        super("Medusa", MedusaTag.prefix, MedusaTag.precedence);
+        super(MedusaTag.namespace, MedusaTag.prefix, MedusaTag.precedence);
         this.medusaTags.addAll(iProcessors);
+        this.medusaTags.add(new StandardXmlNsTagProcessor(MedusaTag.templateMode, MedusaTag.prefix));
         logger.debug("MedusaDialect with tags: {}", medusaTags);
     }
 
@@ -30,5 +32,4 @@ public class MedusaDialect extends AbstractProcessorDialect {
     public Set<IProcessor> getProcessors(String s) {
         return medusaTags;
     }
-
 }
