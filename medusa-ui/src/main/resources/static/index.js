@@ -133,6 +133,18 @@ Medusa.prototype.doAction = function(event, parentFragment, actionToExecute) {
     return false;
 };
 
+/* handle :{selector.attribute} */
+select = function(selector, attribute) {
+    const elms = document.querySelectorAll(selector);
+    if(elms.length === 1) {
+        return elms[0].getAttribute(attribute)
+    } else {
+        const list = []
+        elms.forEach( e => list.push( e.getAttribute(attribute)) );
+        return list;
+    }
+}
+
 getTargetAttributeIfExists = function(event, attribute) {
     const a = event.target.attributes[attribute];
     if(typeof a !== 'undefined') {

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:m="https://www.getmedusa.io/medusa.xsd">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Selectors</title>
+  </head>
+  <body>
+    <div>
+      Controller received: <span th:text="${received}">nothing yet</span>
+    </div>
+    <div>
+      A single value: <input name="single" />
+    </div>
+    <div>
+      List of numbers:
+      <input name="number" type="number" >
+      <input name="number" type="number" >
+      <button m:click="numbers(:{[name='number']})" value="42">select numbers</button>
+    </div>
+    <div>
+      List of (checked) values:
+      <input type="checkbox" name="figures" value="one">1
+      <input type="checkbox" name="figures" value="two">2
+      <input type="checkbox" name="figures" value="three">3
+      <button m:click="checkboxes(:{[name='figures']:checked})">checked figures</button>
+    </div>
+    <div>
+      <button m:click="mixed(:{[name='figures']:checked}, :{[name='single']}, :{[name='number']})">mixed</button>
+    </div>
+  </body>
+</html>
