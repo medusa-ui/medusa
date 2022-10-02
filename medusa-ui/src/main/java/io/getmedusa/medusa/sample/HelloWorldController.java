@@ -42,7 +42,7 @@ public class HelloWorldController {
                 new Attribute("people", people));
     }
 
-    public List<Attribute> increaseCounter() {
+    public List<Attribute> increaseCounter(){
         return List.of(new Attribute("counterValue", ++counter));
     }
 
@@ -85,8 +85,9 @@ public class HelloWorldController {
     }
 
     /* test m:click & m:select */
-    public List<Attribute> search(String searchFor) {
-        return List.of(new Attribute("search", searchFor));
+    public List<Attribute> search(String searchFor) throws Exception {
+        Thread.sleep(200);
+        return List.of(new Attribute("search", searchFor), Attribute.LOADING_DONE);
     }
 
 }
