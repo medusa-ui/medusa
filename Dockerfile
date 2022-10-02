@@ -22,5 +22,11 @@ VOLUME /tmp
 # Add Spring Boot app.jar to Container
 COPY --from=build "/showcase/target/showcase-*-SNAPSHOT.jar" app.jar
 
+curl -LO https://github.com/honeycombio/honeycomb-opentelemetry-java/releases/download/v1.3.0/honeycomb-opentelemetry-javaagent-1.3.0.jar
+
+ENV SERVICE_NAME=medusa-showcase
+ENV HONEYCOMB_API_KEY=$honeycomb_api
+ENV HONEYCOMB_METRICS_DATASET=my-metrics
+
 # Fire up our Spring Boot app by default
-CMD [ "sh", "-c", "java -Dserver.port=$PORT -Dmedusa.hydra.uri=$urlhydra -Dmedusa.hydra.secret.private=$privatekey -Dmedusa.hydra.secret.public=$publickey -Xmx500m -Xss512k -XX:CICompilerCount=2 -Dfile.encoding=UTF-8 -XX:+UseContainerSupport -Djava.security.egd=file:/dev/./urandom -jar /app.jar" ]
+CMD [ "sh", "-c", "java -javaagent:honeycomb-opentelemetry-javaagent-1.3.0.jar -Dserver.port=$PORT -Dmedusa.hydra.uri=$urlhydra -Dmedusa.hydra.secret.private=$privatekey -Dmedusa.hydra.secret.public=$publickey -Xmx500m -Xss512k -XX:CICompilerCount=2 -Dfile.encoding=UTF-8 -XX:+UseContainerSupport -Djava.security.egd=file:/dev/./urandom -jar /app.jar" ]
