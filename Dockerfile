@@ -10,7 +10,7 @@ RUN mvn -B clean install -DskipTests=true
 
 RUN yum -y update && yum install -y curl
 
-RUN curl https://github.com/honeycombio/honeycomb-opentelemetry-java/releases/download/v1.3.0/honeycomb-opentelemetry-javaagent-1.3.0.jar
+RUN curl -LO https://github.com/honeycombio/honeycomb-opentelemetry-java/releases/download/v1.3.0/honeycomb-opentelemetry-javaagent-1.3.0.jar
 
 COPY ./medusa-showcase /showcase
 WORKDIR /showcase
@@ -26,7 +26,7 @@ VOLUME /tmp
 # Add Spring Boot app.jar to Container
 COPY --from=build "/showcase/target/showcase-*-SNAPSHOT.jar" app.jar
 
-COPY --from=build "honeycomb-opentelemetry-javaagent-1.3.0.jar" honeycomb.jar
+COPY --from=build "/medusa-ui/honeycomb-opentelemetry-javaagent-1.3.0.jar" honeycomb.jar
 
 ENV SERVICE_NAME=medusa-showcase
 ENV HONEYCOMB_API_KEY=$honeycomb_api
