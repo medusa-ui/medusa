@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:m="https://www.getmedusa.io/medusa.xsd">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Validation</title>
+  </head>
+  <body>
+    <h5>Form with validation</h5>
+    <div th:if="${!#lists.isEmpty(violations)}">
+        <ul>
+            <li style="color: red;" th:each="err : ${violations}" th:text="${err.defaultMessage}">error</li>
+        </ul>
+    </div>
+    <form m:submit="createUser(:{form})">
+        <label for="nickname">Nickname: </label> <input type="text" id="nickname" name="nickname"/>
+        <label for="email">Email: </label> <input type="text" id="email" name="email" />
+        <input id="btn_validate" type="submit" value="Submit">
+    </form>
+    <span th:if="${success}">
+        User: <b th:text="${user.nickname}">u ser</b>
+        was created successfully, an email was sent to:
+        <b th:text="${user.email}">email</b>
+    </span>
+  </body>
+</html>
