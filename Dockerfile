@@ -8,7 +8,9 @@ WORKDIR /medusa-ui
 
 RUN mvn -B clean install -DskipTests=true
 
-RUN wget https://github.com/honeycombio/honeycomb-opentelemetry-java/releases/download/v1.3.0/honeycomb-opentelemetry-javaagent-1.3.0.jar
+RUN yum -y update && yum install -y curl
+
+RUN curl https://github.com/honeycombio/honeycomb-opentelemetry-java/releases/download/v1.3.0/honeycomb-opentelemetry-javaagent-1.3.0.jar
 
 COPY ./medusa-showcase /showcase
 WORKDIR /showcase
