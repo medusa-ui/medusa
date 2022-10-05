@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:m="https://www.getmedusa.io/medusa.xsd">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Th If Problem?</title>
+    <style>
+      code {
+        color: crimson;
+        font-weight: bold;
+        padding: .25rem;
+      }
+    </style>
+  </head>
+  <body>
+    <div th:if="${top}">
+        <p>If top is <code>true</code> this should be visible on <code>top</code> of the page</p>
+    </div>
+
+    <th:block th:if="${middle}">
+        <p>If middle is <code>true</code> this should be visible between <code>top</code> and <code>bottom</code></p>
+    </th:block>
+
+    <p th:if="${bottom}">If bottom is <code>true</code> this should be visible at the <code>bottom</code></p>
+
+    <div>
+        <button m:click="change()">change</button>
+    </div>
+  </body>
+</html>
