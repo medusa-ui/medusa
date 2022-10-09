@@ -1,3 +1,4 @@
+ARG honeycomb_api
 # Docker multi-stage build
 
 # 1. Building the App with Maven
@@ -28,6 +29,7 @@ COPY --from=build "/showcase/target/showcase-*-SNAPSHOT.jar" app.jar
 
 COPY --from=build "/medusa-ui/honeycomb-opentelemetry-javaagent-1.3.0.jar" honeycomb.jar
 
+ARG honeycomb_api
 RUN export SERVICE_NAME=medusa-showcase
 RUN export HONEYCOMB_API_KEY=$honeycomb_api
 RUN export HONEYCOMB_METRICS_DATASET=my-metrics
