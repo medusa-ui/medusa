@@ -30,9 +30,6 @@ COPY --from=build "/showcase/target/showcase-*-SNAPSHOT.jar" app.jar
 COPY --from=build "/medusa-ui/honeycomb-opentelemetry-javaagent-1.3.0.jar" honeycomb.jar
 
 ARG honeycomb_api
-RUN export SERVICE_NAME=medusa-showcase
-RUN export HONEYCOMB_API_KEY=$honeycomb_api
-RUN export HONEYCOMB_METRICS_DATASET=my-metrics
 
 # Fire up our Spring Boot app by default
-CMD [ "sh", "-c", "java -javaagent:honeycomb.jar -Dserver.port=$PORT -Dmedusa.hydra.uri=$urlhydra -Dmedusa.hydra.secret.private=$privatekey -Dmedusa.hydra.secret.public=$publickey -Xmx500m -Xss512k -XX:CICompilerCount=2 -Dfile.encoding=UTF-8 -XX:+UseContainerSupport -Djava.security.egd=file:/dev/./urandom -jar /app.jar" ]
+CMD [ "sh", "-c", "java -DSERVICE_NAME=medusa-showcase -DHONEYCOMB_METRICS_DATASET=my-metrics -DHONEYCOMB_API_KEY=$honeycomb_api -javaagent:honeycomb.jar -Dserver.port=$PORT -Dmedusa.hydra.uri=$urlhydra -Dmedusa.hydra.secret.private=$privatekey -Dmedusa.hydra.secret.public=$publickey -Xmx500m -Xss512k -XX:CICompilerCount=2 -Dfile.encoding=UTF-8 -XX:+UseContainerSupport -Djava.security.egd=file:/dev/./urandom -jar /app.jar" ]
