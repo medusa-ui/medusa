@@ -1,4 +1,3 @@
-ARG honeycomb_api
 # Docker multi-stage build
 
 # 1. Building the App with Maven
@@ -10,8 +9,6 @@ WORKDIR /medusa-ui
 RUN mvn -B clean install -DskipTests=true
 
 RUN yum -y update && yum install -y curl
-
-RUN curl -LO https://github.com/honeycombio/honeycomb-opentelemetry-java/releases/download/v1.3.0/honeycomb-opentelemetry-javaagent-1.3.0.jar
 
 COPY ./medusa-showcase /showcase
 WORKDIR /showcase
@@ -27,9 +24,5 @@ VOLUME /tmp
 # Add Spring Boot app.jar to Container
 COPY --from=build "/showcase/target/showcase-*-SNAPSHOT.jar" app.jar
 
-COPY --from=build "/medusa-ui/honeycomb-opentelemetry-javaagent-1.3.0.jar" honeycomb.jar
-
-ARG honeycomb_api
-
 # Fire up our Spring Boot app by default
-CMD [ "sh", "-c", "java -DSERVICE_NAME=medusa-showcase -DHONEYCOMB_METRICS_DATASET=my-metrics -DHONEYCOMB_API_KEY=$honeycomb_api -javaagent:honeycomb.jar -Dserver.port=$PORT -Dmedusa.hydra.uri=$urlhydra -Dmedusa.hydra.secret.private=$privatekey -Dmedusa.hydra.secret.public=$publickey -Xmx500m -Xss512k -XX:CICompilerCount=2 -Dfile.encoding=UTF-8 -XX:+UseContainerSupport -Djava.security.egd=file:/dev/./urandom -jar /app.jar" ]
+CMD [ "sh", "-c", "java -Dserver.port=$PORT -Dmedusa.hydra.uri=$urlhydra -Dmedusa.hydra.secret.private=$privatekey -Dmedusa.hydra.secret.public=$publickey -Xmx500m -Xss512k -XX:CICompilerCount=2 -Dfile.encoding=UTF-8 -XX:+UseContainerSupport -Djava.security.egd=file:/dev/./urandom -jar /app.jar" ]
