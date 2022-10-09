@@ -20,8 +20,8 @@ public class PublicKeyController {
     private final String publicKey;
     private final String privateKey;
 
-    public PublicKeyController(@Value("${medusa.hydra.secret.public-key}") String publicKey,
-                               @Value("${medusa.hydra.secret.private-key}") String privateKey) {
+    public PublicKeyController(@Value("${medusa.hydra.secret.public-key:x}") String publicKey,
+                               @Value("${medusa.hydra.secret.private-key:x}") String privateKey) {
         this.privateKey = privateKey;
         this.publicKey = publicKey;
     }
