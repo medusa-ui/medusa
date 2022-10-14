@@ -22,7 +22,7 @@ public abstract class JSEventAttributeProcessor extends AbstractAttributeTagProc
     private static final String BASIC_EXPRESSION = "\\{(.*?)}";
     protected static final String EVENT_TEMPLATE_M_DO_ACTION = "_M.doAction(event, " + FRAGMENT_REPLACEMENT + ", `%s`)";
     protected static final String EVENT_TEMPLATE_M_DO_ACTION_ONKEYUP = "_M.doActionOnKeyUp(%s, event, " + FRAGMENT_REPLACEMENT + ", `%s`)";
-    protected static final String SELECTOR_QUERY ="'${document.querySelector('%s').%s}'";
+    protected static final String SELECTOR_QUERY ="'${document.querySelector(`%s`).%s}'";
     protected static final String SELECTOR_THIS_REFERENCE ="'${%s.%s}'";
     protected static final String SELECTOR_DEFAULT_ATTRIBUTE ="value";
     protected static final String SELECTOR_ALLOWED_ATTRIBUTES ="accept alt checked class cols data dir disabled for href id lang list max media min multiple name open placeholder readonly rel required rows rowspan selected span target title type value width wrap";

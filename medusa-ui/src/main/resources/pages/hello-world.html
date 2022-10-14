@@ -87,6 +87,10 @@
             <br>
             <input type="text" m:enter="search(:{this})" />... m:enter reacts to enter
         </div>
+        <div>
+            <input name="my_data" />
+            <button m:loading-until="loading-done" m:loading-style="top" m:click="search(:{input[name='my_data']})">Search with selector :{input[name='my_data']}</button>
+        </div>
     </div>
 
     <script type="text/javascript">
