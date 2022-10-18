@@ -15,7 +15,7 @@
 	<description>Components showcase for Medusa, hosted on Render</description>
 	<properties>
 		<java.version>17</java.version>
-		<selenide.version>6.8.1</selenide.version>
+		<selenide.version>6.9.0</selenide.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -55,6 +55,17 @@
 			<artifactId>selenide</artifactId>
 			<version>${selenide.version}</version>
 			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.seleniumhq.selenium</groupId>
+			<artifactId>selenium-java</artifactId>
+			<version>4.5.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.seleniumhq.selenium</groupId>
+			<artifactId>selenium-http-jdk-client</artifactId>
+			<version>4.5.0</version>
 		</dependency>
 
 	</dependencies>
