@@ -8,12 +8,10 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
+import org.webjars.WebJarAssetLocator;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public enum StaticResourcesDetection {
 
@@ -21,6 +19,7 @@ public enum StaticResourcesDetection {
 
     private static final String HYDRA_PATH = "{hydrapath}";
     private static final String STATIC = "static";
+    public static final WebJarAssetLocator WEB_JAR_ASSET_LOCATOR = new WebJarAssetLocator();
 
     public static String LOADER_GLOBAL = null;
     public static String LOADER_BUTTON = null;
@@ -46,11 +45,18 @@ public enum StaticResourcesDetection {
         Set<String> set = new HashSet<>();
 
         PathMatchingResourcePatternResolver resourcePatternResolver = new PathMatchingResourcePatternResolver(this.getClass().getClassLoader());
-        Resource[] resources = resourcePatternResolver.getResources("**");
+        List<Resource> resources = new ArrayList<>(List.of(resourcePatternResolver.getResources("**")));
+
+        for(String key : WEB_JAR_ASSET_LOCATOR.getAllWebJars().keySet()) {
+            String version = WEB_JAR_ASSET_LOCATOR.getAllWebJars().get(key).getVersion();
+            for(String asset : WEB_JAR_ASSET_LOCATOR.listAssets(key)) {
+                String path = "webjars/" + key + asset.substring(asset.indexOf(version) + version.length());
+                set.add(path);
+            }
+        }
 
         for (Resource resource : resources) {
             final String path = resource.getURI().toString();
-
             if(LoaderUtils.isPathGlobalLoader(path)) {
                 LOADER_GLOBAL = LoaderUtils.loadGlobalLoader(path);
             } else if(LoaderUtils.isPathButtonLoader(path)) {
