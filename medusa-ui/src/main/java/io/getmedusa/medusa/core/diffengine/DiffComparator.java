@@ -34,6 +34,15 @@ public class DiffComparator implements Comparator<JSReadyDiff> {
             o1Value = 0;
         }
 
+        //do removals last
+        if(o1.isRemoval() && !o2.isRemoval()) {
+            o2Value = 0;
+            o1Value = 1;
+        } else if(o2.isRemoval() && !o1.isRemoval()) {
+            o2Value = 1;
+            o1Value = 0;
+        }
+
         return o1Value - o2Value;
     }
 

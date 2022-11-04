@@ -12,18 +12,20 @@
     </style>
   </head>
   <body>
-    <div th:if="${top}">
-        <p>If top is <code>true</code> this should be visible on <code>top</code> of the page</p>
-    </div>
+    <section>
+        <div th:if="${top}">
+            <p>If top is <code>true</code> this should be visible on <code>top</code> of the page</p>
+        </div>
 
-    <th:block th:if="${middle}">
-        <p>If middle is <code>true</code> this should be visible between <code>top</code> and <code>bottom</code></p>
-    </th:block>
+        <th:block th:if="${middle}">
+            <p>If middle is <code>true</code> this should be visible between <code>top</code> and <code>bottom</code></p>
+        </th:block>
 
-    <p th:if="${bottom}">If bottom is <code>true</code> this should be visible at the <code>bottom</code></p>
+        <p th:if="${bottom}">If bottom is <code>true</code> this should be visible at the <code>bottom</code></p>
 
-    <div>
-        <button m:click="change()">change</button>
-    </div>
+        <div>
+            <button m:click="change()">change</button>
+        </div>
+    </section>
   </body>
 </html>
