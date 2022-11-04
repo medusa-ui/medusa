@@ -30,6 +30,12 @@ public class JSReadyDiff {
         return diff;
     }
 
+    public static JSReadyDiff buildSequenceChange(String wrapperXPath, String indexToMove, String indexToMoveTo) {
+        final JSReadyDiff diff = new JSReadyDiff(indexToMove, wrapperXPath, DiffType.SEQUENCE_CHANGE);
+        diff.setAttribute(indexToMoveTo);
+        return diff;
+    }
+
     public static JSReadyDiff buildNewAddition(String xPath, String content) {
         return new JSReadyDiff(content, determinePreviousNode(xPath), DiffType.ADDITION);
     }
@@ -97,11 +103,20 @@ public class JSReadyDiff {
         TAG_CHANGE,
         REDIRECT,
         JS_FUNCTION,
-        LOADING
+        LOADING,
+        SEQUENCE_CHANGE
     }
 
     public boolean isEdit() {
         return DiffType.EDIT.equals(this.type);
+    }
+
+    public boolean isRemoval() {
+        return DiffType.REMOVAL.equals(this.type);
+    }
+
+    public boolean isSequenceChange() {
+        return DiffType.SEQUENCE_CHANGE.equals(this.type);
     }
 
     @Override

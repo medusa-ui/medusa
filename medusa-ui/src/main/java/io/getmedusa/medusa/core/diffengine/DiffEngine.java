@@ -60,7 +60,6 @@ public class DiffEngine {
 
     private boolean isOfIgnorableType(ComparisonType type) {
         return CHILD_NODELIST_LENGTH.equals(type) ||
-               CHILD_NODELIST_SEQUENCE.equals(type) ||
                ELEMENT_NUM_ATTRIBUTES.equals(type);
     }
 
@@ -84,6 +83,8 @@ public class DiffEngine {
             return buildNewEdit(newDetail.getParentXPath(), nodeToContent(newDocumentNode.getParentNode()));
         } else if(ATTR_VALUE.equals(comparison.getType())) {
             return buildAttrChange(attrOwnerXPath(oldDetail, newDetail), newDocumentNode.getNodeName(), newDocumentNode.getNodeValue());
+        } else if(CHILD_NODELIST_SEQUENCE.equals(comparison.getType())){
+            return buildSequenceChange(oldDetail.getParentXPath(), oldDetail.getValue().toString(), newDetail.getValue().toString());
         } else {
             logger.warn("comparisonToDiff: no match for comparison: " + comparison);
         }

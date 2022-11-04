@@ -165,6 +165,16 @@ doLookups = function (listOfDiffs) {
     return listOfDiffs;
 };
 
+handleSequenceChange = function (obj) {
+    let indexToMove = parseInt(obj.content, 10);
+    let indexToMoveTo = parseInt(obj.attribute, 10);
+    let wrapperXPath = obj.xpath;
+    let elemToMove = document.evaluate(wrapperXPath, document, null, XPathResult.ANY_UNORDERED_NODE_TYPE, null ).singleNodeValue.children[indexToMove];
+    let elemInCurrentPosition = document.evaluate(wrapperXPath, document, null, XPathResult.ANY_UNORDERED_NODE_TYPE, null ).singleNodeValue.children[indexToMoveTo];
+
+    elemToMove.parentNode.insertBefore(elemInCurrentPosition, elemToMove.nextSibling)
+};
+
 handleIncomingAddition = function (obj) {
     let existingNode = obj.element;
 
@@ -243,6 +253,8 @@ applyAllChanges = function (listOfDiffs) {
             runFunction(escape(diff.content), []);
         } else if(diff.type === "LOADING") {
             applyLoadingUpdate(escape(diff.content));
+        } else if(diff.type === "SEQUENCE_CHANGE") {
+            handleSequenceChange(diff);
         }
     }
 };
