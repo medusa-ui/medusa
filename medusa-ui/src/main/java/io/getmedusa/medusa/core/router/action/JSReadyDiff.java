@@ -115,6 +115,10 @@ public class JSReadyDiff {
         return DiffType.REMOVAL.equals(this.type);
     }
 
+    public boolean isSequenceChange() {
+        return DiffType.SEQUENCE_CHANGE.equals(this.type);
+    }
+
     @Override
     public String toString() {
         return "JSReadyDiff{" +

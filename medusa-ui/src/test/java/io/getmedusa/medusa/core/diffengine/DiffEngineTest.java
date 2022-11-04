@@ -4,6 +4,7 @@ import io.getmedusa.medusa.core.router.action.JSReadyDiff;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
 import java.util.List;
 
 class DiffEngineTest {
@@ -180,11 +181,15 @@ class DiffEngineTest {
 
         final List<JSReadyDiff> jsReadyDiffs2 = diffEngine.findDiffs(oldHTMLBUG, newHTMLBUG);
 
+        final List<JSReadyDiff> jsReadyDiffsFinal = new ArrayList<>();
         for(JSReadyDiff diff : jsReadyDiffs2) {
             System.out.println(diff);
+            if(!diff.isSequenceChange()) {
+                jsReadyDiffsFinal.add(diff);
+            }
         }
 
-        Assertions.assertEquals( 1, jsReadyDiffs2.size(), "expected only 1 addition");
+        Assertions.assertEquals( 1, jsReadyDiffsFinal.size(), "expected only 1 addition");
 
     }
 
