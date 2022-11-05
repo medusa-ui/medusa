@@ -3,28 +3,28 @@ git pull
 #verify all works
 cd medusa-ui
 mvn clean install
-cd ../medusa-sample-implementation
+cd ../medusa-showcase 
 mvn clean install
 
 #release
 cd ../medusa-ui
-mvn versions:set -DnewVersion="0.3.7"
+mvn versions:set -DnewVersion="0.9.0"
 git add .
-git commit -m "Release 0.3.7"
-git tag 0.3.7
+git commit -m "Release 0.9.0"
+git tag 0.9.0
 git push --tags
 
 mvn clean deploy -DskipTests=true -Pnexus-staging
 
 #post-release versioning fix
-mvn versions:set -DnewVersion="0.3.8-SNAPSHOT"
-cd ../medusa-sample-implementation
-mvn versions:set -DnewVersion="0.3.8-SNAPSHOT"
+mvn versions:set -DnewVersion="0.9.1-SNAPSHOT"
+cd ../medusa-showcase 
+mvn versions:set -DnewVersion="0.9.1-SNAPSHOT"
 cd ..
 
 git add .
 git status
-git commit -m "Release 0.3.7 - Version update from 0.3.7 to 0.3.8-SNAPSHOT"
+git commit -m "Release 0.9.0 - Version update from 0.9.0 to 0.9.1-SNAPSHOT" 
 git push
 
 #See https://central.sonatype.org/publish/requirements/ for publishing requirements

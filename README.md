@@ -11,7 +11,7 @@ Pages are simply written in HTML and enhanced with Medusa expressions to allow f
 <dependency>
     <groupId>io.getmedusa</groupId>
     <artifactId>medusa-ui</artifactId>
-    <version>0.3.9</version>
+    <version>0.9.0</version>
 </dependency>
 
 <dependency>
@@ -29,4 +29,4 @@ mvn clean install
 
 [![Medusa UI Demo](https://yt-embed.herokuapp.com/embed?v=bbZO1FgLSUY)](https://www.youtube.com/watch?v=bbZO1FgLSUY)
 
-Usage documentation: https://medusa-ui.gitbook.io/docs/
+Usage documentation: https://medusa-ui.github.io/documentation/docs/category/internals/
