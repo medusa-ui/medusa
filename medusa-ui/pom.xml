@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>io.getmedusa</groupId>
 	<artifactId>medusa-ui</artifactId>
-	<version>0.9.0</version>
+	<version>0.9.1-SNAPSHOT</version>
 	<name>medusa ui library</name>
 	<description>Serverside rendering framework</description>
 
@@ -244,13 +244,6 @@
 							<nexusUrl>https://s01.oss.sonatype.org/</nexusUrl>
 							<autoReleaseAfterClose>true</autoReleaseAfterClose>
 						</configuration>
-						<dependencies>
-							<dependency>
-								<groupId>com.thoughtworks.xstream</groupId>
-								<artifactId>xstream</artifactId>
-								<version>1.4.15</version> <!-- apparently this needs to be exactly 1.4.15 -->
-							</dependency>
-						</dependencies>
 					</plugin>
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
