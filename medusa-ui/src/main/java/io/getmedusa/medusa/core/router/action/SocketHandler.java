@@ -77,6 +77,7 @@ public class SocketHandler {
 
             //run diff engine old HTML vs new
             updatedSession.getSink().push(mergeDiffs(diffEngine.findDiffs(oldHTML, newHtml), passThroughAttributes));
+            updatedSession.setDepth(0);
         });
 
         return session.getSink().asFlux();
