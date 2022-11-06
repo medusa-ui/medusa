@@ -77,6 +77,7 @@ public class ServerToClient {
             updatedSession.setLastRenderedHTML(newHtml);
             sessionMemoryRepository.store(updatedSession);
             updatedSession.getSink().push(mergeDiffs(diffEngine.findDiffs(oldHTML, newHtml), passThroughAttributes));
+            updatedSession.setDepth(0);
         });
     }
 }
