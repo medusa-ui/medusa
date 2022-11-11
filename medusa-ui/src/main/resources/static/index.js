@@ -60,10 +60,16 @@ document.addEventListener("DOMContentLoaded", setupRouter);
 
 Medusa.prototype.doFormAction = function(event, parentFragment, actionToExecute) {
     const multiElems = [];
+    const files= [];
     const form = event.target;
 
     for(const multiElem of form.querySelectorAll("[multiple]")) {
         multiElems.push(multiElem.name);
+    }
+
+    for(const file of form.querySelectorAll("input[type='file']")) {
+        files.push(file.name);
+        console.log("file:",file.name);
     }
 
     // output multiple checkboxes with same name should be an array
@@ -87,7 +93,16 @@ Medusa.prototype.doFormAction = function(event, parentFragment, actionToExecute)
             }
             formProps[key].push(v);
         } else {
-            if(multiElems.includes(key) && !Array.isArray(value)) {
+            if(files.includes(key)) {
+                let file = form.querySelector("input[type='file'][name='" + key + "']").files[0];
+                console.log("data file: " + file);
+                const reader = new FileReader();
+                reader.addEventListener('load', event => {
+                    v = event.target.result;
+                    console.log("img",v);
+                });
+                reader.readAsDataURL(file);
+            } else if(multiElems.includes(key) && !Array.isArray(value)) {
                 v = [value];
             }
             formProps[key] = v;

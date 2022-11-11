@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:m="https://www.getmedusa.io/medusa.xsd">
+  <head>
+    <meta charset="UTF-8" />
+    <title>File upload</title>
+  </head>
+  <body>
+    <h2>Upload A file</h2>
+    <form m:submit="upload(:{form})">
+      <div>
+          <label>Name</label>
+          <input type="text" name="name">
+      </div>
+      <div>
+          <label>File</label>
+          <input type="file" name="file">
+      </div>
+      <div>
+          <button type="submit">Submit</button>
+      </div>
+    </form>
+  </body>
+</html>
