@@ -12,12 +12,15 @@
           <input type="text" name="name">
       </div>
       <div>
-          <label>File</label>
-          <input type="file" name="file">
+          <label>Text document</label>
+          <input type="file" name="document" >
       </div>
       <div>
           <button type="submit">Submit</button>
       </div>
     </form>
+    <div>
+        <th:block th:text="${upload}"></th:block>
+    </div>
   </body>
 </html>

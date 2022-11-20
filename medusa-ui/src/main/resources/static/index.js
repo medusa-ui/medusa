@@ -17,6 +17,8 @@ const debugMode = true;
 const MAX_REQUEST_N = 2147483647;
 let stream;
 
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+
 //TODO https://github.com/viglucci/rsocket-chat-demo/blob/main/frontend/src/context/ClientProvider.jsx
 //TODO read https://github.com/viglucci/rsocket-chat-demo/blob/main/frontend/src/hooks/useChat.js
 
@@ -58,10 +60,14 @@ function sendMessage(payloadData) {
 
 document.addEventListener("DOMContentLoaded", setupRouter);
 
-Medusa.prototype.doFormAction = function(event, parentFragment, actionToExecute) {
+Medusa.prototype.doFormAction = async function(event, parentFragment, actionToExecute) {
+    if(typeof event !== "undefined") {
+        event.preventDefault();
+    }
     const multiElems = [];
     const files= [];
     const form = event.target;
+    let done = true;
 
     for(const multiElem of form.querySelectorAll("[multiple]")) {
         multiElems.push(multiElem.name);
@@ -69,7 +75,7 @@ Medusa.prototype.doFormAction = function(event, parentFragment, actionToExecute)
 
     for(const file of form.querySelectorAll("input[type='file']")) {
         files.push(file.name);
-        console.log("file:",file.name);
+        done = false;
     }
 
     // output multiple checkboxes with same name should be an array
@@ -85,6 +91,7 @@ Medusa.prototype.doFormAction = function(event, parentFragment, actionToExecute)
 
     const formData = new FormData(form);
     const formProps = {};
+
     for (const [key, value] of formData) {
         let v = value;
         if(typeof formProps[key] !== "undefined") { //existing value
@@ -93,22 +100,39 @@ Medusa.prototype.doFormAction = function(event, parentFragment, actionToExecute)
             }
             formProps[key].push(v);
         } else {
-            if(files.includes(key)) {
-                let file = form.querySelector("input[type='file'][name='" + key + "']").files[0];
-                console.log("data file: " + file);
-                const reader = new FileReader();
-                reader.addEventListener('load', event => {
-                    v = event.target.result;
-                    console.log("img",v);
-                });
-                reader.readAsDataURL(file);
-            } else if(multiElems.includes(key) && !Array.isArray(value)) {
+          if(multiElems.includes(key) && !Array.isArray(value)) {
                 v = [value];
+            } else {
+                formProps[key] = v;
+                console.log("formProps[",key,"] = ", v);
             }
-            formProps[key] = v;
         }
     }
-    _M.doAction(event, parentFragment, actionToExecute.replace(":{form}", JSON.stringify(formProps) ));
+
+    /* handle files */
+    for(const file_name of files) {
+        let elm = form.querySelector("input[type='file'][name='" + file_name + "']");
+        let file = elm.files[0];
+        const reader = new FileReader();
+        reader.addEventListener('load', event => {
+            done = false;  // what with multiple files!?
+            formProps[file_name] = event.target.result;
+        });
+        reader.addEventListener('loadend', event => {
+            done = true;  // what with multiple files!?
+        });
+        //reader.readAsText(file);
+        reader.readAsBinaryString(file);
+    }
+
+    // wait for longer actions like file upload
+    while (done === false) {
+        debugLog("waiting...")
+        await sleep(5);
+    }
+    let json  = JSON.stringify(formProps)
+    debugLog("json: "+json)
+    _M.doAction(event, parentFragment, actionToExecute.replace(":{form}",  json));
 }
 
 const buttonLoader = document.getElementById("m-template-button-load").content.firstElementChild.outerHTML;
