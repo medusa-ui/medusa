@@ -39,10 +39,12 @@ import static org.springframework.http.MediaType.TEXT_HTML;
  */
 @Component
 public class Renderer {
-
     public static final String CDATA_START = "//<![CDATA[ ";
     public static final String CDATA_END = "//]]>";
     protected static final String END_OF_BODY = "</body>";
+    public static final String TH_IF_SELECTOR = "[th:if]";
+    private static final String TH_IF_TAGS_NOT_TO_WRAP = "li thead tbody th tr td tfoot";
+    public static final String TH_IF_WRAPPER = "<div class='med-wrap'></div>";
 
     private final SpringWebFluxTemplateEngine engine;
     private final DataBufferFactory bufferFactory;
@@ -189,13 +191,26 @@ public class Renderer {
     private String convertToXHTML(String html) {
         final Document document = Jsoup.parse(html);
         document.outputSettings().syntax(Document.OutputSettings.Syntax.xml);
-        final Document wrappedDoc = wrapScriptContentInCDATA(document);
+        final Document wrappedDoc = wrapIfTag(wrapScriptContentInCDATA(document));
         boolean isFragment = FragmentUtils.determineIfFragment(wrappedDoc);
         String outerHtml = document.outerHtml();
         if(isFragment) {
             outerHtml = document.body().html();
         }
         return outerHtml;
+    }
+
+    /*
+     * Wrap all thymeleaf if-tags in a div.
+     * So that the DiffEngine can use xpath to merge changes.
+     */
+    private Document wrapIfTag(Document document) {
+       for (Element element : document.select(TH_IF_SELECTOR)) {
+           if(! TH_IF_TAGS_NOT_TO_WRAP.contains(element.tagName())) {
+               element.wrap(TH_IF_WRAPPER);
+           }
+       }
+       return document;
     }
 
     Document wrapScriptContentInCDATA(Document document) {
