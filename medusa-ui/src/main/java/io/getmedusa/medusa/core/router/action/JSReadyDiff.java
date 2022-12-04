@@ -119,6 +119,10 @@ public class JSReadyDiff {
         return DiffType.SEQUENCE_CHANGE.equals(this.type);
     }
 
+    public boolean isAddition()  {
+        return DiffType.ADDITION.equals(this.type);
+    }
+
     @Override
     public String toString() {
         return "JSReadyDiff{" +

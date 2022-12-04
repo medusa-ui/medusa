@@ -7,9 +7,7 @@ import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 import java.util.List;
 
-class DiffEngineTest {
-
-    private final DiffEngine diffEngine = new DiffEngine();
+class DiffEngineTest extends DiffEngineJSoup {
 
     @Test
     void testDiffGeneration_Addition_Simple() {
@@ -190,7 +188,96 @@ class DiffEngineTest {
         }
 
         Assertions.assertEquals( 1, jsReadyDiffsFinal.size(), "expected only 1 addition");
+    }
 
+    @Test
+    void testInvestigation() {
+        String oldHTML = "<section>" +
+                "   <h5>1</h5>" +
+                "   <p>3</p>" +
+                "   <div><button onclick=\"_M.doAction(event, '__FRAGMENT__', `change()`)\">4 change</button>\n" +
+                "   </div>" +
+                "   <h5>5</h5>" +
+                "   <p>7</p>" +
+                "  </section>";
+
+        final String newHTML = "<section>" +
+                "   <h5>1</h5>" +
+                "   <div>" +
+                "    <p>2</p>" +
+                "   </div>" +
+                "   <p>3</p>" +
+                "   <div><button onclick=\"_M.doAction(event, '__FRAGMENT__', `change()`)\">4 change</button>\n" +
+                "   </div>" +
+                "   <h5>5</h5>" +
+                "   <div>" +
+                "    <p>6</p>" +
+                "   </div>" +
+                "   <p>7</p>" +
+                "  </section>";
+
+        final List<JSReadyDiff> jsReadyDiffs = diffEngine.findDiffs(oldHTML, newHTML);
+
+        for(JSReadyDiff diff : jsReadyDiffs) {
+            System.out.println(diff);
+            oldHTML = applyDiff(oldHTML, diff);
+        }
+
+        System.out.println(oldHTML);
+        Assertions.assertEquals(pretty(newHTML), pretty(oldHTML));
+    }
+
+    @Test
+    void testSimpleAdd() {
+        String oldHTML = "<section></section>";
+        final String newHTML = "<section><p>Hello world</p></section>";
+
+        final List<JSReadyDiff> jsReadyDiffs = diffEngine.findDiffs(oldHTML, newHTML);
+
+        for(JSReadyDiff diff : jsReadyDiffs) {
+            System.out.println(diff);
+            oldHTML = applyDiff(oldHTML, diff);
+        }
+
+        System.out.println(oldHTML);
+        Assertions.assertEquals(pretty(newHTML), pretty(oldHTML));
+    }
+
+    @Test
+    void testSimpleAdd2() {
+        String oldHTML = "<section><p>Hello world</p></section>";
+        final String newHTML = "<section><p>Hello world</p><p>Hello world</p></section>";
+
+        final List<JSReadyDiff> jsReadyDiffs = diffEngine.findDiffs(oldHTML, newHTML);
+        for(JSReadyDiff diff : jsReadyDiffs) {
+            System.out.println(diff);
+            oldHTML = applyDiff(oldHTML, diff);
+        }
+
+        System.out.println(oldHTML);
+        Assertions.assertEquals(pretty(newHTML), oldHTML);
+    }
+
+    @Test
+    void testToElement() {
+        String html = "<p>Hello world</p>";
+        Assertions.assertEquals(html, toElement(html).outerHtml());
+    }
+
+    @Test
+    void testSimpleRemoval() {
+        String oldHTML = "<section><p>Hello world</p></section>";
+        final String newHTML = "<section></section>";
+
+        final List<JSReadyDiff> jsReadyDiffs = diffEngine.findDiffs(oldHTML, newHTML);
+
+        for(JSReadyDiff diff : jsReadyDiffs) {
+            System.out.println(diff);
+            oldHTML = applyDiff(oldHTML, diff);
+        }
+
+        System.out.println(oldHTML);
+        Assertions.assertEquals(pretty(newHTML), oldHTML);
     }
 
 }
