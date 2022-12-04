@@ -9,7 +9,7 @@
   },
   "license": "BSD-3-Clause",
   "dependencies": {
-    "@braintree/sanitize-url": "^6.0.1",
+    "@braintree/sanitize-url": "^6.0.2",
     "morphdom": "^2.6.1",
     "rsocket-composite-metadata": "^1.0.0-alpha.3",
     "rsocket-core": "^1.0.0-alpha.1",
@@ -17,6 +17,6 @@
     "rsocket-types": "^0.0.27",
     "rsocket-websocket-client": "^1.0.0-alpha.3",
     "uglifyify": "^5.0.2",
-    "ws": "^8.10.0"
+    "ws": "^8.11.0"
   }
 }
