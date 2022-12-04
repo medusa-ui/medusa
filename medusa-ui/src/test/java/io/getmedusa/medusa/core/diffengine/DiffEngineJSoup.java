@@ -24,8 +24,8 @@ public class DiffEngineJSoup {
         } else if(diff.isRemoval()) {
             xpath(html, diff.getXpath()).remove();
         } else if(diff.isSequenceChange()) {
-            var indexToMove = Integer.parseInt(diff.getContent()) - 1;
-            var indexToMoveTo = Integer.parseInt(diff.getAttribute()) - 1;
+            var indexToMove = Integer.parseInt(diff.getContent());
+            var indexToMoveTo = Integer.parseInt(diff.getAttribute());
 
             Element elements = xpath(html, diff.getXpath()).get(0);
             var elemToMove = elements.child(indexToMove);

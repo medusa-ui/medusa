@@ -192,29 +192,24 @@ class DiffEngineTest extends DiffEngineJSoup {
 
     @Test
     void testInvestigation() {
-        String oldHTML = "<section>" +
-                "   <h5>1</h5>" +
-                "   <p>3</p>" +
-                "   <div><button onclick=\"_M.doAction(event, '__FRAGMENT__', `change()`)\">4 change</button>\n" +
-                "   </div>" +
-                "   <h5>5</h5>" +
-                "   <p>7</p>" +
-                "  </section>";
+        String oldHTML = """
+                <section>
+                    <p>A</p>
+                    <p>B</p>
+                </section>
+                """;
 
-        final String newHTML = "<section>" +
-                "   <h5>1</h5>" +
-                "   <div>" +
-                "    <p>2</p>" +
-                "   </div>" +
-                "   <p>3</p>" +
-                "   <div><button onclick=\"_M.doAction(event, '__FRAGMENT__', `change()`)\">4 change</button>\n" +
-                "   </div>" +
-                "   <h5>5</h5>" +
-                "   <div>" +
-                "    <p>6</p>" +
-                "   </div>" +
-                "   <p>7</p>" +
-                "  </section>";
+        final String newHTML = """
+                <section>
+                    <div>
+                        <p>1</p>
+                    </div>
+                    <p>A</p>
+                    <div>
+                        <p>2</p>
+                    </div>
+                    <p>B</p>
+                </section>""";
 
         final List<JSReadyDiff> jsReadyDiffs = diffEngine.findDiffs(oldHTML, newHTML);
 

@@ -125,10 +125,20 @@ public class JSReadyDiff {
 
     @Override
     public String toString() {
-        return "JSReadyDiff{" +
-                "content='" + content + '\'' +
-                ", xpath='" + xpath + '\'' +
-                ", type=" + type +
-                '}';
+        if(isSequenceChange()) {
+            return "JSReadyDiff{" +
+                    "from='" + content + '\'' +
+                    ", xpath='" + xpath + '\'' +
+                    ((attribute == null) ? "" : ", to='" + attribute + '\'') +
+                    ", type=" + type +
+                    '}';
+        } else {
+            return "JSReadyDiff{" +
+                    "content='" + content + '\'' +
+                    ", xpath='" + xpath + '\'' +
+                    ((attribute == null) ? "" : ", attribute='" + attribute + '\'') +
+                    ", type=" + type +
+                    '}';
+        }
     }
 }
