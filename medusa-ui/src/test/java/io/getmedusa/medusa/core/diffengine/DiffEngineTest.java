@@ -325,5 +325,45 @@ class DiffEngineTest extends DiffEngineJSoup {
         applyAndTest(oldHTML, newHTML, diffEngine.findDiffs(oldHTML, newHTML));
     }
 
+    @Test
+    void testSimpleSequenceChange() {
+        String oldHTML = """
+                <section>
+                    <p>3</p>
+                    <span>1</span>
+                    <button>2</button>
+                </section>
+                """;
+        final String newHTML = """
+                <section>
+                    <span>1</span>
+                    <button>2</button>
+                    <p>3</p>
+                </section>
+                """;
+
+        applyAndTest(oldHTML, newHTML, diffEngine.findDiffs(oldHTML, newHTML));
+    }
+
+    @Test
+    void testSimpleSequenceChange2() {
+        String oldHTML = """
+                <section>
+                    <div><button>3</button></div>
+                    <p><span>1</span></p>
+                    <button>2</button>
+                </section>
+                """;
+        final String newHTML = """
+                <section>
+                    <p><span>1</span></p>
+                    <button>2</button>
+                    <div><button>3</button></div>
+                </section>
+                """;
+
+        applyAndTest(oldHTML, newHTML, diffEngine.findDiffs(oldHTML, newHTML));
+    }
+
 }
 

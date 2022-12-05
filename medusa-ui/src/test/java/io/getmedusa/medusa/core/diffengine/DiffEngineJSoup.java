@@ -108,14 +108,23 @@ public class DiffEngineJSoup {
         for(Element e : parsed.getElementsByAttribute("uuid")) {
             e.removeAttr("uuid");
         }
-        return parsed.getElementsByTag("section").get(0).outerHtml();
+        return clean(parsed);
     }
 
     protected String pretty(String html) {
         Document.OutputSettings outputSettings = new Document.OutputSettings();
         outputSettings.prettyPrint(true);
         var parsed = Jsoup.parse(html);
-        return parsed.getElementsByTag("section").get(0).outerHtml();
+        return clean(parsed);
+    }
+
+    private String clean(Document html) {
+        return html.getElementsByTag("section").get(0).outerHtml()
+                .replace("\n", "")
+                .replace(">  <","><")
+                .replace("> <","><")
+                .replace("><", ">\n<")
+                .trim();
     }
 
     protected Element toElement(String content) {
