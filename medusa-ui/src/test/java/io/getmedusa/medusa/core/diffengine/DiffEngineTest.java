@@ -263,33 +263,29 @@ class DiffEngineTest extends DiffEngineJSoup {
     @Test
     void testComplex3() {
         String oldHTML = "<section>\n" +
-                "   <h5>1 <code>th:if</code>Above button</h5>\n" +
+                "   <h5>1</h5>\n" +
                 "   <div>\n" +
-                "    <p>2 TOP If top is <code>true</code> this should be visible on <code>top</code> of the page</p>\n" +
+                "    <p>2</p>\n" +
                 "   </div>\n" +
                 "   \n" +
-                "   <div><button onclick=\"_M.doAction(event, '__FRAGMENT__', `change()`)\">4 change</button>\n" +
-                "   </div>\n" +
-                "   <h5>5 <code>th:if</code>Below button</h5>\n" +
+                "   <h5>5</h5>\n" +
                 "   <div>\n" +
-                "    <p>6 TOP If top is <code>true</code> this should be visible on <code>top</code> of the page, but below the button</p>\n" +
+                "    <p>6</p>\n" +
                 "   </div>\n" +
                 "   \n" +
                 "  </section>";
 
         final String newHTML = "<section>\n" +
-                "   <h5>1 <code>th:if</code>Above button</h5>\n" +
+                "   <h5>1</h5>\n" +
                 "   <div>\n" +
-                "    <p>2 TOP If top is <code>true</code> this should be visible on <code>top</code> of the page</p>\n" +
+                "    <p>2</p>\n" +
                 "   </div>\n" +
-                "   <p>3 BOTTOM If bottom is <code>true</code> this should be visible at the <code>bottom</code></p>\n" +
-                "   <div><button onclick=\"_M.doAction(event, '__FRAGMENT__', `change()`)\">4 change</button>\n" +
-                "   </div>\n" +
-                "   <h5>5 <code>th:if</code>Below button</h5>\n" +
+                "   <p>3</p>\n" +
+                "   <h5>5</h5>\n" +
                 "   <div>\n" +
-                "    <p>6 TOP If top is <code>true</code> this should be visible on <code>top</code> of the page, but below the button</p>\n" +
+                "    <p>6</p>\n" +
                 "   </div>\n" +
-                "   <p>7 BOTTOM If bottom is <code>true</code> this should be visible at the <code>bottom</code>, but below the button</p>\n" +
+                "   <p>7</p>\n" +
                 "  </section>";
 
         applyAndTest(oldHTML, newHTML, diffEngine.findDiffs(oldHTML, newHTML));

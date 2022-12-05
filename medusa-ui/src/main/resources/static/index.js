@@ -173,10 +173,11 @@ handleSequenceChange = function (obj) {
     let xpathToAddBefore = obj.content;
 
     if("::LAST" === xpathToAddBefore) {
-        obj.element.parent().appendChild(obj.element);
+        obj.element.parentNode.appendChild(obj.element);
     } else {
-        console.log("obj.element", obj.element);
-        console.log("obj.contentElement", obj.contentElement);
+        if(obj.contentElement === null && obj.content !== null) {
+            obj.contentElement = evalXPath(obj.content); //why?
+        }
         obj.element.parentNode.insertBefore(obj.element, obj.contentElement);
     }
 };
@@ -192,11 +193,12 @@ handleIncomingAddition = function (obj) {
 
     if(existingNode !== null && nodeToAdd !== null) {
         if(obj.firstEntry) {
-            if(existingNode.childElementCount === 0) {
+            /*if(existingNode.childElementCount === 0) {
                 existingNode.appendChild(nodeToAdd);
             } else {
                 existingNode.prepend(nodeToAdd);
-            }
+            }*/
+            existingNode.appendChild(nodeToAdd);
         } else {
             //existing node is previous node, so do an 'add after' (= addBefore of nextSibling)
             existingNode.parentNode.insertBefore(nodeToAdd, existingNode.nextSibling);
