@@ -160,19 +160,25 @@ doLookups = function (listOfDiffs) {
                 diff.xpath = diff.xpath.substring(0, diff.xpath.length - 8); //8 = '/::first'.length
             }
             diff.element = evalXPath(diff.xpath);
+
+            if(diff.type === "SEQUENCE_CHANGE" && diff.content !== "::LAST") {
+                diff.contentElement = evalXPath(diff.content);
+            }
         }
     }
     return listOfDiffs;
 };
 
 handleSequenceChange = function (obj) {
-    let indexToMove = parseInt(obj.content, 10);
-    let indexToMoveTo = parseInt(obj.attribute, 10);
-    let wrapperXPath = obj.xpath;
-    let elemToMove = document.evaluate(wrapperXPath, document, null, XPathResult.ANY_UNORDERED_NODE_TYPE, null ).singleNodeValue.children[indexToMove];
-    let elemInCurrentPosition = document.evaluate(wrapperXPath, document, null, XPathResult.ANY_UNORDERED_NODE_TYPE, null ).singleNodeValue.children[indexToMoveTo];
+    let xpathToAddBefore = obj.content;
 
-    elemToMove.parentNode.insertBefore(elemInCurrentPosition, elemToMove.nextSibling)
+    if("::LAST" === xpathToAddBefore) {
+        obj.element.parent().appendChild(obj.element);
+    } else {
+        console.log("obj.element", obj.element);
+        console.log("obj.contentElement", obj.contentElement);
+        obj.element.parentNode.insertBefore(obj.element, obj.contentElement);
+    }
 };
 
 handleIncomingAddition = function (obj) {
@@ -186,8 +192,11 @@ handleIncomingAddition = function (obj) {
 
     if(existingNode !== null && nodeToAdd !== null) {
         if(obj.firstEntry) {
-            //existingNode is parentNode, so add as child
-            existingNode.appendChild(nodeToAdd);
+            if(existingNode.childElementCount === 0) {
+                existingNode.appendChild(nodeToAdd);
+            } else {
+                existingNode.prepend(nodeToAdd);
+            }
         } else {
             //existing node is previous node, so do an 'add after' (= addBefore of nextSibling)
             existingNode.parentNode.insertBefore(nodeToAdd, existingNode.nextSibling);

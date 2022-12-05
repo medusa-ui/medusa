@@ -1,6 +1,7 @@
 package io.getmedusa.medusa.core.diffengine;
 
 import io.getmedusa.medusa.core.router.action.JSReadyDiff;
+import org.joox.JOOX;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -41,11 +42,15 @@ public class DiffEngine {
             for (Difference difference : differences.getDifferences()) {
                 final Comparison comparison = difference.getComparison();
 
+                logger.info("difference: {}", comparison);
+
                 if (!isOfIgnorableType(comparison.getType())) {
                     final JSReadyDiff diff = comparisonToDiff(comparison);
                     if (null != diff) {
                         diffs.add(diff);
                     }
+                } else {
+                    logger.error("ignored: {}", difference);
                 }
             }
         } catch (Exception e) {
@@ -84,7 +89,16 @@ public class DiffEngine {
         } else if(ATTR_VALUE.equals(comparison.getType())) {
             return buildAttrChange(attrOwnerXPath(oldDetail, newDetail), newDocumentNode.getNodeName(), newDocumentNode.getNodeValue());
         } else if(CHILD_NODELIST_SEQUENCE.equals(comparison.getType())){
-            return buildSequenceChange(oldDetail.getParentXPath(), oldDetail.getValue().toString(), newDetail.getValue().toString());
+            int index = Integer.parseInt(newDetail.getValue().toString());
+            var addBeforeNode = newDocumentNode.getParentNode().getChildNodes().item(index + 1);
+            if(null == addBeforeNode) {
+                //add as last
+                return buildSequenceChange(oldDetail.getXPath(), "::LAST");
+            } else {
+                //to xpath
+                String path = JOOX.$(addBeforeNode).xpath();
+                return buildSequenceChange(oldDetail.getXPath(), path);
+            }
         } else {
             logger.warn("comparisonToDiff: no match for comparison: " + comparison);
         }

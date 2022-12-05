@@ -30,10 +30,8 @@ public class JSReadyDiff {
         return diff;
     }
 
-    public static JSReadyDiff buildSequenceChange(String wrapperXPath, String indexToMove, String indexToMoveTo) {
-        final JSReadyDiff diff = new JSReadyDiff(indexToMove, wrapperXPath, DiffType.SEQUENCE_CHANGE);
-        diff.setAttribute(indexToMoveTo);
-        return diff;
+    public static JSReadyDiff buildSequenceChange(String wrapperXPath, String indexToMoveTo) {
+        return new JSReadyDiff(indexToMoveTo, wrapperXPath, DiffType.SEQUENCE_CHANGE);
     }
 
     public static JSReadyDiff buildNewAddition(String xPath, String content) {
@@ -127,9 +125,8 @@ public class JSReadyDiff {
     public String toString() {
         if(isSequenceChange()) {
             return "JSReadyDiff{" +
-                    "from='" + content + '\'' +
+                    "before='" + content + '\'' +
                     ", xpath='" + xpath + '\'' +
-                    ((attribute == null) ? "" : ", to='" + attribute + '\'') +
                     ", type=" + type +
                     '}';
         } else {

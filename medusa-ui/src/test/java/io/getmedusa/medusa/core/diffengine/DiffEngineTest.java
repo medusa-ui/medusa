@@ -191,7 +191,7 @@ class DiffEngineTest extends DiffEngineJSoup {
     }
 
     @Test
-    void testInvestigation() {
+    void testComplex1() {
         String oldHTML = """
                 <section>
                     <p>A</p>
@@ -201,9 +201,6 @@ class DiffEngineTest extends DiffEngineJSoup {
 
         final String newHTML = """
                 <section>
-                    <div>
-                        <p>1</p>
-                    </div>
                     <p>A</p>
                     <div>
                         <p>2</p>
@@ -211,15 +208,91 @@ class DiffEngineTest extends DiffEngineJSoup {
                     <p>B</p>
                 </section>""";
 
-        final List<JSReadyDiff> jsReadyDiffs = diffEngine.findDiffs(oldHTML, newHTML);
+        applyAndTest(oldHTML, newHTML, diffEngine.findDiffs(oldHTML, newHTML));
+    }
 
-        for(JSReadyDiff diff : jsReadyDiffs) {
-            System.out.println(diff);
-            oldHTML = applyDiff(oldHTML, diff);
-        }
+    @Test
+    void testComplex1B() {
+        String oldHTML = """
+                <section>
+                    <p>A</p>
+                    <p>B</p>
+                    <p>C</p>
+                </section>
+                """;
 
-        System.out.println(oldHTML);
-        Assertions.assertEquals(pretty(newHTML), pretty(oldHTML));
+        final String newHTML = """
+                <section>
+                    <p>A</p>
+                    <div>
+                        <p>1</p>
+                    </div>
+                    <p>B</p>
+                    <div>
+                        <p>2</p>
+                    </div>
+                    <p>C</p>
+                </section>""";
+
+        applyAndTest(oldHTML, newHTML, diffEngine.findDiffs(oldHTML, newHTML));
+    }
+
+    @Test
+    void testComplex2() {
+        String oldHTML = "<section>" +
+                "   <h5>1</h5>" +
+                "   <p>3</p>" +
+                "   <div>4 change</div>" +
+                "   <h5>5</h5>" +
+                "   <p>7</p>" +
+                "  </section>";
+
+        final String newHTML = "<section>" +
+                "   <h5>1</h5>" +
+                "   <div><p>2</p></div>" +
+                "   <p>3</p>" +
+                "   <div>4 change</div>" +
+                "   <h5>5</h5>" +
+                "   <div><p>6</p></div>" +
+                "   <p>7</p>" +
+                "  </section>";
+
+        applyAndTest(oldHTML, newHTML, diffEngine.findDiffs(oldHTML, newHTML));
+    }
+
+    @Test
+    void testComplex3() {
+        String oldHTML = "<section>\n" +
+                "   <h5>1 <code>th:if</code>Above button</h5>\n" +
+                "   <div>\n" +
+                "    <p>2 TOP If top is <code>true</code> this should be visible on <code>top</code> of the page</p>\n" +
+                "   </div>\n" +
+                "   \n" +
+                "   <div><button onclick=\"_M.doAction(event, '__FRAGMENT__', `change()`)\">4 change</button>\n" +
+                "   </div>\n" +
+                "   <h5>5 <code>th:if</code>Below button</h5>\n" +
+                "   <div>\n" +
+                "    <p>6 TOP If top is <code>true</code> this should be visible on <code>top</code> of the page, but below the button</p>\n" +
+                "   </div>\n" +
+                "   \n" +
+                "  </section>";
+
+        final String newHTML = "<section>\n" +
+                "   <h5>1 <code>th:if</code>Above button</h5>\n" +
+                "   <div>\n" +
+                "    <p>2 TOP If top is <code>true</code> this should be visible on <code>top</code> of the page</p>\n" +
+                "   </div>\n" +
+                "   <p>3 BOTTOM If bottom is <code>true</code> this should be visible at the <code>bottom</code></p>\n" +
+                "   <div><button onclick=\"_M.doAction(event, '__FRAGMENT__', `change()`)\">4 change</button>\n" +
+                "   </div>\n" +
+                "   <h5>5 <code>th:if</code>Below button</h5>\n" +
+                "   <div>\n" +
+                "    <p>6 TOP If top is <code>true</code> this should be visible on <code>top</code> of the page, but below the button</p>\n" +
+                "   </div>\n" +
+                "   <p>7 BOTTOM If bottom is <code>true</code> this should be visible at the <code>bottom</code>, but below the button</p>\n" +
+                "  </section>";
+
+        applyAndTest(oldHTML, newHTML, diffEngine.findDiffs(oldHTML, newHTML));
     }
 
     @Test
@@ -227,15 +300,7 @@ class DiffEngineTest extends DiffEngineJSoup {
         String oldHTML = "<section></section>";
         final String newHTML = "<section><p>Hello world</p></section>";
 
-        final List<JSReadyDiff> jsReadyDiffs = diffEngine.findDiffs(oldHTML, newHTML);
-
-        for(JSReadyDiff diff : jsReadyDiffs) {
-            System.out.println(diff);
-            oldHTML = applyDiff(oldHTML, diff);
-        }
-
-        System.out.println(oldHTML);
-        Assertions.assertEquals(pretty(newHTML), pretty(oldHTML));
+        applyAndTest(oldHTML, newHTML, diffEngine.findDiffs(oldHTML, newHTML));
     }
 
     @Test
@@ -243,14 +308,7 @@ class DiffEngineTest extends DiffEngineJSoup {
         String oldHTML = "<section><p>Hello world</p></section>";
         final String newHTML = "<section><p>Hello world</p><p>Hello world</p></section>";
 
-        final List<JSReadyDiff> jsReadyDiffs = diffEngine.findDiffs(oldHTML, newHTML);
-        for(JSReadyDiff diff : jsReadyDiffs) {
-            System.out.println(diff);
-            oldHTML = applyDiff(oldHTML, diff);
-        }
-
-        System.out.println(oldHTML);
-        Assertions.assertEquals(pretty(newHTML), oldHTML);
+        applyAndTest(oldHTML, newHTML, diffEngine.findDiffs(oldHTML, newHTML));
     }
 
     @Test
@@ -264,15 +322,7 @@ class DiffEngineTest extends DiffEngineJSoup {
         String oldHTML = "<section><p>Hello world</p></section>";
         final String newHTML = "<section></section>";
 
-        final List<JSReadyDiff> jsReadyDiffs = diffEngine.findDiffs(oldHTML, newHTML);
-
-        for(JSReadyDiff diff : jsReadyDiffs) {
-            System.out.println(diff);
-            oldHTML = applyDiff(oldHTML, diff);
-        }
-
-        System.out.println(oldHTML);
-        Assertions.assertEquals(pretty(newHTML), oldHTML);
+        applyAndTest(oldHTML, newHTML, diffEngine.findDiffs(oldHTML, newHTML));
     }
 
 }
