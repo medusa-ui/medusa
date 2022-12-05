@@ -34,7 +34,7 @@ public class DiffComparator implements Comparator<JSReadyDiff> {
             o1Value = 0;
         }
 
-        //do sequence changes last
+        //do sequence changes one-to-last
         if(o1.isSequenceChange() && !o2.isSequenceChange()) {
             o2Value = 0;
             o1Value = 1;
@@ -43,7 +43,7 @@ public class DiffComparator implements Comparator<JSReadyDiff> {
             o1Value = 0;
         }
 
-        //do removals one-to-last
+        //do removals last
         if(o1.isRemoval() && !o2.isRemoval()) {
             o2Value = 0;
             o1Value = 1;

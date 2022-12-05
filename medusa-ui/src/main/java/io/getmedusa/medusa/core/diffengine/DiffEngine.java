@@ -90,6 +90,8 @@ public class DiffEngine {
             return buildAttrChange(attrOwnerXPath(oldDetail, newDetail), newDocumentNode.getNodeName(), newDocumentNode.getNodeValue());
         } else if(CHILD_NODELIST_SEQUENCE.equals(comparison.getType())){
             int index = Integer.parseInt(newDetail.getValue().toString());
+            //we should be able to do this, because we sort so that all additions are already done
+            //any new elements should already exist
             var addBeforeNode = newDocumentNode.getParentNode().getChildNodes().item(index + 1);
             if(null == addBeforeNode) {
                 //add as last
