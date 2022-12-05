@@ -2,6 +2,7 @@ package io.getmedusa.medusa.core.diffengine;
 
 import io.getmedusa.medusa.core.router.action.JSReadyDiff;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -235,6 +236,74 @@ class DiffEngineTest extends DiffEngineJSoup {
                 </section>""";
 
         applyAndTest(oldHTML, newHTML, diffEngine.findDiffs(oldHTML, newHTML));
+    }
+    @Test
+    @DisplayName("wrap in div alternative (fixes failing tests testComplex2 testComplex3)")
+    void wrapConditionalTagsInDiv() {
+        /* Assume some template snippet like:
+
+            <section>
+               <h5>1</h5>
+               <p th:if="${eval}">2</p> <!-- conditional tag -->
+               <p>3</p>
+               <div>4 change</div>
+               <h5>5</h5>
+               <p th:if="${eval}">6</p> <!-- conditional tag -->
+               <p>7</p>
+            </section>
+
+           Backend can detect tags with th:if attribute and wrap them in a div
+           So result will be like
+
+           <section>
+               <h5>1</h5>
+               <div>
+                   <p th:if="${eval}">2</p>  <!-- wrapped conditional tag -->
+               </div>
+               <p>3</p>
+               <div>4 change</div>
+               <h5>5</h5>
+               <div>
+                   <p th:if="${eval}">6</p> <!-- wrapped conditional tag -->
+               </div>
+               <p>7</p>
+            </section>
+        */
+
+        String evalFalse = """
+                <section>
+                   <h5>1</h5>
+                   <div>  <!-- wrapped conditional tag -->
+                   </div>
+                   <p>3</p>
+                   <div>4 change</div>
+                   <h5>5</h5>
+                   <div>  <!-- wrapped conditional tag -->
+                   </div>
+                   <p>7</p>
+                </section>
+                """;
+
+        String evalTrue = """
+                <section>
+                   <h5>1</h5>
+                   <div>   <!-- wrapped conditional tag -->
+                      <p>2</p>
+                   </div>
+                   <p>3</p>
+                   <div>4 change</div>
+                   <h5>5</h5>
+                   <div>  <!-- wrapped conditional tag -->
+                      <p>6</p>
+                   </div>
+                   <p>7</p>
+                </section>
+                """;
+
+        // eval false -> true
+        applyAndTest(evalFalse, evalTrue, diffEngine.findDiffs(evalFalse, evalTrue));
+        // eval true -> false
+        applyAndTest(evalTrue, evalFalse, diffEngine.findDiffs(evalTrue, evalFalse));
     }
 
     @Test
