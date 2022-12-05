@@ -17,7 +17,8 @@ public class ThIfController {
         return List.of(
                 new Attribute("top",true),
                 new Attribute("middle",true),
-                new Attribute("bottom",true)
+                new Attribute("bottom",true),
+                new Attribute("counter", counter)
         );
     }
 
@@ -31,7 +32,8 @@ public class ThIfController {
         return List.of(
                 new Attribute("top",top ),
                 new Attribute("middle", middle),
-                new Attribute("bottom", bottom)
+                new Attribute("bottom", bottom),
+                new Attribute("counter", counter)
         );
     }
 
