@@ -95,6 +95,10 @@ public class JSReadyDiff {
         this.type = type;
     }
 
+    public boolean isAddition()  {
+        return DiffType.ADDITION.equals(this.type);
+    }
+
     enum DiffType {
         ADDITION,
         EDIT,

@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 import java.util.List;
 
-class DiffEngineTest {
+class DiffEngineTest extends DiffEngineJSoup{
 
     private final DiffEngine diffEngine = new DiffEngine();
 
@@ -191,6 +191,176 @@ class DiffEngineTest {
 
         Assertions.assertEquals( 1, jsReadyDiffsFinal.size(), "expected only 1 addition");
 
+    }
+
+    @Test
+    void wrapConditionalTagsInDiv() {
+        /* Assume some template snippet like:
+
+            <section>
+               <h5>1</h5>
+               <p th:if="${eval}">2</p> <!-- conditional tag -->
+               <p>3</p>
+               <div>4 change</div>
+               <h5>5</h5>
+               <p th:if="${eval}">6</p> <!-- conditional tag -->
+               <p>7</p>
+            </section>
+
+           Backend can detect tags with th:if attribute and wrap them in a div
+           So result will be like
+
+           <section>
+               <h5>1</h5>
+               <div>
+                   <p th:if="${eval}">2</p>  <!-- wrapped conditional tag -->
+               </div>
+               <p>3</p>
+               <div>4 change</div>
+               <h5>5</h5>
+               <div>
+                   <p th:if="${eval}">6</p> <!-- wrapped conditional tag -->
+               </div>
+               <p>7</p>
+            </section>
+        */
+
+        String evalFalse = """
+                <section>
+                   <h5>1</h5>
+                   <div>  <!-- wrapped conditional tag -->
+                   </div>
+                   <p>3</p>
+                   <div>4 change</div>
+                   <h5>5</h5>
+                   <div>  <!-- wrapped conditional tag -->
+                   </div>
+                   <p>7</p>
+                </section>
+                """;
+
+        String evalTrue = """
+                <section>
+                   <h5>1</h5>
+                   <div>   <!-- wrapped conditional tag -->
+                      <p>2</p>
+                   </div>
+                   <p>3</p>
+                   <div>4 change</div>
+                   <h5>5</h5>
+                   <div>  <!-- wrapped conditional tag -->
+                      <p>6</p>
+                   </div>
+                   <p>7</p>
+                </section>
+                """;
+
+        // eval false -> true
+        applyAndTest(evalFalse, evalTrue, diffEngine.findDiffs(evalFalse, evalTrue));
+        // eval true -> false
+        applyAndTest(evalTrue, evalFalse, diffEngine.findDiffs(evalTrue, evalFalse));
+    }
+
+    @Test
+    void wrapNestedConditionalTagsInDiv() {
+        /* Assume some template snippet like:
+
+            <section>
+               <h5>1</h5>
+               <th:block th:if="${eval1}">
+                   <p th:if="${eval2}">2</p>
+                   <p>3</p>
+               </th:block>
+               <div>4 change</div>
+               <h5>5</h5>
+               <p th:if="${eval1}">6</p>
+               <p>7</p>
+            </section>
+
+           Backend can detect tags with th:if attribute and wrap them in a div
+           So result will be like
+
+           <section>
+               <h5>1</h5>
+               <div>
+                   <th:block th:if="${eval1}">
+                       <div>
+                           <p th:if="${eval2}">2</p>
+                       </div>
+                       <p>3</p>
+                   </th:block>
+               </div>
+               <div>4 change</div>
+               <h5>5</h5>
+               <div>
+                   <p th:if="${eval1}">6</p>
+               </div>
+               <p>7</p>
+            </section>
+        */
+
+        String eval1False = """
+                <section>
+                   <h5>1</h5>
+                   <div>
+                      <div>
+                      </div>
+                   </div>
+                   <p>3</p>
+                   <div>4 change</div>
+                   <h5>5</h5>
+                   <div>
+                   </div>
+                   <p>7</p>
+                </section>
+                """;
+
+        String eval1True = """
+                <section>
+                   <h5>1</h5>
+                   <div>
+                      <div>
+                      </div>
+                      <p>3</p>
+                   </div>
+                   <p>3</p>
+                   <div>4 change</div>
+                   <h5>5</h5>
+                   <div>
+                      <p>6</p>
+                   </div>
+                   <p>7</p>
+                </section>
+                """;
+
+        String eval12True = """
+                <section>
+                   <h5>1</h5>
+                   <div>
+                      <div>
+                        <p>2</p>
+                      </div>
+                      <p>3</p>
+                   </div>
+                   <p>3</p>
+                   <div>4 change</div>
+                   <h5>5</h5>
+                   <div>
+                      <p>6</p>
+                   </div>
+                   <p>7</p>
+                </section>
+                """;
+
+        // eval1 false -> true
+        applyAndTest(eval1False, eval1True, diffEngine.findDiffs(eval1False, eval1True));
+        // eval1 true -> false
+        applyAndTest(eval1True, eval1False, diffEngine.findDiffs(eval1True, eval1False));
+
+        // eval12 false -> true
+        applyAndTest(eval1False, eval12True, diffEngine.findDiffs(eval1False, eval12True));
+        // eval12 true -> false
+        applyAndTest(eval12True, eval1False, diffEngine.findDiffs(eval12True, eval1False));
     }
 
 }
