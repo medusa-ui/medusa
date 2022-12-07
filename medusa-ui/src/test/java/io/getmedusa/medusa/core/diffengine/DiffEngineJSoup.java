@@ -26,11 +26,18 @@ public class DiffEngineJSoup {
             handleRemoval(diff, html);
         } else if(diff.isSequenceChange()) {
             handleSequenceChange(diff, html, elementMap);
+        } else if(diff.isEdit()) {
+            handleEdit(diff, html);
         } else {
             throw new NotImplementedException("diff not implemented: " + diff);
         }
 
         return html.getElementsByTag("section").get(0).outerHtml();
+    }
+
+    private void handleEdit(JSReadyDiff diff, Document html) {
+        Element element = xpath(html, diff.getXpath()).get(0);
+        element.replaceWith(toElement(diff.getContent()));
     }
 
     //I believe the XMLUnit expects things to be added at the bottom
