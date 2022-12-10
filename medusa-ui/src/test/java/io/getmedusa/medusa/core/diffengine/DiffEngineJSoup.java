@@ -16,6 +16,7 @@ import java.util.UUID;
 public class DiffEngineJSoup {
 
     protected final DiffEngine diffEngine = new DiffEngine();
+    protected final CustomDiffEngine engine = new CustomDiffEngine();
 
     protected String applyDiff(String oldHTML, JSReadyDiff diff, Map<JSReadyDiff, Element> elementMap) {
         var html = Jsoup.parse(oldHTML);
@@ -26,11 +27,25 @@ public class DiffEngineJSoup {
             handleRemoval(diff, html);
         } else if(diff.isSequenceChange()) {
             handleSequenceChange(diff, html, elementMap);
+        } else if(diff.isAttrChange()) {
+            handleAttrChange(diff, html);
+        } else if(diff.isEdit()) {
+            final Element foundElement = xpath(html, diff.getXpath()).get(0);
+            foundElement.replaceWith(Jsoup.parse(diff.getContent()).body().child(0));
         } else {
             throw new NotImplementedException("diff not implemented: " + diff);
         }
 
         return html.getElementsByTag("section").get(0).outerHtml();
+    }
+
+    private void handleAttrChange(JSReadyDiff diff, Document html) {
+        final Element foundElement = xpath(html, diff.getXpath()).get(0);
+        if(diff.getContent().isBlank()) {
+            foundElement.removeAttr(diff.getAttribute());
+        } else {
+            foundElement.attr(diff.getAttribute(), diff.getContent());
+        }
     }
 
     //I believe the XMLUnit expects things to be added at the bottom

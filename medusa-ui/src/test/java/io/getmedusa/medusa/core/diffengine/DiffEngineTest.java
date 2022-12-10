@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 class DiffEngineTest extends DiffEngineJSoup {
@@ -14,7 +15,7 @@ class DiffEngineTest extends DiffEngineJSoup {
         final String oldHTML = "<table><tr><td>1</td><td>2</td></tr></table>";
         final String newHTML = "<table><tr><td>1</td><td>2</td></tr><tr><td>3</td><td>4</td></tr></table>";
 
-        final List<JSReadyDiff> listOf = diffEngine.findDiffs(oldHTML, newHTML);
+        final List<JSReadyDiff> listOf = getDiffs(oldHTML, newHTML);
 
         Assertions.assertEquals(1, listOf.size());
         final JSReadyDiff jsReadyDiff = listOf.get(0);
@@ -29,7 +30,7 @@ class DiffEngineTest extends DiffEngineJSoup {
         final String oldHTML = "<table></table>";
         final String newHTML = "<table><tr><td>1</td><td>2</td></tr></table>";
 
-        final List<JSReadyDiff> listOf = diffEngine.findDiffs(oldHTML, newHTML);
+        final List<JSReadyDiff> listOf = getDiffs(oldHTML, newHTML);
         Assertions.assertEquals(1, listOf.size());
         final JSReadyDiff jsReadyDiff = listOf.get(0);
         Assertions.assertNotNull(jsReadyDiff);
@@ -43,7 +44,7 @@ class DiffEngineTest extends DiffEngineJSoup {
         final String oldHTML = "<table><tr><td>1</td><td>2</td></tr><tr><td>3</td><td>4</td></tr></table>";
         final String newHTML = "<table><tr><td>1</td><td>2</td></tr></table>";
 
-        final List<JSReadyDiff> listOf = diffEngine.findDiffs(oldHTML, newHTML);
+        final List<JSReadyDiff> listOf = getDiffs(oldHTML, newHTML);
         Assertions.assertEquals(1, listOf.size());
 
         final JSReadyDiff jsReadyDiff = listOf.get(0);
@@ -58,7 +59,7 @@ class DiffEngineTest extends DiffEngineJSoup {
         final String oldHTML = "<p>Hello world</p>";
         final String newHTML = "<p>Hello WORLD</p>";
 
-        final List<JSReadyDiff> listOf = diffEngine.findDiffs(oldHTML, newHTML);
+        final List<JSReadyDiff> listOf = getDiffs(oldHTML, newHTML);
         Assertions.assertEquals(1, listOf.size());
 
         final JSReadyDiff jsReadyDiff = listOf.get(0);
@@ -73,7 +74,7 @@ class DiffEngineTest extends DiffEngineJSoup {
         final String oldHTML = "<p>Hello world</p>";
         final String newHTML = "<p class=\"red\">Hello world</p>";
 
-        final List<JSReadyDiff> jsReadyDiffs = diffEngine.findDiffs(oldHTML, newHTML);
+        final List<JSReadyDiff> jsReadyDiffs = getDiffs(oldHTML, newHTML);
 
         for(JSReadyDiff diff : jsReadyDiffs) {
             System.out.println(diff);
@@ -93,7 +94,7 @@ class DiffEngineTest extends DiffEngineJSoup {
         final String oldHTML = "<html><table><tr><td>1</td><td>2</td></tr></table></html>";
         final String newHTML = "<html><table><tr><td>1</td><td>2</td><td>3</td><td>4</td></tr></table><p>Hello world</p></html>";
 
-        final List<JSReadyDiff> listOf = diffEngine.findDiffs(oldHTML, newHTML);
+        final List<JSReadyDiff> listOf = getDiffs(oldHTML, newHTML);
 
         final JSReadyDiff jsReadyDiff1 = listOf.get(0);
         System.out.println(jsReadyDiff1);
@@ -123,10 +124,7 @@ class DiffEngineTest extends DiffEngineJSoup {
         final String oldHTML = "<html><table><tr><td>1</td><td>2</td></tr></table></html>";
         final String newHTML = "<html><p>Hello world</p><table><tr><td>3</td><td>4</td><td>1</td><td>2</td></tr></table></html>";
 
-        final List<JSReadyDiff> diffs = diffEngine.findDiffs(oldHTML, newHTML);
-        System.out.println(diffs);
-
-        //TODO
+        getDiffs(oldHTML, newHTML);
     }
 
     @Test
@@ -154,8 +152,7 @@ class DiffEngineTest extends DiffEngineJSoup {
                 </div>
                 """;
 
-        final List<JSReadyDiff> jsReadyDiffs = diffEngine.findDiffs(oldHTMLOK, newHTMLOK);
-        System.out.println(jsReadyDiffs);
+        final List<JSReadyDiff> jsReadyDiffs = getDiffs(oldHTMLOK, newHTMLOK);
         Assertions.assertEquals( 1, jsReadyDiffs.size(), "expected only 1 addition");
 
         // Here there is bug
@@ -177,7 +174,7 @@ class DiffEngineTest extends DiffEngineJSoup {
                 </div>
                 """;
 
-        final List<JSReadyDiff> jsReadyDiffs2 = diffEngine.findDiffs(oldHTMLBUG, newHTMLBUG);
+        final List<JSReadyDiff> jsReadyDiffs2 = getDiffs(oldHTMLBUG, newHTMLBUG);
 
         final List<JSReadyDiff> jsReadyDiffsFinal = new ArrayList<>();
         for(JSReadyDiff diff : jsReadyDiffs2) {
@@ -189,6 +186,13 @@ class DiffEngineTest extends DiffEngineJSoup {
 
         Assertions.assertEquals( 1, jsReadyDiffsFinal.size(), "expected only 1 addition");
     }
+
+    private List<JSReadyDiff> getDiffs(String oldHTML, String newHTML) {
+        final List<JSReadyDiff> jsReadyDiffs = new LinkedList<>(engine.calculate(oldHTML, newHTML));
+        System.out.println(jsReadyDiffs);
+        return jsReadyDiffs;
+    }
+
 
     @Test
     void testComplex1() {
@@ -208,7 +212,7 @@ class DiffEngineTest extends DiffEngineJSoup {
                     <p>B</p>
                 </section>""";
 
-        applyAndTest(oldHTML, newHTML, diffEngine.findDiffs(oldHTML, newHTML));
+        applyAndTest(oldHTML, newHTML, getDiffs(oldHTML, newHTML));
     }
 
     @Test
@@ -234,7 +238,7 @@ class DiffEngineTest extends DiffEngineJSoup {
                     <p>C</p>
                 </section>""";
 
-        applyAndTest(oldHTML, newHTML, diffEngine.findDiffs(oldHTML, newHTML));
+        applyAndTest(oldHTML, newHTML, getDiffs(oldHTML, newHTML));
     }
 
     @Test
@@ -257,7 +261,7 @@ class DiffEngineTest extends DiffEngineJSoup {
                 "   <p>7</p>" +
                 "  </section>";
 
-        applyAndTest(oldHTML, newHTML, diffEngine.findDiffs(oldHTML, newHTML));
+        applyAndTest(oldHTML, newHTML, getDiffs(oldHTML, newHTML));
     }
 
     @Test
@@ -288,7 +292,7 @@ class DiffEngineTest extends DiffEngineJSoup {
                 "   <p>7</p>\n" +
                 "  </section>";
 
-        applyAndTest(oldHTML, newHTML, diffEngine.findDiffs(oldHTML, newHTML));
+        applyAndTest(oldHTML, newHTML, getDiffs(oldHTML, newHTML));
     }
 
     @Test
@@ -296,7 +300,7 @@ class DiffEngineTest extends DiffEngineJSoup {
         String oldHTML = "<section></section>";
         final String newHTML = "<section><p>Hello world</p></section>";
 
-        applyAndTest(oldHTML, newHTML, diffEngine.findDiffs(oldHTML, newHTML));
+        applyAndTest(oldHTML, newHTML, getDiffs(oldHTML, newHTML));
     }
 
     @Test
@@ -304,7 +308,7 @@ class DiffEngineTest extends DiffEngineJSoup {
         String oldHTML = "<section><p>Hello world</p></section>";
         final String newHTML = "<section><p>Hello world</p><p>Hello world</p></section>";
 
-        applyAndTest(oldHTML, newHTML, diffEngine.findDiffs(oldHTML, newHTML));
+        applyAndTest(oldHTML, newHTML, getDiffs(oldHTML, newHTML));
     }
 
     @Test
@@ -318,7 +322,7 @@ class DiffEngineTest extends DiffEngineJSoup {
         String oldHTML = "<section><p>Hello world</p></section>";
         final String newHTML = "<section></section>";
 
-        applyAndTest(oldHTML, newHTML, diffEngine.findDiffs(oldHTML, newHTML));
+        applyAndTest(oldHTML, newHTML, getDiffs(oldHTML, newHTML));
     }
 
     @Test
@@ -338,7 +342,7 @@ class DiffEngineTest extends DiffEngineJSoup {
                 </section>
                 """;
 
-        applyAndTest(oldHTML, newHTML, diffEngine.findDiffs(oldHTML, newHTML));
+        applyAndTest(oldHTML, newHTML, getDiffs(oldHTML, newHTML));
     }
 
     @Test
@@ -358,7 +362,7 @@ class DiffEngineTest extends DiffEngineJSoup {
                 </section>
                 """;
 
-        applyAndTest(oldHTML, newHTML, diffEngine.findDiffs(oldHTML, newHTML));
+        applyAndTest(oldHTML, newHTML, getDiffs(oldHTML, newHTML));
     }
 
 }

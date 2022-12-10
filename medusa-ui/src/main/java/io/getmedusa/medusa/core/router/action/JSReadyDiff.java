@@ -35,7 +35,7 @@ public class JSReadyDiff {
     }
 
     public static JSReadyDiff buildNewAddition(String xPath, String content) {
-        return new JSReadyDiff(content, determinePreviousNode(xPath), DiffType.ADDITION);
+        return new JSReadyDiff(content, xPath, DiffType.ADDITION);
     }
 
     public static JSReadyDiff buildNewRedirect(String url) {
@@ -119,6 +119,10 @@ public class JSReadyDiff {
 
     public boolean isAddition()  {
         return DiffType.ADDITION.equals(this.type);
+    }
+
+    public boolean isAttrChange()  {
+        return DiffType.ATTR_CHANGE.equals(this.type);
     }
 
     @Override
