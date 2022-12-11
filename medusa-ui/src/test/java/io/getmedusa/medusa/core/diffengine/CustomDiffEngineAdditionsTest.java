@@ -60,6 +60,23 @@ class CustomDiffEngineAdditionsTest extends DiffEngineJSoup {
                             <div>3</div>
                         </section>
                         """
+                ),
+                Arguments.of(
+                """
+                        <section>
+                            <h5>1</h5>
+                            <p>3</p>
+                            <div>4 change</div>
+                        </section>
+                        """,
+                        """
+                        <section>
+                            <h5>1</h5>
+                            <div><p>2</p></div>
+                            <p>3</p>
+                            <div>4 change</div>
+                        </section>
+                        """
                 ));
     }
 

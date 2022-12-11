@@ -11,27 +11,23 @@ import org.junit.jupiter.api.Assertions;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 public class DiffEngineJSoup {
 
     protected final DiffEngine diffEngine = new DiffEngine();
     protected final CustomDiffEngine engine = new CustomDiffEngine();
 
-    protected String applyDiff(String oldHTML, JSReadyDiff diff, Map<JSReadyDiff, Element> elementMap) {
-        var html = Jsoup.parse(oldHTML);
-
+    protected String applyDiff(Document html, JSReadyDiff diff, Map<JSReadyDiff, Element> elementMap) {
         if(diff.isAddition()) {
             handleAddition(diff, html);
         } else if(diff.isRemoval()) {
-            handleRemoval(diff, html);
+            handleRemoval(diff, html, elementMap);
         } else if(diff.isSequenceChange()) {
-            handleSequenceChange(diff, html, elementMap);
+            //handleSequenceChange(diff, html, elementMap);
         } else if(diff.isAttrChange()) {
             handleAttrChange(diff, html);
         } else if(diff.isEdit()) {
-            final Element foundElement = xpath(html, diff.getXpath()).get(0);
-            foundElement.replaceWith(Jsoup.parse(diff.getContent()).body().child(0));
+            elementMap.get(diff).replaceWith(Jsoup.parse(diff.getContent()).body().child(0));
         } else {
             throw new NotImplementedException("diff not implemented: " + diff);
         }
@@ -65,25 +61,12 @@ public class DiffEngineJSoup {
         }
     }
 
-    private void handleRemoval(JSReadyDiff diff, Document html) {
+    private void handleRemoval(JSReadyDiff diff, Document html, Map<JSReadyDiff, Element> elementMap) {
         if(diff.getXpath().endsWith("text()[1]")) {
             xpath(html, diff.getXpath().replace("/text()[1]", "")).textNodes().get(0).remove();
         } else {
-            xpath(html, diff.getXpath()).remove();
+            elementMap.get(diff).remove();
         }
-    }
-
-    //TODO this one has issues
-    private void handleSequenceChange(JSReadyDiff diff, Document html, Map<JSReadyDiff, Element> elementMap) {
-        Element elemToMove = xpath(html, diff.getXpath()).get(0);
-
-        if("::LAST".equals(diff.getContent())) {
-            elemToMove.parent().appendChild(elementMap.get(diff));
-        } else {
-            final Element addBefore = xpath(html, diff.getContent()).get(0);
-            addBefore.before(elementMap.get(diff).outerHtml());
-        }
-        html.selectXpath("//*[@uuid='"+diff.getAttribute()+"']").remove();
     }
 
     protected void applyAndTest(String oldHTML, String newHTML, List<JSReadyDiff> jsReadyDiffs) {
@@ -92,14 +75,10 @@ public class DiffEngineJSoup {
 
         System.out.println("Initial HTML: \n" + parsedHTMLForLookups.getElementsByTag("section").get(0).outerHtml());
 
-        //prep sequences first
         for(JSReadyDiff diff : jsReadyDiffs) {
-            if(diff.isSequenceChange()) {
+            if(diff.isRemoval() || diff.isEdit()) {
                 Element elem = parsedHTMLForLookups.selectXpath("/" + diff.getXpath()).get(0);
-                String uuid = UUID.randomUUID().toString();
-                diff.setAttribute(uuid);
-                elementMap.put(diff, elem.clone());
-                elem.attr("uuid", uuid);
+                elementMap.put(diff, elem);
             }
         }
         if(!elementMap.isEmpty()) {
@@ -107,7 +86,7 @@ public class DiffEngineJSoup {
         }
 
         for(JSReadyDiff diff : jsReadyDiffs) {
-            oldHTML = applyDiff(oldHTML, diff, elementMap);
+            oldHTML = applyDiff(parsedHTMLForLookups, diff, elementMap);
 
             System.out.println("---");
             System.out.println("Applied: " + diff);
