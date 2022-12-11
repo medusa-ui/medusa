@@ -21,6 +21,7 @@ import reactor.core.publisher.Flux;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static io.getmedusa.medusa.core.util.AttributeUtils.mergeDiffs;
 
@@ -48,10 +49,10 @@ public class SocketHandler {
 
     @PreAuthorize("hasRole('USER')")
     @MessageMapping("event-emitter/{hash}/{sessionId}")
-    public Flux<List<JSReadyDiff>> eventEmitter(final @Headers Map<String, Object> metadata,
-                                                final @Payload Flux<SocketAction> request,
-                                                final @DestinationVariable String hash,
-                                                final @DestinationVariable String sessionId) {
+    public Flux<Set<JSReadyDiff>> eventEmitter(final @Headers Map<String, Object> metadata,
+                                               final @Payload Flux<SocketAction> request,
+                                               final @DestinationVariable String hash,
+                                               final @DestinationVariable String sessionId) {
 
         final Route route = RouteDetection.INSTANCE.findRoute(hash);
 

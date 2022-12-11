@@ -2,8 +2,8 @@ package io.getmedusa.medusa.core.router.action;
 
 import reactor.core.publisher.Flux;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.LinkedHashSet;
+import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -20,24 +20,24 @@ public class SocketSink {
     }
 
     interface EventProcessor {
-        void register(EventListener<List<JSReadyDiff>> eventListener);
+        void register(EventListener<Set<JSReadyDiff>> eventListener);
 
-        void dataChunk(List<JSReadyDiff> value);
+        void dataChunk(Set<JSReadyDiff> value);
         void processComplete();
     }
 
     private final EventProcessor eventProcessor = new EventProcessor() {
 
-        private EventListener<List<JSReadyDiff>> eventListener;
+        private EventListener<Set<JSReadyDiff>> eventListener;
         private final ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
 
         @Override
-        public void register(EventListener<List<JSReadyDiff>> eventListener) {
+        public void register(EventListener<Set<JSReadyDiff>> eventListener) {
             this.eventListener = eventListener;
         }
 
         @Override
-        public void dataChunk(List<JSReadyDiff> value) {
+        public void dataChunk(Set<JSReadyDiff> value) {
             executor.schedule(() -> eventListener.onDataChunk(value), 0, TimeUnit.MILLISECONDS);
         }
 
@@ -47,9 +47,9 @@ public class SocketSink {
         }
     };
 
-    Flux<List<JSReadyDiff>> eventFlux = Flux.create(sink -> eventProcessor.register(
+    Flux<Set<JSReadyDiff>> eventFlux = Flux.create(sink -> eventProcessor.register(
             new EventListener<>() {
-                public void onDataChunk(List<JSReadyDiff> chunk) {
+                public void onDataChunk(Set<JSReadyDiff> chunk) {
                     sink.next(chunk);
                 }
 
@@ -58,16 +58,16 @@ public class SocketSink {
                 }
             }));
 
-    public void push(List<JSReadyDiff> heartbeat) {
+    public void push(Set<JSReadyDiff> heartbeat) {
         eventProcessor.dataChunk(heartbeat);
     }
 
-    public Flux<List<JSReadyDiff>> asFlux() {
+    public Flux<Set<JSReadyDiff>> asFlux() {
         return eventFlux;
     }
 
     public SocketSink() {
-        this.eventProcessor.dataChunk(new ArrayList<>());
+        this.eventProcessor.dataChunk(new LinkedHashSet<>());
     }
 
 }

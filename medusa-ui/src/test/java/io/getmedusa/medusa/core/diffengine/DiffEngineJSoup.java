@@ -9,8 +9,8 @@ import org.jsoup.select.Elements;
 import org.junit.jupiter.api.Assertions;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class DiffEngineJSoup {
 
@@ -71,7 +71,7 @@ public class DiffEngineJSoup {
         }
     }
 
-    protected void applyAndTest(String oldHTML, String newHTML, List<JSReadyDiff> jsReadyDiffs) {
+    protected void applyAndTest(String oldHTML, String newHTML, Set<JSReadyDiff> jsReadyDiffs) {
         Map<JSReadyDiff, Element> elementMap = new HashMap<>();
         var parsedHTMLForLookups = Jsoup.parse(oldHTML);
 

@@ -5,7 +5,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import java.util.ArrayList;
 import java.util.Set;
 import java.util.stream.Stream;
 
@@ -57,7 +56,7 @@ class CustomDiffEngineBaseElementChangesTest extends DiffEngineJSoup {
     @MethodSource("baseElementChanges")
     void testBaseElementChange(String oldHTML, String newHTML) {
         Set<JSReadyDiff> diffs = engine.calculate(oldHTML, newHTML);
-        applyAndTest(oldHTML, newHTML, new ArrayList<>(diffs));
+        applyAndTest(oldHTML, newHTML, diffs);
     }
 
 }

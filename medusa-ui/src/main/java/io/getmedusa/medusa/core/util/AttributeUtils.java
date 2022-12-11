@@ -5,9 +5,7 @@ import io.getmedusa.medusa.core.attributes.StandardAttributeKeys;
 import io.getmedusa.medusa.core.router.action.JSReadyDiff;
 import io.getmedusa.medusa.core.router.request.Route;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public final class AttributeUtils {
@@ -20,9 +18,9 @@ public final class AttributeUtils {
         allowExternalRedirect = value;
     }
 
-    public static List<JSReadyDiff> mergeDiffs(List<JSReadyDiff> diffs, List<Attribute> passThroughAttributes) {
+    public static Set<JSReadyDiff> mergeDiffs(Set<JSReadyDiff> diffs, List<Attribute> passThroughAttributes) {
         if(passThroughAttributes != null && !passThroughAttributes.isEmpty()) {
-            List<JSReadyDiff> extraDiffs = new ArrayList<>();
+            Set<JSReadyDiff> extraDiffs = new LinkedHashSet<>();
             for(Attribute attribute : passThroughAttributes) {
                 if(attribute.name().equalsIgnoreCase(StandardAttributeKeys.FORWARD)) {
                     String url = attribute.value().toString();

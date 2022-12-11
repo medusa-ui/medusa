@@ -1,6 +1,8 @@
 package io.getmedusa.medusa.core.router.action;
 
+import org.joox.JOOX;
 import org.joox.Match;
+import org.w3c.dom.Node;
 
 //outgoing diff
 public class JSReadyDiff {
@@ -36,12 +38,19 @@ public class JSReadyDiff {
         return new JSReadyDiff(indexToMoveTo, wrapperXPath, DiffType.SEQUENCE_CHANGE);
     }
 
-    public static JSReadyDiff buildNewAddition(Match element, String content)  {
+    private static JSReadyDiff buildNewAddition(Match element, String content)  {
         String prevXPath = element.prev().xpath();
         if(prevXPath == null) {
             prevXPath = element.parent().xpath() + "/::first";
         }
         return new JSReadyDiff(content, prevXPath, DiffType.ADDITION);
+    }
+
+    public static JSReadyDiff buildNewAddition(Node target, String nodeToContent) {
+        if(target.getNodeType() == Node.TEXT_NODE) {
+            return new JSReadyDiff(nodeToContent, JOOX.$(target.getParentNode()).xpath() + "/text()[1]", DiffType.ADDITION);
+        }
+        return buildNewAddition(JOOX.$(target), nodeToContent);
     }
 
     public static JSReadyDiff buildNewRedirect(String url) {

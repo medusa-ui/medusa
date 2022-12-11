@@ -3,7 +3,6 @@ package io.getmedusa.medusa.core.diffengine;
 import io.getmedusa.medusa.core.router.action.JSReadyDiff;
 import org.junit.jupiter.api.Test;
 
-import java.util.LinkedList;
 import java.util.Set;
 
 class CustomDiffEngineComplexTest extends DiffEngineJSoup {
@@ -48,7 +47,7 @@ class CustomDiffEngineComplexTest extends DiffEngineJSoup {
         //removal of span 1
         System.out.println(diffs);
 
-        applyAndTest(oldHTML, newHTML, new LinkedList<>(diffs));
+        applyAndTest(oldHTML, newHTML, diffs);
     }
 
     @Test
@@ -70,7 +69,7 @@ class CustomDiffEngineComplexTest extends DiffEngineJSoup {
                 </section>""";
 
         Set<JSReadyDiff> diffs = diffEngine.calculate(oldHTML, newHTML);
-        applyAndTest(oldHTML, newHTML, new LinkedList<>(diffs));
+        applyAndTest(oldHTML, newHTML, diffs);
     }
 
     @Test
@@ -97,7 +96,7 @@ class CustomDiffEngineComplexTest extends DiffEngineJSoup {
                 </section>""";
 
         Set<JSReadyDiff> diffs = diffEngine.calculate(oldHTML, newHTML);
-        applyAndTest(oldHTML, newHTML, new LinkedList<>(diffs));
+        applyAndTest(oldHTML, newHTML, diffs);
     }
 
     @Test
@@ -125,7 +124,7 @@ class CustomDiffEngineComplexTest extends DiffEngineJSoup {
                 """;
 
         Set<JSReadyDiff> diffs = diffEngine.calculate(oldHTML, newHTML);
-        applyAndTest(oldHTML, newHTML, new LinkedList<>(diffs));
+        applyAndTest(oldHTML, newHTML, diffs);
     }
 
 }

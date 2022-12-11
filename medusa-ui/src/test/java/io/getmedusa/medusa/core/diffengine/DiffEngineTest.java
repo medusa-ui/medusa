@@ -4,9 +4,8 @@ import io.getmedusa.medusa.core.router.action.JSReadyDiff;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 class DiffEngineTest extends DiffEngineJSoup {
 
@@ -15,10 +14,10 @@ class DiffEngineTest extends DiffEngineJSoup {
         final String oldHTML = "<table><tr><td>1</td><td>2</td></tr></table>";
         final String newHTML = "<table><tr><td>1</td><td>2</td></tr><tr><td>3</td><td>4</td></tr></table>";
 
-        final List<JSReadyDiff> listOf = getDiffs(oldHTML, newHTML);
+        final Set<JSReadyDiff> listOf = getDiffs(oldHTML, newHTML);
 
         Assertions.assertEquals(1, listOf.size());
-        final JSReadyDiff jsReadyDiff = listOf.get(0);
+        final JSReadyDiff jsReadyDiff = listOf.stream().findFirst().get();
         Assertions.assertNotNull(jsReadyDiff);
         Assertions.assertTrue(jsReadyDiff.toString().contains("type=ADDITION"));
         Assertions.assertEquals("/table[1]/tr[1]", jsReadyDiff.getXpath()); //expect an existing xpath of the prev element
@@ -30,9 +29,9 @@ class DiffEngineTest extends DiffEngineJSoup {
         final String oldHTML = "<table></table>";
         final String newHTML = "<table><tr><td>1</td><td>2</td></tr></table>";
 
-        final List<JSReadyDiff> listOf = getDiffs(oldHTML, newHTML);
+        final Set<JSReadyDiff> listOf = getDiffs(oldHTML, newHTML);
         Assertions.assertEquals(1, listOf.size());
-        final JSReadyDiff jsReadyDiff = listOf.get(0);
+        final JSReadyDiff jsReadyDiff = listOf.stream().findFirst().get();
         Assertions.assertNotNull(jsReadyDiff);
         Assertions.assertTrue(jsReadyDiff.toString().contains("type=ADDITION"));
         Assertions.assertEquals("/table[1]/::first", jsReadyDiff.getXpath()); //or explicitly calling out that it'd be the first entry
@@ -44,10 +43,10 @@ class DiffEngineTest extends DiffEngineJSoup {
         final String oldHTML = "<table><tr><td>1</td><td>2</td></tr><tr><td>3</td><td>4</td></tr></table>";
         final String newHTML = "<table><tr><td>1</td><td>2</td></tr></table>";
 
-        final List<JSReadyDiff> listOf = getDiffs(oldHTML, newHTML);
+        final Set<JSReadyDiff> listOf = getDiffs(oldHTML, newHTML);
         Assertions.assertEquals(1, listOf.size());
 
-        final JSReadyDiff jsReadyDiff = listOf.get(0);
+        final JSReadyDiff jsReadyDiff = listOf.stream().findFirst().get();
         Assertions.assertNotNull(jsReadyDiff);
         Assertions.assertTrue(jsReadyDiff.toString().contains("type=REMOVAL"));
         Assertions.assertEquals("/table[1]/tr[2]", jsReadyDiff.getXpath());
@@ -59,10 +58,10 @@ class DiffEngineTest extends DiffEngineJSoup {
         final String oldHTML = "<p>Hello world</p>";
         final String newHTML = "<p>Hello WORLD</p>";
 
-        final List<JSReadyDiff> listOf = getDiffs(oldHTML, newHTML);
+        final Set<JSReadyDiff> listOf = getDiffs(oldHTML, newHTML);
         Assertions.assertEquals(1, listOf.size());
 
-        final JSReadyDiff jsReadyDiff = listOf.get(0);
+        final JSReadyDiff jsReadyDiff = listOf.stream().findFirst().get();
         Assertions.assertNotNull(jsReadyDiff);
         Assertions.assertTrue(jsReadyDiff.toString().contains("type=EDIT"));
         Assertions.assertEquals("/p[1]", jsReadyDiff.getXpath());
@@ -74,7 +73,7 @@ class DiffEngineTest extends DiffEngineJSoup {
         final String oldHTML = "<p>Hello world</p>";
         final String newHTML = "<p class=\"red\">Hello world</p>";
 
-        final List<JSReadyDiff> jsReadyDiffs = getDiffs(oldHTML, newHTML);
+        final Set<JSReadyDiff> jsReadyDiffs = getDiffs(oldHTML, newHTML);
 
         for(JSReadyDiff diff : jsReadyDiffs) {
             System.out.println(diff);
@@ -82,7 +81,7 @@ class DiffEngineTest extends DiffEngineJSoup {
 
         Assertions.assertEquals( 1, jsReadyDiffs.size(), "expected only 1 edit");
 
-        final JSReadyDiff jsReadyDiff1 = jsReadyDiffs.get(0);
+        final JSReadyDiff jsReadyDiff1 = jsReadyDiffs.stream().findFirst().get();
         Assertions.assertNotNull(jsReadyDiff1);
         Assertions.assertTrue(jsReadyDiff1.toString().contains("type=EDIT"));
         Assertions.assertEquals("/p[1]", jsReadyDiff1.getXpath());
@@ -94,23 +93,23 @@ class DiffEngineTest extends DiffEngineJSoup {
         final String oldHTML = "<html><table><tr><td>1</td><td>2</td></tr></table></html>";
         final String newHTML = "<html><table><tr><td>1</td><td>2</td><td>3</td><td>4</td></tr></table><p>Hello world</p></html>";
 
-        final List<JSReadyDiff> listOf = getDiffs(oldHTML, newHTML);
+        final Set<JSReadyDiff> listOf = getDiffs(oldHTML, newHTML);
 
-        final JSReadyDiff jsReadyDiff1 = listOf.get(0);
+        final JSReadyDiff jsReadyDiff1 = listOf.stream().findFirst().get();
         System.out.println(jsReadyDiff1);
         Assertions.assertNotNull(jsReadyDiff1);
         Assertions.assertTrue(jsReadyDiff1.toString().contains("type=ADDITION"));
         Assertions.assertEquals("/html[1]/table[1]/tr[1]/td[2]", jsReadyDiff1.getXpath());
         Assertions.assertEquals("<td>3</td>", jsReadyDiff1.getContent());
 
-        final JSReadyDiff jsReadyDiff2 = listOf.get(1);
+        final JSReadyDiff jsReadyDiff2 = listOf.stream().toList().get(1);
         System.out.println(jsReadyDiff2);
         Assertions.assertNotNull(jsReadyDiff2);
         Assertions.assertTrue(jsReadyDiff2.toString().contains("type=ADDITION"));
         Assertions.assertEquals("/html[1]/table[1]/tr[1]/td[3]", jsReadyDiff2.getXpath());
         Assertions.assertEquals("<td>4</td>", jsReadyDiff2.getContent());
 
-        final JSReadyDiff jsReadyDiff3 = listOf.get(2);
+        final JSReadyDiff jsReadyDiff3 = listOf.stream().toList().get(2);
         System.out.println(jsReadyDiff3);
         Assertions.assertNotNull(jsReadyDiff3);
         Assertions.assertTrue(jsReadyDiff3.toString().contains("type=ADDITION"));
@@ -152,7 +151,7 @@ class DiffEngineTest extends DiffEngineJSoup {
                 </div>
                 """;
 
-        final List<JSReadyDiff> jsReadyDiffs = getDiffs(oldHTMLOK, newHTMLOK);
+        final Set<JSReadyDiff> jsReadyDiffs = getDiffs(oldHTMLOK, newHTMLOK);
         Assertions.assertEquals( 1, jsReadyDiffs.size(), "expected only 1 addition");
 
         // Here there is bug
@@ -174,9 +173,9 @@ class DiffEngineTest extends DiffEngineJSoup {
                 </div>
                 """;
 
-        final List<JSReadyDiff> jsReadyDiffs2 = getDiffs(oldHTMLBUG, newHTMLBUG);
+        final Set<JSReadyDiff> jsReadyDiffs2 = getDiffs(oldHTMLBUG, newHTMLBUG);
 
-        final List<JSReadyDiff> jsReadyDiffsFinal = new ArrayList<>();
+        final Set<JSReadyDiff> jsReadyDiffsFinal = new LinkedHashSet<>();
         for(JSReadyDiff diff : jsReadyDiffs2) {
             System.out.println(diff);
             if(!diff.isSequenceChange()) {
@@ -187,8 +186,8 @@ class DiffEngineTest extends DiffEngineJSoup {
         Assertions.assertEquals( 1, jsReadyDiffsFinal.size(), "expected only 1 addition");
     }
 
-    private List<JSReadyDiff> getDiffs(String oldHTML, String newHTML) {
-        final List<JSReadyDiff> jsReadyDiffs = new LinkedList<>(engine.calculate(oldHTML, newHTML));
+    private Set<JSReadyDiff> getDiffs(String oldHTML, String newHTML) {
+        final Set<JSReadyDiff> jsReadyDiffs = engine.calculate(oldHTML, newHTML);
         System.out.println(jsReadyDiffs);
         return jsReadyDiffs;
     }

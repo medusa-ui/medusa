@@ -20,6 +20,7 @@ import reactor.core.publisher.Flux;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 
 import static org.mockito.ArgumentMatchers.*;
 
@@ -58,9 +59,9 @@ class SocketHandlerTest {
         Mockito.when(sessionMemoryRepository.retrieve(anyString(), any())).thenReturn(session);
         Mockito.when(actionHandler.executeAndMerge(any(), any(), any())).thenReturn(session);
         Mockito.when(renderer.render(anyString(), any())).thenReturn(createDataBuffer("test"));
-        Mockito.when(diffEngine.findDiffs(nullable(String.class), nullable(String.class))).thenReturn(List.of(new JSReadyDiff()));
+        Mockito.when(diffEngine.findDiffs(nullable(String.class), nullable(String.class))).thenReturn(Set.of(new JSReadyDiff()));
 
-        final Flux<List<JSReadyDiff>> jsReadyDiffFlux = socketHandler.eventEmitter(new HashMap<>(),
+        final Flux<Set<JSReadyDiff>> jsReadyDiffFlux = socketHandler.eventEmitter(new HashMap<>(),
                 Flux.just(socketAction),
                 findSampleHash(),
                 "sessionId");

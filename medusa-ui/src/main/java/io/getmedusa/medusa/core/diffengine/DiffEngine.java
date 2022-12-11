@@ -26,8 +26,8 @@ public class DiffEngine {
     private static final int XML_VERSION_LENGTH = XML_VERSION.length();
     private static final DiffComparator DIFF_COMPARATOR = new DiffComparator();
 
-    public List<JSReadyDiff> findDiffs(String oldHTML, String newHTML) {
-        List<JSReadyDiff> diffs = new LinkedList<>();
+    public Set<JSReadyDiff> findDiffs(String oldHTML, String newHTML) {
+        Set<JSReadyDiff> diffs = new LinkedHashSet<>();
 
         try {
             Diff differences = DiffBuilder
@@ -93,7 +93,7 @@ public class DiffEngine {
                 return buildNewEdit(attrOwnerXPath(oldDetail, newDetail), nodeToContent(newDocumentNode));
             }
         } else if(isAddition(comparison)) {
-            return buildNewAddition(JOOX.$(newDetail.getTarget()), nodeToContent(newDocumentNode));
+            return buildNewAddition(newDetail.getTarget(), nodeToContent(newDocumentNode));
         } else if(isRemoval(comparison)) {
             return buildNewRemoval(oldDetail.getXPath());
         } else if(TEXT_VALUE.equals(comparison.getType())) {
@@ -171,6 +171,6 @@ public class DiffEngine {
     }
 
     public Set<JSReadyDiff> calculate(String oldHTML, String newHTML) {
-        return new HashSet<>(findDiffs(oldHTML, newHTML));
+        return findDiffs(oldHTML, newHTML);
     }
 }
