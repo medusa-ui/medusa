@@ -14,8 +14,8 @@ import java.util.Map;
 
 public class DiffEngineJSoup {
 
-    protected final DiffEngine diffEngine = new DiffEngine();
-    protected final CustomDiffEngine engine = new CustomDiffEngine();
+    protected final DiffEngine engine = new DiffEngine();
+    protected final CustomDiffEngine diffEngine = new CustomDiffEngine();
 
     protected String applyDiff(Document html, JSReadyDiff diff, Map<JSReadyDiff, Element> elementMap) {
         if(diff.isAddition()) {
@@ -51,11 +51,13 @@ public class DiffEngineJSoup {
             final String parentXPath = diff.getXpath().replace("/::first", "");
 
             final Element foundElement = xpath(html, parentXPath).get(0);
-            //if(foundElement.children().isEmpty()) {
+            if(foundElement.children().isEmpty()) {
                 foundElement.append(diff.getContent());
-            //} else {
-                //foundElement.children().get(0).before(diff.getContent());
-            //}
+            } else {
+                foundElement.children().get(0).before(diff.getContent());
+            }
+        } else if(diff.getXpath().endsWith("/text()[1]")) {
+            xpath(html, diff.getXpath().replace("/text()[1]", "")).append(diff.getContent());
         } else {
             xpath(html, diff.getXpath()).after(diff.getContent());
         }
@@ -77,8 +79,13 @@ public class DiffEngineJSoup {
 
         for(JSReadyDiff diff : jsReadyDiffs) {
             if(diff.isRemoval() || diff.isEdit()) {
-                Element elem = parsedHTMLForLookups.selectXpath("/" + diff.getXpath()).get(0);
-                elementMap.put(diff, elem);
+                final Elements elements = parsedHTMLForLookups.selectXpath("/" + diff.getXpath());
+                if(!elements.isEmpty()) {
+                    Element elem = elements.get(0);
+                    elementMap.put(diff, elem);
+                } else {
+                    System.err.println("Could not find xpath: /" + diff.getXpath());
+                }
             }
         }
         if(!elementMap.isEmpty()) {

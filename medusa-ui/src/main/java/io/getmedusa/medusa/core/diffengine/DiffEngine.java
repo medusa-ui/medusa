@@ -13,8 +13,7 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 import static io.getmedusa.medusa.core.router.action.JSReadyDiff.*;
 import static org.xmlunit.diff.ComparisonType.*;
@@ -28,7 +27,7 @@ public class DiffEngine {
     private static final DiffComparator DIFF_COMPARATOR = new DiffComparator();
 
     public List<JSReadyDiff> findDiffs(String oldHTML, String newHTML) {
-        List<JSReadyDiff> diffs = new ArrayList<>();
+        List<JSReadyDiff> diffs = new LinkedList<>();
 
         try {
             Diff differences = DiffBuilder
@@ -58,7 +57,7 @@ public class DiffEngine {
             throw new RuntimeException(e);
         }
 
-        diffs.sort(DIFF_COMPARATOR);
+        //diffs.sort(DIFF_COMPARATOR);
 
         return diffs;
     }
@@ -74,12 +73,24 @@ public class DiffEngine {
 
         final Node newDocumentNode = newDetail.getTarget();
 
+        System.out.println(comparison.getType());
+        System.out.println(comparison);
+
         if(ELEMENT_TAG_NAME.equals(comparison.getType())) {
             //return buildNewEdit(oldDetail.getXPath(), nodeToContent(newDocumentNode));
             logger.debug("comparisonToDiff: no implementation for comparison: " + comparison + " of type ELEMENT_TAG_NAME");
             return null;
         } else if(ATTR_NAME_LOOKUP.equals(comparison.getType())){
-            return buildNewEdit(attrOwnerXPath(oldDetail, newDetail), nodeToContent(newDocumentNode));
+            if(oldDetail.getValue() != null && newDetail.getValue() == null) {
+                //delete attribute
+                return buildAttrChange(newDetail.getXPath(), oldDetail.getValue().toString(), "");
+            } else if(oldDetail.getValue() == null && newDetail.getValue() != null) {
+                //add attribute
+                return buildAttrChange(oldDetail.getXPath(), newDetail.getValue().toString(), JOOX.$(newDetail.getTarget()).attr(newDetail.getValue().toString()));
+            } else {
+                //unknown?
+                return buildNewEdit(attrOwnerXPath(oldDetail, newDetail), nodeToContent(newDocumentNode));
+            }
         } else if(isAddition(comparison)) {
             return buildNewAddition(newDetail.getXPath(), nodeToContent(newDocumentNode));
         } else if(isRemoval(comparison)) {
@@ -156,5 +167,9 @@ public class DiffEngine {
             return null;
         }
 
+    }
+
+    public Set<JSReadyDiff> calculate(String oldHTML, String newHTML) {
+        return new HashSet<>(findDiffs(oldHTML, newHTML));
     }
 }
