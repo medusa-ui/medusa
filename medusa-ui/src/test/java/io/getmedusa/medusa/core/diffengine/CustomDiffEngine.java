@@ -22,6 +22,8 @@ public class CustomDiffEngine {
         var oldDoc = JOOX.$(oldHTML);
         var newDoc = JOOX.$(newHTML);
 
+        oldDoc = ensureBaseElementsMatchNewDoc(oldDoc, newDoc);
+
         final Set<JSReadyDiff> diffs = new LinkedHashSet<>();
 
         //TODO top layer - unlikely diff
@@ -38,9 +40,21 @@ public class CustomDiffEngine {
         return diffs;
     }
 
+    private Match ensureBaseElementsMatchNewDoc(Match oldDoc, Match newDoc) {
+        /*for (int i = 0; i < newDoc.children().size(); i++) {
+            var expectedElem = newDoc.children().get(i);
+            var actualElem = oldDoc.children().get(i);
+            if(!expectedElem.getTagName().equals(actualElem.getTagName())) {
+                JOOX.$(actualElem).before(expectedElem);
+            } else if(actualElem == null) {
+
+            }
+        }*/
+        return oldDoc;
+    }
+
     private void goThroughChildren(Set<JSReadyDiff> diffs, Match oldDoc, Match newDoc, CheckDirection direction) {
         //old vs new
-        //for(var elem : oldDoc.children()) {
         for (int i = 0; i < oldDoc.children().size(); i++) {
             var elem = oldDoc.children().get(i);
             final Match elemMatch = JOOX.$(elem);
@@ -64,15 +78,13 @@ public class CustomDiffEngine {
         final List<JSReadyDiff> diffsOnThisLayer = new LinkedList<>();
 
         final String xpath = elemMatch.xpath();
-        //Match newElemMatch = newDoc.xpath(xpath);
 
         LOGGER.debug("Checking for difference on: " + xpath + " " + direction);
 
-        //same base element?
         final Element oldElement = elemMatch.get(0);
         final Element newElement = newElemMatch.get(0);
 
-        if(newElement == null && oldElement != null) {
+        if((newElement == null && oldElement != null) || baseElementDiff(oldElement, newElement)) {
             if(direction == CheckDirection.OLD_VS_NEW) {
                 diffsOnThisLayer.add(JSReadyDiff.buildNewRemoval(xpath));
             } else {
@@ -85,7 +97,7 @@ public class CustomDiffEngine {
             return diffsOnThisLayer; //quick exit, because you can't compare nulls further down the line
         }
 
-        if(baseElementDiff(oldElement, newElement) || textDifferenceDiff(oldElement, newElement)) { //TODO different tag, is that correct?
+        if(textDifferenceDiff(oldElement, newElement)) {
             //new vs old doesn't matter, because we only apply edits in 1 direction and there would always be 2 diffs
             if(direction == CheckDirection.OLD_VS_NEW) {
                 diffsOnThisLayer.add(JSReadyDiff.buildNewEdit(xpath, newElemMatch.toString()));
