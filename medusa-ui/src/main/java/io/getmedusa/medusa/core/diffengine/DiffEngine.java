@@ -83,16 +83,17 @@ public class DiffEngine {
         } else if(ATTR_NAME_LOOKUP.equals(comparison.getType())){
             if(oldDetail.getValue() != null && newDetail.getValue() == null) {
                 //delete attribute
-                return buildAttrChange(newDetail.getXPath(), oldDetail.getValue().toString(), "");
+                return buildAttrChange(newDetail.getXPath(), oldDetail.getValue().toString(), ""); //TODO "" or null?
             } else if(oldDetail.getValue() == null && newDetail.getValue() != null) {
                 //add attribute
-                return buildAttrChange(oldDetail.getXPath(), newDetail.getValue().toString(), JOOX.$(newDetail.getTarget()).attr(newDetail.getValue().toString()));
+                final String attrValue = JOOX.$(newDetail.getTarget()).attr(newDetail.getValue().toString());
+                return buildAttrChange(oldDetail.getXPath(), newDetail.getValue().toString(), attrValue);
             } else {
-                //unknown?
+                //TODO unknown?
                 return buildNewEdit(attrOwnerXPath(oldDetail, newDetail), nodeToContent(newDocumentNode));
             }
         } else if(isAddition(comparison)) {
-            return buildNewAddition(newDetail.getXPath(), nodeToContent(newDocumentNode));
+            return buildNewAddition(JOOX.$(newDetail.getTarget()), nodeToContent(newDocumentNode));
         } else if(isRemoval(comparison)) {
             return buildNewRemoval(oldDetail.getXPath());
         } else if(TEXT_VALUE.equals(comparison.getType())) {

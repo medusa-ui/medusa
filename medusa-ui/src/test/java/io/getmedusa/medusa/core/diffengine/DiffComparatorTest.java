@@ -25,7 +25,7 @@ class DiffComparatorTest {
     @Test
     void testOverlappingUpdatesSmallestFirst() {
         JSReadyDiff optionBiggest = JSReadyDiff.buildNewEdit("/html[1]/body[1]/div[3]/p[1]", "<p>Your score is <span>7</span></p>");
-        JSReadyDiff optionSmallest = JSReadyDiff.buildNewAddition("/html[1]/body[1]/div[3]/p[1]/span[1]", "<span>7</span>");
+        JSReadyDiff optionSmallest = JSReadyDiff.buildNewEdit("/html[1]/body[1]/div[3]/p[1]/span[1]", "<span>7</span>");
 
         List<JSReadyDiff> diffs = new ArrayList<>(List.of(optionBiggest, optionSmallest));
         diffs.sort(DIFF_COMPARATOR);

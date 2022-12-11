@@ -88,11 +88,7 @@ public class CustomDiffEngine {
             if(direction == CheckDirection.OLD_VS_NEW) {
                 diffsOnThisLayer.add(JSReadyDiff.buildNewRemoval(xpath));
             } else {
-                String prevXPath = elemMatch.prev().xpath();
-                if(prevXPath == null) {
-                    prevXPath = elemMatch.parent().xpath() + "/::first";
-                }
-                diffsOnThisLayer.add(JSReadyDiff.buildNewAddition(prevXPath, elemMatch.toString()));
+                diffsOnThisLayer.add(JSReadyDiff.buildNewAddition(JOOX.$(elemMatch), elemMatch.toString()));
             }
             return diffsOnThisLayer; //quick exit, because you can't compare nulls further down the line
         }

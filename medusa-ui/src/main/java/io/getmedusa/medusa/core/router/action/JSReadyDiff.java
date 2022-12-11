@@ -36,10 +36,6 @@ public class JSReadyDiff {
         return new JSReadyDiff(indexToMoveTo, wrapperXPath, DiffType.SEQUENCE_CHANGE);
     }
 
-    public static JSReadyDiff buildNewAddition(String previousXPath, String content) {
-        return new JSReadyDiff(content, previousXPath, DiffType.ADDITION);
-    }
-
     public static JSReadyDiff buildNewAddition(Match element, String content)  {
         String prevXPath = element.prev().xpath();
         if(prevXPath == null) {
