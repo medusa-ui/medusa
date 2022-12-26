@@ -49,4 +49,13 @@ public class Fragment {
         return f;
     }
 
+    @Override
+    public String toString() {
+        return "Fragment{" +
+                "id='" + id + '\'' +
+                ", service='" + service + '\'' +
+                ", ref='" + ref + '\'' +
+                ", fallback='" + fallback + '\'' +
+                '}';
+    }
 }

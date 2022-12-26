@@ -149,24 +149,7 @@ Medusa.prototype.doActionOnKeyUp = function(key, event, parentFragment, actionTo
 };
 
 evalXPath = function(xpath) {
-    return document.evaluate(xpath, document, null, XPathResult.ANY_UNORDERED_NODE_TYPE, null ).singleNodeValue;
-};
-
-doLookups = function (listOfDiffs) {
-    for(let diff of listOfDiffs) {
-        if (diff.xpath !== null) {
-            if (diff.xpath.endsWith("::first")) { //additions - no previous entry, so pick parent pom and mark as first entry
-                diff.firstEntry = true;
-                diff.xpath = diff.xpath.substring(0, diff.xpath.length - 8); //8 = '/::first'.length
-            }
-            diff.element = evalXPath(diff.xpath);
-
-            if(diff.type === "SEQUENCE_CHANGE" && diff.content !== "::LAST") {
-                diff.contentElement = evalXPath(diff.content);
-            }
-        }
-    }
-    return listOfDiffs;
+    return document.evaluate("/html[1]" + xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null ).singleNodeValue;
 };
 
 handleSequenceChange = function (obj) {
@@ -183,28 +166,26 @@ handleSequenceChange = function (obj) {
 };
 
 handleIncomingAddition = function (obj) {
-    let existingNode = obj.element;
-
-    if(existingNode === null) { //if node added by previous event, it would only exist now, so do last chance lookup
-        existingNode = evalXPath(obj.xpath);
-    }
-
     let nodeToAdd = htmlToElement(obj.content);
 
-    if(existingNode !== null && nodeToAdd !== null) {
-        if(obj.firstEntry) {
-            //always add at bottom, as per xmlunit's expectation
-            existingNode.appendChild(nodeToAdd);
-        } else {
-            //existing node is previous node, so do an 'add after' (= addBefore of nextSibling)
-            existingNode.parentNode.insertBefore(nodeToAdd, existingNode.nextSibling);
-        }
-    } else {
-        console.error("failed to add", obj.xpath);
-        console.log("handleIncomingAddition: obj", obj);
-        console.log("handleIncomingAddition: element", existingNode);
-        console.log("handleIncomingAddition: nodeToAdd", nodeToAdd);
+    if(obj.before !== undefined) {
+        let matchingBeforeElement = evalXPath(obj['before']);
+        addBefore(matchingBeforeElement, nodeToAdd);
+    } else if(obj.after !== undefined) {
+        let matchingAfterElement = evalXPath(obj['after']);
+        addAfter(matchingAfterElement, nodeToAdd);
+    } else if(obj.in !== undefined) {
+        let matchingParentElement = evalXPath(obj['in']);
+        matchingParentElement.appendChild(nodeToAdd);
     }
+};
+
+addBefore = function (reference, elementToAdd) {
+    reference.parentNode.insertBefore(elementToAdd, reference);
+};
+
+addAfter = function (reference, elementToAdd) {
+    reference.parentNode.insertBefore(elementToAdd, reference.nextSibling);
 };
 
 handleAttrChange = function (obj) {
@@ -221,10 +202,11 @@ handleAttrChange = function (obj) {
 };
 
 handleMorph = function (obj) {
-    let element = obj.element;
+    let element = evalXPath(obj.xpath);
 
     if(element !== null) {
-        morphdom(element, obj.content);
+        //morphdom(element, obj.content);
+        element.textContent = obj.content;
     } else {
         console.error("failed to morphdom", obj.xpath);
         console.log("handleMorph: obj", obj);
@@ -234,13 +216,9 @@ handleMorph = function (obj) {
 };
 
 handleRemoval = function(obj) {
-    let element = obj.element;
+    let element = evalXPath(obj.xpath);
     if(element !== null) {
         element.remove();
-    } else {
-        console.error("failed to remove", obj.xpath);
-        console.log("handleRemoval: obj", obj);
-        console.log("handleRemoval: element", element);
     }
 };
 
@@ -290,8 +268,7 @@ runFunction = function(name, arguments) {
 
 handleIncomingChange = function (obj) {
     debugLog(obj);
-    const toApply = doLookups(obj);
-    applyAllChanges(toApply);
+    applyAllChanges(obj);
 };
 
 debugLog = function (objToLog) {

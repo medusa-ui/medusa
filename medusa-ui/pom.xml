@@ -98,18 +98,15 @@
 		</dependency>
 
 		<dependency>
-			<groupId>org.xmlunit</groupId>
-			<artifactId>xmlunit-matchers</artifactId>
-		</dependency>
-		<dependency>
 			<groupId>org.jsoup</groupId>
 			<artifactId>jsoup</artifactId>
 			<version>1.15.3</version>
 		</dependency>
+
 		<dependency>
-			<groupId>org.jooq</groupId>
-			<artifactId>joox</artifactId>
-			<version>2.0.0</version>
+			<groupId>io.getmedusa</groupId>
+			<artifactId>diff-engine</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 
 		<!-- JAXB API only -->

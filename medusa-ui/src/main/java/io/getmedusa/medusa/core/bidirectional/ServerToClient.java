@@ -1,7 +1,7 @@
 package io.getmedusa.medusa.core.bidirectional;
 
+import io.getmedusa.diffengine.Engine;
 import io.getmedusa.medusa.core.attributes.Attribute;
-import io.getmedusa.medusa.core.diffengine.DiffEngine;
 import io.getmedusa.medusa.core.memory.SessionMemoryRepository;
 import io.getmedusa.medusa.core.render.Renderer;
 import io.getmedusa.medusa.core.session.Session;
@@ -24,12 +24,12 @@ public class ServerToClient {
 
     private final SessionMemoryRepository sessionMemoryRepository;
     private final Renderer renderer;
-    private final DiffEngine diffEngine;
+    private final Engine diffEngine;
 
-    public ServerToClient(SessionMemoryRepository sessionMemoryRepository, Renderer renderer, DiffEngine diffEngine) {
+    public ServerToClient(SessionMemoryRepository sessionMemoryRepository, Renderer renderer) {
         this.sessionMemoryRepository = sessionMemoryRepository;
         this.renderer = renderer;
-        this.diffEngine = diffEngine;
+        this.diffEngine = new Engine();
     }
 
     /**
@@ -76,7 +76,7 @@ public class ServerToClient {
             final String newHtml = FluxUtils.dataBufferFluxToString(dataBufferFlux);
             updatedSession.setLastRenderedHTML(newHtml);
             sessionMemoryRepository.store(updatedSession);
-            updatedSession.getSink().push(mergeDiffs(diffEngine.findDiffs(oldHTML, newHtml), passThroughAttributes));
+            updatedSession.getSink().push(mergeDiffs(diffEngine.calculate(oldHTML, newHtml), passThroughAttributes));
             updatedSession.setDepth(0);
         });
     }

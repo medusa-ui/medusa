@@ -1,5 +1,6 @@
 package io.getmedusa.medusa.core.router.action;
 
+import io.getmedusa.diffengine.diff.ServerSideDiff;
 import reactor.core.publisher.Flux;
 
 import java.util.LinkedHashSet;
@@ -20,24 +21,24 @@ public class SocketSink {
     }
 
     interface EventProcessor {
-        void register(EventListener<Set<JSReadyDiff>> eventListener);
+        void register(EventListener<Set<ServerSideDiff>> eventListener);
 
-        void dataChunk(Set<JSReadyDiff> value);
+        void dataChunk(Set<ServerSideDiff> value);
         void processComplete();
     }
 
     private final EventProcessor eventProcessor = new EventProcessor() {
 
-        private EventListener<Set<JSReadyDiff>> eventListener;
+        private EventListener<Set<ServerSideDiff>> eventListener;
         private final ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
 
         @Override
-        public void register(EventListener<Set<JSReadyDiff>> eventListener) {
+        public void register(EventListener<Set<ServerSideDiff>> eventListener) {
             this.eventListener = eventListener;
         }
 
         @Override
-        public void dataChunk(Set<JSReadyDiff> value) {
+        public void dataChunk(Set<ServerSideDiff> value) {
             executor.schedule(() -> eventListener.onDataChunk(value), 0, TimeUnit.MILLISECONDS);
         }
 
@@ -47,9 +48,9 @@ public class SocketSink {
         }
     };
 
-    Flux<Set<JSReadyDiff>> eventFlux = Flux.create(sink -> eventProcessor.register(
+    Flux<Set<ServerSideDiff>> eventFlux = Flux.create(sink -> eventProcessor.register(
             new EventListener<>() {
-                public void onDataChunk(Set<JSReadyDiff> chunk) {
+                public void onDataChunk(Set<ServerSideDiff> chunk) {
                     sink.next(chunk);
                 }
 
@@ -58,11 +59,11 @@ public class SocketSink {
                 }
             }));
 
-    public void push(Set<JSReadyDiff> heartbeat) {
+    public void push(Set<ServerSideDiff> heartbeat) {
         eventProcessor.dataChunk(heartbeat);
     }
 
-    public Flux<Set<JSReadyDiff>> asFlux() {
+    public Flux<Set<ServerSideDiff>> asFlux() {
         return eventFlux;
     }
 
