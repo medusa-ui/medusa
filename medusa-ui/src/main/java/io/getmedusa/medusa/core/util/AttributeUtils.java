@@ -1,6 +1,6 @@
 package io.getmedusa.medusa.core.util;
 
-import io.getmedusa.diffengine.diff.ServerSideDiff;
+import io.getmedusa.diffengine.model.ServerSideDiff;
 import io.getmedusa.medusa.core.attributes.Attribute;
 import io.getmedusa.medusa.core.attributes.StandardAttributeKeys;
 import io.getmedusa.medusa.core.router.request.Route;

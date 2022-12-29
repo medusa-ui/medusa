@@ -1,8 +1,8 @@
 package io.getmedusa.medusa.core.router.action;
 
 import io.getmedusa.diffengine.Engine;
-import io.getmedusa.diffengine.diff.AbstractDiff;
-import io.getmedusa.diffengine.diff.ServerSideDiff;
+import io.getmedusa.diffengine.model.AbstractDiff;
+import io.getmedusa.diffengine.model.ServerSideDiff;
 import io.getmedusa.medusa.core.annotation.UIEventPage;
 import io.getmedusa.medusa.core.attributes.Attribute;
 import io.getmedusa.medusa.core.boot.RouteDetection;

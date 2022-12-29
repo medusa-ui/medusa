@@ -8,10 +8,9 @@ import java.util.List;
 @UIEventPage(path = "/", file = "/pages/hello-world")
 public class HelloWorldController {
 
-    int counter;
+    int counter = 1;
 
     public List<Attribute> setupAttributes() {
-        counter = 3;
         return change();
     }
 

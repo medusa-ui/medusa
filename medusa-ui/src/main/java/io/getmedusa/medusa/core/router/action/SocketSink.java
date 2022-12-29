@@ -1,6 +1,7 @@
 package io.getmedusa.medusa.core.router.action;
 
-import io.getmedusa.diffengine.diff.ServerSideDiff;
+
+import io.getmedusa.diffengine.model.ServerSideDiff;
 import reactor.core.publisher.Flux;
 
 import java.util.LinkedHashSet;

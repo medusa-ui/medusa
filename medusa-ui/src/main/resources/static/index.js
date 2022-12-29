@@ -149,20 +149,19 @@ Medusa.prototype.doActionOnKeyUp = function(key, event, parentFragment, actionTo
 };
 
 evalXPath = function(xpath) {
-    return document.evaluate("/html[1]" + xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null ).singleNodeValue;
-};
-
-handleSequenceChange = function (obj) {
-    let xpathToAddBefore = obj.content;
-
-    if("::LAST" === xpathToAddBefore) {
-        obj.element.parentNode.appendChild(obj.element);
-    } else {
-        if(obj.contentElement === null && obj.content !== null) {
-            obj.contentElement = evalXPath(obj.content); //why?
+    if(-1 !== xpath.indexOf("/text(")) {
+        let xpathSplit = xpath.split("/text()");
+        let element = evalXPath(xpathSplit[0]);
+        let expectedIndex = parseInt(xpathSplit[1].substring(1, xpathSplit[1].length -1));
+        let currentIndex = 0;
+        for (const child of element.childNodes) {
+            if(child.nodeName === "#text" && currentIndex++ === expectedIndex) {
+                return child;
+            }
         }
-        obj.element.parentNode.insertBefore(obj.element, obj.contentElement);
     }
+
+    return document.evaluate("/html[1]" + xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null ).singleNodeValue;
 };
 
 handleIncomingAddition = function (obj) {
@@ -180,6 +179,8 @@ handleIncomingAddition = function (obj) {
     }
 };
 
+
+
 addBefore = function (reference, elementToAdd) {
     reference.parentNode.insertBefore(elementToAdd, reference);
 };
@@ -189,15 +190,12 @@ addAfter = function (reference, elementToAdd) {
 };
 
 handleAttrChange = function (obj) {
-    let element = obj.element;
+    let element = evalXPath(obj.xpath);
 
-    if(element !== null) {
-        element.setAttribute(obj.attribute, obj.content);
+    if(obj.attributeValue === null) {
+        element.removeAttr(obj.attributeKey);
     } else {
-        console.error("failed to attr value change", obj.xpath);
-        console.log("handleAttrChange: obj", obj);
-        console.log("handleAttrChange: element", element);
-        console.log("--");
+        element.setAttribute(obj.attributeKey, obj.attributeValue);
     }
 };
 
@@ -222,24 +220,25 @@ handleRemoval = function(obj) {
     }
 };
 
+
 applyAllChanges = function (listOfDiffs) {
     for(let diff of listOfDiffs) {
+        //main
         if(diff.type === "ADDITION") {
             handleIncomingAddition(diff);
-        } else if(diff.type === "EDIT") {
-            handleMorph(diff);
         } else if(diff.type === "REMOVAL") {
             handleRemoval(diff);
+        } else if(diff.type === "TEXT_EDIT") {
+            handleMorph(diff);
         } else if(diff.type === "ATTR_CHANGE") {
             handleAttrChange(diff);
+        //extra
         } else if(diff.type === "REDIRECT") {
             window.location.href = escape(diff.content);
         } else if(diff.type === "JS_FUNCTION") {
             runFunction(escape(diff.content), []);
         } else if(diff.type === "LOADING") {
             applyLoadingUpdate(escape(diff.content));
-        } else if(diff.type === "SEQUENCE_CHANGE") {
-            handleSequenceChange(diff);
         }
     }
 };
