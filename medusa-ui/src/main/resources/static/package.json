@@ -1,18 +1,17 @@
 {
-  "name": "rsocket-demo",
+  "name": "medusa-ui",
   "private": true,
-  "description": "RSocket Demo",
-  "version": "0.0.1",
+  "description": "Serverside rendering framework",
+  "version": "0.9.1",
   "repository": {
     "type": "git",
-    "url": "https://github.com/dsibilio/rsocket-demo.git"
+    "url": "https://github.com/medusa-ui/medusa.git"
   },
-  "license": "BSD-3-Clause",
+  "license": "MIT",
   "dependencies": {
     "@braintree/sanitize-url": "^6.0.2",
-    "morphdom": "^2.6.1",
     "rsocket-composite-metadata": "^1.0.0-alpha.3",
-    "rsocket-core": "^1.0.0-alpha.1",
+    "rsocket-core": "^1.0.0-alpha.3",
     "rsocket-flowable": "^0.0.27",
     "rsocket-types": "^0.0.27",
     "rsocket-websocket-client": "^1.0.0-alpha.3",

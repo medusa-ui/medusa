@@ -98,30 +98,9 @@
 		</dependency>
 
 		<dependency>
-			<groupId>org.jsoup</groupId>
-			<artifactId>jsoup</artifactId>
-			<version>1.15.3</version>
-		</dependency>
-
-		<dependency>
 			<groupId>io.getmedusa</groupId>
 			<artifactId>diff-engine</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
-		</dependency>
-
-		<!-- JAXB API only -->
-		<dependency>
-			<groupId>jakarta.xml.bind</groupId>
-			<artifactId>jakarta.xml.bind-api</artifactId>
-			<version>4.0.0</version>
-		</dependency>
-
-		<!-- JAXB RI, Jakarta XML Binding -->
-		<dependency>
-			<groupId>com.sun.xml.bind</groupId>
-			<artifactId>jaxb-impl</artifactId>
-			<version>4.0.1</version>
-			<scope>runtime</scope>
+			<version>0.0.1</version>
 		</dependency>
 
 		<dependency>

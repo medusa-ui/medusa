@@ -5,25 +5,100 @@
     <title>Hello world</title>
 </head>
 <body>
-<section>
-    <span th:text="${counter}"></span>
-    <h5>1 <code>th:if</code>Above button</h5>
-    <div th:if="${top}">
-        <p>2 TOP If top is <code>true</code> this should be visible on <code>top</code> of the page</p>
-    </div>
+<h1>Hello world</h1>
 
-    <p th:if="${bottom}">3 BOTTOM If bottom is <code>true</code> this should be visible at the <code>bottom</code></p>
+<div th:text="${counterValue}"></div>
+<button m:click="increaseCounter()">Increase counter</button>
+<!-- test DiffEngine attribute changes -->
+<button m:click="increaseCounterWith(${counterValue})">Double counter</button>
 
+<!--
+<th:block m:fragment="sample-impl#header">
+    <p>Fallback for local header fragment</p>
+</th:block>
+
+<th:block m:fragment="self#header">
+    <p>Fallback for local header fragment (w/ self)</p>
+</th:block>
+-->
+
+<!-- test DiffEngine attribute changes -->
+<button m:click="increaseCounterWith(${counterValue})">Double counter</button>
+<input type="number" m:change="increaseCounterWith(:{this})" /> <i>change value to add</i>
+
+<table>
+    <thead>
+    <tr>
+        <td>Random text</td>
+        <td>Conditional button</td>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="person: ${people}">
+        <td th:text="${person.name}"></td>
+        <td>
+            <th:block th:if="${person.number > 5}">
+                <button m:click="randomNewTable()">Regenerate table</button>
+            </th:block>
+            <th:block th:if="${person.number <= 5}">
+                <button disabled="disabled">Cannot remove</button>
+            </th:block>
+        </td>
+    </tr>
+    </tbody>
+</table>
+<div>total = <span th:text="${expectedTableCount}"></span></div>
+
+<button m:click="addPerson()">Add person</button>
+<button m:click="removePerson()">Remove person</button>
+
+<h2>Search</h2>
+
+<p>Searching for <i th:text="${search}"></i>...</p>
+<div>
     <div>
-        <button m:click="change()">4 change</button>
+        <input type="text" m:key="32" m:keyup="search(:{this.value})" /> ... triggered when space pressed with m:key="32" (keycode)
+        <br>
+        <input type="text" m:key=" " m:keyup="search(:{this.value})" />  ... triggered when space pressed with m:key=" " (key)
+        <br>
+        <input type="text" m:keyup="search(:{this.value})" /> ... no m:key defaults to enter
+        <!-- does it break -->
+        <!--
+        <br>
+        <input type="text" m:key="" m:keyup="search(:{this.value})" /> ... no m:key empty?
+        <br>
+        <input type="text" m:key="fake" m:keyup="search(:{this.value})" /> ... no m:key invalid key?
+        <br>
+        <input type="text" m:key="257" m:keyup="search(:{this.value})" /> ... no m:key invalid keycode?
+        -->
     </div>
-
-    <h5>5 <code>th:if</code>Below button</h5>
-    <div th:if="${top}">
-        <p>6 TOP If top is <code>true</code> this should be visible on <code>top</code> of the page, but below the button</p>
+    <div>
+        <input id="search-input" type="text" m:enter="search(:{this.value})" />
+        <button m:click="search(:{#search-input})">Search</button>
     </div>
+    <div>
+        <select name="search" m:change="search(:{this.value})">
+            <option value="Hello World">Search for 'Hello World'</option>
+            <option value="Hello Medusa">Search for 'Hello Medusa'</option>
+        </select>
+    </div>
+    <div>
+        <input type="text" class="search search-by-class" m:change="search(:{.search.search-by-class})" />... m:change reacts to a change after enter or tab
+        <br>
+        <input type="text" m:enter="search(:{this})" />... m:enter reacts to enter
+    </div>
+    <div>
+        <input name="my_data" />
+        <button m:loading-until="loading-done" m:loading-style="top" m:click="search(:{input[name='my_data']})">Search with selector :{input[name='my_data']}</button>
+    </div>
+</div>
 
-    <p th:if="${bottom}">7 BOTTOM If bottom is <code>true</code> this should be visible at the <code>bottom</code>, but below the button</p>
-</section>
+<script type="text/javascript">
+    function test() {
+        const number = 123 && 42;
+        return `Does the usage of && in JS break the application?  123 && 42 = ${number}`;
+    }
+    console.log(test());
+</script>
 </body>
 </html>

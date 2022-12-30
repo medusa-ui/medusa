@@ -2,39 +2,37 @@ package io.getmedusa.medusa.sample;
 
 import io.getmedusa.medusa.core.annotation.UIEventPage;
 import io.getmedusa.medusa.core.attributes.Attribute;
-import io.getmedusa.medusa.core.session.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.web.reactive.function.server.ServerRequest;
 
 import java.util.List;
 
-@UIEventPage(path = "/th-if",file = "/pages/loading")
+@UIEventPage(path = "th-if",file = "/pages/th-if")
 public class ThIfController {
     private static final Logger logger = LoggerFactory.getLogger(ThIfController.class);
-    boolean top = true;
+    int counter = 0;
 
-    public List<Attribute> setupAttributes(ServerRequest serverRequest, Session session) {
+
+    public List<Attribute> setupAttributes(){
         return List.of(
                 new Attribute("top",true),
+                new Attribute("middle",true),
                 new Attribute("bottom",true)
         );
     }
 
     public List<Attribute> change(){
-        if(top) {
-            top = false;
-            return List.of(
-                    new Attribute("top", true),
-                    new Attribute("bottom", false)
-            );
-        } else {
-            return List.of(
-                    new Attribute("top",true),
-                    new Attribute("bottom",true)
-            );
-        }
-
+        counter ++;
+        if (counter == 4) counter = 0;
+        boolean top = counter != 1;
+        boolean middle = counter != 2;
+        boolean bottom = counter != 3;
+        logger.info("counter: {}, top: {}, middle: {}, bottom: {}", counter, top, middle, bottom);
+        return List.of(
+                new Attribute("top",top ),
+                new Attribute("middle", middle),
+                new Attribute("bottom", bottom)
+        );
     }
 
 }

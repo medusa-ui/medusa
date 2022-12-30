@@ -7,7 +7,6 @@ const {
     WellKnownMimeType,
     encodeSimpleAuthMetadata,
 } = require("rsocket-composite-metadata");
-const morphdom = require("morphdom");
 
 function Medusa() {}
 const _M = new Medusa();
@@ -48,7 +47,6 @@ async function setupRouter() {
     const rsocket = await connector.connect();
     stream = await buildStream(rsocket);
 }
-
 
 function sendMessage(payloadData) {
     stream.onNext({
@@ -94,7 +92,7 @@ Medusa.prototype.doFormAction = function(event, parentFragment, actionToExecute)
         }
     }
     _M.doAction(event, parentFragment, actionToExecute.replace(":{form}", JSON.stringify(formProps) ));
-}
+};
 
 const buttonLoader = document.getElementById("m-template-button-load").content.firstElementChild.outerHTML;
 
@@ -179,8 +177,6 @@ handleIncomingAddition = function (obj) {
     }
 };
 
-
-
 addBefore = function (reference, elementToAdd) {
     reference.parentNode.insertBefore(elementToAdd, reference);
 };
@@ -220,7 +216,6 @@ handleRemoval = function(obj) {
     }
 };
 
-
 applyAllChanges = function (listOfDiffs) {
     for(let diff of listOfDiffs) {
         //main
@@ -255,7 +250,7 @@ applyLoadingUpdate = function(loadingName) {
             }
         }
     }
-}
+};
 
 runFunction = function(name, arguments) {
     const fn = window[name];
