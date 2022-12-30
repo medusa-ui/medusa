@@ -26,6 +26,16 @@
     <div>
         <button m:click="change()">change</button>
     </div>
+
+    <div th:if="${top}">
+        <p>If top is <code>true</code> this should be visible on <code>top</code>, after the button</p>
+    </div>
+
+    <th:block th:if="${middle}">
+        <p>If middle is <code>true</code> this should be visible between <code>top</code> and <code>bottom</code>, after the button</p>
+    </th:block>
+
+    <p th:if="${bottom}">If bottom is <code>true</code> this should be visible at the <code>bottom</code>, after the button</p>
 </section>
 </body>
 </html>
