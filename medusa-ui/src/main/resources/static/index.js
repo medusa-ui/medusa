@@ -7,7 +7,6 @@ const {
     WellKnownMimeType,
     encodeSimpleAuthMetadata,
 } = require("rsocket-composite-metadata");
-const morphdom = require("morphdom");
 
 function Medusa() {}
 const _M = new Medusa();
@@ -48,7 +47,6 @@ async function setupRouter() {
     const rsocket = await connector.connect();
     stream = await buildStream(rsocket);
 }
-
 
 function sendMessage(payloadData) {
     stream.onNext({
@@ -94,7 +92,7 @@ Medusa.prototype.doFormAction = function(event, parentFragment, actionToExecute)
         }
     }
     _M.doAction(event, parentFragment, actionToExecute.replace(":{form}", JSON.stringify(formProps) ));
-}
+};
 
 const buttonLoader = document.getElementById("m-template-button-load").content.firstElementChild.outerHTML;
 
@@ -149,75 +147,60 @@ Medusa.prototype.doActionOnKeyUp = function(key, event, parentFragment, actionTo
 };
 
 evalXPath = function(xpath) {
-    return document.evaluate(xpath, document, null, XPathResult.ANY_UNORDERED_NODE_TYPE, null ).singleNodeValue;
-};
-
-doLookups = function (listOfDiffs) {
-    for(let diff of listOfDiffs) {
-        if (diff.xpath !== null) {
-            if (diff.xpath.endsWith("::first")) { //additions - no previous entry, so pick parent pom and mark as first entry
-                diff.firstEntry = true;
-                diff.xpath = diff.xpath.substring(0, diff.xpath.length - 8); //8 = '/::first'.length
+    if(-1 !== xpath.indexOf("/text(")) {
+        let xpathSplit = xpath.split("/text()");
+        let element = evalXPath(xpathSplit[0]);
+        let expectedIndex = parseInt(xpathSplit[1].substring(1, xpathSplit[1].length -1));
+        let currentIndex = 0;
+        for (const child of element.childNodes) {
+            if(child.nodeName === "#text" && currentIndex++ === expectedIndex) {
+                return child;
             }
-            diff.element = evalXPath(diff.xpath);
         }
     }
-    return listOfDiffs;
-};
 
-handleSequenceChange = function (obj) {
-    let indexToMove = parseInt(obj.content, 10);
-    let indexToMoveTo = parseInt(obj.attribute, 10);
-    let wrapperXPath = obj.xpath;
-    let elemToMove = document.evaluate(wrapperXPath, document, null, XPathResult.ANY_UNORDERED_NODE_TYPE, null ).singleNodeValue.children[indexToMove];
-    let elemInCurrentPosition = document.evaluate(wrapperXPath, document, null, XPathResult.ANY_UNORDERED_NODE_TYPE, null ).singleNodeValue.children[indexToMoveTo];
-
-    elemToMove.parentNode.insertBefore(elemInCurrentPosition, elemToMove.nextSibling)
+    return document.evaluate("/html[1]" + xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null ).singleNodeValue;
 };
 
 handleIncomingAddition = function (obj) {
-    let existingNode = obj.element;
-
-    if(existingNode === null) { //if node added by previous event, it would only exist now, so do last chance lookup
-        existingNode = evalXPath(obj.xpath);
-    }
-
     let nodeToAdd = htmlToElement(obj.content);
 
-    if(existingNode !== null && nodeToAdd !== null) {
-        if(obj.firstEntry) {
-            //existingNode is parentNode, so add as child
-            existingNode.appendChild(nodeToAdd);
-        } else {
-            //existing node is previous node, so do an 'add after' (= addBefore of nextSibling)
-            existingNode.parentNode.insertBefore(nodeToAdd, existingNode.nextSibling);
-        }
-    } else {
-        console.error("failed to add", obj.xpath);
-        console.log("handleIncomingAddition: obj", obj);
-        console.log("handleIncomingAddition: element", existingNode);
-        console.log("handleIncomingAddition: nodeToAdd", nodeToAdd);
+    if(obj.before !== undefined) {
+        let matchingBeforeElement = evalXPath(obj['before']);
+        addBefore(matchingBeforeElement, nodeToAdd);
+    } else if(obj.after !== undefined) {
+        let matchingAfterElement = evalXPath(obj['after']);
+        addAfter(matchingAfterElement, nodeToAdd);
+    } else if(obj.in !== undefined) {
+        let matchingParentElement = evalXPath(obj['in']);
+        matchingParentElement.appendChild(nodeToAdd);
     }
 };
 
-handleAttrChange = function (obj) {
-    let element = obj.element;
+addBefore = function (reference, elementToAdd) {
+    reference.parentNode.insertBefore(elementToAdd, reference);
+};
 
-    if(element !== null) {
-        element.setAttribute(obj.attribute, obj.content);
+addAfter = function (reference, elementToAdd) {
+    reference.parentNode.insertBefore(elementToAdd, reference.nextSibling);
+};
+
+handleAttrChange = function (obj) {
+    let element = evalXPath(obj.xpath);
+
+    if(obj.attributeValue === null) {
+        element.removeAttr(obj.attributeKey);
     } else {
-        console.error("failed to attr value change", obj.xpath);
-        console.log("handleAttrChange: obj", obj);
-        console.log("handleAttrChange: element", element);
-        console.log("--");
+        element.setAttribute(obj.attributeKey, obj.attributeValue);
     }
 };
 
 handleMorph = function (obj) {
-    let element = obj.element;
+    let element = evalXPath(obj.xpath);
 
     if(element !== null) {
-        morphdom(element, obj.content);
+        //morphdom(element, obj.content);
+        element.textContent = obj.content;
     } else {
         console.error("failed to morphdom", obj.xpath);
         console.log("handleMorph: obj", obj);
@@ -227,34 +210,30 @@ handleMorph = function (obj) {
 };
 
 handleRemoval = function(obj) {
-    let element = obj.element;
+    let element = evalXPath(obj.xpath);
     if(element !== null) {
         element.remove();
-    } else {
-        console.error("failed to remove", obj.xpath);
-        console.log("handleRemoval: obj", obj);
-        console.log("handleRemoval: element", element);
     }
 };
 
 applyAllChanges = function (listOfDiffs) {
     for(let diff of listOfDiffs) {
+        //main
         if(diff.type === "ADDITION") {
             handleIncomingAddition(diff);
-        } else if(diff.type === "EDIT") {
-            handleMorph(diff);
         } else if(diff.type === "REMOVAL") {
             handleRemoval(diff);
+        } else if(diff.type === "TEXT_EDIT") {
+            handleMorph(diff);
         } else if(diff.type === "ATTR_CHANGE") {
             handleAttrChange(diff);
+        //extra
         } else if(diff.type === "REDIRECT") {
             window.location.href = escape(diff.content);
         } else if(diff.type === "JS_FUNCTION") {
             runFunction(escape(diff.content), []);
         } else if(diff.type === "LOADING") {
             applyLoadingUpdate(escape(diff.content));
-        } else if(diff.type === "SEQUENCE_CHANGE") {
-            handleSequenceChange(diff);
         }
     }
 };
@@ -271,7 +250,7 @@ applyLoadingUpdate = function(loadingName) {
             }
         }
     }
-}
+};
 
 runFunction = function(name, arguments) {
     const fn = window[name];
@@ -283,8 +262,7 @@ runFunction = function(name, arguments) {
 
 handleIncomingChange = function (obj) {
     debugLog(obj);
-    const toApply = doLookups(obj);
-    applyAllChanges(toApply);
+    applyAllChanges(obj);
 };
 
 debugLog = function (objToLog) {

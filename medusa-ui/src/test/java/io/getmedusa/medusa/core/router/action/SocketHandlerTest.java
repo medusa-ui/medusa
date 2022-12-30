@@ -1,9 +1,11 @@
 package io.getmedusa.medusa.core.router.action;
 
+import io.getmedusa.diffengine.Engine;
+import io.getmedusa.diffengine.model.AbstractDiff;
+import io.getmedusa.diffengine.model.ServerSideDiff;
 import io.getmedusa.medusa.core.annotation.UIEventPage;
 import io.getmedusa.medusa.core.attributes.Attribute;
 import io.getmedusa.medusa.core.boot.RouteDetection;
-import io.getmedusa.medusa.core.diffengine.DiffEngine;
 import io.getmedusa.medusa.core.memory.SessionMemoryRepository;
 import io.getmedusa.medusa.core.render.Renderer;
 import io.getmedusa.medusa.core.session.Session;
@@ -20,6 +22,7 @@ import reactor.core.publisher.Flux;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 
 import static org.mockito.ArgumentMatchers.*;
 
@@ -37,12 +40,12 @@ class SocketHandlerTest {
     private Renderer renderer;
 
     @Mock
-    private DiffEngine diffEngine;
+    private Engine diffEngine;
 
     @BeforeEach
     public void setup() {
         MockitoAnnotations.openMocks(this);
-        socketHandler = new SocketHandler(sessionMemoryRepository, actionHandler, renderer, diffEngine, false);
+        socketHandler = new SocketHandler(sessionMemoryRepository, actionHandler, renderer, false);
     }
 
     @Test
@@ -58,14 +61,14 @@ class SocketHandlerTest {
         Mockito.when(sessionMemoryRepository.retrieve(anyString(), any())).thenReturn(session);
         Mockito.when(actionHandler.executeAndMerge(any(), any(), any())).thenReturn(session);
         Mockito.when(renderer.render(anyString(), any())).thenReturn(createDataBuffer("test"));
-        Mockito.when(diffEngine.findDiffs(nullable(String.class), nullable(String.class))).thenReturn(List.of(new JSReadyDiff()));
+        Mockito.when(diffEngine.calculate(nullable(String.class), nullable(String.class))).thenReturn(Set.of(new ServerSideDiff(AbstractDiff.DiffType.ADDITION)));
 
-        final Flux<List<JSReadyDiff>> jsReadyDiffFlux = socketHandler.eventEmitter(new HashMap<>(),
+        final Flux<Set<ServerSideDiff>> ServerSideDiffFlux = socketHandler.eventEmitter(new HashMap<>(),
                 Flux.just(socketAction),
                 findSampleHash(),
                 "sessionId");
 
-        //TODO StepVerifier.create(jsReadyDiffFlux).assertNext(Assertions::assertNotNull).then(jsReadyDiffFlux.ter)
+        //TODO StepVerifier.create(ServerSideDiffFlux).assertNext(Assertions::assertNotNull).then(ServerSideDiffFlux.ter)
     }
 
     private Flux<DataBuffer> createDataBuffer(String value) {

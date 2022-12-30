@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -98,18 +99,22 @@ public class HydraConnectionController {
                 }
                 return response.bodyToMono(List.class);
             } else {
-                registrationFailure(null);
+                System.err.println(response.statusCode());
+                registrationFailure(null, response.statusCode());
                 return Mono.empty();
             }
         })
-                .doOnError(this::registrationFailure)
+                .doOnError(e -> registrationFailure(e, null))
                 .onErrorReturn(List.of())
                 .subscribe();
     }
 
-    private void registrationFailure(Throwable e) {
+    private void registrationFailure(Throwable e, HttpStatusCode httpStatusCode) {
         if (!hasShownConnectionError) {
             logger.error("Connection to Hydra failed, retrying every second. In the meantime, the app will fallback to a non-connected state and continue working.");
+            if(httpStatusCode != null) {
+                logger.error("Error response to failed Hydra connection was: {}", httpStatusCode);
+            }
             if(e != null) { aliveFailure(e); }
             hasShownConnectionError = true;
         }

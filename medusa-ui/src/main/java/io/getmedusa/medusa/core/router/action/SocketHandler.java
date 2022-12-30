@@ -1,8 +1,9 @@
 package io.getmedusa.medusa.core.router.action;
 
+import io.getmedusa.diffengine.Engine;
+import io.getmedusa.diffengine.model.ServerSideDiff;
 import io.getmedusa.medusa.core.attributes.Attribute;
 import io.getmedusa.medusa.core.boot.RouteDetection;
-import io.getmedusa.medusa.core.diffengine.DiffEngine;
 import io.getmedusa.medusa.core.memory.SessionMemoryRepository;
 import io.getmedusa.medusa.core.render.Renderer;
 import io.getmedusa.medusa.core.router.request.Route;
@@ -21,6 +22,7 @@ import reactor.core.publisher.Flux;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static io.getmedusa.medusa.core.util.AttributeUtils.mergeDiffs;
 
@@ -32,26 +34,25 @@ public class SocketHandler {
     private final SessionMemoryRepository sessionMemoryRepository;
     private final ActionHandler actionHandler;
     private final Renderer renderer;
-    private final DiffEngine diffEngine;
+    private final Engine diffEngine;
 
     public SocketHandler(SessionMemoryRepository sessionMemoryRepository,
                          ActionHandler actionHandler,
                          Renderer renderer,
-                         DiffEngine diffEngine,
                          @Value("${medusa.allow-external-redirect:false}") boolean allowExternalRedirect){
         this.sessionMemoryRepository = sessionMemoryRepository;
         this.actionHandler = actionHandler;
         this.renderer = renderer;
-        this.diffEngine = diffEngine;
+        this.diffEngine = new Engine();
         AttributeUtils.setAllowExternalRedirect(allowExternalRedirect);
     }
 
     @PreAuthorize("hasRole('USER')")
     @MessageMapping("event-emitter/{hash}/{sessionId}")
-    public Flux<List<JSReadyDiff>> eventEmitter(final @Headers Map<String, Object> metadata,
-                                                final @Payload Flux<SocketAction> request,
-                                                final @DestinationVariable String hash,
-                                                final @DestinationVariable String sessionId) {
+    public Flux<Set<ServerSideDiff>> eventEmitter(final @Headers Map<String, Object> metadata,
+                                                  final @Payload Flux<SocketAction> request,
+                                                  final @DestinationVariable String hash,
+                                                  final @DestinationVariable String sessionId) {
 
         final Route route = RouteDetection.INSTANCE.findRoute(hash);
 
@@ -76,7 +77,7 @@ public class SocketHandler {
             sessionMemoryRepository.store(updatedSession);
 
             //run diff engine old HTML vs new
-            updatedSession.getSink().push(mergeDiffs(diffEngine.findDiffs(oldHTML, newHtml), passThroughAttributes));
+            updatedSession.getSink().push(mergeDiffs(diffEngine.calculate(oldHTML, newHtml), passThroughAttributes));
             updatedSession.setDepth(0);
         });
 
