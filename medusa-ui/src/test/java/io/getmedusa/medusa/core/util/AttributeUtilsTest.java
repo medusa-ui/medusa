@@ -1,7 +1,6 @@
 package io.getmedusa.medusa.core.util;
 
 import io.getmedusa.diffengine.model.ServerSideDiff;
-import io.getmedusa.diffengine.model.meta.TextNode;
 import io.getmedusa.medusa.core.attributes.Attribute;
 import io.getmedusa.medusa.core.attributes.StandardAttributeKeys;
 import io.getmedusa.medusa.core.router.request.Route;
@@ -16,9 +15,7 @@ import java.util.Set;
 
 class AttributeUtilsTest {
 
-    private final TextNode node = null;
-
-    private final Set<ServerSideDiff> diffs = new LinkedHashSet<>(List.of(ServerSideDiff.buildRemoval(node)));
+    private final Set<ServerSideDiff> diffs = new LinkedHashSet<>();
 
     @BeforeEach
     public void init() {
