@@ -150,7 +150,7 @@ evalXPath = function(xpath) {
     if(-1 !== xpath.indexOf("/text(")) {
         let xpathSplit = xpath.split("/text()");
         let element = evalXPath(xpathSplit[0]);
-        let expectedIndex = parseInt(xpathSplit[1].substring(1, xpathSplit[1].length -1));
+        let expectedIndex = parseInt(xpathSplit[1].substring(1, xpathSplit[1].length -1), 10);
         let currentIndex = 0;
         for (const child of element.childNodes) {
             if(child.nodeName === "#text" && currentIndex++ === expectedIndex) {

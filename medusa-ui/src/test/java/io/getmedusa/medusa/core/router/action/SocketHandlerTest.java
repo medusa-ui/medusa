@@ -63,7 +63,7 @@ class SocketHandlerTest {
         Mockito.when(renderer.render(anyString(), any())).thenReturn(createDataBuffer("test"));
         Mockito.when(diffEngine.calculate(nullable(String.class), nullable(String.class))).thenReturn(Set.of(new ServerSideDiff(AbstractDiff.DiffType.ADDITION)));
 
-        final Flux<Set<ServerSideDiff>> ServerSideDiffFlux = socketHandler.eventEmitter(new HashMap<>(),
+        socketHandler.eventEmitter(new HashMap<>(),
                 Flux.just(socketAction),
                 findSampleHash(),
                 "sessionId");
