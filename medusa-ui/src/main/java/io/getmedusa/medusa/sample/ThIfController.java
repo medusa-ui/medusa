@@ -27,7 +27,7 @@ public class ThIfController {
         boolean top = counter != 1;
         boolean middle = counter != 2;
         boolean bottom = counter != 3;
-        logger.info("counter: {}, top: {}, middle: {}, bottom: {}", counter, top, middle, bottom);
+        logger.debug("counter: {}, top: {}, middle: {}, bottom: {}", counter, top, middle, bottom);
         return List.of(
                 new Attribute("top",top ),
                 new Attribute("middle", middle),
