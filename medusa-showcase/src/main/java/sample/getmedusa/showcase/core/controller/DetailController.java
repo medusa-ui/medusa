@@ -7,6 +7,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.reactive.function.server.ServerRequest;
+import sample.getmedusa.showcase.core.Versions;
 import sample.getmedusa.showcase.core.model.Component;
 
 import java.io.IOException;
@@ -25,7 +26,8 @@ public class DetailController {
         return List.of(new Attribute("title", title),
                 new Attribute("type", request.pathVariable("type")),
                 new Attribute("serverCode", loadCode(component.getServerCode())),
-                new Attribute("clientCode", loadCode(component.getClientCode())));
+                new Attribute("clientCode", loadCode(component.getClientCode())),
+                new Attribute("version", Versions.getVersionFooter()));
     }
 
     private final ResourceLoader resourceLoader = new DefaultResourceLoader();
