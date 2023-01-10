@@ -2,6 +2,9 @@ import io.getmedusa.medusa.core.annotation.UIEventPage;
 import io.getmedusa.medusa.core.attributes.Attribute;
 import io.getmedusa.medusa.core.session.Session;
 
+import static io.getmedusa.medusa.core.attributes.Attribute.$;
+import static io.getmedusa.medusa.core.attributes.Attribute.$$;
+
 import java.util.List;
 
 @UIEventPage(path = "/detail/basic-button", file = "/pages/basic-button.html")
@@ -9,7 +12,8 @@ public class Controller {
 
     //This method gets called on page load and sets the initial values of variables
     public List<Attribute> setupAttributes() {
-        return List.of(new Attribute("counter", 0));
+        //based on static import from Attribute class
+        return $$("counter", 0);
     }
 
     //This method takes a single parameter. The Session object can optionally be
@@ -17,11 +21,13 @@ public class Controller {
     public List<Attribute> updateCounter(int amount, Session session) {
         int counter = session.getAttribute("counter");
         counter += amount;
-        return List.of(new Attribute("counter", counter));
+        //another way of writing attributes, based on static imports
+        return $$($("counter", counter));
     }
 
     //This method takes no parameters.
     public List<Attribute> reset() {
+        //another way of writing attributes, without static imports
         return List.of(new Attribute("counter", 0));
     }
 
