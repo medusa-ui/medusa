@@ -70,7 +70,7 @@ class AttributeUtilsTest {
 
     @Test
     void testKeyPairs() {
-        List<Attribute> list = Attribute.$$("x", 1, "y", 2);
+        List<Attribute> list = $$("x", 1, "y", 2);
 
         Assertions.assertNotNull(list);
         Assertions.assertEquals(2, list.size());
