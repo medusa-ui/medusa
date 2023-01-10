@@ -13,6 +13,9 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
+import static io.getmedusa.medusa.core.attributes.Attribute.$;
+import static io.getmedusa.medusa.core.attributes.Attribute.$$;
+
 class AttributeUtilsTest {
 
     private final Set<ServerSideDiff> diffs = new LinkedHashSet<>();
@@ -63,6 +66,30 @@ class AttributeUtilsTest {
         Attribute redirectAttribute = new Attribute(StandardAttributeKeys.FORWARD, "https://google.com/");
         Set<ServerSideDiff> mergedDiffs = AttributeUtils.mergeDiffs(diffs, List.of(redirectAttribute));
         Assertions.assertEquals(diffs, mergedDiffs);
+    }
+
+    @Test
+    void testKeyPairs() {
+        List<Attribute> list = Attribute.$$("x", 1, "y", 2);
+
+        Assertions.assertNotNull(list);
+        Assertions.assertEquals(2, list.size());
+        Assertions.assertEquals("x", list.get(0).name());
+        Assertions.assertEquals("y", list.get(1).name());
+        Assertions.assertEquals(1, list.get(0).value());
+        Assertions.assertEquals(2, list.get(1).value());
+    }
+
+    @Test
+    void testKeyPairsWithAttributes() {
+        List<Attribute> list = $$($("x", 1), $("y", 2));
+
+        Assertions.assertNotNull(list);
+        Assertions.assertEquals(2, list.size());
+        Assertions.assertEquals("x", list.get(0).name());
+        Assertions.assertEquals("y", list.get(1).name());
+        Assertions.assertEquals(1, list.get(0).value());
+        Assertions.assertEquals(2, list.get(1).value());
     }
 
 }

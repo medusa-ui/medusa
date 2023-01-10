@@ -7,6 +7,9 @@ import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
+import static io.getmedusa.medusa.core.attributes.Attribute.$;
+import static io.getmedusa.medusa.core.attributes.Attribute.$$;
+
 @UIEventPage(path = "/clicks", file = "/pages/clicks")
 public class ClicksController {
 
@@ -14,11 +17,11 @@ public class ClicksController {
 
     public List<Attribute> setupAttributes(){
         logger.info("setupAttributes()");
-        return List.of(
-                    new Attribute("number", 42),
-                    new Attribute("text", "some text"),
-                    new Attribute("one", new KeyValue("one",1)),
-                    new Attribute("two", new KeyValue("two", new KeyValue("three",3)))
+        return $$(
+                    $("number", 42),
+                    $("text", "some text"),
+                    $("one", new KeyValue("one",1)),
+                    $("two", new KeyValue("two", new KeyValue("three",3)))
                 );
     }
 
@@ -31,10 +34,9 @@ public class ClicksController {
 
     public List<Attribute> actionNumber(Integer number) {
         logger.info("action(Integer number)");
-        return List.of(
-                new Attribute("action", "actionNumber(Integer number)"),
-                new Attribute("value", number)
-        );
+        return $$(
+                "action", "actionNumber(Integer number)",
+                "value", number);
     }
 
     public List<Attribute> actionString(String text) {
