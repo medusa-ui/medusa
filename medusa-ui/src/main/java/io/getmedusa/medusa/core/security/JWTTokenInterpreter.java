@@ -53,13 +53,22 @@ public class JWTTokenInterpreter extends AuthenticationWebFilter {
         });
     }
 
-    public static void handleUpdateToPublicKey(String pubKeyAsText) throws Exception {
-        System.out.println("Loading new Hydra public key");
-        byte[] decodedKey = Base64.getDecoder().decode(pubKeyAsText);
-        X509EncodedKeySpec spec = new X509EncodedKeySpec(decodedKey);
-        KeyFactory kf = KeyFactory.getInstance("RSA");
-        PUBLIC_KEY = (RSAPublicKey) kf.generatePublic(spec);
-        JWTTokenInterpreter.clearCache();
+    public static void handleUpdateToPublicKey(String pubKeyAsText) {
+        if(null != pubKeyAsText) {
+            try {
+                System.out.println("Loading new Hydra public key");
+                byte[] decodedKey = Base64.getDecoder().decode(pubKeyAsText);
+                X509EncodedKeySpec spec = new X509EncodedKeySpec(decodedKey);
+                KeyFactory kf = KeyFactory.getInstance("RSA");
+                PUBLIC_KEY = (RSAPublicKey) kf.generatePublic(spec);
+                System.out.println("Hydra connection established with public key");
+            } catch (Exception e) {
+                PUBLIC_KEY = null;
+                throw new RuntimeException(e);
+            } finally {
+                JWTTokenInterpreter.clearCache();
+            }
+        }
     }
 
     private Mono<Authentication> reject(ServerWebExchange exchange) {
@@ -79,7 +88,9 @@ public class JWTTokenInterpreter extends AuthenticationWebFilter {
             final String username = jwt.getClaim("username").asString();
             final String[] roles = jwt.getClaim("roles").asArray(String.class);
             List<SimpleGrantedAuthority> authorities = buildAuthorities(roles);
-            return new PreAuthenticatedAuthenticationToken(username, new SecureRandom(), authorities);
+            final PreAuthenticatedAuthenticationToken t = new PreAuthenticatedAuthenticationToken(username, new SecureRandom(), authorities);
+            t.setAuthenticated(true);
+            return t;
         } catch (Exception exception) {
             return null;
         }

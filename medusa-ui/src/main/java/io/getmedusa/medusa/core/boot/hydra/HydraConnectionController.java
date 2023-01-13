@@ -5,9 +5,11 @@ import io.getmedusa.medusa.core.boot.RouteDetection;
 import io.getmedusa.medusa.core.boot.StaticResourcesDetection;
 import io.getmedusa.medusa.core.boot.hydra.config.MedusaConfigurationProperties;
 import io.getmedusa.medusa.core.boot.hydra.model.FragmentHydraRequestWrapper;
+import io.getmedusa.medusa.core.boot.hydra.model.RegistrationResponse;
 import io.getmedusa.medusa.core.boot.hydra.model.meta.ActiveService;
 import io.getmedusa.medusa.core.boot.hydra.model.meta.RenderedFragment;
 import io.getmedusa.medusa.core.router.request.Route;
+import io.getmedusa.medusa.core.security.JWTTokenInterpreter;
 import io.getmedusa.medusa.core.util.TimeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -97,7 +99,7 @@ public class HydraConnectionController {
                     hasShownConnectionError = false;
                     downtimeStart = 0L;
                 }
-                return response.bodyToMono(List.class);
+                return response.bodyToMono(RegistrationResponse.class);
             } else {
                 System.err.println(response.statusCode());
                 registrationFailure(null, response.statusCode());
@@ -105,7 +107,10 @@ public class HydraConnectionController {
             }
         })
                 .doOnError(e -> registrationFailure(e, null))
-                .onErrorReturn(List.of())
+                .map(response -> {
+                    JWTTokenInterpreter.handleUpdateToPublicKey(response.getPublicKey());
+                    return response;
+                })
                 .subscribe();
     }
 
