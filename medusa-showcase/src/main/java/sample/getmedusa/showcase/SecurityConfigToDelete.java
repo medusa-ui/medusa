@@ -20,7 +20,8 @@ public class SecurityConfigToDelete {
                 .formLogin().and()
                 .httpBasic().disable()
                 .authorizeExchange()
-                .anyExchange().authenticated()
+                //.anyExchange().authenticated()
+                .anyExchange().permitAll()
                 .and().csrf().requireCsrfProtectionMatcher(
                     serverWebExchange -> ServerWebExchangeMatchers.pathMatchers("/urls-with-csrf-check/**").matches(serverWebExchange)
                 )
