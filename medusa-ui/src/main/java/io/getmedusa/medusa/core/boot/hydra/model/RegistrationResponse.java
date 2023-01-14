@@ -7,6 +7,10 @@ public class RegistrationResponse {
     private String publicKey;
     private List<ActiveServiceOverview> services;
 
+    public static RegistrationResponse error() {
+        return new RegistrationResponse();
+    }
+
     public String getPublicKey() {
         return publicKey;
     }
