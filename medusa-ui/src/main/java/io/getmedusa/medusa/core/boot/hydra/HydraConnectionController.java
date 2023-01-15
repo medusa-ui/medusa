@@ -109,7 +109,7 @@ public class HydraConnectionController {
                 .doOnError(e -> registrationFailure(e, null))
                 .onErrorReturn(RegistrationResponse.error())
                 .map(response -> {
-                    JWTTokenInterpreter.handleUpdateToPublicKey(response.getPublicKey());
+                    JWTTokenInterpreter.handleUpdate(response.getPublicKey(), response.getRoleMappings());
                     return response;
                 })
                 .subscribe();
