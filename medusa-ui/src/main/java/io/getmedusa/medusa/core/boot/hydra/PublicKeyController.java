@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Mono;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @RestController
@@ -31,7 +32,10 @@ public class PublicKeyController {
                                                               @PathVariable String publicKey,
                                                               ServerHttpResponse response) throws Exception {
         if(this.publicKey.equals(publicKey)) {
-            JWTTokenInterpreter.handleUpdateToPublicKey(reqMap.get("k"));
+            if(true) {
+                throw new IllegalStateException("Not yet implemented");
+            }
+            JWTTokenInterpreter.handleUpdate(reqMap.get("k"), new HashMap<>());
         } else {
             response.setStatusCode(HttpStatus.NOT_FOUND);
         }

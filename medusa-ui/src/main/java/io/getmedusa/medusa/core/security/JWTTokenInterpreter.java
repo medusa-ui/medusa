@@ -20,14 +20,13 @@ import java.security.SecureRandom;
 import java.security.interfaces.RSAPublicKey;
 import java.security.spec.X509EncodedKeySpec;
 import java.time.Duration;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 public class JWTTokenInterpreter extends AuthenticationWebFilter {
 
     public static RSAPublicKey PUBLIC_KEY = null;
+    private static final Map<String, String> ROLE_MAPPING = new HashMap<>();
 
     static Cache<String, Authentication> cache = Caffeine.newBuilder()
             .expireAfterWrite(5, TimeUnit.MINUTES)
@@ -53,14 +52,17 @@ public class JWTTokenInterpreter extends AuthenticationWebFilter {
         });
     }
 
-    public static void handleUpdateToPublicKey(String pubKeyAsText) {
+    public static void handleUpdate(String pubKeyAsText, Map<String, String> roleMappings) {
         if(null != pubKeyAsText) {
+            ROLE_MAPPING.clear();
             try {
                 System.out.println("Loading new Hydra public key");
                 byte[] decodedKey = Base64.getDecoder().decode(pubKeyAsText);
                 X509EncodedKeySpec spec = new X509EncodedKeySpec(decodedKey);
                 KeyFactory kf = KeyFactory.getInstance("RSA");
                 PUBLIC_KEY = (RSAPublicKey) kf.generatePublic(spec);
+
+                ROLE_MAPPING.putAll(roleMappings);
                 System.out.println("Hydra connection established with public key");
             } catch (Exception e) {
                 PUBLIC_KEY = null;
@@ -87,7 +89,7 @@ public class JWTTokenInterpreter extends AuthenticationWebFilter {
 
             final String username = jwt.getClaim("username").asString();
             final String[] roles = jwt.getClaim("roles").asArray(String.class);
-            List<SimpleGrantedAuthority> authorities = buildAuthorities(roles);
+            List<SimpleGrantedAuthority> authorities = buildAuthorities(mapRolesIfApplicable(roles));
             final PreAuthenticatedAuthenticationToken t = new PreAuthenticatedAuthenticationToken(username, new SecureRandom(), authorities);
             t.setAuthenticated(true);
             return t;
@@ -96,9 +98,17 @@ public class JWTTokenInterpreter extends AuthenticationWebFilter {
         }
     }
 
-    private List<SimpleGrantedAuthority> buildAuthorities(String[] roles) {
+    private static List<String> mapRolesIfApplicable(String[] roles) {
+        List<String> mappedRoles = new ArrayList<>();
+        for(String r : roles) {
+            mappedRoles.add(ROLE_MAPPING.getOrDefault(r, r));
+        }
+        return mappedRoles;
+    }
+
+    private List<SimpleGrantedAuthority> buildAuthorities(List<String> roles) {
         List<SimpleGrantedAuthority> authorities = new ArrayList<>();
-        if(roles.length == 0) return authorities;
+        if(roles.isEmpty()) return authorities;
         for(String role : roles) {
             authorities.add(new SimpleGrantedAuthority(role.toUpperCase()));
         }
