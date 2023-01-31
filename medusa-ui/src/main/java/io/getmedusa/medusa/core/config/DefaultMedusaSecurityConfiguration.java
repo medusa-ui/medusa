@@ -1,9 +1,9 @@
 package io.getmedusa.medusa.core.config;
 
 import io.getmedusa.medusa.core.security.MedusaSecurity;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 
@@ -12,7 +12,7 @@ import org.springframework.security.web.server.SecurityWebFilterChain;
  * By default, nothing is restricted (permitAll).
  */
 @ConditionalOnMissingBean(SecurityWebFilterChain.class)
-@Configuration
+@AutoConfiguration
 public class DefaultMedusaSecurityConfiguration {
 
     @Bean
