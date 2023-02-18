@@ -5,7 +5,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-public class LoaderUtils {
+public final class LoaderUtils {
 
     private LoaderUtils() {}
 

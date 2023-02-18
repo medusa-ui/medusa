@@ -51,7 +51,9 @@ public class ConditionalController {
         ListIterator<Integer> listIterator = fibonacci.listIterator(fibonacci.size());
         while (listIterator.hasPrevious()) {
             Integer fib = listIterator.previous();
-            if(number == 0) break;
+            if(number == 0) {
+                break;
+            }
             if (number >= fib) {
                 number -= fib;
                 result.add(fib);

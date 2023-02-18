@@ -7,7 +7,7 @@ import java.util.Map;
 
 public class PojoConverter implements Converter<Map, Object> {
 
-    private Class<?> clazz;
+    private final Class<?> clazz;
 
     public PojoConverter(Class<?> clazz) {
         this.clazz = clazz;

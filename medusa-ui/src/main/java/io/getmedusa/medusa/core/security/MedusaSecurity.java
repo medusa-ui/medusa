@@ -8,7 +8,7 @@ import org.springframework.security.config.web.server.ServerHttpSecurity;
  * It predefines form login and adds a JWT Token interpretation filter to facilitate Hydra logins.
  * You only need to do this if you have protected endpoints, otherwise a default SecurityWebFilterChain sets everything up for you.
  */
-public class MedusaSecurity {
+public final class MedusaSecurity {
 
     private MedusaSecurity() {}
 

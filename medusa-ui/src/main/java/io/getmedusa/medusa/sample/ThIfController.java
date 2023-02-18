@@ -10,7 +10,7 @@ import java.util.List;
 @UIEventPage(path = "th-if",file = "/pages/th-if")
 public class ThIfController {
     private static final Logger logger = LoggerFactory.getLogger(ThIfController.class);
-    int counter = 0;
+    int counter;
 
 
     public List<Attribute> setupAttributes(){
@@ -23,7 +23,9 @@ public class ThIfController {
 
     public List<Attribute> change(){
         counter ++;
-        if (counter == 4) counter = 0;
+        if(counter == 4) {
+            counter = 0;
+        }
         boolean top = counter != 1;
         boolean middle = counter != 2;
         boolean bottom = counter != 3;

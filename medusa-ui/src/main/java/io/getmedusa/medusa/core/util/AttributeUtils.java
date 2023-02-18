@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 
 public final class AttributeUtils {
 
-    private static boolean allowExternalRedirect = false;
+    private static boolean allowExternalRedirect;
 
     private AttributeUtils() {}
 

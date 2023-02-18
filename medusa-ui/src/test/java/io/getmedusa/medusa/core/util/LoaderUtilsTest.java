@@ -12,23 +12,23 @@ class LoaderUtilsTest {
 
     @Test
     void testParseGlobalLoader() {
-        final String GLOBAL_LOADER = """
+        final String globalLoader = """
                 <div id="m-full-loader">
                     <h1>Loading ...</h1>
                 </div>
                 """;
-        Assertions.assertTrue(LoaderUtils.parseGlobalLoader(GLOBAL_LOADER).contains("div id=\"m-full-loader\" style=\"display: none;\""));
+        Assertions.assertTrue(LoaderUtils.parseGlobalLoader(globalLoader).contains("div id=\"m-full-loader\" style=\"display: none;\""));
     }
 
     @Test
     void testParseButtonLoader() {
-        final String BUTTON_LOADER = """
+        final String buttonLoader = """
                 <div class="m-button-loader">
                     <h1>Loading ...</h1>
                 </div>
                 <style>color: red;</style>
                 """;
-        final String parsed = LoaderUtils.parseButtonLoader(BUTTON_LOADER);
+        final String parsed = LoaderUtils.parseButtonLoader(buttonLoader);
         System.out.println(parsed);
 
         Assertions.assertNotNull(parsed);

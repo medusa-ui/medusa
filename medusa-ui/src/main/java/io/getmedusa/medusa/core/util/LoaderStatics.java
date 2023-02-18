@@ -4,7 +4,7 @@ import io.getmedusa.medusa.core.boot.StaticResourcesDetection;
 
 import java.util.Objects;
 
-public class LoaderStatics {
+public final class LoaderStatics {
 
     private LoaderStatics() {}
 

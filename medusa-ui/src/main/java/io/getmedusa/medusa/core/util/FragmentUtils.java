@@ -6,7 +6,7 @@ import org.jsoup.nodes.Attributes;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
-public class FragmentUtils {
+public final class FragmentUtils {
 
     protected static final String NULL = "null";
     protected static final String SINGLE_QUOTE = "'";

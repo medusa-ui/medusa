@@ -10,7 +10,7 @@ import java.util.List;
 
 class FormDetectionTest {
 
-    private String html = """
+    private final String html = """
             <form m:submit="displayName(123, :{form}, 'sample')">
                 <label for="firstName">First name: </label>
                 <input type="text" id="firstName" name="firstName" />

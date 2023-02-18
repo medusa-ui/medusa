@@ -19,8 +19,8 @@ public class UIEventPageCallWrapper {
 
     private Method setupAttributesMethod;
 
-    private Object controller;
-    private Method exitMethod;
+    private final Object controller;
+    private final Method exitMethod;
 
     public UIEventPageCallWrapper(Object controller) {
         this.controller = controller;

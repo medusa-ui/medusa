@@ -24,7 +24,7 @@ public class Session {
     private boolean matched;
     private boolean initialRender = true;
 
-    private int depth = 0;
+    private int depth;
     @JsonIgnore
     private final SocketSink sink = new SocketSink();
 

@@ -52,7 +52,7 @@ public enum FormDetection {
         int formArg = 0;
         for (int i = 0; i < args.length; i++) {
             final String arg = args[i].trim();
-            if(arg.equals(":{form}")) {
+            if(":{form}".equals(arg)) {
                 formArg = i;
                 break;
             }

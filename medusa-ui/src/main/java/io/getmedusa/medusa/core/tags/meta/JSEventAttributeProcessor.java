@@ -14,7 +14,7 @@ import static io.getmedusa.medusa.core.tags.annotation.MedusaTag.*;
 
 public abstract class JSEventAttributeProcessor extends AbstractAttributeTagProcessor {
     //`search('${document.querySelector("input").value}')`
-    private final SpelExpressionParser SPEL_EXPRESSION_PARSER = new SpelExpressionParser();
+    private final SpelExpressionParser spelExpressionParser = new SpelExpressionParser();
 
     public static final String FRAGMENT_REPLACEMENT = "'__FRAGMENT__'";
     public static final String QUERY_SELECTOR_PREFIX = ":"; // avoid collisions with existing Thymeleaf Standard Expression Syntax
@@ -86,7 +86,7 @@ public abstract class JSEventAttributeProcessor extends AbstractAttributeTagProc
         if(replaceValue.contains(".")) {
             String expression = replaceValue.substring(replaceValue.indexOf(".") + 1);
             String target = replaceValue.substring(0, replaceValue.indexOf("."));
-            return "" + SPEL_EXPRESSION_PARSER.parseExpression(expression).getValue(context.getVariable(target));
+            return "" + spelExpressionParser.parseExpression(expression).getValue(context.getVariable(target));
         } else {
             return context.getVariable(replaceValue).toString();
         }

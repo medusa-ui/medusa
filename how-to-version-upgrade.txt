@@ -1,9 +1,13 @@
 git pull
 
+set index.js debugMode to false
+run the update_websocket.bat
+
 #verify all works
 cd medusa-ui
+mvn rewrite:run
 mvn clean install
-cd ../medusa-showcase 
+cd ../medusa-showcase
 mvn clean install
 
 #release

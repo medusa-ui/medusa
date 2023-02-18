@@ -25,7 +25,7 @@ import java.util.concurrent.TimeUnit;
 
 public class JWTTokenInterpreter extends AuthenticationWebFilter {
 
-    public static RSAPublicKey PUBLIC_KEY = null;
+    public static RSAPublicKey PUBLIC_KEY;
     private static final Map<String, String> ROLE_MAPPING = new HashMap<>();
 
     static Cache<String, Authentication> cache = Caffeine.newBuilder()
@@ -45,7 +45,9 @@ public class JWTTokenInterpreter extends AuthenticationWebFilter {
             if (!cookies.isEmpty()) {
                 String token = cookies.get(0).getValue();
                 Authentication auth = cache.get(token, t -> verifyToken(token));
-                if (auth == null) return reject(exchange);
+                if(auth == null) {
+                    return reject(exchange);
+                }
                 return Mono.just(auth);
             }
             return reject(exchange);
@@ -85,7 +87,9 @@ public class JWTTokenInterpreter extends AuthenticationWebFilter {
                     .withIssuer("hydra")
                     .build();
             DecodedJWT jwt = verifier.verify(token);
-            if (jwt == null) return null;
+            if(jwt == null) {
+                return null;
+            }
 
             final String username = jwt.getClaim("username").asString();
             final String[] roles = jwt.getClaim("roles").asArray(String.class);
@@ -108,7 +112,9 @@ public class JWTTokenInterpreter extends AuthenticationWebFilter {
 
     private List<SimpleGrantedAuthority> buildAuthorities(List<String> roles) {
         List<SimpleGrantedAuthority> authorities = new ArrayList<>();
-        if(roles.isEmpty()) return authorities;
+        if(roles.isEmpty()) {
+            return authorities;
+        }
         for(String role : roles) {
             authorities.add(new SimpleGrantedAuthority(role.toUpperCase()));
         }
