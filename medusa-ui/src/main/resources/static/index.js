@@ -11,7 +11,7 @@ const {
 function Medusa() {}
 const _M = new Medusa();
 
-const debugMode = true;
+const debugMode = false;
 
 const MAX_REQUEST_N = 2147483647;
 let stream;
