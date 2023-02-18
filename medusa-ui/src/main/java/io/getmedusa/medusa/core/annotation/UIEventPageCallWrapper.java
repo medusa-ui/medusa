@@ -20,7 +20,7 @@ public class UIEventPageCallWrapper {
     private Method setupAttributesMethod;
 
     private final Object controller;
-    private final Method exitMethod;
+
 
     public UIEventPageCallWrapper(Object controller) {
         this.controller = controller;
@@ -31,8 +31,6 @@ public class UIEventPageCallWrapper {
         } else if(annotation != null && !DEFAULT_SETUP.equals(annotation.setup())){
             throw new IllegalArgumentException("Setup method '" + annotation.setup() + "' does not exist on " + controller.getClass());
         }
-
-        this.exitMethod = determineExitMethod(controller);
     }
 
     /**
@@ -86,16 +84,6 @@ public class UIEventPageCallWrapper {
                 if (!returningAttributes(method)) {
                     throw new RuntimeException(uiEventPageObject.getClass().getName() + "." + method.getName() + " should return a List<Attribute> but was " + method.getReturnType());
                 }
-                return method;
-            }
-        }
-        return null;
-    }
-
-    private Method determineExitMethod(Object uiEventPageObject) {
-        if(uiEventPageObject == null) { return null; }
-        for(Method method : uiEventPageObject.getClass().getMethods()) {
-            if ("exit".equals(method.getName())) {
                 return method;
             }
         }
