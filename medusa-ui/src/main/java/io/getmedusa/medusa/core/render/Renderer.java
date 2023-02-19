@@ -2,10 +2,7 @@ package io.getmedusa.medusa.core.render;
 
 import io.getmedusa.medusa.core.annotation.UIEventPageCallWrapper;
 import io.getmedusa.medusa.core.attributes.Attribute;
-import io.getmedusa.medusa.core.boot.Fragment;
-import io.getmedusa.medusa.core.boot.FragmentDetection;
-import io.getmedusa.medusa.core.boot.RefDetection;
-import io.getmedusa.medusa.core.boot.StaticResourcesDetection;
+import io.getmedusa.medusa.core.boot.*;
 import io.getmedusa.medusa.core.boot.hydra.HydraConnectionController;
 import io.getmedusa.medusa.core.boot.hydra.model.meta.RenderedFragment;
 import io.getmedusa.medusa.core.session.Session;
@@ -195,7 +192,7 @@ public class Renderer {
         if(isFragment) {
             outerHtml = document.body().html();
         }
-        return outerHtml;
+        return ModalDetection.INSTANCE.prepFile(outerHtml);
     }
 
     Document wrapScriptContentInCDATA(Document document) {

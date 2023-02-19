@@ -48,7 +48,9 @@ public class Component {
         ));
 
         map.put("Overlays", List.of(
-                new Component("Modal / Alert"),
+                new Component("Modal / Alert", "modal",
+                        new String[]{"/samples/modal/ModalController_page.txt"},
+                        new String[]{"/samples/modal/ModalController.txt"}),
                 new Component("Notifications"),
                 new Component("Loading", "loading",
                         new String[]{"/samples/loading/LoadingController_page.txt"},

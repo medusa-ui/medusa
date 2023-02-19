@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:m="https://www.getmedusa.io/medusa.xsd">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medusa - Component detail</title>
+</head>
+<body>
+
+<div id="container" m:ref="modal">
+    <section id="hero">
+        <h1>Modal</h1>
+
+        <p class="lead">An example of a simple modal. This runs purely on the front-end with some simple CSS and JS.</p>
+
+        <a id="back-to-overview" href="/">Back to overview</a>
+    </section>
+
+        <h2>Modal</h2>
+        <p>Dialogs, sometimes called "modals", appear above the page and require the user's immediate attention. Users can always dismiss a modal via the "Escape" key or by clicking the ✕ icon.</p>
+
+        <section class="example">
+            <p><button onclick="_M.openModal('modal-1')">Open Modal 1</button></p>
+            <p><button onclick="_M.openModal('modal-2')">Open Modal 2</button></p>
+
+            <m:modal id="modal-1" title="💡 Example with title">
+                <p>This is a sample modal (1). This one has a title.</p>
+                <p>Try pressing 'Esc' to close this.</p>
+            </m:modal>
+
+            <m:modal id="modal-2">
+                <p>This is another sample modal (2). This one has <strong>no</strong> title.</p>
+            </m:modal>
+
+            <footer th:text="${version}"></footer>
+        </section>
+
+        <section class="client">
+            <h3>Client</h3>
+            <pre><code class="language-html hljs" th:text="${clientCode[0]}"></code></pre>
+        </section>
+
+        <section class="server">
+            <h3>Server</h3>
+            <pre><code class="language-java hljs" th:text="${serverCode[0]}"></code></pre>
+        </section>
+
+    <h2>Custom modal CSS</h2>
+    <p>By default, Medusa comes with a simple pre-defined style. If you want to customize the CSS, you can simply define custom rules </p>
+    <p>The following classes are used:</p>
+    <ul>
+        <li><strong>modal-background</strong>: Encompasses everything, contains rules on the darkness of the background</li>
+        <li><strong>modal-container</strong>: Encompasses just the modal itself. Can be used for sizing, padding or overall rules</li>
+        <li><strong>modal-header</strong>: Encompasses all header components (such as the title and the close button)</li>
+        <li><strong>modal-title</strong>: h3 tag with title</li>
+        <li><strong>modal-close</strong>: button tag that closes the modal</li>
+        <li><strong>modal-content</strong>: div tag that wraps the entire content you provide in the m:modal tag</li>
+    </ul>
+
+    <br/>
+</div>
+</body>
+</html>

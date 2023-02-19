@@ -29,7 +29,7 @@ public enum RouteDetection {
         if(null != annotation) {
             final String rawHTML = FileUtils.load(annotation.file());
             final String fragmentDetectedHTML = FragmentDetection.INSTANCE.prepFile(rawHTML);
-            FormDetection.INSTANCE.prepFile(rawHTML, bean);
+            FormDetection.INSTANCE.prepFile(fragmentDetectedHTML, bean);
             final String staticResourceDetectedHTML = StaticResourcesDetection.INSTANCE.detectUsedResources(fragmentDetectedHTML);
             Route route = new Route(
                     annotation.path(),

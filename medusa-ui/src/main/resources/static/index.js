@@ -16,8 +16,8 @@ const debugMode = false;
 const MAX_REQUEST_N = 2147483647;
 let stream;
 
-//TODO https://github.com/viglucci/rsocket-chat-demo/blob/main/frontend/src/context/ClientProvider.jsx
-//TODO read https://github.com/viglucci/rsocket-chat-demo/blob/main/frontend/src/hooks/useChat.js
+//based off https://github.com/viglucci/rsocket-chat-demo/blob/main/frontend/src/context/ClientProvider.jsx
+//based off https://github.com/viglucci/rsocket-chat-demo/blob/main/frontend/src/hooks/useChat.js
 
 async function setupRouter() {
     const map = new Map();
@@ -55,6 +55,15 @@ function sendMessage(payloadData) {
 }
 
 document.addEventListener("DOMContentLoaded", setupRouter);
+document.addEventListener('keydown', (event) => {
+    let isEscape = false;
+    if ("key" in event) {
+        isEscape = (event.key === "Escape" || event.key === "Esc");
+    }
+    if (isEscape) {
+        _M.closeModal();
+    }
+}, false);
 
 Medusa.prototype.doFormAction = function(event, parentFragment, actionToExecute) {
     const multiElems = [];
@@ -143,6 +152,18 @@ getTargetAttributeIfExists = function(event, attribute) {
 Medusa.prototype.doActionOnKeyUp = function(key, event, parentFragment, actionToExecute) {
     if(event.key === key || event.keyCode === key) {
         _M.doAction(event, parentFragment, actionToExecute);
+    }
+};
+
+Medusa.prototype.openModal = function(id) {
+    document.getElementById(id).classList.add("is-open");
+};
+
+Medusa.prototype.closeModal = function() {
+    for (const openElem of document.getElementsByClassName("is-open")) {
+        if(openElem.classList.contains("modal-background")) {
+            openElem.classList.remove("is-open");
+        }
     }
 };
 

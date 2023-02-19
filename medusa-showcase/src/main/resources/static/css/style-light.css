@@ -236,3 +236,7 @@ button:disabled {
   color: gray;
   pointer-events: none;
 }
+
+.modal-container .modal-title, .modal-container .modal-content {
+  color: rgb(87, 70, 175);
+}

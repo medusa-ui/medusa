@@ -18,7 +18,7 @@ public enum FragmentDetection {
 
     private final Map<String, Fragment> detectedFragments = new HashMap<>();
 
-    private String findPrefix(Document document) {
+    public static String findPrefix(Document document) {
         try {
             final Element htmlTag = document.getElementsByTag("html").get(0);
             for (Attribute attribute : htmlTag.attributes()) {
