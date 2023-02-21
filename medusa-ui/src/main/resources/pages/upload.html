@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:m="https://www.getmedusa.io/medusa.xsd">
+<head>
+    <meta charset="UTF-8" />
+    <title>Hello world</title>
+</head>
+<body>
+
+<h1>Upload</h1>
+
+<input type="file" id="myFile" name="filename"> <br>
+<button id="upload" onclick="_M.uploadFileToMethod(document.getElementById('myFile').files[0], 'uploadFileMethod(#byteBuffer)')">Upload via RSocket</button>
+<!--button id="upload2" onclick="parseFile(document.getElementById('myFile').files[0])">Read file</button-->
+<script>
+    function parseFile(file) {
+        new Promise(function(resolve, reject) {
+            try{
+                resolve(fileToByteArray(file));
+            } catch (e) {
+                reject(e);
+            }
+        });
+    }
+
+    async function fileToByteArray(file) {
+        let reader = new FileReader();
+        console.log("Preparing to load file from OS, I/O operation, we'll want this to be async");
+        reader.readAsArrayBuffer(file); //this takes a second, I/O is slow; essentially locating file on HD and sending it to the browser
+        const fileID = sendFileStart(file);
+        reader.onloadend = (evt) => {
+            if (evt.target.readyState === FileReader.DONE) {
+                console.log("Local file found. Done doing local I/O");
+                let arrayBuffer = evt.target.result;
+                //console.log(array.length); - now we know the total size
+                //we probably don't want to send this to the server per byte, but we can 'chunk' these together
+                //in 100kb blocks
+                const chunk_size = 100*1000;
+                //expected amount of chunks
+                const expected_amount_of_chunks = Math.ceil(arrayBuffer.byteLength / chunk_size);
+                let chunk_index = 0;
+                let index = 0;
+                while(expected_amount_of_chunks !== chunk_index) {
+                    const chunk = new Uint8Array(arrayBuffer.slice(index, index+chunk_size));
+                    index += chunk_size;
+                    sendFileChunk(fileID, chunk);
+                    chunk_index++;
+                }
+
+                sendFileCompletion(fileID);
+            }
+        }
+    }
+
+    function sendFileStart(file) {
+        console.log("Sending message to prepare serverside for receiving:")
+        console.log(file.name);
+        console.log(file.type);
+        console.log(file.size);
+
+        console.log("Finding file locally ...");
+
+        return crypto.randomUUID();
+    }
+
+    function sendFileChunk(fileId, chunk) {
+        console.log("Sending chunk ("+fileId+"): " + chunk.length);
+    }
+
+    function sendFileCompletion(fileId) {
+        console.log("File upload completed from a local perspective:" + fileId);
+    }
+</script>
+</body>
+</html>

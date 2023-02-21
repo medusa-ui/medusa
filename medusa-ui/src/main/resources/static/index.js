@@ -11,7 +11,7 @@ const {
 function Medusa() {}
 const _M = new Medusa();
 
-const debugMode = false;
+const debugMode = true;
 
 const MAX_REQUEST_N = 2147483647;
 let stream;
@@ -65,6 +65,83 @@ document.addEventListener('keydown', (event) => {
     }
 }, false);
 
+
+Medusa.prototype.uploadFileToMethod = function (file, method) {
+    new Promise(function (resolve, reject) {
+        try {
+            resolve(fileToByteArray(file, method));
+        } catch (e) {
+            reject(e);
+        }
+    }).catch(e => new Error(e));
+};
+
+async function fileToByteArray(file, method) {
+    const reader = new FileReader();
+
+    reader.readAsArrayBuffer(file); //this takes a second, I/O is slow; essentially locating file on HD and sending it to the browser
+
+    const fileID = sendFileStart(file, method);
+
+    reader.onloadend = (evt) => {
+        if (evt.target.readyState === FileReader.DONE) {
+            //console.log("Local file found. Done doing local I/O");
+            let arrayBuffer = evt.target.result;
+            //we probably don't want to send this to the server per byte, but we can 'chunk' these together in 2kb blocks
+            const chunk_size = 2000;
+            //expected amount of chunks
+            const expected_amount_of_chunks = Math.ceil(arrayBuffer.byteLength / chunk_size);
+            let chunk_index = 0;
+            let index = 0;
+            while(expected_amount_of_chunks !== chunk_index) {
+                const chunk = new Uint8Array(arrayBuffer.slice(index, index+chunk_size));
+                index += chunk_size;
+                sendFileChunk(fileID, [].slice.call(chunk));
+                chunk_index++;
+            }
+            sendFileCompletion(fileID, method);
+        }
+    }
+}
+
+function sendFileStart(file, method) {
+    const fileId = crypto.randomUUID();
+    sendMessage({
+        "fileMeta" : {
+            "sAct": "upload_start",
+            "fileName": file.name,
+            "mimeType": file.type,
+            "size": file.size,
+            "fileId": fileId
+        }
+    });
+    return fileId;
+}
+
+function sendFileChunk(fileId, chunk) {
+    sendMessage({
+        "fileMeta" : {
+            "sAct": "upload_chunk",
+            "fileId": fileId,
+            "chunk": chunk
+        }
+    });
+}
+
+function sendFileCompletion(fileId, method) {
+    if(typeof fileId !== "undefined") {
+        console.log("File upload completed from a local perspective:" + fileId);
+        sendMessage({
+            "fileMeta" : {
+                "sAct": "upload_complete",
+                "fileId": fileId,
+                "method": method
+            }
+        });
+        return fileId;
+    }
+}
+
 Medusa.prototype.doFormAction = function(event, parentFragment, actionToExecute) {
     const multiElems = [];
     const form = event.target;
@@ -104,6 +181,15 @@ Medusa.prototype.doFormAction = function(event, parentFragment, actionToExecute)
 };
 
 const buttonLoader = document.getElementById("m-template-button-load").content.firstElementChild.outerHTML;
+
+Medusa.prototype.doUpload = function(event, file) {
+    if(typeof event !== "undefined") {
+        event.preventDefault();
+    }
+    const target = event.target;
+
+    console.log(file);
+}
 
 Medusa.prototype.doAction = function(event, parentFragment, actionToExecute) {
     if(typeof event !== "undefined") {

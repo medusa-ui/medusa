@@ -8,8 +8,12 @@ import io.getmedusa.medusa.core.memory.SessionMemoryRepository;
 import io.getmedusa.medusa.core.render.Renderer;
 import io.getmedusa.medusa.core.router.request.Route;
 import io.getmedusa.medusa.core.session.Session;
+import io.getmedusa.medusa.core.session.upload.FileUploadService;
+import io.getmedusa.medusa.core.session.upload.UploadConstants;
+import io.getmedusa.medusa.core.session.upload.UploadStatus;
 import io.getmedusa.medusa.core.util.AttributeUtils;
 import io.getmedusa.medusa.core.util.FluxUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
@@ -19,7 +23,10 @@ import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
+import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -33,15 +40,18 @@ public class SocketHandler {
 
     private final SessionMemoryRepository sessionMemoryRepository;
     private final ActionHandler actionHandler;
+    private final FileUploadHandler fileUploadHandler;
     private final Renderer renderer;
     private final Engine diffEngine;
 
     public SocketHandler(SessionMemoryRepository sessionMemoryRepository,
                          ActionHandler actionHandler,
+                         FileUploadHandler fileUploadHandler,
                          Renderer renderer,
                          @Value("${medusa.allow-external-redirect:false}") boolean allowExternalRedirect){
         this.sessionMemoryRepository = sessionMemoryRepository;
         this.actionHandler = actionHandler;
+        this.fileUploadHandler = fileUploadHandler;
         this.renderer = renderer;
         this.diffEngine = new Engine();
         AttributeUtils.setAllowExternalRedirect(allowExternalRedirect);
@@ -62,25 +72,44 @@ public class SocketHandler {
         session.setInitialRender(false);
 
         request.onErrorReturn(new SocketAction()).subscribe(r -> {
-            //execute action and combine attributes
-            Session updatedSession = actionHandler.executeAndMerge(r, route, session);
+            if(FileUploadHandler.isUploadRelated(r)) {
+                fileUploadHandler.execute(r, route, session);
+            } else {
+                //execute action and combine attributes
+                Session updatedSession = actionHandler.executeAndMerge(r, route, session);
 
-            //not all attributes are used for rendering - some are pass-through, like redirections.
-            //these get filtered out first
-            List<Attribute> passThroughAttributes = updatedSession.findPassThroughAttributes();
+                //not all attributes are used for rendering - some are pass-through, like redirections.
+                //these get filtered out first
+                List<Attribute> passThroughAttributes = updatedSession.findPassThroughAttributes();
 
-            //render new HTML w/ new attributes
-            final Flux<DataBuffer> dataBufferFlux = renderer.render(route.getTemplateHTML(), updatedSession);
-            final String oldHTML = updatedSession.getLastRenderedHTML();
-            final String newHtml = FluxUtils.dataBufferFluxToString(dataBufferFlux);
-            updatedSession.setLastRenderedHTML(newHtml);
-            sessionMemoryRepository.store(updatedSession);
+                //render new HTML w/ new attributes
+                final Flux<DataBuffer> dataBufferFlux = renderer.render(route.getTemplateHTML(), updatedSession);
+                final String oldHTML = updatedSession.getLastRenderedHTML();
+                final String newHtml = FluxUtils.dataBufferFluxToString(dataBufferFlux);
+                updatedSession.setLastRenderedHTML(newHtml);
+                sessionMemoryRepository.store(updatedSession);
 
-            //run diff engine old HTML vs new
-            updatedSession.getSink().push(mergeDiffs(diffEngine.calculate(oldHTML, newHtml), passThroughAttributes));
-            updatedSession.setDepth(0);
+                //run diff engine old HTML vs new
+                updatedSession.getSink().push(mergeDiffs(diffEngine.calculate(oldHTML, newHtml), passThroughAttributes));
+                updatedSession.setDepth(0);
+            }
         });
 
         return session.getSink().asFlux();
     }
+
+    @Autowired
+    FileUploadService service;
+
+    @PreAuthorize("hasRole('USER')")
+    @MessageMapping("file.upload")
+    public Flux<UploadStatus> upload(@Headers Map<String, Object> metadata, @Payload Flux<DataBuffer> content) throws IOException {
+        var fileName = metadata.get(UploadConstants.FILE_NAME);
+        var fileExtn = metadata.get(UploadConstants.FILE_EXTN);
+        var path = Paths.get(fileName + "." + fileExtn);
+        return Flux.concat(service.uploadFile(path, content), Mono.just(UploadStatus.COMPLETED))
+                .onErrorReturn(UploadStatus.FAILED);
+
+    }
+
 }

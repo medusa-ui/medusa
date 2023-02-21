@@ -37,6 +37,9 @@ class SocketHandlerTest {
     private ActionHandler actionHandler;
 
     @Mock
+    private FileUploadHandler fileUploadHandler;
+
+    @Mock
     private Renderer renderer;
 
     @Mock
@@ -45,7 +48,7 @@ class SocketHandlerTest {
     @BeforeEach
     public void setup() {
         MockitoAnnotations.openMocks(this);
-        socketHandler = new SocketHandler(sessionMemoryRepository, actionHandler, renderer, false);
+        socketHandler = new SocketHandler(sessionMemoryRepository, actionHandler, fileUploadHandler, renderer, false);
     }
 
     @Test

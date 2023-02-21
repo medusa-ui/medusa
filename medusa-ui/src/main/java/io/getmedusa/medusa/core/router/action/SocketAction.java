@@ -7,6 +7,7 @@ public class SocketAction {
 
     private String fragment;
     private String action;
+    private FileUploadMeta fileMeta;
     private Map<String, Object> metadata;
 
     public String getFragment() {
@@ -31,5 +32,13 @@ public class SocketAction {
 
     public void setMetadata(Map<String, Object> metadata) {
         this.metadata = metadata;
+    }
+
+    public FileUploadMeta getFileMeta() {
+        return fileMeta;
+    }
+
+    public void setFileMeta(FileUploadMeta fileMeta) {
+        this.fileMeta = fileMeta;
     }
 }

@@ -24,6 +24,8 @@ public class Session {
     private boolean matched;
     private boolean initialRender = true;
 
+    private List<String> pendingFileUploads = null; //TODO this is used upon session breaking to clean up any in-memory file uploads
+
     private int depth;
     @JsonIgnore
     private final SocketSink sink = new SocketSink();
@@ -187,5 +189,13 @@ public class Session {
 
     public String getPassword() {
         return password;
+    }
+
+    public List<String> getPendingFileUploads() {
+        return pendingFileUploads;
+    }
+
+    public void setPendingFileUploads(List<String> pendingFileUploads) {
+        this.pendingFileUploads = pendingFileUploads;
     }
 }
