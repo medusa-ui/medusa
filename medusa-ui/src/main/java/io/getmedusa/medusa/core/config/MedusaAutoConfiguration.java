@@ -7,7 +7,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 /**
- * This is autoconfiguration that gets called by /META-INF/spring.factories. <br/>
+ * This is autoconfiguration that gets called by /META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports. <br/>
  * It simply ensures the beans defined in the medusa library are component scanned
  */
 @Configuration
