@@ -9,6 +9,8 @@ import java.util.UUID;
 
 public final class RandomUtils {
 
+    public static final String ALGORITHM = "SHA3-256";
+
     private RandomUtils() {}
 
     public static String generateId() {
@@ -27,7 +29,7 @@ public final class RandomUtils {
     }
 
     private static String createSHAHash(final String input) throws NoSuchAlgorithmException {
-        MessageDigest md = MessageDigest.getInstance("SHA-256");
+        MessageDigest md = MessageDigest.getInstance(ALGORITHM);
         byte[] messageDigest =  md.digest(input.getBytes(StandardCharsets.UTF_8));
         return convertToHex(messageDigest);
     }
