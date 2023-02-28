@@ -9,6 +9,7 @@ public class FileUploadMeta {
     private String method;
     private String fileId;
     private byte[] chunk;
+    private double percentage;
 
     public String getsAct() {
         return sAct;
@@ -64,5 +65,26 @@ public class FileUploadMeta {
 
     public void setChunk(byte[] chunk) {
         this.chunk = chunk;
+    }
+
+    public double getPercentage() {
+        return percentage;
+    }
+
+    public void setPercentage(double percentage) {
+        this.percentage = percentage;
+    }
+
+    @Override
+    public String toString() {
+        return "FileUploadMeta{" +
+                "sAct='" + sAct + '\'' +
+                ((fileName != null) ? ", fileName='" + fileName + '\'' : "") +
+                ((mimeType != null) ? ", mimeType='" + mimeType + '\'' : "") +
+                ((size != 0) ? ", size='" + size + '\'' : "") +
+                ((method != null) ? ", method='" + method + '\'' : "") +
+                ((fileId != null) ? ", fileId='" + fileId + '\'' : "") +
+                ((percentage != 0) ? ", percentage='" + percentage + '\'' : "") +
+                '}';
     }
 }

@@ -96,7 +96,7 @@ async function fileToByteArray(file, method) {
             while(expected_amount_of_chunks !== chunk_index) {
                 const chunk = new Uint8Array(arrayBuffer.slice(index, index+chunk_size));
                 index += chunk_size;
-                sendFileChunk(fileID, [].slice.call(chunk));
+                sendFileChunk(fileID, [].slice.call(chunk), (chunk_index/expected_amount_of_chunks)*100);
                 chunk_index++;
             }
             sendFileCompletion(fileID, method);
@@ -112,18 +112,20 @@ function sendFileStart(file, method) {
             "fileName": file.name,
             "mimeType": file.type,
             "size": file.size,
-            "fileId": fileId
+            "fileId": fileId,
+            "method": method
         }
     });
     return fileId;
 }
 
-function sendFileChunk(fileId, chunk) {
+function sendFileChunk(fileId, chunk, percentage) {
     sendMessage({
         "fileMeta" : {
             "sAct": "upload_chunk",
             "fileId": fileId,
-            "chunk": chunk
+            "chunk": chunk,
+            "percentage": percentage
         }
     });
 }

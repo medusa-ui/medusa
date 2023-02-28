@@ -7,7 +7,7 @@
 <body>
 
 <h1>Upload</h1>
-
+<p th:text="${percentage}"></p>
 <input type="file" id="myFile" name="filename"> <br>
 <button id="upload" onclick="_M.uploadFileToMethod(document.getElementById('myFile').files[0], 'uploadFileMethod(#byteBuffer)')">Upload via RSocket</button>
 <!--button id="upload2" onclick="parseFile(document.getElementById('myFile').files[0])">Read file</button-->

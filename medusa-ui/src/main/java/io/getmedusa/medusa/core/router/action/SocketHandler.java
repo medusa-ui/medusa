@@ -8,12 +8,8 @@ import io.getmedusa.medusa.core.memory.SessionMemoryRepository;
 import io.getmedusa.medusa.core.render.Renderer;
 import io.getmedusa.medusa.core.router.request.Route;
 import io.getmedusa.medusa.core.session.Session;
-import io.getmedusa.medusa.core.session.upload.FileUploadService;
-import io.getmedusa.medusa.core.session.upload.UploadConstants;
-import io.getmedusa.medusa.core.session.upload.UploadStatus;
 import io.getmedusa.medusa.core.util.AttributeUtils;
 import io.getmedusa.medusa.core.util.FluxUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
@@ -23,10 +19,7 @@ import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
 
-import java.io.IOException;
-import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -71,10 +64,8 @@ public class SocketHandler {
         final Session session = sessionMemoryRepository.retrieve(sessionId, route);
         session.setInitialRender(false);
 
-        request.onErrorReturn(new SocketAction()).subscribe(r -> {
-            if(FileUploadHandler.isUploadRelated(r)) {
-                fileUploadHandler.execute(r, route, session);
-            } else {
+        request.onErrorReturn(new SocketAction()).map(r -> handleFileUploadIfRelated(r, session, route)).subscribe(r -> {
+            if(!FileUploadHandler.isUploadRelated(r)) {
                 //execute action and combine attributes
                 Session updatedSession = actionHandler.executeAndMerge(r, route, session);
 
@@ -98,18 +89,20 @@ public class SocketHandler {
         return session.getSink().asFlux();
     }
 
-    @Autowired
-    FileUploadService service;
-
-    @PreAuthorize("hasRole('USER')")
-    @MessageMapping("file.upload")
-    public Flux<UploadStatus> upload(@Headers Map<String, Object> metadata, @Payload Flux<DataBuffer> content) throws IOException {
-        var fileName = metadata.get(UploadConstants.FILE_NAME);
-        var fileExtn = metadata.get(UploadConstants.FILE_EXTN);
-        var path = Paths.get(fileName + "." + fileExtn);
-        return Flux.concat(service.uploadFile(path, content), Mono.just(UploadStatus.COMPLETED))
-                .onErrorReturn(UploadStatus.FAILED);
-
+    private SocketAction handleFileUploadIfRelated(SocketAction r, Session session, Route route) {
+        if(FileUploadHandler.isUploadRelated(r)) {
+            final FileUploadMeta fileMeta = r.getFileMeta();
+            final String fileId = fileMeta.getFileId();
+            if("upload_start".equals(fileMeta.getsAct())) {
+                session.getPendingFileUploads().put(fileId, fileMeta);
+            } else if("upload_complete".equals(fileMeta.getsAct())) {
+                session.getPendingFileUploads().remove(fileId);
+            } else {
+                final FileUploadMeta originalMetadata = session.getPendingFileUploads().get(fileId);
+                UploadableUI bean = (UploadableUI) route.getController();
+                bean.uploadChunk(DataChunk.from(fileMeta, originalMetadata), session);
+            }
+        }
+        return r;
     }
-
 }

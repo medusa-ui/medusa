@@ -7,7 +7,6 @@ import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -22,31 +21,7 @@ public class FileUploadHandler {
 
     Map<String, FileUploadWrapper> map = new HashMap<>();
 
-    public void execute(SocketAction socketAction, Route route, Session session) {
-        final FileUploadMeta fileMeta = socketAction.getFileMeta();
-        switch (fileMeta.getsAct()) {
-            case "upload_start" -> uploadStart(fileMeta, route, session);
-            case "upload_chunk" -> uploadChunk(fileMeta, session);
-            case "upload_complete" -> uploadComplete(fileMeta, route, session);
-            default -> throw new IllegalStateException("Unexpected value: " + fileMeta.getsAct());
-        }
-    }
-
-    private void uploadStart(FileUploadMeta fileMeta, Route route, Session session) {
-        if(null == session.getPendingFileUploads()) {
-            session.setPendingFileUploads(new ArrayList<>());
-        }
-
-        session.getPendingFileUploads().add(fileMeta.getFileId());
-        map.put(fileMeta.getFileId(), new FileUploadWrapper(fileMeta));
-    }
-
-    private void uploadChunk(FileUploadMeta fileMeta, Session session) {
-        map.get(fileMeta.getFileId()).add(fileMeta.getChunk());
-    }
-
     private void uploadComplete(FileUploadMeta fileMeta, Route route, Session session) {
-
         session.getPendingFileUploads().remove(fileMeta.getFileId());
         if(session.getPendingFileUploads().isEmpty()) {
             session.setPendingFileUploads(null);

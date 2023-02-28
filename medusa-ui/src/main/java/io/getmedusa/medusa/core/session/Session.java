@@ -3,6 +3,7 @@ package io.getmedusa.medusa.core.session;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.getmedusa.medusa.core.attributes.Attribute;
 import io.getmedusa.medusa.core.attributes.StandardAttributeKeys;
+import io.getmedusa.medusa.core.router.action.FileUploadMeta;
 import io.getmedusa.medusa.core.router.action.SocketSink;
 import io.getmedusa.medusa.core.router.request.Route;
 import io.getmedusa.medusa.core.util.AttributeUtils;
@@ -24,7 +25,7 @@ public class Session {
     private boolean matched;
     private boolean initialRender = true;
 
-    private List<String> pendingFileUploads = null; //TODO this is used upon session breaking to clean up any in-memory file uploads
+    private Map<String, FileUploadMeta> pendingFileUploads = new HashMap<>();
 
     private int depth;
     @JsonIgnore
@@ -191,11 +192,11 @@ public class Session {
         return password;
     }
 
-    public List<String> getPendingFileUploads() {
+    public Map<String, FileUploadMeta> getPendingFileUploads() {
         return pendingFileUploads;
     }
 
-    public void setPendingFileUploads(List<String> pendingFileUploads) {
+    public void setPendingFileUploads(Map<String, FileUploadMeta> pendingFileUploads) {
         this.pendingFileUploads = pendingFileUploads;
     }
 }
