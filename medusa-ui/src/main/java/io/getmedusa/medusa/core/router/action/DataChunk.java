@@ -11,6 +11,9 @@ public class DataChunk {
     public static DataChunk from(FileUploadMeta chunkMetaData, FileUploadMeta originalMetadata) {
         DataChunk d = new DataChunk();
         d.chunk = chunkMetaData.getChunk();
+        if(d.chunk == null) {
+            d.chunk = new byte[0];
+        }
         d.completion = chunkMetaData.getPercentage();
         d.fileId = originalMetadata.getFileId();
         d.fileName = originalMetadata.getFileName();

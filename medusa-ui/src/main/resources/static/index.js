@@ -77,31 +77,31 @@ Medusa.prototype.uploadFileToMethod = function (file, method) {
 };
 
 async function fileToByteArray(file, method) {
-    const reader = new FileReader();
 
-    reader.readAsArrayBuffer(file); //this takes a second, I/O is slow; essentially locating file on HD and sending it to the browser
-
+    const expected_amount_of_chunks = Math.ceil(file.size / CHUNK_SIZE);
     const fileID = sendFileStart(file, method);
+    readFileChunk(file, fileID, method, expected_amount_of_chunks, 0);
 
-    reader.onloadend = (evt) => {
-        if (evt.target.readyState === FileReader.DONE) {
-            //console.log("Local file found. Done doing local I/O");
-            let arrayBuffer = evt.target.result;
-            //we probably don't want to send this to the server per byte, but we can 'chunk' these together in 2kb blocks
-            const chunk_size = 2000;
-            //expected amount of chunks
-            const expected_amount_of_chunks = Math.ceil(arrayBuffer.byteLength / chunk_size);
-            let chunk_index = 0;
-            let index = 0;
-            while(expected_amount_of_chunks !== chunk_index) {
-                const chunk = new Uint8Array(arrayBuffer.slice(index, index+chunk_size));
-                index += chunk_size;
-                sendFileChunk(fileID, [].slice.call(chunk), (chunk_index/expected_amount_of_chunks)*100);
-                chunk_index++;
-            }
+}
+
+const CHUNK_SIZE = 2000;
+let offset = 0;
+
+function readFileChunk(file, fileID, method, expected_amount_of_chunks, index) {
+    const reader = new FileReader();
+    const blob = file.slice(offset, offset + CHUNK_SIZE);
+    reader.readAsArrayBuffer(blob);
+    reader.onload = function(e) {
+
+        sendFileChunk(fileID, [].slice.call(new Uint8Array(e.target.result)), (index/expected_amount_of_chunks)*100);
+
+        offset += CHUNK_SIZE;
+        if (offset < file.size) {
+            readFileChunk(file, fileID, method, expected_amount_of_chunks, ++index);
+        } else {
             sendFileCompletion(fileID, method);
         }
-    }
+    };
 }
 
 function sendFileStart(file, method) {

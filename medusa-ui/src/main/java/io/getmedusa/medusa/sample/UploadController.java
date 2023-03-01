@@ -30,7 +30,7 @@ public class UploadController implements UploadableUI {
     public void uploadChunk(DataChunk dataChunk, Session session) {
         System.out.println(dataChunk.getCompletion() + " :: " + dataChunk.getChunk().length);
         final double lastPercentage = Double.parseDouble(session.getAttribute("percentage").toString());
-        if((dataChunk.getCompletion() - lastPercentage) > 1D) {
+        if((dataChunk.getCompletion() - lastPercentage) > 0.5D) {
             serverToClient.sendAttributesToSessionIDs($$("percentage", dataChunk.getCompletion()), Collections.singletonList(session.getId()));
         }
     }

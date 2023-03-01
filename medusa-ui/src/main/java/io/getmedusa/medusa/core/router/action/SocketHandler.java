@@ -95,12 +95,20 @@ public class SocketHandler {
             final String fileId = fileMeta.getFileId();
             if("upload_start".equals(fileMeta.getsAct())) {
                 session.getPendingFileUploads().put(fileId, fileMeta);
-            } else if("upload_complete".equals(fileMeta.getsAct())) {
-                session.getPendingFileUploads().remove(fileId);
             } else {
                 final FileUploadMeta originalMetadata = session.getPendingFileUploads().get(fileId);
                 UploadableUI bean = (UploadableUI) route.getController();
+
+                final boolean uploadCompleted = "upload_complete".equals(fileMeta.getsAct());
+                if(uploadCompleted) {
+                    fileMeta.setPercentage(100);
+                }
+
                 bean.uploadChunk(DataChunk.from(fileMeta, originalMetadata), session);
+
+                if(uploadCompleted) {
+                    session.getPendingFileUploads().remove(fileId);
+                }
             }
         }
         return r;
