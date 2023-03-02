@@ -10,8 +10,13 @@
 <p th:text="${percentage}"></p>
 <input type="file" id="myFile" name="filename"> <br>
 <button id="upload" onclick="_M.uploadFileToMethod(document.getElementById('myFile').files[0], 'uploadFileMethod(#byteBuffer)')">Upload via RSocket</button>
+
+<button m:upload="myFile">Upload via <code>m:upload</code></button>
+
 <!--button id="upload2" onclick="parseFile(document.getElementById('myFile').files[0])">Read file</button-->
 <script>
+    /*
+
     function parseFile(file) {
         new Promise(function(resolve, reject) {
             try{
@@ -69,6 +74,8 @@
     function sendFileCompletion(fileId) {
         console.log("File upload completed from a local perspective:" + fileId);
     }
+
+    */
 </script>
 </body>
 </html>
