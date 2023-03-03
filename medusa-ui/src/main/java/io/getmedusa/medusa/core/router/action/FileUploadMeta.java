@@ -6,7 +6,6 @@ public class FileUploadMeta {
     private String fileName;
     private String mimeType;
     private long size;
-    private String method;
     private String fileId;
     private byte[] chunk;
     private double percentage;
@@ -43,14 +42,6 @@ public class FileUploadMeta {
         this.size = size;
     }
 
-    public String getMethod() {
-        return method;
-    }
-
-    public void setMethod(String method) {
-        this.method = method;
-    }
-
     public String getFileId() {
         return fileId;
     }
@@ -82,7 +73,6 @@ public class FileUploadMeta {
                 ((fileName != null) ? ", fileName='" + fileName + '\'' : "") +
                 ((mimeType != null) ? ", mimeType='" + mimeType + '\'' : "") +
                 ((size != 0) ? ", size='" + size + '\'' : "") +
-                ((method != null) ? ", method='" + method + '\'' : "") +
                 ((fileId != null) ? ", fileId='" + fileId + '\'' : "") +
                 ((percentage != 0) ? ", percentage='" + percentage + '\'' : "") +
                 '}';

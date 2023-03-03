@@ -67,28 +67,27 @@ document.addEventListener('keydown', (event) => {
 }, false);
 
 
-Medusa.prototype.uploadFileToMethod = function (file, method) {
+Medusa.prototype.uploadFileToMethod = function (file) {
     new Promise(function (resolve, reject) {
         try {
-            resolve(fileToByteArray(file, method));
+            resolve(fileToByteArray(file));
         } catch (e) {
             reject(e);
         }
     }).catch(e => new Error(e));
 };
 
-async function fileToByteArray(file, method) {
-
+async function fileToByteArray(file) {
     const expected_amount_of_chunks = Math.ceil(file.size / CHUNK_SIZE);
-    const fileID = sendFileStart(file, method);
-    readFileChunk(file, fileID, method, expected_amount_of_chunks, 0);
+    const fileID = sendFileStart(file);
+    readFileChunk(file, fileID, expected_amount_of_chunks, 0);
 
 }
 
 const CHUNK_SIZE = 2000;
 let offset = 0;
 
-function readFileChunk(file, fileID, method, expected_amount_of_chunks, index) {
+function readFileChunk(file, fileID, expected_amount_of_chunks, index) {
     const reader = new FileReader();
     const blob = file.slice(offset, offset + CHUNK_SIZE);
     reader.readAsArrayBuffer(blob);
@@ -98,14 +97,14 @@ function readFileChunk(file, fileID, method, expected_amount_of_chunks, index) {
 
         offset += CHUNK_SIZE;
         if (offset < file.size) {
-            readFileChunk(file, fileID, method, expected_amount_of_chunks, ++index);
+            readFileChunk(file, fileID, expected_amount_of_chunks, ++index);
         } else {
-            sendFileCompletion(fileID, method);
+            sendFileCompletion(fileID);
         }
     };
 }
 
-function sendFileStart(file, method) {
+function sendFileStart(file) {
     const fileId = crypto.randomUUID();
     sendMessage({
         "fileMeta" : {
@@ -113,8 +112,7 @@ function sendFileStart(file, method) {
             "fileName": file.name,
             "mimeType": file.type,
             "size": file.size,
-            "fileId": fileId,
-            "method": method
+            "fileId": fileId
         }
     });
     return fileId;
@@ -131,16 +129,16 @@ function sendFileChunk(fileId, chunk, percentage) {
     });
 }
 
-function sendFileCompletion(fileId, method) {
+function sendFileCompletion(fileId) {
     if(typeof fileId !== "undefined") {
         console.log("File upload completed from a local perspective:" + fileId);
         sendMessage({
             "fileMeta" : {
                 "sAct": "upload_complete",
-                "fileId": fileId,
-                "method": method
+                "fileId": fileId
             }
         });
+        offset = 0;
         return fileId;
     }
 }
