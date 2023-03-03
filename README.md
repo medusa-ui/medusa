@@ -11,12 +11,7 @@ Pages are simply written in HTML and enhanced with Medusa expressions to allow f
 <dependency>
     <groupId>io.getmedusa</groupId>
     <artifactId>medusa-ui</artifactId>
-    <version>0.9.2</version>
-</dependency>
-
-<dependency>
-  <groupId>org.springframework.boot</groupId>
-  <artifactId>spring-boot-starter-webflux</artifactId>
+    <version>0.9.3</version>
 </dependency>
 ```
 
