@@ -46,6 +46,7 @@ async function setupRouter() {
     });
     const rsocket = await connector.connect();
     stream = await buildStream(rsocket);
+    _M.wsP = undefined;
 }
 
 function sendMessage(payloadData) {

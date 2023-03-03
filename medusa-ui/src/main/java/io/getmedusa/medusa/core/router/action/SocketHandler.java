@@ -33,18 +33,15 @@ public class SocketHandler {
 
     private final SessionMemoryRepository sessionMemoryRepository;
     private final ActionHandler actionHandler;
-    private final FileUploadHandler fileUploadHandler;
     private final Renderer renderer;
     private final Engine diffEngine;
 
     public SocketHandler(SessionMemoryRepository sessionMemoryRepository,
                          ActionHandler actionHandler,
-                         FileUploadHandler fileUploadHandler,
                          Renderer renderer,
                          @Value("${medusa.allow-external-redirect:false}") boolean allowExternalRedirect){
         this.sessionMemoryRepository = sessionMemoryRepository;
         this.actionHandler = actionHandler;
-        this.fileUploadHandler = fileUploadHandler;
         this.renderer = renderer;
         this.diffEngine = new Engine();
         AttributeUtils.setAllowExternalRedirect(allowExternalRedirect);
@@ -64,8 +61,10 @@ public class SocketHandler {
         final Session session = sessionMemoryRepository.retrieve(sessionId, route);
         session.setInitialRender(false);
 
-        request.onErrorReturn(new SocketAction()).map(r -> handleFileUploadIfRelated(r, session, route)).subscribe(r -> {
-            if(!FileUploadHandler.isUploadRelated(r)) {
+        request.onErrorReturn(new SocketAction())
+                .map(r -> handleFileUploadIfRelated(r, session, route))
+                .subscribe(r -> {
+            if(!isUploadRelated(r)) {
                 //execute action and combine attributes
                 Session updatedSession = actionHandler.executeAndMerge(r, route, session);
 
@@ -90,7 +89,7 @@ public class SocketHandler {
     }
 
     private SocketAction handleFileUploadIfRelated(SocketAction r, Session session, Route route) {
-        if(FileUploadHandler.isUploadRelated(r)) {
+        if(isUploadRelated(r)) {
             final FileUploadMeta fileMeta = r.getFileMeta();
             final String fileId = fileMeta.getFileId();
             if("upload_start".equals(fileMeta.getsAct())) {
@@ -112,5 +111,9 @@ public class SocketHandler {
             }
         }
         return r;
+    }
+
+    public boolean isUploadRelated(SocketAction action) {
+        return action.getFileMeta() != null;
     }
 }
