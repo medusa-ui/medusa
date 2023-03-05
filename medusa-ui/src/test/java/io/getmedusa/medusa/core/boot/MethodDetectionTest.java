@@ -63,7 +63,7 @@ class CorrectTestController {
     }
 }
 
-//@UIEventPage(path = "", file = "/pages/sample")
+@UIEventPage(path = "", file = "/pages/sample")
 class BadTestController {
 
     public List<Attribute> callable(String something, Session session ){
