@@ -67,14 +67,17 @@ document.addEventListener('keydown', (event) => {
 }, false);
 
 
-Medusa.prototype.uploadFileToMethod = function (file) {
-    new Promise(function (resolve, reject) {
-        try {
-            resolve(fileToByteArray(file));
-        } catch (e) {
-            reject(e);
-        }
-    }).catch(e => new Error(e));
+Medusa.prototype.uploadFileToMethod = function (files) {
+    for (const file of files) {
+        debugLog("upload" + file);
+        new Promise(function (resolve, reject) {
+            try {
+                resolve(fileToByteArray(file));
+            } catch (e) {
+                reject(e);
+            }
+        }).catch(e => new Error(e));
+    }
 };
 
 async function fileToByteArray(file) {
