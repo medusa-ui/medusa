@@ -67,7 +67,7 @@ document.addEventListener('keydown', (event) => {
 }, false);
 
 
-Medusa.prototype.uploadFileToMethod = function (files) {
+Medusa.prototype.uploadFileToMethod = async function (files) {
     for (const file of files) {
         debugLog("upload" + file);
         new Promise(function (resolve, reject) {
@@ -83,14 +83,13 @@ Medusa.prototype.uploadFileToMethod = function (files) {
 async function fileToByteArray(file) {
     const expected_amount_of_chunks = Math.ceil(file.size / CHUNK_SIZE);
     const fileID = sendFileStart(file);
-    readFileChunk(file, fileID, expected_amount_of_chunks, 0);
+    readFileChunk(file, fileID, expected_amount_of_chunks, 0, 0);
 
 }
 
 const CHUNK_SIZE = 2000;
-let offset = 0;
 
-function readFileChunk(file, fileID, expected_amount_of_chunks, index) {
+function readFileChunk(file, fileID, expected_amount_of_chunks, index, offset) {
     const reader = new FileReader();
     const blob = file.slice(offset, offset + CHUNK_SIZE);
     reader.readAsArrayBuffer(blob);
@@ -100,7 +99,7 @@ function readFileChunk(file, fileID, expected_amount_of_chunks, index) {
 
         offset += CHUNK_SIZE;
         if (offset < file.size) {
-            readFileChunk(file, fileID, expected_amount_of_chunks, ++index);
+            readFileChunk(file, fileID, expected_amount_of_chunks, ++index, offset);
         } else {
             sendFileCompletion(fileID);
         }
