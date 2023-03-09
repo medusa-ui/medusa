@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -49,6 +50,17 @@ public class ServerToClient {
         }
 
         sendAttributesToSession(attributes, sessionMemoryRepository.findSessionsByTag(sessionTagKey, sessionTagValue));
+    }
+
+    /**
+     * Send attribute updates from the server to the client via session. <br/>
+     * <i>It might be preferable to use sendAttributesToSessionTag() instead, for its ease of use.</i>
+     *
+     * @param attributes Collection of {@link Attribute} to send
+     * @param session Specific session to send to.
+     */
+    public void sendAttributesToSession(Collection<Attribute> attributes, Session session) {
+        sendAttributesToSessionIDs(attributes, Collections.singletonList(session.getId()));
     }
 
     /**
