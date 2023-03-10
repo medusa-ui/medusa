@@ -90,13 +90,17 @@ public class SocketHandler {
 
     private SocketAction handleFileUploadIfRelated(SocketAction r, Session session, Route route) {
         if(isUploadRelated(r)) {
+            final UploadableUI bean = (UploadableUI) route.getController();
             final FileUploadMeta fileMeta = r.getFileMeta();
             final String fileId = fileMeta.getFileId();
             if("upload_start".equals(fileMeta.getsAct())) {
                 session.getPendingFileUploads().put(fileId, fileMeta);
+            } else if("upload_cancel".equals(fileMeta.getsAct())) {
+                bean.onCancel(fileMeta,session);
+            } else if("upload_error".equals(fileMeta.getsAct())) {
+                bean.onError(fileMeta,session);
             } else {
                 final FileUploadMeta originalMetadata = session.getPendingFileUploads().get(fileId);
-                UploadableUI bean = (UploadableUI) route.getController();
 
                 final boolean uploadCompleted = "upload_complete".equals(fileMeta.getsAct());
                 if(uploadCompleted) {

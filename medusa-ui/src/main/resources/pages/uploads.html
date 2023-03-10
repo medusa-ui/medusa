@@ -11,7 +11,9 @@
 <input type="file" id="myFiles" name="filename" multiple accept="image/*"> <br>
 
 <button m:upload="myFiles">Upload picture via  <code>m:upload</code></button>
-
+<div th:if="${null != error}">
+    <p th:text="${error}" style="color: red"></p>
+</div>
 <div th:each="image: ${images}" style="flex-flow: row; max-width: 33%;">
     <img th:if="${image.completed}" th:src="${image.base64ImageString}" th:alt="${image.name}" width="33%"/>
     <p style="font-size: 3em; color: grey" th:if="${false == image.completed}" th:text="${image.progress + '%'}"></p>

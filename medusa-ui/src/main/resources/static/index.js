@@ -68,17 +68,31 @@ document.addEventListener('keydown', (event) => {
 
 
 Medusa.prototype.uploadFileToMethod = async function (files) {
-    for (const file of files) {
-        debugLog("upload" + file);
-        new Promise(function (resolve, reject) {
-            try {
-                resolve(fileToByteArray(file));
-            } catch (e) {
-                reject(e);
-            }
-        }).catch(e => new Error(e));
+    if( validateFiles(files) ) {   //TODO allow configuration of client-side validation per page?
+        for (const file of files) {
+            debugLog("upload: " + file.name);
+            new Promise(function (resolve, reject) {
+                try {
+                    resolve(fileToByteArray(file));
+                } catch (e) {
+                    reject(e);
+                }
+            }).catch(e => new Error(e));
+        }
     }
 };
+
+const validateFiles = function (files) {
+    for (const file of files) {
+        if(file.size > MAX_FILE_SIZE) {
+            let message = "size > " + MAX_FILE_SIZE;
+            sendFileError(file,message);
+            debugLog(message + " for file: " + file.name + " with size: " + file.size)
+            return false; // fail fast
+        }
+    }
+    return true;
+}
 
 async function fileToByteArray(file) {
     const expected_amount_of_chunks = Math.ceil(file.size / CHUNK_SIZE);
@@ -87,7 +101,9 @@ async function fileToByteArray(file) {
 
 }
 
+/* TODO should be possible to set dynamically */
 const CHUNK_SIZE = 2000;
+const MAX_FILE_SIZE = 1048576; // 1MB
 
 function readFileChunk(file, fileID, expected_amount_of_chunks, index, offset) {
     const reader = new FileReader();
@@ -114,6 +130,36 @@ function sendFileStart(file) {
             "fileName": file.name,
             "mimeType": file.type,
             "size": file.size,
+            "fileId": fileId
+        }
+    });
+    return fileId;
+}
+
+function sendFileError(file, message) {
+    const fileId = crypto.randomUUID();
+    sendMessage({
+        "fileMeta" : {
+            "sAct": "upload_error",
+            "fileName": file.name,
+            "mimeType": file.type,
+            "size": file.size,
+            "message": message, //TODO maybe not needed
+            "fileId": fileId
+        }
+    });
+    return fileId;
+}
+
+function sendFileCancel(file, message) {
+    const fileId = crypto.randomUUID();
+    sendMessage({
+        "fileMeta" : {
+            "sAct": "upload_cancel",
+            "fileName": file.name,
+            "mimeType": file.type,
+            "size": file.size,
+            "message": message,
             "fileId": fileId
         }
     });

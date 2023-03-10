@@ -7,6 +7,7 @@ public class DataChunk {
     private String mimeType;
     private byte[] chunk;
     private double completion;
+    private long size;
 
     public static DataChunk from(FileUploadMeta chunkMetaData, FileUploadMeta originalMetadata) {
         DataChunk d = new DataChunk();
@@ -18,7 +19,12 @@ public class DataChunk {
         d.fileId = originalMetadata.getFileId();
         d.fileName = originalMetadata.getFileName();
         d.mimeType = originalMetadata.getMimeType();
+        d.size = originalMetadata.getSize();
         return d;
+    }
+
+    public long getSize() {
+        return size;
     }
 
     public String getFileId() {

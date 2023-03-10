@@ -4,6 +4,7 @@ import io.getmedusa.medusa.core.annotation.UIEventPage;
 import io.getmedusa.medusa.core.attributes.Attribute;
 import io.getmedusa.medusa.core.bidirectional.ServerToClient;
 import io.getmedusa.medusa.core.router.action.DataChunk;
+import io.getmedusa.medusa.core.router.action.FileUploadMeta;
 import io.getmedusa.medusa.core.router.action.UploadableUI;
 import io.getmedusa.medusa.core.session.Session;
 import org.slf4j.Logger;
@@ -27,6 +28,14 @@ public class UploadsController implements UploadableUI {
     }
     public List<Attribute> setupAttributes() {
         return $$("progress", new HashMap<String, Double>(), "images" , new ArrayList<SessionImage>());
+    }
+
+    @Override
+    public void onError(FileUploadMeta uploadMeta, Session session) {
+        String message = uploadMeta.getFileName() + " [" + uploadMeta.getSize() + "] is to big, message:" + uploadMeta.getMessage();
+        serverToClient.sendAttributesToSession($$("error", message), session);
+        // clear error after new action
+        // maybe there should be a serverToClient.sendAttributesToSessionOnce(....)
     }
 
     @Override
