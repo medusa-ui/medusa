@@ -2,7 +2,9 @@ package io.getmedusa.medusa.core.router.action;
 
 import io.getmedusa.diffengine.Engine;
 import io.getmedusa.diffengine.model.ServerSideDiff;
+import io.getmedusa.medusa.core.annotation.UIEventPageCallWrapper;
 import io.getmedusa.medusa.core.attributes.Attribute;
+import io.getmedusa.medusa.core.boot.RefDetection;
 import io.getmedusa.medusa.core.boot.RouteDetection;
 import io.getmedusa.medusa.core.memory.SessionMemoryRepository;
 import io.getmedusa.medusa.core.render.Renderer;
@@ -90,7 +92,19 @@ public class SocketHandler {
 
     private SocketAction handleFileUploadIfRelated(SocketAction r, Session session, Route route) {
         if(isUploadRelated(r)) {
-            final UploadableUI bean = (UploadableUI) route.getController();
+
+            final UploadableUI bean;
+            if(null != r.getFragment()) {
+                final UIEventPageCallWrapper beanByRef = RefDetection.INSTANCE.findBeanByRef(r.getFragment());
+                if(null != beanByRef) {
+                    bean = (UploadableUI) beanByRef.getController();
+                } else {
+                    bean = (UploadableUI) route.getController();
+                }
+            } else {
+                bean = (UploadableUI) route.getController();
+            }
+
             final FileUploadMeta fileMeta = r.getFileMeta();
             final String fileId = fileMeta.getFileId();
             if("upload_start".equals(fileMeta.getsAct())) {

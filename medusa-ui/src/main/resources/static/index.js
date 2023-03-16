@@ -7,6 +7,7 @@ const {
     WellKnownMimeType,
     encodeSimpleAuthMetadata,
 } = require("rsocket-composite-metadata");
+const {fragment} = require("./websocket");
 
 function Medusa() {}
 const _M = new Medusa();
@@ -67,13 +68,13 @@ document.addEventListener('keydown', (event) => {
 }, false);
 
 
-Medusa.prototype.uploadFileToMethod = async function (files) {
-    if( validateFiles(files) ) {   //TODO allow configuration of client-side validation per page?
+Medusa.prototype.uploadFileToMethod = async function (fragment, files) {
+    if( validateFiles(fragment, files) ) {   //TODO allow configuration of client-side validation per page?
         for (const file of files) {
             debugLog("upload: " + file.name);
             new Promise(function (resolve, reject) {
                 try {
-                    resolve(fileToByteArray(file));
+                    resolve(fileToByteArray(fragment, file));
                 } catch (e) {
                     reject(e);
                 }
@@ -82,11 +83,11 @@ Medusa.prototype.uploadFileToMethod = async function (files) {
     }
 };
 
-const validateFiles = function (files) {
+const validateFiles = function (fragment, files) {
     for (const file of files) {
         if(file.size > MAX_FILE_SIZE) {
             let message = "size > " + MAX_FILE_SIZE;
-            sendFileError(file,message);
+            sendFileError(fragment, file,message);
             debugLog(message + " for file: " + file.name + " with size: " + file.size)
             return false; // fail fast
         }
@@ -94,10 +95,10 @@ const validateFiles = function (files) {
     return true;
 }
 
-async function fileToByteArray(file) {
+async function fileToByteArray(fragment, file) {
     const expected_amount_of_chunks = Math.ceil(file.size / CHUNK_SIZE);
-    const fileID = sendFileStart(file);
-    readFileChunk(file, fileID, expected_amount_of_chunks, 0, 0);
+    const fileID = sendFileStart(fragment, file);
+    readFileChunk(fragment, file, fileID, expected_amount_of_chunks, 0, 0);
 
 }
 
@@ -105,26 +106,27 @@ async function fileToByteArray(file) {
 const CHUNK_SIZE = 2000;
 const MAX_FILE_SIZE = 1048576; // 1MB
 
-function readFileChunk(file, fileID, expected_amount_of_chunks, index, offset) {
+function readFileChunk(fragment, file, fileID, expected_amount_of_chunks, index, offset) {
     const reader = new FileReader();
     const blob = file.slice(offset, offset + CHUNK_SIZE);
     reader.readAsArrayBuffer(blob);
     reader.onload = function(e) {
 
-        sendFileChunk(fileID, [].slice.call(new Uint8Array(e.target.result)), (index/expected_amount_of_chunks)*100);
+        sendFileChunk(fragment, fileID, [].slice.call(new Uint8Array(e.target.result)), (index/expected_amount_of_chunks)*100);
 
         offset += CHUNK_SIZE;
         if (offset < file.size) {
-            readFileChunk(file, fileID, expected_amount_of_chunks, ++index, offset);
+            readFileChunk(fragment, file, fileID, expected_amount_of_chunks, ++index, offset);
         } else {
-            sendFileCompletion(fileID);
+            sendFileCompletion(fragment, fileID);
         }
     };
 }
 
-function sendFileStart(file) {
+function sendFileStart(fragment, file) {
     const fileId = crypto.randomUUID();
     sendMessage({
+        "fragment" : fragment,
         "fileMeta" : {
             "sAct": "upload_start",
             "fileName": file.name,
@@ -136,9 +138,10 @@ function sendFileStart(file) {
     return fileId;
 }
 
-function sendFileError(file, message) {
+function sendFileError(fragment, file, message) {
     const fileId = crypto.randomUUID();
     sendMessage({
+        "fragment" : fragment,
         "fileMeta" : {
             "sAct": "upload_error",
             "fileName": file.name,
@@ -151,9 +154,10 @@ function sendFileError(file, message) {
     return fileId;
 }
 
-function sendFileCancel(file, message) {
+function sendFileCancel(fragment, file, message) { //TODO I dont think we ever send this manually, this happens if the socket connection dies
     const fileId = crypto.randomUUID();
     sendMessage({
+        "fragment" : fragment,
         "fileMeta" : {
             "sAct": "upload_cancel",
             "fileName": file.name,
@@ -166,8 +170,9 @@ function sendFileCancel(file, message) {
     return fileId;
 }
 
-function sendFileChunk(fileId, chunk, percentage) {
+function sendFileChunk(fragment, fileId, chunk, percentage) {
     sendMessage({
+        "fragment" : fragment,
         "fileMeta" : {
             "sAct": "upload_chunk",
             "fileId": fileId,
@@ -177,10 +182,11 @@ function sendFileChunk(fileId, chunk, percentage) {
     });
 }
 
-function sendFileCompletion(fileId) {
+function sendFileCompletion(fragment, fileId) {
     if(typeof fileId !== "undefined") {
         console.log("File upload completed from a local perspective:" + fileId);
         sendMessage({
+            "fragment" : fragment,
             "fileMeta" : {
                 "sAct": "upload_complete",
                 "fileId": fileId
