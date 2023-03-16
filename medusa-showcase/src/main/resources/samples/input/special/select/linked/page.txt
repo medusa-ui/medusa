@@ -1,0 +1,27 @@
+<section>
+    <p> Select your drink
+
+    <!-- with :{selector} you can refer to 'this' as being the Element itself -->
+    <select m:change="drinks(:{this})" style="width: 156px">
+        <option th:each="type: ${drinksType}"
+                th:text="${type}"
+                th:selected="${type} == ${selectedType}">
+            Drink Type
+        </option>
+    </select>
+
+    <select m:change="order(:{this})" style="width: 156px">
+        <option th:each="drinkType: ${drinksList}"
+                th:text="${drinkType}"
+                th:selected="${drinkType} == ${type}">
+            Selected Drink
+        </option>
+    </select>
+    </p>
+
+    <p> Your Order:</p>
+
+    <ul>
+        <li th:each="item:${order}" th:text="${item}"></li>
+    </ul>
+</section>

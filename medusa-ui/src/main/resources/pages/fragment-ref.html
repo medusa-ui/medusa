@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:m="http://www.getmedusa.io/">
+<head>
+    <meta charset="UTF-8">
+    <title>Pretend this is another server</title>
+</head>
+<body>
+
+<div m:ref="first-fragment">
+    <p style="color:blue; padding-left: 3em;">This is the first fragment. It includes another fragment.</p>
+
+    <p style="padding-left: 3em;">Second fragment (in first fragment) starts here:</p>
+
+    <m:fragment service="self" ref="second-fragment">
+        <p style="color:red; padding-left: 5em;">Fallback info for second m:fragment, manual self</p>
+    </m:fragment>
+
+    <p style="padding-left: 3em;">Second fragment ends here</p>
+</div>
+
+<section m:ref="second-fragment">
+    <p style="color:green; padding-left: 5em;">This is the second fragment content. This means the fragment logic is complete and correct.</p>
+    <!-- TODO: RECURSE INTO SELF TO TEST LIMIT -->
+
+    <m:fragment service="self" ref="third-fragment">
+        <p style="color:red; padding-left: 7em;">Fallback info for third m:fragment, manual self</p>
+    </m:fragment>
+</section>
+
+<section m:ref="third-fragment">
+    <p style="color:green; padding-left: 7em;">This is the third fragment content. This means the fragment logic is complete and correct.</p>
+
+    <!--m:fragment service="self" ref="first-fragment">
+        <p style="color:red; padding-left: 7em;">Fallback info for fourth (recursive source) m:fragment, manual self</p>
+    </m:fragment-->
+</section>
+
+</body>
+</html>

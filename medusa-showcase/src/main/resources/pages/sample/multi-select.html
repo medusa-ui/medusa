@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:m="https://www.getmedusa.io/medusa.xsd">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medusa - Component detail</title>
+</head>
+<body>
+
+<div id="container" m:ref="multi-select">
+    <section id="hero">
+        <h1>Submit multi-select</h1>
+
+        <p class="lead">An example of a simple form with a multi-select that gets submit as map or mapped object on the Controller side</p>
+
+        <a id="back-to-overview" href="/">Back to overview</a>
+    </section>
+
+    <h2>Form submit as mapped object</h2>
+    <p>Automatically map (multiple) selected options as List</p>
+
+    <section class="example">
+
+        <div style="display: flex">
+
+            <form m:submit="favoriteFruits(:{form})">
+                <label for="m_select">Select your favorite fruit(s)</label>
+                <br>
+                <select id="m_select"
+                        name="favorites"
+                        multiple
+                        th:size="${#lists.size(fruits)}" style="overflow-y: hidden;" >
+                    <option
+                            th:each="fruit : ${fruits}"
+                            th:value="${fruit}"
+                            th:text="${fruit}" style="color:#6600ff; font-size: 1rem;">a fruit</option>
+                </select>
+                <br>
+                <input id="m_submit" type="submit" value="Submit">
+            </form>
+
+            <div class="example-result" style="font-size: 1.25rem;">
+                <ul>
+                    <li th:each="fav : ${favoritesMap}"  th:text="${fav}">a favorite fruit</li>
+                </ul>
+            </div>
+        </div>
+
+        <footer th:text="${version}"></footer>
+    </section>
+
+    <section class="client">
+        <h3>Client</h3>
+        <pre><code class="language-html hljs" th:text="${clientCode[0]}"></code></pre>
+    </section>
+
+    <section class="server">
+        <h3>Server</h3>
+        <pre><code class="language-java hljs" th:text="${serverCode[0]}"></code></pre>
+    </section>
+
+    <h2>Multi select via checkboxes</h2>
+    <p>Automatically map multiple (checked) values to a POJO. The name of the input should correspond with the POJO's field name</p>
+
+    <section class="example">
+
+        <div style="display: flex">
+            <form m:submit="favorites(:{form})">
+                <label for="m_select">Select your favorite fruit(s)</label>
+                <br>
+                <div th:each="fruit : ${fruits}">
+                    <input type="checkbox" name="favoriteFruits"
+                           th:value="${fruit}" th:id="${'check-' + fruit}"/>
+                    <label th:text="${fruit}" th:for="${'check-' + fruit}" style="display: inline-block; cursor: pointer;"></label>
+                </div>
+                <br>
+                <input id="submit_form" type="submit" value="Submit">
+            </form>
+
+            <div class="example-result" style="font-size: 1.25rem;">
+                <ul>
+                    <li th:each="fav : ${favoritesForm}"  th:text="${fav}">a favorite fruit</li>
+                </ul>
+            </div>
+        </div>
+
+        <footer th:text="${version}"></footer>
+    </section>
+
+    <section class="client">
+        <h3>Client</h3>
+        <pre><code class="language-html hljs" th:text="${clientCode[1]}"></code></pre>
+    </section>
+
+    <section class="server">
+        <h3>Server</h3>
+        <pre><code class="language-java hljs" th:text="${serverCode[1]}"></code></pre>
+    </section>
+
+</div>
+</body>
+</html>

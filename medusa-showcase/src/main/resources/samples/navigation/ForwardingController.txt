@@ -1,0 +1,16 @@
+import io.getmedusa.medusa.core.annotation.UIEventPage;
+import io.getmedusa.medusa.core.attributes.Attribute;
+import io.getmedusa.medusa.core.attributes.StandardAttributeKeys;
+
+import java.util.List;
+
+@UIEventPage(path = "/detail/forwarding", file = "/pages/forwarding.html")
+public class ForwardingController {
+
+    public List<Attribute> forwardTo(String pathToForwardTo) {
+        return List.of(
+            new Attribute(StandardAttributeKeys.REDIRECT, "/detail/" + pathToForwardTo)
+        );
+    }
+
+}

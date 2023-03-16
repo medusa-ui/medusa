@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:m="https://www.getmedusa.io/medusa.xsd">
+<head>
+    <meta charset="UTF-8" />
+    <title>Hello world</title>
+    <style>
+        .loading {
+            display: inline-block;
+            position: relative;
+            width: 1em;
+            height: 1em;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            opacity: 0.6;
+        }
+        .loading span {
+            box-sizing: border-box;
+            display: block;
+            position: absolute;
+            width: 1em;
+            height: 1em;
+            border: 0.15em solid;
+            border-radius: 50%;
+            animation: loading-spin 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+            border-color: gray transparent transparent transparent;
+        }
+        .loading span:nth-child(1) {
+            animation-delay: -0.45s;
+        }
+        .loading span:nth-child(2) {
+            animation-delay: -0.3s;
+        }
+        .loading span:nth-child(3) {
+            animation-delay: -0.15s;
+        }
+        @keyframes loading-spin {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+        div#m-top-load-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            width: 100%;
+        }
+        .progress-line, .progress-line:before {
+            height: 3px;
+            width: 100%;
+            margin: 0;
+        }
+        .progress-line {
+            background-color: #7a00ff;
+            display: -webkit-flex;
+            display: flex;
+        }
+        .progress-line:before {
+            background-color: #f4abba;
+            content: '';
+            -webkit-animation: running-progress 2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+            animation: running-progress 2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+        }
+        @-webkit-keyframes running-progress {
+            0% { margin-left: 0px; margin-right: 100%; }
+            50% { margin-left: 25%; margin-right: 0%; }
+            100% { margin-left: 100%; margin-right: 0; }
+        }
+        @keyframes running-progress {
+            0% { margin-left: 0px; margin-right: 100%; }
+            50% { margin-left: 25%; margin-right: 0%; }
+            100% { margin-left: 100%; margin-right: 0; }
+        }
+
+        div#m-full-loader {
+            background: #0000006e;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            padding-top: 15%;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Loading</h1>
+
+<p>
+
+    <button m:click="loadingLogic()" m:loading-until="loading-done">Loading full page (default)</button>
+    <button m:click="loadingLogic()" m:loading-until="loading-done" m:loading-style="full">Loading full page (explicit)</button>
+    <button m:click="loadingLogic()" m:loading-until="loading-done" m:loading-style="top">Loading top</button>
+    <button m:click="loadingLogic()" m:loading-until="loading-done" m:loading-style="button">Loading button (TODO)</button>
+
+</p><p>
+
+
+<button>Clicking this starts a full page loader</button>
+
+
+</p>
+
+</body>
+</html>

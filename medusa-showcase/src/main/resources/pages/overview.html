@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:m="https://www.getmedusa.io/medusa.xsd">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Medusa - Component overview</title>
+    <link rel="stylesheet" href="/css/style-light.css" />
+    <link rel="stylesheet" href="/css/style-dark.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Karla:wght@300;500&display=swap" rel="stylesheet">
+</head>
+<body class="dark">
+
+<m:fragment ref="darkmode"></m:fragment>
+
+<div id="container">
+    <h1>Medusa UI component showcase</h1>
+
+    <p class="lead">
+        This library showcases a series of ready-to-use, bidirectional component examples you can immediately use in your next Java project.
+    </p>
+    <p>
+        Medusa is an open-source bidirectional micro-frontend framework built in Java, on top of
+        <a target="_blank" href="https://spring.io/reactive">Spring Reactive</a> and <a href="https://www.thymeleaf.org/">Thymeleaf</a>.
+        More details on the internal workings of the framework are provided in the
+        <a target="_blank" href="https://medusa-ui.github.io/documentation/docs/internals/at-startup-initialization">documentation</a>.
+    </p>
+    <p>
+        Our major goals are to dramatically close the distance between front-end and back-end,
+        remove the need for Javascript for standard usecases,
+        and use bi-directionality to provide an enhanced development and users experience.
+    </p>
+
+    <h2>Getting started</h2>
+
+    <p>
+        After <a href="/install">installing Medusa</a> in your app, you can just write Thymeleaf, extend it with Medusa tags,
+        and you'll see your components interacting directly with the controller. You only write Java and HTML.
+    </p>
+    <p>
+        To better illustrate the framework's capabilities and get you up and running faster,
+        we've listed up several common usecases and how to implement them in Medusa.
+        All examples are also available in the respective <a href="https://github.com/medusa-ui/medusa">GitHub</a> repository.
+    </p>
+
+    <section class="listing" th:each="categoryEntry : ${categoryMap}">
+        <section class="category" th:text="${categoryEntry.key}">Category name</section>
+
+        <ul class="listings">
+            <th:block  th:each="category : ${categoryEntry.value}">
+                <th:block th:if="${!category.comingSoon}">
+                    <li><a th:href="${'/detail/' + category.urlPart}" th:text="${category.label}">Label</a></li>
+                </th:block>
+
+                <th:block th:if="${category.comingSoon}">
+                    <li><a class="soon" th:text="${category.label}">Label</a> <span class="coming-soon">Coming soon</span></li>
+                </th:block>
+            </th:block>
+        </ul>
+    </section>
+</div>
+
+</body>
+</html>

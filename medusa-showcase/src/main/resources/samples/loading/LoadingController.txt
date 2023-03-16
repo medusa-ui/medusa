@@ -1,0 +1,14 @@
+import io.getmedusa.medusa.core.annotation.UIEventPage;
+import io.getmedusa.medusa.core.attributes.Attribute;
+import io.getmedusa.medusa.core.attributes.StandardAttributeKeys;
+
+import java.util.List;
+
+@UIEventPage(path = "/detail/loading", file = "/pages/loading.html")
+public class LoadingController {
+
+    public List<Attribute> loadingLogic() {
+        return List.of(new Attribute(StandardAttributeKeys.LOADING, "loading-done"));
+    }
+
+}

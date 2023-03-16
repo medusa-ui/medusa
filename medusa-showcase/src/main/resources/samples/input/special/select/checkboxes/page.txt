@@ -1,0 +1,20 @@
+<section>
+    <div style="display: flex">
+        <form m:submit="favorites(:{form})">
+            <label for="m_select">Select your favorite fruit(s)</label>
+            <br>
+            <div th:each="fruit : ${fruits}">
+                <input type="checkbox" name="favoriteFruits" th:value="${fruit}"/>
+                <label th:text="${fruit}"></label>
+            </div>
+            <br>
+            <input id="submit_form" type="submit" value="Submit">
+        </form>
+
+        <div class="example-result">
+            <ul>
+                <li th:each="fav : ${favoritesForm}"  th:text="${fav}">a fruit</li>
+            </ul>
+        </div>
+    </div>
+</section>

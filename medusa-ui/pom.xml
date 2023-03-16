@@ -4,38 +4,84 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>io.getmedusa</groupId>
 	<artifactId>medusa-ui</artifactId>
-	<version>0.3.10-SNAPSHOT</version>
+	<version>0.9.3-SNAPSHOT</version>
 	<name>medusa ui library</name>
-	<description>Serverside rendering framework</description>
+	<description>Medusa is an open-source bidirectional micro-frontend framework built in Java, on top of Spring Reactive and Thymeleaf.</description>
 
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.6.7</version>
-		<relativePath/> <!-- lookup parent from repository -->
+		<version>3.0.4</version>
+		<relativePath/>
+		<!-- lookup parent from repository -->
 	</parent>
 
 	<properties>
-		<java.version>17</java.version>
+		<java.version>19</java.version>
+		<diff-engine.version>0.0.4</diff-engine.version>
 	</properties>
 
 	<dependencies>
+
+		<dependency>
+			<groupId>io.projectreactor.tools</groupId>
+			<artifactId>blockhound</artifactId>
+			<version>1.0.7.RELEASE</version>
+			<scope>provided</scope>
+		</dependency>
+
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-webflux</artifactId>
-			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.webjars</groupId>
+			<artifactId>webjars-locator</artifactId>
+			<version>0.46</version>
+			<exclusions>
+				<exclusion>
+					<artifactId>commons-text</artifactId>
+					<groupId>org.apache.commons</groupId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-text</artifactId>
+			<version>1.10.0</version>
+		</dependency>
+
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-thymeleaf</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-rsocket</artifactId>
 		</dependency>
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-security</artifactId>
-			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-rsocket</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-messaging</artifactId>
 		</dependency>
 
 		<dependency>
 			<groupId>com.auth0</groupId>
 			<artifactId>java-jwt</artifactId>
-			<version>3.19.2</version>
+			<version>4.3.0</version>
 			<exclusions>
 				<exclusion>
 					<artifactId>jackson-databind</artifactId>
@@ -45,77 +91,21 @@
 		</dependency>
 
 		<dependency>
-			<groupId>org.jsoup</groupId>
-			<artifactId>jsoup</artifactId>
-			<version>1.15.1</version>
+			<groupId>io.getmedusa</groupId>
+			<artifactId>diff-engine</artifactId>
+			<version>${diff-engine.version}</version>
 		</dependency>
 
 		<dependency>
 			<groupId>com.github.ben-manes.caffeine</groupId>
 			<artifactId>caffeine</artifactId>
-			<version>3.1.1</version>
+			<version>3.1.5</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-configuration-processor</artifactId>
 			<optional>true</optional>
-		</dependency>
-
-		<!-- BLOCKHOUND - Testing to see if any blocking elements are in the code -->
-		<dependency>
-			<groupId>io.projectreactor</groupId>
-			<artifactId>reactor-tools</artifactId>
-			<version>3.4.18</version>
-		</dependency>
-
-		<dependency>
-			<groupId>io.projectreactor.tools</groupId>
-			<artifactId>blockhound</artifactId>
-			<version>1.0.6.RELEASE</version>
-		</dependency>
-
-		<!-- TEST DEPENDENCIES -->
-		<dependency>
-			<groupId>io.github.bonigarcia</groupId>
-			<artifactId>webdrivermanager</artifactId>
-			<version>5.2.0</version>
-			<scope>test</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>org.seleniumhq.selenium</groupId>
-			<artifactId>selenium-java</artifactId>
-			<version>4.1.4</version>
-			<scope>test</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>org.seleniumhq.selenium</groupId>
-			<artifactId>selenium-api</artifactId>
-			<version>4.1.4</version>
-			<scope>test</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>org.seleniumhq.selenium</groupId>
-			<artifactId>selenium-chrome-driver</artifactId>
-			<version>4.1.4</version>
-			<scope>test</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>org.seleniumhq.selenium</groupId>
-			<artifactId>selenium-remote-driver</artifactId>
-			<version>4.1.4</version>
-			<scope>test</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>io.github.bonigarcia</groupId>
-			<artifactId>selenium-jupiter</artifactId>
-			<version>4.1.0</version>
-			<scope>test</scope>
 		</dependency>
 
 		<dependency>
@@ -129,17 +119,49 @@
 			<artifactId>reactor-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+
+		<!-- USED FOR DEBUGGING -->
+		<dependency>
+			<groupId>io.projectreactor</groupId>
+			<artifactId>reactor-tools</artifactId>
+		</dependency>
+
 	</dependencies>
 
 	<build>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>3.3.0</version>
+				<configuration>
+					<excludes>
+						<exclude>**/static/node_modules/**</exclude>
+						<exclude>**/static/package-lock.json</exclude>
+						<exclude>**/static/package.json</exclude>
+						<exclude>**/static/index.js</exclude>
+						<exclude>**/static/*.bat</exclude>
+					</excludes>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.10.1</version>
+				<version>3.11.0</version>
 				<configuration>
 					<source>${java.version}</source>
 					<target>${java.version}</target>
+				</configuration>
+			</plugin>
+			<plugin>
+				<!-- run with mvn rewrite:run -->
+				<groupId>org.openrewrite.maven</groupId>
+				<artifactId>rewrite-maven-plugin</artifactId>
+				<version>4.41.1</version>
+				<configuration>
+					<activeRecipes>
+						<recipe>org.openrewrite.java.cleanup.CommonStaticAnalysis</recipe>
+					</activeRecipes>
 				</configuration>
 			</plugin>
 		</plugins>
@@ -199,13 +221,6 @@
 							<nexusUrl>https://s01.oss.sonatype.org/</nexusUrl>
 							<autoReleaseAfterClose>true</autoReleaseAfterClose>
 						</configuration>
-						<dependencies>
-							<dependency>
-								<groupId>com.thoughtworks.xstream</groupId>
-								<artifactId>xstream</artifactId>
-								<version>1.4.15</version> <!-- apparently this needs to be exactly 1.4.15 -->
-							</dependency>
-						</dependencies>
 					</plugin>
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>

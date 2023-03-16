@@ -5,6 +5,10 @@ updates:
     schedule:
       interval: "daily"
   - package-ecosystem: "maven"
-    directory: "/medusa-sample-implementation"
+    directory: "/medusa-showcase"
+    schedule:
+      interval: "daily"
+  - package-ecosystem: 'npm'
+    directory: "/medusa-ui/src/main/resources/static"
     schedule:
       interval: "daily"

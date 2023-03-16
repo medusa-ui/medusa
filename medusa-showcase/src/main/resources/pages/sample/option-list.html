@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:m="https://www.getmedusa.io/medusa.xsd">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medusa - Component detail</title>
+</head>
+<body>
+
+<div id="container" m:ref="option-list">
+    <section id="hero">
+        <h1>Select - Option List</h1>
+
+        <p class="lead">An example of a simple select that triggers an action on the Controller side.</p>
+
+        <a id="back-to-overview" href="/">Back to overview</a>
+    </section>
+
+    <section id="variations">
+        <h2>Basic Select - Option List</h2>
+        <p>The selected option is sent to the controller on a change event.
+            Since a bean is a singleton instance, storing a variable in the controller itself would mean it is shared across all users.
+            Instead, we can use the Session object to get the specific variables for the active user.</p>
+
+
+        <section class="example">
+            <p> I really like an Orange, but what is your favorite fruit?
+                <select name="favorite" id="select-fruit" m:change="favorite(:{#select-fruit})" >
+                    <option th:each="fruit: ${fruits}" th:text="${fruit}" th:selected="(${fruit} == ${favorite})"></option>
+                </select>
+            </p>
+            <p>Your favorite fruit is: <b id="favorite-fruit" th:text="${favorite}"></b></p>
+
+            <footer th:text="${version}"></footer>
+        </section>
+
+        <section class="client">
+            <h3>Client</h3>
+            <pre><code class="language-html hljs" th:text="${clientCode[0]}"></code></pre>
+        </section>
+
+        <section class="server">
+            <h3>Server</h3>
+            <pre><code class="language-java hljs" th:text="${serverCode[0]}"></code></pre>
+        </section>
+
+        <h2>Linked Select - Option List</h2>
+        <p>A selected option in the first select, triggers a change of the content of the second select.
+            The selected option is sent to the controller on a change event.</p>
+
+        <section class="example">
+            <p> Select your drink
+
+                <!-- with :{selector} you can refer to 'this' as being the Element itself -->
+                <select id="slc_drinks" m:change="drinks(:{this})" style="width: 156px">
+                    <option th:each="type: ${drinksType}"
+                            th:text="${type}"
+                            th:selected="${type} == ${selectedType}">
+                        Drink Type
+                    </option>
+                </select>
+
+                <select id="slc_order" m:change="order(:{this})" style="width: 156px">
+                    <option th:each="drinkType: ${drinksList}"
+                            th:text="${drinkType}"
+                            th:selected="${drinkType} == ${type}">
+                        Selected Drink
+                    </option>
+                </select>
+            </p>
+
+            <p> Your Order:</p>
+
+            <ul>
+                <li class="order" th:each="item:${order}" th:text="${item}"></li>
+            </ul>
+            <footer th:text="${version}"></footer>
+        </section>
+
+        <section class="client">
+            <h3>Client</h3>
+            <pre><code class="language-html hljs" th:text="${clientCode[1]}"></code></pre>
+        </section>
+
+        <section class="server">
+            <h3>Server</h3>
+            <pre><code class="language-java hljs" th:text="${serverCode[1]}"></code></pre>
+        </section>
+
+    </section> <!-- end #variations -->
+
+</div>
+</body>
+</html>

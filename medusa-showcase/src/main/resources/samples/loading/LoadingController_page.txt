@@ -1,0 +1,15 @@
+<button m:click="loadingLogic()" m:loading-until="loading-done">
+    Loading full page (default)
+</button>
+
+<button m:click="loadingLogic()" m:loading-until="loading-done" m:loading-style="full">
+    Loading full page (explicit)
+</button>
+
+<button m:click="loadingLogic()" m:loading-until="loading-done" m:loading-style="top">
+    Loading top
+</button>
+
+<button m:click="loadingLogic()" m:loading-until="loading-done" m:loading-style="button">
+    Loading button only
+</button>

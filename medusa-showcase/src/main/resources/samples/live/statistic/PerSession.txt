@@ -1,0 +1,51 @@
+import io.getmedusa.medusa.core.annotation.UIEventPage;
+import io.getmedusa.medusa.core.attributes.Attribute;
+import io.getmedusa.medusa.core.bidirectional.ServerToClient;
+import io.getmedusa.medusa.core.session.Session;
+import org.springframework.scheduling.annotation.Scheduled;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
+@UIEventPage(path = "/detail/live-data", file = "/pages/live-data.html")
+public class LiveStatisticController {
+
+    private final ServerToClient serverToClient;
+
+    private final List<String> uniqueSessionsIdSubscribedForARandom = new ArrayList<>();
+
+    public LiveStatisticController(ServerToClient serverToClient) {
+        this.serverToClient = serverToClient;
+    }
+
+    public List<Attribute> setupAttributes(Session session) {
+        subscribeViaID(session);
+
+        return List.of(
+                new Attribute("randomNumberUniquePerSession", 0)
+            );
+
+    }
+
+    public void subscribeViaID(Session session) {
+        uniqueSessionsIdSubscribedForARandom.add(session.getId());
+    }
+
+    @Scheduled(fixedDelay = 500)
+    public void someServerProcess() {
+        for(String sessionId : new ArrayList<>(uniqueSessionsIdSubscribedForARandom)) {
+            serverToClient.sendAttributesToSessionIDs(
+                    List.of(new Attribute("randomNumberUniquePerSession", randomInt())),
+                    List.of(sessionId)
+            );
+        }
+
+        uniqueSessionsIdSubscribedForARandom.clear();
+    }
+
+    private int randomInt() {
+        return new Random().nextInt(99999);
+    }
+
+}

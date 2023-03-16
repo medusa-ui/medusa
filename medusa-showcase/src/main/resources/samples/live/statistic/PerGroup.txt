@@ -1,0 +1,51 @@
+import io.getmedusa.medusa.core.annotation.UIEventPage;
+import io.getmedusa.medusa.core.attributes.Attribute;
+import io.getmedusa.medusa.core.bidirectional.ServerToClient;
+import io.getmedusa.medusa.core.session.Session;
+import org.springframework.scheduling.annotation.Scheduled;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+import java.util.UUID;
+
+@UIEventPage(path = "/detail/live-data", file = "/pages/live-data.html")
+public class LiveStatisticController {
+
+    private final ServerToClient serverToClient;
+    private final List<String> uniqueSessionsTagSubscribed = new ArrayList<>();
+
+    public LiveStatisticController(ServerToClient serverToClient) {
+        this.serverToClient = serverToClient;
+    }
+
+    public List<Attribute> setupAttributes(Session session) {
+        subscribeTag(session);
+
+        return List.of(
+                new Attribute("randomNumberUniquePerGroup", 0)
+            );
+    }
+
+    public void subscribeTag(Session session) {
+        session.putTag("uniqueTag", UUID.randomUUID().toString());
+        uniqueSessionsTagSubscribed.add(session.getTag("uniqueTag"));
+    }
+
+    @Scheduled(fixedDelay = 500)
+    public void aServerProcess() {
+        for(String subscriberTagValue : new ArrayList<>(uniqueSessionsTagSubscribed)) {
+            serverToClient.sendAttributesToSessionTag(
+                    List.of(new Attribute("randomNumberUniquePerGroup", randomInt())),
+                    "uniqueTag",
+                    subscriberTagValue);
+        }
+
+        uniqueSessionsTagSubscribed.clear();
+    }
+
+    private int randomInt() {
+        return new Random().nextInt(99999);
+    }
+
+}

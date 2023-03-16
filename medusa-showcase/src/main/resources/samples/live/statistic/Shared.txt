@@ -1,0 +1,40 @@
+import io.getmedusa.medusa.core.annotation.UIEventPage;
+import io.getmedusa.medusa.core.attributes.Attribute;
+import io.getmedusa.medusa.core.bidirectional.ServerToClient;
+import io.getmedusa.medusa.core.session.Session;
+import io.getmedusa.medusa.core.session.StandardSessionTagKeys;
+import org.springframework.scheduling.annotation.Scheduled;
+
+import java.util.List;
+import java.util.Random;
+
+@UIEventPage(path = "/detail/live-data", file = "/pages/live-data.html")
+public class LiveStatisticController {
+
+    private final ServerToClient serverToClient;
+    public LiveStatisticController(ServerToClient serverToClient) {
+        this.serverToClient = serverToClient;
+    }
+
+    public List<Attribute> setupAttributes(Session session) {
+        return List.of(
+                new Attribute("randomNumberShared", 0)
+            );
+
+    }
+
+    //this process does not have to be a timer, but because timers run on a separate thread
+    //outside of context like, this perfect to kick off the serverside call
+    @Scheduled(fixedDelay = 500)
+    public void someServerProcess() {
+        serverToClient.sendAttributesToSessionTag(
+                List.of(new Attribute("randomNumberShared", randomInt())),
+                StandardSessionTagKeys.ROUTE,
+                "/detail/live-data");
+    }
+
+    private int randomInt() {
+        return new Random().nextInt(99999);
+    }
+
+}

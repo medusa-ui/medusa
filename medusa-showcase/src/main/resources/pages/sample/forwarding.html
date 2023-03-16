@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:m="https://www.getmedusa.io/medusa.xsd">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medusa - Component detail</title>
+</head>
+<body>
+
+<div id="container" m:ref="forwarding">
+    <section id="hero">
+        <h1>Forwarding</h1>
+        <p class="lead">An example of a simple forward to another page or site.</p>
+
+        <a id="back-to-overview" href="/">Back to overview</a>
+    </section>
+
+    <h2>Server-side Forwarding</h2>
+    <p>This illustrates a forwarding decision from the serverside. Any action can return an Attribute that causes the user to forward.</p>
+    <p>By default, you can only refer to locations within your own URL. For example, if the page is available on 'https://mysite.com/hello', then a call to 'https://mysite.com/something-else' is allowed.</p>
+    <p>Relative URLS ('/hello', '../hello') are also allowed but must either start with a '.' or a '/'</p>
+    <p>If you want to refer to a location on another URL, you must explicitly set the property 'medusa.allow-external-redirect' to <i>true</i>.</p>
+
+    <section class="example">
+        <button id="btn_basic-button" m:click="forwardTo('basic-button')">Forward to 'basic button sample'</button>
+        <button id="btn_live-data" m:click="forwardTo('live-data')">Forward to 'live data sample'</button>
+    </section>
+
+    <section class="client">
+        <h3>Client</h3>
+        <pre><code class="language-html hljs" th:text="${clientCode[0]}"></code></pre>
+    </section>
+
+    <section class="server">
+        <h3>Server</h3>
+        <pre><code class="language-java hljs" th:text="${serverCode[0]}"></code></pre>
+    </section>
+
+    <h2>Server-initiated Forwarding</h2>
+    <p>This same forwarding concept can also be triggered outside the scope of an action, via ServerToClient.</p>
+
+    <section class="example">
+        <button id="btn_register" m:click="registerMeForAForward()">Register me for a forward</button>
+    </section>
+
+    <section class="client">
+        <h3>Client</h3>
+        <pre><code class="language-html hljs" th:text="${clientCode[1]}"></code></pre>
+    </section>
+
+    <section class="server">
+        <h3>Server</h3>
+        <pre><code class="language-java hljs" th:text="${serverCode[1]}"></code></pre>
+    </section>
+
+</div>
+</body>
+</html>

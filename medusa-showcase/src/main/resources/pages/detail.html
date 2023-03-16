@@ -1,0 +1,28 @@
+
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:m="https://www.getmedusa.io/medusa.xsd">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Medusa - Component overview</title>
+    <link rel="stylesheet" href="/css/style-light.css" />
+    <link rel="stylesheet" href="/css/style-dark.css" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono&family=Karla:wght@300;500&display=swap" rel="stylesheet">
+
+    <link id="dark-code" rel="stylesheet" href="/webjars/highlightjs/styles/stackoverflow-dark.min.css">
+    <link id="light-code" rel="stylesheet" href="/webjars/highlightjs/styles/stackoverflow-light.min.css" disabled="disabled">
+</head>
+<body class="dark">
+
+<script src="/webjars/highlightjs/highlight.min.js"></script>
+<m:fragment ref="darkmode"></m:fragment>
+
+<section id="container">
+    <m:fragment ref="${type}"></m:fragment>
+</section>
+
+</body>
+</html>

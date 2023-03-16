@@ -1,0 +1,4 @@
+import io.getmedusa.medusa.core.annotation.UIEventPage;
+
+@UIEventPage(path = "/detail/modal", file = "/pages/modal.html")
+public class ModalController { }

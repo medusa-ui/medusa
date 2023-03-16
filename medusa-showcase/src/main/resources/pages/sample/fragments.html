@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:m="https://www.getmedusa.io/medusa.xsd">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medusa - Component detail</title>
+</head>
+<body>
+
+
+
+<div id="container" m:ref="fragments">
+    <section id="hero">
+        <h1>Fragments</h1>
+        <p class="lead">An example of a fragment </p>
+
+        <a id="back-to-overview" href="/">Back to overview</a>
+    </section>
+
+    <h2>Local fragments</h2>
+    <p>This illustrates a fragment from the same server.</p>
+    <p>Fragments work by defining an <span class="code-snippet">m:ref=""</span> element on a page and exposing that page with a controller (in this example: SampleFragmentPartController).</p>
+    <p>That wrapper can then be referenced via an <span class="code-snippet">m:fragment=""</span>. The fragment's contents serve as a fallback in case the data cannot be loaded.</p>
+
+    <section class="example">
+        <p>The following are all fragments loaded in dynamically: </p>
+
+        <m:fragment ref="a-sample-ref">
+            <p>This is a fallback that triggers if a-sample-ref does not exist.</p>
+        </m:fragment>
+
+        <m:fragment ref="${myRefName}">
+            <p>This is a fallback that triggers if <th:block th:text="${myRefName}"></th:block> does not exist.</p>
+        </m:fragment>
+
+        <m:fragment ref="${nonExistentRef}">
+            <p class="fallback-ref">This is a fallback that triggers if <th:block th:text="${nonExistentRef}"></th:block> does not exist.</p>
+        </m:fragment>
+    </section>
+
+    <section class="client">
+        <h3>Client</h3>
+        <pre><code class="language-html hljs" th:text="${clientCode[0]}"></code></pre>
+    </section>
+
+    <section class="server">
+        <h3>Server</h3>
+        <pre><code class="language-java hljs" th:text="${serverCode[0]}"></code></pre>
+    </section>
+
+    <h2>Remote fragments</h2>
+    <p>This illustrates a forwarding decision from the serverside. Any action can return an Attribute that causes the user to forward.</p>
+
+</div>
+</body>
+</html>

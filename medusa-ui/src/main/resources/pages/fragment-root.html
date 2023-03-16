@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:m="http://www.getmedusa.io/">
+<head>
+    <meta charset="UTF-8">
+    <title>This page embeds a fragment</title>
+</head>
+<body>
+
+<h1>Hello, this is a root page. This is rendered outside of any fragment.</h1>
+<ul>
+    <li th:text="${service}"></li>
+    <li th:text="${ref}"></li>
+</ul>
+
+<p>First fragment (in root) starts here:</p>
+
+<section class="example" style="border:1px solid red;">
+    <m:fragment service="self" ref="third-fragment">
+        <p>Fallback info for first m:fragment, manual self</p>
+    </m:fragment>
+    <m:fragment service="self" ref="third-fragment">
+        <p>Fallback info for first m:fragment, manual self</p>
+    </m:fragment>
+</section>
+
+<p>First fragment ends here</p>
+<!--m:fragment ref="${ref}">
+    <p>Fallback info for search bar w/ m:fragment, auto self</p>
+</m:fragment>
+
+<m:fragment service="${service}" ref="${ref}">
+   <p>Fallback info for search bar w/ m:fragment</p>
+</m:fragment-->
+
+<p>End of content</p>
+
+</body>
+</html>

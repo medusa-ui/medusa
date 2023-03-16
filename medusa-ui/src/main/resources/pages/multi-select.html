@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:m="https://www.getmedusa.io/medusa.xsd">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Multi Select</title>
+<body>
+<h3>Form with multi-select</h3>
+<h5>Use a Map</h5>
+<form m:submit="favoritesMap(:{form})">
+    <div>
+        <label>Your Favorite fruit(s)</label>
+        <select th:name="favoriteFruits" th:value="${favoriteFruits}" th:multiple="multiple" th:size="${#lists.size(fruits)}">
+            <option
+                    th:each="fruit: ${fruits}"
+                    th:value="${fruit}"
+                    th:text="${fruit}"
+                    th:selected="${#lists.contains(favoriteFruits,fruit)}"
+            > a fruit</option>
+        </select>
+    </div>
+    <button type="submit">Submit</button>
+</form>
+
+<h5>Use a FormObject</h5>
+<form m:submit="favoritesFormObject(:{form})">
+    <div>
+        <label>Your Favorite fruit(s)</label>
+        <select th:name="favoriteFruits" th:value="${favoriteFruits}" th:multiple="multiple" th:size="${#lists.size(fruits)}" >
+            <option
+                    th:each="fruit: ${fruits}"
+                    th:value="${fruit}"
+                    th:text="${fruit}"
+                    th:selected="${#lists.contains(favoriteFruits,fruit)}"
+            > a fruit</option>
+        </select>
+        <br>
+        <label>How do you drink your coffee?</label>
+        <br>
+        <input id="form_milk" type="checkbox" name="coffeeSupplements" value="milk">
+        <label for="form_milk"> Milk</label>
+        <br>
+        <input id="form_sugar" type="checkbox" name="coffeeSupplements" value="sugar">
+        <label for="form_sugar"> Sugar</label>
+        <br>
+    </div>
+    <button type="submit">Submit</button>
+</form>
+</body>
+</html>
