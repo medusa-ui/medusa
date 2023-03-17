@@ -129,7 +129,7 @@ span.coming-soon {
   color: white;
 }
 
-.example button, .example input[type='submit'] {
+.example button, .example input[type='submit'], .example input[type='file']::file-selector-button {
   background-color: white;
   color: rgb(87, 70, 175);
   line-height: 15px;
@@ -147,7 +147,15 @@ span.coming-soon {
   transition-duration: 0.2s;
 }
 
-.example button:hover, .example input[type='submit']:hover {
+.example input[type=file]::file-selector-button {
+  margin-right: 10px;
+}
+
+.example input[type='file']{
+  min-width: 600px;
+}
+
+.example button:hover, .example input[type='submit']:hover, .example input[type='file']::file-selector-button:hover {
   background-color: #d6e7ff;
   cursor: pointer;
 }

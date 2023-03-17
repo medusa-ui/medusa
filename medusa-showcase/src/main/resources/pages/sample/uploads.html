@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:m="https://www.getmedusa.io/medusa.xsd">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medusa - Component detail - Uploads</title>
+</head>
+<body>
+<div id="container" m:ref="uploads">
+    <section id="hero">
+        <h1>Uploading files</h1>
+        <p class="lead">An example of uploading a single file, or multiple files</p>
+        <a id="back-to-overview" href="/">Back to overview</a>
+    </section>
+    <h2>Upload a single file</h2>
+    <p>Files are upload in small chunks</p>
+    <section class="example">
+
+        <input type="file" id="single_file" name="filename" accept="image/*" />
+        <p></p>
+        <button id="btn_upload" m:upload="single_file">Upload a file</button>
+        <p></p>
+        <th:block th:if="${null != image}">
+            <p th:if="${image.completed}">
+               <img id="img_upload" th:src="${image.base64ImageString}" th:alt="${image.name}" style="max-width: 75%"/>
+               <p th:text="${image.name}"></p>
+            </p>
+            <p id="prg_upload" th:if="${false == image.completed}" th:text="${image.progress + '%'}"  style="font-size: 3em; color: grey"></p>
+        </th:block>
+        <footer th:text="${version}"></footer>
+    </section>
+
+    <section class="client">
+        <h3>Client</h3>
+        <pre><code class="language-html hljs" th:text="${clientCode[0]}"></code></pre>
+    </section>
+
+    <section class="server">
+        <h3>Server</h3>
+        <pre><code class="language-java hljs" th:text="${serverCode[0]}"></code></pre>
+    </section>
+</div>
+</body>
+</html>
