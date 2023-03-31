@@ -17,7 +17,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.0.4</version>
+		<version>3.0.5</version>
 		<relativePath/>
 		<!-- lookup parent from repository -->
 	</parent>
@@ -163,7 +163,7 @@
 				<!-- run with mvn rewrite:run -->
 				<groupId>org.openrewrite.maven</groupId>
 				<artifactId>rewrite-maven-plugin</artifactId>
-				<version>4.41.1</version>
+				<version>4.42.0</version>
 				<configuration>
 					<activeRecipes>
 						<recipe>org.openrewrite.java.cleanup.CommonStaticAnalysis</recipe>
