@@ -4,6 +4,7 @@ import io.getmedusa.medusa.core.annotation.UIEventPage;
 import io.getmedusa.medusa.core.attributes.Attribute;
 import io.getmedusa.medusa.core.bidirectional.ServerToClient;
 import io.getmedusa.medusa.core.router.action.DataChunk;
+import io.getmedusa.medusa.core.router.action.FileUploadMeta;
 import io.getmedusa.medusa.core.router.action.UploadableUI;
 import io.getmedusa.medusa.core.session.Session;
 import org.springframework.web.reactive.function.server.ServerRequest;
@@ -33,5 +34,10 @@ public class UploadController implements UploadableUI {
         if((dataChunk.getCompletion() - lastPercentage) > 0.5D) {
             serverToClient.sendAttributesToSessionIDs($$("percentage", dataChunk.getCompletion()), Collections.singletonList(session.getId()));
         }
+    }
+
+    @Override
+    public void onCancel(FileUploadMeta uploadMeta, Session session) {
+        System.out.println("Upload cancelled: " + uploadMeta.getFileId());
     }
 }
