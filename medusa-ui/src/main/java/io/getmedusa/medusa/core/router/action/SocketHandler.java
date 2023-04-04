@@ -63,7 +63,8 @@ public class SocketHandler {
         final Session session = sessionMemoryRepository.retrieve(sessionId, route);
         session.setInitialRender(false);
 
-        request.onErrorReturn(new SocketAction())
+        request.doOnError(t -> onErrorReturnEmptyAction(session, route))
+                .onErrorReturn(new SocketAction())
                 .map(r -> handleFileUploadIfRelated(r, session, route))
                 .subscribe(r -> {
             if(!isUploadRelated(r)) {
@@ -90,20 +91,19 @@ public class SocketHandler {
         return session.getSink().asFlux();
     }
 
+    private void onErrorReturnEmptyAction(Session session, Route route) {
+        final Map<String, FileUploadMeta> pendingFileUploads = session.getPendingFileUploads();
+        if(!pendingFileUploads.isEmpty()) {
+            UploadableUI bean = getUploadableUI(new SocketAction(), route);
+            for (Map.Entry<String, FileUploadMeta> pendingUpload : pendingFileUploads.entrySet()) {
+                bean.onCancel(pendingUpload.getValue(), session);
+            }
+        }
+    }
+
     private SocketAction handleFileUploadIfRelated(SocketAction r, Session session, Route route) {
         if(isUploadRelated(r)) {
-
-            final UploadableUI bean;
-            if(null != r.getFragment()) {
-                final UIEventPageCallWrapper beanByRef = RefDetection.INSTANCE.findBeanByRef(r.getFragment());
-                if(null != beanByRef) {
-                    bean = (UploadableUI) beanByRef.getController();
-                } else {
-                    bean = (UploadableUI) route.getController();
-                }
-            } else {
-                bean = (UploadableUI) route.getController();
-            }
+            final UploadableUI bean = getUploadableUI(r, route);
 
             final FileUploadMeta fileMeta = r.getFileMeta();
             final String fileId = fileMeta.getFileId();
@@ -129,6 +129,21 @@ public class SocketHandler {
             }
         }
         return r;
+    }
+
+    private static UploadableUI getUploadableUI(SocketAction r, Route route) {
+        final UploadableUI bean;
+        if(null != r.getFragment()) {
+            final UIEventPageCallWrapper beanByRef = RefDetection.INSTANCE.findBeanByRef(r.getFragment());
+            if(null != beanByRef) {
+                bean = (UploadableUI) beanByRef.getController();
+            } else {
+                bean = (UploadableUI) route.getController();
+            }
+        } else {
+            bean = (UploadableUI) route.getController();
+        }
+        return bean;
     }
 
     public boolean isUploadRelated(SocketAction action) {
