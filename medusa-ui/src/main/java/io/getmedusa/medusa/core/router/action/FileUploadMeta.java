@@ -10,6 +10,7 @@ public class FileUploadMeta {
     private byte[] chunk;
     private double percentage;
     private String message;
+    private String fragment;
 
     public String getsAct() {
         return sAct;
@@ -73,6 +74,14 @@ public class FileUploadMeta {
 
     public void setMessage(String message) {
         this.message = message;
+    }
+
+    public String getFragment() {
+        return fragment;
+    }
+
+    public void setFragment(String fragment) {
+        this.fragment = fragment;
     }
 
     @Override

@@ -94,11 +94,17 @@ public class SocketHandler {
     private void onErrorReturnEmptyAction(Session session, Route route) {
         final Map<String, FileUploadMeta> pendingFileUploads = session.getPendingFileUploads();
         if(!pendingFileUploads.isEmpty()) {
-            UploadableUI bean = getUploadableUI(new SocketAction(), route);
             for (Map.Entry<String, FileUploadMeta> pendingUpload : pendingFileUploads.entrySet()) {
+                UploadableUI bean = getUploadableUI(socketActionWithFragment(pendingUpload.getValue()), route);
                 bean.onCancel(pendingUpload.getValue(), session);
             }
         }
+    }
+
+    private static SocketAction socketActionWithFragment(FileUploadMeta fileUploadMeta) {
+        final SocketAction socketAction = new SocketAction();
+        socketAction.setFragment(fileUploadMeta.getFragment());
+        return socketAction;
     }
 
     private SocketAction handleFileUploadIfRelated(SocketAction r, Session session, Route route) {
@@ -106,6 +112,8 @@ public class SocketHandler {
             final UploadableUI bean = getUploadableUI(r, route);
 
             final FileUploadMeta fileMeta = r.getFileMeta();
+            fileMeta.setFragment(r.getFragment());
+
             final String fileId = fileMeta.getFileId();
             if("upload_start".equals(fileMeta.getsAct())) {
                 session.getPendingFileUploads().put(fileId, fileMeta);
