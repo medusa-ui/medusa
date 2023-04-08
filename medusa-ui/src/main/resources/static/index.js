@@ -7,11 +7,12 @@ const {
     WellKnownMimeType,
     encodeSimpleAuthMetadata,
 } = require("rsocket-composite-metadata");
+const {fragment} = require("./websocket");
 
 function Medusa() {}
 const _M = new Medusa();
 
-const debugMode = false;
+const debugMode = true;
 
 const MAX_REQUEST_N = 2147483647;
 let stream;
@@ -46,6 +47,7 @@ async function setupRouter() {
     });
     const rsocket = await connector.connect();
     stream = await buildStream(rsocket);
+    _M.wsP = undefined;
 }
 
 function sendMessage(payloadData) {
@@ -64,6 +66,136 @@ document.addEventListener('keydown', (event) => {
         _M.closeModal();
     }
 }, false);
+
+
+Medusa.prototype.uploadFileToMethod = async function (fragment, files) {
+    if( validateFiles(fragment, files) ) {   //TODO allow configuration of client-side validation per page?
+        for (const file of files) {
+            debugLog("upload: " + file.name);
+            new Promise(function (resolve, reject) {
+                try {
+                    resolve(fileToByteArray(fragment, file));
+                } catch (e) {
+                    reject(e);
+                }
+            }).catch(e => new Error(e));
+        }
+    }
+};
+
+const validateFiles = function (fragment, files) {
+    for (const file of files) {
+        if(file.size > MAX_FILE_SIZE) {
+            let message = "size > " + MAX_FILE_SIZE;
+            sendFileError(fragment, file,message);
+            debugLog(message + " for file: " + file.name + " with size: " + file.size)
+            return false; // fail fast
+        }
+    }
+    return true;
+}
+
+async function fileToByteArray(fragment, file) {
+    const expected_amount_of_chunks = Math.ceil(file.size / CHUNK_SIZE);
+    const fileID = sendFileStart(fragment, file);
+    readFileChunk(fragment, file, fileID, expected_amount_of_chunks, 0, 0);
+
+}
+
+/* TODO should be possible to set dynamically */
+const CHUNK_SIZE = 2000;
+const MAX_FILE_SIZE = 1048576; // 1MB
+
+function readFileChunk(fragment, file, fileID, expected_amount_of_chunks, index, offset) {
+    const reader = new FileReader();
+    const blob = file.slice(offset, offset + CHUNK_SIZE);
+    reader.readAsArrayBuffer(blob);
+    reader.onload = function(e) {
+
+        sendFileChunk(fragment, fileID, [].slice.call(new Uint8Array(e.target.result)), (index/expected_amount_of_chunks)*100);
+
+        offset += CHUNK_SIZE;
+        if (offset < file.size) {
+            readFileChunk(fragment, file, fileID, expected_amount_of_chunks, ++index, offset);
+        } else {
+            sendFileCompletion(fragment, fileID);
+        }
+    };
+}
+
+function sendFileStart(fragment, file) {
+    const fileId = crypto.randomUUID();
+    sendMessage({
+        "fragment" : fragment,
+        "fileMeta" : {
+            "sAct": "upload_start",
+            "fileName": file.name,
+            "mimeType": file.type,
+            "size": file.size,
+            "fileId": fileId
+        }
+    });
+    return fileId;
+}
+
+function sendFileError(fragment, file, message) {
+    const fileId = crypto.randomUUID();
+    sendMessage({
+        "fragment" : fragment,
+        "fileMeta" : {
+            "sAct": "upload_error",
+            "fileName": file.name,
+            "mimeType": file.type,
+            "size": file.size,
+            "message": message, //TODO maybe not needed
+            "fileId": fileId
+        }
+    });
+    return fileId;
+}
+
+function sendFileCancel(fragment, file, message) { //TODO I dont think we ever send this manually, this happens if the socket connection dies
+    const fileId = crypto.randomUUID();
+    sendMessage({
+        "fragment" : fragment,
+        "fileMeta" : {
+            "sAct": "upload_cancel",
+            "fileName": file.name,
+            "mimeType": file.type,
+            "size": file.size,
+            "message": message,
+            "fileId": fileId
+        }
+    });
+    return fileId;
+}
+
+function sendFileChunk(fragment, fileId, chunk, percentage) {
+    sendMessage({
+        "fragment" : fragment,
+        "fileMeta" : {
+            "sAct": "upload_chunk",
+            "fileId": fileId,
+            "chunk": chunk,
+            "percentage": percentage
+        }
+    });
+}
+
+function sendFileCompletion(fragment, fileId) {
+    if(typeof fileId !== "undefined") {
+        console.log("File upload completed from a local perspective:" + fileId);
+        sendMessage({
+            "fragment" : fragment,
+            "fileMeta" : {
+                "sAct": "upload_complete",
+                "fileId": fileId
+            }
+        });
+        offset = 0;
+        return fileId;
+    }
+}
 
 Medusa.prototype.doFormAction = function(event, parentFragment, actionToExecute) {
     const multiElems = [];
@@ -104,6 +236,15 @@ Medusa.prototype.doFormAction = function(event, parentFragment, actionToExecute)
 };
 
 const buttonLoader = document.getElementById("m-template-button-load").content.firstElementChild.outerHTML;
+
+Medusa.prototype.doUpload = function(event, file) {
+    if(typeof event !== "undefined") {
+        event.preventDefault();
+    }
+    const target = event.target;
+
+    console.log(file);
+}
 
 Medusa.prototype.doAction = function(event, parentFragment, actionToExecute) {
     if(typeof event !== "undefined") {

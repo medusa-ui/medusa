@@ -43,7 +43,7 @@ class MethodDetectionTest {
 }
 
 /* TestControllers */
-@UIEventPage(path = "", file = "")
+@UIEventPage(path = "", file = "/pages/sample")
 class CorrectTestController {
 
     public List<Attribute> sessionFirst(Session session, String something){
@@ -63,7 +63,7 @@ class CorrectTestController {
     }
 }
 
-@UIEventPage(path = "", file = "")
+@UIEventPage(path = "", file = "/pages/sample")
 class BadTestController {
 
     public List<Attribute> callable(String something, Session session ){

@@ -1,0 +1,14 @@
+<section>
+    <!-- just use a normal input[type="file"] element and provide its id to m:upload -->
+    <input type="file" id="single_file" name="filename" accept="image/*" />
+    <button m:upload="single_file">Upload a file</button>
+
+    <!-- show progress and once done, show the image -->
+    <th:block th:if="${null != image}">
+       <p th:if="${image.completed}">
+          <img th:src="${image.base64ImageString}" th:alt="${image.name}" />
+          <p th:text="${image.name}"></p>
+       </p>
+       <p th:if="${false == image.completed}" th:text="${image.progress + '%'}"></p>
+    </th:block>
+</section>

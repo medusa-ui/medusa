@@ -7,6 +7,12 @@
 	<version>0.9.3-SNAPSHOT</version>
 	<name>medusa ui library</name>
 	<description>Medusa is an open-source bidirectional micro-frontend framework built in Java, on top of Spring Reactive and Thymeleaf.</description>
+	<licenses>
+		<license>
+			<name>MIT License</name>
+			<url>https://github.com/medusa-ui/medusa/blob/main/LICENSE</url>
+		</license>
+	</licenses>
 
 	<parent>
 		<groupId>org.springframework.boot</groupId>

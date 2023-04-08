@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:m="https://www.getmedusa.io/medusa.xsd">
+<head>
+    <meta charset="UTF-8" />
+    <title>Hello world</title>
+</head>
+<body>
+
+<h1>Upload</h1>
+<p th:text="${percentage}"></p>
+<input type="file" id="myFile" name="filename"> <br>
+<button m:upload="myFile">Upload via <code>m:upload</code></button>
+
+</body>
+</html>

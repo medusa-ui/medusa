@@ -2,7 +2,9 @@ package io.getmedusa.medusa.core.router.action;
 
 import io.getmedusa.diffengine.Engine;
 import io.getmedusa.diffengine.model.ServerSideDiff;
+import io.getmedusa.medusa.core.annotation.UIEventPageCallWrapper;
 import io.getmedusa.medusa.core.attributes.Attribute;
+import io.getmedusa.medusa.core.boot.RefDetection;
 import io.getmedusa.medusa.core.boot.RouteDetection;
 import io.getmedusa.medusa.core.memory.SessionMemoryRepository;
 import io.getmedusa.medusa.core.render.Renderer;
@@ -61,26 +63,98 @@ public class SocketHandler {
         final Session session = sessionMemoryRepository.retrieve(sessionId, route);
         session.setInitialRender(false);
 
-        request.onErrorReturn(new SocketAction()).subscribe(r -> {
-            //execute action and combine attributes
-            Session updatedSession = actionHandler.executeAndMerge(r, route, session);
+        request.doOnError(t -> onErrorReturnEmptyAction(session, route))
+                .onErrorReturn(new SocketAction())
+                .map(r -> handleFileUploadIfRelated(r, session, route))
+                .subscribe(r -> {
+            if(!isUploadRelated(r)) {
+                //execute action and combine attributes
+                Session updatedSession = actionHandler.executeAndMerge(r, route, session);
 
-            //not all attributes are used for rendering - some are pass-through, like redirections.
-            //these get filtered out first
-            List<Attribute> passThroughAttributes = updatedSession.findPassThroughAttributes();
+                //not all attributes are used for rendering - some are pass-through, like redirections.
+                //these get filtered out first
+                List<Attribute> passThroughAttributes = updatedSession.findPassThroughAttributes();
 
-            //render new HTML w/ new attributes
-            final Flux<DataBuffer> dataBufferFlux = renderer.render(route.getTemplateHTML(), updatedSession);
-            final String oldHTML = updatedSession.getLastRenderedHTML();
-            final String newHtml = FluxUtils.dataBufferFluxToString(dataBufferFlux);
-            updatedSession.setLastRenderedHTML(newHtml);
-            sessionMemoryRepository.store(updatedSession);
+                //render new HTML w/ new attributes
+                final Flux<DataBuffer> dataBufferFlux = renderer.render(route.getTemplateHTML(), updatedSession);
+                final String oldHTML = updatedSession.getLastRenderedHTML();
+                final String newHtml = FluxUtils.dataBufferFluxToString(dataBufferFlux);
+                updatedSession.setLastRenderedHTML(newHtml);
+                sessionMemoryRepository.store(updatedSession);
 
-            //run diff engine old HTML vs new
-            updatedSession.getSink().push(mergeDiffs(diffEngine.calculate(oldHTML, newHtml), passThroughAttributes));
-            updatedSession.setDepth(0);
+                //run diff engine old HTML vs new
+                updatedSession.getSink().push(mergeDiffs(diffEngine.calculate(oldHTML, newHtml), passThroughAttributes));
+                updatedSession.setDepth(0);
+            }
         });
 
         return session.getSink().asFlux();
+    }
+
+    private void onErrorReturnEmptyAction(Session session, Route route) {
+        final Map<String, FileUploadMeta> pendingFileUploads = session.getPendingFileUploads();
+        if(!pendingFileUploads.isEmpty()) {
+            for (Map.Entry<String, FileUploadMeta> pendingUpload : pendingFileUploads.entrySet()) {
+                UploadableUI bean = getUploadableUI(socketActionWithFragment(pendingUpload.getValue()), route);
+                bean.onCancel(pendingUpload.getValue(), session);
+            }
+        }
+    }
+
+    private static SocketAction socketActionWithFragment(FileUploadMeta fileUploadMeta) {
+        final SocketAction socketAction = new SocketAction();
+        socketAction.setFragment(fileUploadMeta.getFragment());
+        return socketAction;
+    }
+
+    private SocketAction handleFileUploadIfRelated(SocketAction r, Session session, Route route) {
+        if(isUploadRelated(r)) {
+            final UploadableUI bean = getUploadableUI(r, route);
+
+            final FileUploadMeta fileMeta = r.getFileMeta();
+            fileMeta.setFragment(r.getFragment());
+
+            final String fileId = fileMeta.getFileId();
+            if("upload_start".equals(fileMeta.getsAct())) {
+                session.getPendingFileUploads().put(fileId, fileMeta);
+            } else if("upload_cancel".equals(fileMeta.getsAct())) {
+                bean.onCancel(fileMeta,session);
+            } else if("upload_error".equals(fileMeta.getsAct())) {
+                bean.onError(fileMeta,session);
+            } else {
+                final FileUploadMeta originalMetadata = session.getPendingFileUploads().get(fileId);
+
+                final boolean uploadCompleted = "upload_complete".equals(fileMeta.getsAct());
+                if(uploadCompleted) {
+                    fileMeta.setPercentage(100);
+                }
+
+                bean.uploadChunk(DataChunk.from(fileMeta, originalMetadata), session);
+
+                if(uploadCompleted) {
+                    session.getPendingFileUploads().remove(fileId);
+                }
+            }
+        }
+        return r;
+    }
+
+    private static UploadableUI getUploadableUI(SocketAction r, Route route) {
+        final UploadableUI bean;
+        if(null != r.getFragment()) {
+            final UIEventPageCallWrapper beanByRef = RefDetection.INSTANCE.findBeanByRef(r.getFragment());
+            if(null != beanByRef) {
+                bean = (UploadableUI) beanByRef.getController();
+            } else {
+                bean = (UploadableUI) route.getController();
+            }
+        } else {
+            bean = (UploadableUI) route.getController();
+        }
+        return bean;
+    }
+
+    public boolean isUploadRelated(SocketAction action) {
+        return action.getFileMeta() != null;
     }
 }

@@ -3,6 +3,8 @@ package io.getmedusa.medusa.core.config;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.codec.cbor.Jackson2CborDecoder;
+import org.springframework.http.codec.cbor.Jackson2CborEncoder;
 import org.springframework.messaging.rsocket.RSocketRequester;
 import org.springframework.messaging.rsocket.RSocketStrategies;
 import reactor.core.publisher.Mono;
@@ -21,7 +23,16 @@ public class RSocketConfiguration {
     @Bean
     public Mono<RSocketRequester> rSocketRequester(RSocketStrategies rSocketStrategies) {
         return Mono.just(RSocketRequester.builder()
-                .rsocketStrategies(rSocketStrategies)
+                .rsocketStrategies(RSocketStrategies.builder()
+                        .encoders(encoders -> {
+                            encoders.addAll(rSocketStrategies.encoders());
+                            encoders.add(new Jackson2CborEncoder());
+                        })
+                        .decoders(decoders -> {
+                            decoders.addAll(rSocketStrategies.decoders());
+                            decoders.add(new Jackson2CborDecoder());
+                        })
+                        .build())
                 .websocket(getURI()));
     }
 

@@ -1,45 +1,27 @@
 package io.getmedusa.medusa.core.util;
 
-import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
-import java.util.UUID;
+import java.util.Base64;
 
 public final class RandomUtils {
 
-    public static final String ALGORITHM = "SHA3-256";
+    private static final int PASSWORD_LENGTH = 45;
 
     private RandomUtils() {}
 
     public static String generateId() {
-        final String newId = System.nanoTime() +
-                UUID.randomUUID().toString() +
-                new SecureRandom().nextInt(99999);
-        return newId.replace("-", "");
+        SecureRandom random = new SecureRandom();
+        byte[] bytes = new byte[PASSWORD_LENGTH];
+        random.nextBytes(bytes);
+        return createHash(bytes);
     }
 
     public static String generatePassword(String id) {
-        try {
-            return createSHAHash(id);
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
-        }
+        return createHash(id.getBytes(StandardCharsets.UTF_8));
     }
 
-    private static String createSHAHash(final String input) throws NoSuchAlgorithmException {
-        MessageDigest md = MessageDigest.getInstance(ALGORITHM);
-        byte[] messageDigest =  md.digest(input.getBytes(StandardCharsets.UTF_8));
-        return convertToHex(messageDigest);
-    }
-
-    private static String convertToHex(final byte[] messageDigest) {
-        BigInteger bigint = new BigInteger(1, messageDigest);
-        String hexText = bigint.toString(16);
-        while (hexText.length() < 32) {
-            hexText = "0".concat(hexText);
-        }
-        return hexText;
+    private static String createHash(final byte[] input) {
+        return Base64.getEncoder().encodeToString(input).replace("/", "+");
     }
 }

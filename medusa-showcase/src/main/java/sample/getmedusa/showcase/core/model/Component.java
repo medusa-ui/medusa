@@ -28,7 +28,10 @@ public class Component {
         ));
 
         map.put("Var inputs", List.of(
-                new Component("File uploads"),
+                new Component("File uploads", "uploads",
+                        new String[]{"/samples/input/special/uploads/single/page.txt" /*,"/samples/input/special/uploads/multiple/page.txt" */},
+                        new String[]{"/samples/input/special/uploads/single/controller.txt" /* ,"/samples/input/special/uploads/multiple/controller.txt" */}
+                ),
                 new Component("Option list", "option-list",
                         new String[]{"/samples/input/special/select/basic/page.txt","/samples/input/special/select/linked/page.txt"},
                         new String[]{"/samples/input/special/select/basic/controller.txt", "/samples/input/special/select/linked/controller.txt"}
