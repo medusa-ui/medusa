@@ -24,6 +24,7 @@ public class RootDetector implements BeanPostProcessor {
         RouteDetection.INSTANCE.consider(bean);
         RefDetection.INSTANCE.consider(bean);
         MethodDetection.INSTANCE.consider(bean);
+        ValidationDetection.INSTANCE.consider(bean);
         return BeanPostProcessor.super.postProcessBeforeInitialization(bean, beanName);
     }
 

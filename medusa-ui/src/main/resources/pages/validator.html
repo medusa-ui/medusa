@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:m="https://www.getmedusa.io/medusa.xsd">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        .error {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+
+    <form m:submit="displayName(123, :{form}, ' ')">
+        <ul class="error" m:validation="all"></ul>
+
+        <label for="firstName">First name: </label>
+        <input type="text" id="firstName" name="firstName" />
+
+        <p class="error" m:validation="firstName"></p>
+
+        <label for="lastName">Last name: </label>
+        <input type="text" id="lastName" name="lastName" />
+
+        <p class="error" m:validation="lastName"></p>
+
+        <input type="submit" value="Submit">
+    </form>
+
+    <div class="example-result" th:text="${result}"></div>
+
+</body>
+</html>

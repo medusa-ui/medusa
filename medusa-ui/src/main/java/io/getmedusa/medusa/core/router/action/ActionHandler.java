@@ -7,6 +7,8 @@ import io.getmedusa.medusa.core.boot.MethodDetection;
 import io.getmedusa.medusa.core.boot.RefDetection;
 import io.getmedusa.medusa.core.router.action.converter.PojoTypeConverter;
 import io.getmedusa.medusa.core.router.request.Route;
+import io.getmedusa.medusa.core.security.ValidationError;
+import io.getmedusa.medusa.core.security.ValidationExecutor;
 import io.getmedusa.medusa.core.session.Session;
 import org.springframework.context.expression.MapAccessor;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
@@ -18,6 +20,7 @@ import java.net.URLDecoder;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -73,9 +76,19 @@ public class ActionHandler {
                         .replace("(,#session", "(#session");
             }
 
-            result = SPEL_EXPRESSION_PARSER
-                    .parseExpression(expression)
-                    .getValue(evaluationContext, bean);
+
+            final Set<ValidationError> violations = ValidationExecutor.INSTANCE.validate(expression, bean);
+            if(violations.isEmpty()) {
+                result = SPEL_EXPRESSION_PARSER
+                        .parseExpression(expression)
+                        .getValue(evaluationContext, bean);
+            } else {
+                List<Attribute> validatorViolation = new ArrayList<>();
+                for(ValidationError violation : violations) {
+                    validatorViolation.add(new Attribute(violation.field(), violation.message()));
+                }
+                return validatorViolation;
+            }
         }
 
         if(null == result) {
