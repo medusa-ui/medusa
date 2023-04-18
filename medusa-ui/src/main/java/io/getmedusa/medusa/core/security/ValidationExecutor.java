@@ -27,11 +27,19 @@ public enum ValidationExecutor {
         return violationSet;
     }
 
+    //TODO I'm not sure if its best to make an implementation ourselves or use something like Hibernate Validator
+    // you might think: no need to re-implement; but actually we need this information anyway for the front-end
+    // so the effort to have manual validation is kind of minimal compared to all the up-front work, and we save a dependency?
+    // (basically just this method)
     public ValidationError validateParam(ValidationDetection.ParamWithValidation param, String valueToValidate) {
-        if (param.contains(NotBlank.class) && validateNotBlank(valueToValidate)) {
-            return new ValidationError(param.field(), "Value cannot be blank");
-        } else if(param.contains(Pattern.class) && validatePattern("TODO", valueToValidate)) { //TODO
-            return new ValidationError(param.field(), "Value does not match pattern");
+        for(ValidationDetection.Validation validation : param.validations()) {
+            if (NotBlank.class.equals(validation.type()) && validateNotBlank(valueToValidate)) {
+                return new ValidationError(param.field(), validation.message());
+            } else if(Pattern.class.equals(validation.type()) && validatePattern(validation.value(), valueToValidate)) {
+                return new ValidationError(param.field(), validation.message());
+            } else {
+                //TODO
+            }
         }
         return null;
     }

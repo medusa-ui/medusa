@@ -138,11 +138,7 @@ public enum ValidationDetection {
                 Field[] declaredFields = paramType.getDeclaredFields();
                 for (Field field : declaredFields) {
                     ParamWithValidation paramWithValidation = new ParamWithValidation(field.getName(), i, new ArrayList<>());
-                    for (Annotation annotation : field.getAnnotations()) {
-                        if (annotation.annotationType().getName().startsWith("jakarta.validation.constraints.")) {
-                            paramWithValidation.validations().add(annotation.annotationType().getName());
-                        }
-                    }
+                    paramWithValidation.validations().addAll(AnnotationToValidation.findValidations(field));
                     if (!paramWithValidation.validations.isEmpty()) {
                         params.add(paramWithValidation);
                     }
@@ -151,11 +147,13 @@ public enum ValidationDetection {
         }
     }
 
-    public record ParamWithValidation(String field, int index, List<String> validations) {
+    public record ParamWithValidation(String field, int index, List<Validation> validations) {
 
         public boolean contains(Class clazz) {
             final String className = clazz.getName();
             return validations.contains(className);
         }
     }
+
+    public record Validation(Class type, String value, String value2, String message) {}
 }
