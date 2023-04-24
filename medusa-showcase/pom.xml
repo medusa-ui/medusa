@@ -15,7 +15,7 @@
 	<description>Components showcase for Medusa, hosted on Render</description>
 	<properties>
 		<java.version>19</java.version>
-		<selenide.version>6.13.0</selenide.version>
+		<selenide.version>6.13.1</selenide.version>
 	</properties>
 	<dependencies>
 		<dependency>
