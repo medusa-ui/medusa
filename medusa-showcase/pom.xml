@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.0.5</version>
+		<version>3.0.6</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>sample.getmedusa</groupId>
@@ -15,7 +15,7 @@
 	<description>Components showcase for Medusa, hosted on Render</description>
 	<properties>
 		<java.version>19</java.version>
-		<selenide.version>6.13.0</selenide.version>
+		<selenide.version>6.13.1</selenide.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -69,13 +69,13 @@
 		<dependency>
 			<groupId>org.seleniumhq.selenium</groupId>
 			<artifactId>selenium-java</artifactId>
-			<version>4.8.3</version>
+			<version>4.9.0</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.seleniumhq.selenium</groupId>
 			<artifactId>selenium-http-jdk-client</artifactId>
-			<version>4.8.3</version>
+			<version>4.9.0</version>
 			<scope>test</scope>
 		</dependency>
 
