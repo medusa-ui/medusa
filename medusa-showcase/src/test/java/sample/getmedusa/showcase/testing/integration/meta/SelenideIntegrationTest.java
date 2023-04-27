@@ -5,6 +5,7 @@ import com.codeborne.selenide.Configuration;
 import com.codeborne.selenide.junit5.TextReportExtension;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.openqa.selenium.chrome.ChromeOptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,6 +26,9 @@ public abstract class SelenideIntegrationTest {
         Configuration.headless=headless;
         Configuration.screenshots=false;
         Configuration.browser="chrome";
+        ChromeOptions options = new ChromeOptions();
+        options.addArguments("--remote-allow-origins=*");
+        Configuration.browserCapabilities = options;
     }
 
     protected void openPage(String page) {
