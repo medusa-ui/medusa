@@ -12,12 +12,16 @@
 <body>
 
     <form m:submit="displayName(123, :{form}, ' ')">
-        <ul class="error" m:validation="all"></ul>
+        <ul class="error" m:validation="all" validation="form-global"></ul>
 
         <label for="firstName">First name: </label>
         <input type="text" id="firstName" name="firstName" />
 
-        <p class="error" m:validation="firstName"></p>
+        <p class="error" th:if="${validation_firstName != null}" th:text="${validation_firstName}">
+            This paragraph will only be shown if myString has a value.
+        </p>
+
+        <p class="error" m:validation="firstName" validation="firstName"></p>
 
         <label for="lastName">Last name: </label>
         <input type="text" id="lastName" name="lastName" />

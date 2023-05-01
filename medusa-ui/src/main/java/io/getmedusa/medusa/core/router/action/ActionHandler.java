@@ -85,7 +85,8 @@ public class ActionHandler {
             } else {
                 List<Attribute> validatorViolation = new ArrayList<>();
                 for(ValidationError violation : violations) {
-                    validatorViolation.add(new Attribute(violation.field(), violation.message()));
+                    System.out.println("validation_" + violation.field()); //TODO this should be validation stuff
+                    validatorViolation.add(new Attribute("validation_" + violation.field(), violation.message()));
                 }
                 return validatorViolation;
             }

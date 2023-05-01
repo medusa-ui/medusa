@@ -198,6 +198,12 @@ function sendFileCompletion(fragment, fileId) {
 }
 
 Medusa.prototype.doFormAction = function(event, parentFragment, actionToExecute) {
+    if(typeof event !== "undefined") {
+        event.preventDefault();
+    }
+
+    clearAllValidation();
+
     const multiElems = [];
     const form = event.target;
 
@@ -232,8 +238,86 @@ Medusa.prototype.doFormAction = function(event, parentFragment, actionToExecute)
             formProps[key] = v;
         }
     }
+
+    let validationPass = true;
+
+    for(let validationDef of _M.validationsPossible) {
+        let validationResult = validate(validationDef.validation, document.querySelector("[name='"+validationDef.field+"']").value);
+        debugLog("Local validation of field '"+validationDef.field+"': " + validationResult);
+        if(!validationResult) {
+            validationPass = markFieldAsFailedValidation(validationDef.field, validationDef.message);
+        }
+    }
+
+    if(!validationPass) {
+        debugLog("Local validation did not pass, so no backend call is made");
+        return;
+    } else {
+        debugLog("Local validation passed, so proceeding to backend");
+    }
+
     _M.doAction(event, parentFragment, actionToExecute.replace(":{form}", JSON.stringify(formProps) ));
 };
+
+validate = function(type, value) {
+    debugLog(type);
+    if(type === "NotBlank") {
+        debugLog("- validation '"+type+"' /w '"+value+"' = " + (value !== undefined && value.length !== 0));
+        return (value !== undefined && value.length !== 0);
+    } else {
+        //...
+    }
+    return true;
+};
+
+markFieldAsFailedValidation = function(name, message) {
+    let field = document.querySelector("[validation='"+name+"']");
+    if(null !== field) {
+        //- make visible, add error class, add message
+        field.innerText = message;
+
+        let form = document.querySelector("[name='firstName']").closest("form");
+        if(null !== form) {
+            let validationGlobal = form.querySelector("ul[validation='form-global']");
+            if(null !== validationGlobal) {
+                //- make visible, added li with message
+                const li = document.createElement('li');
+                li.innerText = message;
+                validationGlobal.appendChild(li);
+            }
+        }
+    }
+
+    return false;
+};
+
+clearAllValidation = function () {
+    let allLi = document.querySelectorAll("ul[validation='form-global'] li");
+    for(let li of allLi) {
+        li.remove();
+    }
+}
+
+clearValidationErrorForField = function (name) {
+    let field = document.querySelector("[validation='"+name+"']");
+    if(null !== field) {
+        //- make visible, add error class, add message
+        field.innerText = "";
+        field.classList.remove("error");
+        field.classList.add("to-retry"); //TODO better name for just failed need to retry
+
+        let form = document.querySelector("[name='" + name + "']").closest("form");
+        if(null !== form) {
+            let validationGlobal = form.querySelector("ul[validation='form-global']");
+            if(null !== validationGlobal) {
+                let relatedValidationError = validationGlobal.querySelector("[validation-error='" + name + "']");
+                if(null !== relatedValidationError) {
+                    relatedValidationError.remove();
+                }
+            }
+        }
+    }
+}
 
 const buttonLoader = document.getElementById("m-template-button-load").content.firstElementChild.outerHTML;
 

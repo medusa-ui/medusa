@@ -19,6 +19,15 @@ public enum ValidationDetection {
 
     private final ValidationList classesWithValidMethods = new ValidationList(new ArrayList<>());
 
+    public String buildFrontendValidations(String controller) {
+        try {
+            List<FrontEndValidation> frontEndValidations = classesWithValidMethods.findFrontEndValidationsForController(controller);
+            return objectMapper.writeValueAsString(frontEndValidations);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public void consider(Object bean) {
         Class beanClass = bean.getClass();
         for (Method method : beanClass.getMethods()) {
@@ -77,8 +86,13 @@ public enum ValidationDetection {
 
     record ValidationList(List<ClassWithValidation> classes) {
         public ClassWithValidation findByKey(Class className) {
+            String name = className.getName();
+            return findByClassName(name);
+        }
+
+        public ClassWithValidation findByClassName(String className) {
             for(ClassWithValidation clazz : classes) {
-                if(clazz.clazz.equals(className.getName())) {
+                if(clazz.clazz.equals(className)) {
                     return clazz;
                 }
             }
@@ -95,7 +109,28 @@ public enum ValidationDetection {
                 clazz.add(method, i);
             }
         }
+
+        public List<FrontEndValidation> findFrontEndValidationsForController(String controller) {
+            List<FrontEndValidation> list = new ArrayList<>();
+            ClassWithValidation clazz = findByClassName(controller);
+
+            for(MethodWithValidation method : clazz.methods) {
+                for(ParamWithValidation param : method.params) {
+                    String fieldName = param.field;
+
+                    for(Validation validationDefinition : param.validations) {
+                        String validation = validationDefinition.type().getSimpleName();
+                        String message = validationDefinition.message;
+                        list.add(new FrontEndValidation(fieldName, validation, message));
+                    }
+                }
+            }
+
+            return list;
+        }
     }
+
+    record FrontEndValidation(String field, String validation, String message) { }
 
     record ClassWithValidation(String clazz, List<MethodWithValidation> methods) {
 

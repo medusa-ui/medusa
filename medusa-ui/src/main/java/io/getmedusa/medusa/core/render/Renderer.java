@@ -6,6 +6,7 @@ import io.getmedusa.medusa.core.boot.*;
 import io.getmedusa.medusa.core.boot.hydra.HydraConnectionController;
 import io.getmedusa.medusa.core.boot.hydra.model.meta.RenderedFragment;
 import io.getmedusa.medusa.core.session.Session;
+import io.getmedusa.medusa.core.session.StandardSessionTagKeys;
 import io.getmedusa.medusa.core.util.FluxUtils;
 import io.getmedusa.medusa.core.util.FragmentUtils;
 import io.getmedusa.medusa.core.util.LoaderStatics;
@@ -218,6 +219,7 @@ public class Renderer {
                         "_M.sessionId = '" + session.getId() + "'; " +
                         "_M.wsURL = " + wsURL + ";" +
                         "_M.wsP = '" + session.getPassword() + "';" +
+                        "_M.validationsPossible = " + ValidationDetection.INSTANCE.buildFrontendValidations(session.getTag(StandardSessionTagKeys.CONTROLLER)) + ";" +
                         "</script>\n" + END_OF_BODY), session);
     }
 
