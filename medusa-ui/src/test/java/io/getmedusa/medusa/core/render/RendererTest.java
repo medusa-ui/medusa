@@ -5,6 +5,7 @@ import io.getmedusa.medusa.core.session.Session;
 import io.getmedusa.medusa.core.tags.MedusaDialect;
 import io.getmedusa.medusa.core.tags.action.MedusaOnClick;
 import io.getmedusa.medusa.core.util.FluxUtils;
+import io.getmedusa.medusa.core.validation.ValidationMessageResolver;
 import org.jsoup.Jsoup;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -29,6 +30,9 @@ class RendererTest {
     @Mock
     private HydraConnectionController hydraConnectionController;
 
+    @Mock
+    private ValidationMessageResolver resolver;
+
     private Renderer rendererWithoutHydra;
 
     private Renderer rendererWithHydra;
@@ -37,8 +41,8 @@ class RendererTest {
     public void init() {
         MockitoAnnotations.openMocks(this);
         Mockito.when(hydraConnectionController.askHydraForFragment(Mockito.any(), Mockito.anyMap(), Mockito.any())).thenReturn(Mono.just(List.of()));
-        rendererWithoutHydra = new Renderer(DIALECTS, null, "self");
-        rendererWithHydra = new Renderer(DIALECTS, hydraConnectionController,  "self");
+        rendererWithoutHydra = new Renderer(DIALECTS, null, "self", resolver);
+        rendererWithHydra = new Renderer(DIALECTS, hydraConnectionController,  "self", resolver);
     }
 
     @Test

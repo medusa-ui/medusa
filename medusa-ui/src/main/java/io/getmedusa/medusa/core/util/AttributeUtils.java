@@ -35,6 +35,8 @@ public final class AttributeUtils {
                     extraDiffs.add(ServerSideDiff.buildNewJSFunction(attribute.value().toString()));
                 } else if(attribute.name().equalsIgnoreCase(StandardAttributeKeys.LOADING)) {
                     extraDiffs.add(ServerSideDiff.buildNewLoading(attribute.value().toString()));
+                } else if(attribute.name().equalsIgnoreCase(StandardAttributeKeys.VALIDATION)) {
+                    extraDiffs.addAll((List<ServerSideDiff>) attribute.value());
                 }
             }
             diffs.addAll(extraDiffs);

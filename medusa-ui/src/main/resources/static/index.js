@@ -7,7 +7,6 @@ const {
     WellKnownMimeType,
     encodeSimpleAuthMetadata,
 } = require("rsocket-composite-metadata");
-const {fragment} = require("./websocket");
 
 function Medusa() {}
 const _M = new Medusa();
@@ -275,16 +274,17 @@ markFieldAsFailedValidation = function(name, message) {
     if(null !== field) {
         //- make visible, add error class, add message
         field.innerText = message;
+        field.classList.remove("hidden");
+    }
 
-        let form = document.querySelector("[name='firstName']").closest("form");
-        if(null !== form) {
-            let validationGlobal = form.querySelector("ul[validation='form-global']");
-            if(null !== validationGlobal) {
-                //- make visible, added li with message
-                const li = document.createElement('li');
-                li.innerText = message;
-                validationGlobal.appendChild(li);
-            }
+    let form = document.querySelector("[name='"+name+"']").closest("form");
+    if(null !== form) {
+        let validationGlobal = form.querySelector("ul[validation='form-global']");
+        if(null !== validationGlobal) {
+            //- make visible, added li with message
+            const li = document.createElement('li');
+            li.innerText = message;
+            validationGlobal.appendChild(li);
         }
     }
 
@@ -296,15 +296,16 @@ clearAllValidation = function () {
     for(let li of allLi) {
         li.remove();
     }
+    for (const validationElement of document.querySelectorAll("[validation]:not([validation='form-global'])")) {
+        clearValidationErrorForField(validationElement.getAttribute("validation"));
+    }
 }
 
 clearValidationErrorForField = function (name) {
     let field = document.querySelector("[validation='"+name+"']");
     if(null !== field) {
-        //- make visible, add error class, add message
         field.innerText = "";
-        field.classList.remove("error");
-        field.classList.add("to-retry"); //TODO better name for just failed need to retry
+        field.classList.add("hidden");
 
         let form = document.querySelector("[name='" + name + "']").closest("form");
         if(null !== form) {
@@ -320,15 +321,6 @@ clearValidationErrorForField = function (name) {
 }
 
 const buttonLoader = document.getElementById("m-template-button-load").content.firstElementChild.outerHTML;
-
-Medusa.prototype.doUpload = function(event, file) {
-    if(typeof event !== "undefined") {
-        event.preventDefault();
-    }
-    const target = event.target;
-
-    console.log(file);
-}
 
 Medusa.prototype.doAction = function(event, parentFragment, actionToExecute) {
     if(typeof event !== "undefined") {
@@ -480,6 +472,8 @@ applyAllChanges = function (listOfDiffs) {
             runFunction(escape(diff.content), []);
         } else if(diff.type === "LOADING") {
             applyLoadingUpdate(escape(diff.content));
+        } else if(diff.type === "VALIDATION") {
+            markFieldAsFailedValidation(diff.attributeKey, diff.attributeValue);
         }
     }
 };

@@ -1,15 +1,18 @@
 package io.getmedusa.medusa.core.router.action;
 
+import io.getmedusa.diffengine.model.ServerSideDiff;
 import io.getmedusa.medusa.core.annotation.UIEventPageCallWrapper;
 import io.getmedusa.medusa.core.attributes.Attribute;
+import io.getmedusa.medusa.core.attributes.StandardAttributeKeys;
 import io.getmedusa.medusa.core.boot.FormDetection;
 import io.getmedusa.medusa.core.boot.MethodDetection;
 import io.getmedusa.medusa.core.boot.RefDetection;
 import io.getmedusa.medusa.core.router.action.converter.PojoTypeConverter;
 import io.getmedusa.medusa.core.router.request.Route;
-import io.getmedusa.medusa.core.security.ValidationError;
-import io.getmedusa.medusa.core.security.ValidationExecutor;
 import io.getmedusa.medusa.core.session.Session;
+import io.getmedusa.medusa.core.validation.ValidationError;
+import io.getmedusa.medusa.core.validation.ValidationExecutor;
+import io.getmedusa.medusa.core.validation.ValidationMessageResolver;
 import org.springframework.context.expression.MapAccessor;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
@@ -28,6 +31,12 @@ import java.util.regex.Pattern;
 public class ActionHandler {
 
     private static final SpelExpressionParser SPEL_EXPRESSION_PARSER = new SpelExpressionParser();
+
+    private final ValidationMessageResolver resolver;
+
+    public ActionHandler(ValidationMessageResolver resolver) {
+        this.resolver = resolver;
+    }
 
     public Session executeAndMerge(SocketAction socketAction, Route route, Session session) {
         //find controller from cache
@@ -83,12 +92,11 @@ public class ActionHandler {
                         .parseExpression(expression)
                         .getValue(evaluationContext, bean);
             } else {
-                List<Attribute> validatorViolation = new ArrayList<>();
+                List<ServerSideDiff> validatorViolation = new ArrayList<>();
                 for(ValidationError violation : violations) {
-                    System.out.println("validation_" + violation.field()); //TODO this should be validation stuff
-                    validatorViolation.add(new Attribute("validation_" + violation.field(), violation.message()));
+                    validatorViolation.add(ServerSideDiff.buildValidation(violation.field(), resolver.resolveMessage(violation)));
                 }
-                return validatorViolation;
+                return List.of(new Attribute(StandardAttributeKeys.VALIDATION, validatorViolation));
             }
         }
 
@@ -97,6 +105,8 @@ public class ActionHandler {
         }
         return (List<Attribute>) result;
     }
+
+
 
     private static String handleArrayParsing(String expression) {
         Pattern pattern = Pattern.compile("\\[.*?]");

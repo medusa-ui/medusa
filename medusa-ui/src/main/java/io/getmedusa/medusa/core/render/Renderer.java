@@ -10,6 +10,7 @@ import io.getmedusa.medusa.core.session.StandardSessionTagKeys;
 import io.getmedusa.medusa.core.util.FluxUtils;
 import io.getmedusa.medusa.core.util.FragmentUtils;
 import io.getmedusa.medusa.core.util.LoaderStatics;
+import io.getmedusa.medusa.core.validation.ValidationMessageResolver;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -53,6 +54,7 @@ public class Renderer {
     protected static final Locale LOCALE = Locale.getDefault();
 
     private final String selfName;
+    private final ValidationMessageResolver resolver;
 
     /**
      * Thymeleaf renderer
@@ -60,7 +62,8 @@ public class Renderer {
      */
     public Renderer(Set<AbstractProcessorDialect> dialects,
                     @Autowired(required = false) HydraConnectionController hydraConnectionController,
-                    @Value("${medusa.name:self}") String selfName) {
+                    @Value("${medusa.name:self}") String selfName,
+                    ValidationMessageResolver resolver) {
         this.bufferFactory = new DefaultDataBufferFactory();
 
         SpringWebFluxTemplateEngine templateEngine = new SpringWebFluxTemplateEngine();
@@ -71,6 +74,7 @@ public class Renderer {
         this.hydraConnectionController = hydraConnectionController;
 
         this.selfName = selfName;
+        this.resolver = resolver;
     }
 
     public Flux<DataBuffer> render(String templateHTML, Session session) {
@@ -219,7 +223,7 @@ public class Renderer {
                         "_M.sessionId = '" + session.getId() + "'; " +
                         "_M.wsURL = " + wsURL + ";" +
                         "_M.wsP = '" + session.getPassword() + "';" +
-                        "_M.validationsPossible = " + ValidationDetection.INSTANCE.buildFrontendValidations(session.getTag(StandardSessionTagKeys.CONTROLLER)) + ";" +
+                        "_M.validationsPossible = " + ValidationDetection.INSTANCE.buildFrontendValidations(session.getTag(StandardSessionTagKeys.CONTROLLER), resolver) + ";" +
                         "</script>\n" + END_OF_BODY), session);
     }
 

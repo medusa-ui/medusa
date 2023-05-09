@@ -2,8 +2,9 @@ package io.getmedusa.medusa.core.boot;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.getmedusa.medusa.core.security.ValidationError;
-import io.getmedusa.medusa.core.security.ValidationExecutor;
+import io.getmedusa.medusa.core.validation.ValidationError;
+import io.getmedusa.medusa.core.validation.ValidationExecutor;
+import io.getmedusa.medusa.core.validation.ValidationMessageResolver;
 import jakarta.validation.Valid;
 
 import java.lang.annotation.Annotation;
@@ -19,9 +20,9 @@ public enum ValidationDetection {
 
     private final ValidationList classesWithValidMethods = new ValidationList(new ArrayList<>());
 
-    public String buildFrontendValidations(String controller) {
+    public String buildFrontendValidations(String controller, ValidationMessageResolver resolver) {
         try {
-            List<FrontEndValidation> frontEndValidations = classesWithValidMethods.findFrontEndValidationsForController(controller);
+            List<FrontEndValidation> frontEndValidations = resolver.resolveMessages(classesWithValidMethods.findFrontEndValidationsForController(controller));
             return objectMapper.writeValueAsString(frontEndValidations);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
@@ -114,14 +115,16 @@ public enum ValidationDetection {
             List<FrontEndValidation> list = new ArrayList<>();
             ClassWithValidation clazz = findByClassName(controller);
 
-            for(MethodWithValidation method : clazz.methods) {
-                for(ParamWithValidation param : method.params) {
-                    String fieldName = param.field;
+            if(null != clazz) {
+                for (MethodWithValidation method : clazz.methods) {
+                    for (ParamWithValidation param : method.params) {
+                        String fieldName = param.field;
 
-                    for(Validation validationDefinition : param.validations) {
-                        String validation = validationDefinition.type().getSimpleName();
-                        String message = validationDefinition.message;
-                        list.add(new FrontEndValidation(fieldName, validation, message));
+                        for (Validation validationDefinition : param.validations) {
+                            String validation = validationDefinition.type().getSimpleName();
+                            String message = validationDefinition.message;
+                            list.add(new FrontEndValidation(fieldName, validation, message));
+                        }
                     }
                 }
             }
@@ -130,7 +133,35 @@ public enum ValidationDetection {
         }
     }
 
-    record FrontEndValidation(String field, String validation, String message) { }
+    public static class FrontEndValidation {
+
+        private final String field;
+        private final String validation;
+        private String message;
+
+        public FrontEndValidation(String field, String validation, String message) {
+            this.field = field;
+            this.validation = validation;
+            //TODO if Pattern, make sure we suggest UTF-8 checks vs [a-Z]
+            this.message = message;
+        }
+
+        public String getField() {
+            return field;
+        }
+
+        public String getValidation() {
+            return validation;
+        }
+
+        public void setMessage(String message) {
+            this.message = message;
+        }
+
+        public String getMessage() {
+            return message;
+        }
+    }
 
     record ClassWithValidation(String clazz, List<MethodWithValidation> methods) {
 
@@ -183,7 +214,6 @@ public enum ValidationDetection {
     }
 
     public record ParamWithValidation(String field, int index, List<Validation> validations) {
-
         public boolean contains(Class clazz) {
             final String className = clazz.getName();
             return validations.contains(className);
