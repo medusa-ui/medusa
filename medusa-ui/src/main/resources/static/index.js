@@ -12,6 +12,7 @@ function Medusa() {}
 const _M = new Medusa();
 
 const debugMode = true;
+const XRegExp = require('xregexp');
 
 const MAX_REQUEST_N = 2147483647;
 let stream;
@@ -241,7 +242,7 @@ Medusa.prototype.doFormAction = function(event, parentFragment, actionToExecute)
     let validationPass = true;
 
     for(let validationDef of _M.validationsPossible) {
-        let validationResult = validate(validationDef.validation, document.querySelector("[name='"+validationDef.field+"']").value);
+        let validationResult = validate(validationDef.validation, document.querySelector("[name='"+validationDef.field+"']").value, validationDef.value1, validationDef.value2);
         debugLog("Local validation of field '"+validationDef.field+"': " + validationResult);
         if(!validationResult) {
             validationPass = markFieldAsFailedValidation(validationDef.field, validationDef.message);
@@ -258,16 +259,70 @@ Medusa.prototype.doFormAction = function(event, parentFragment, actionToExecute)
     _M.doAction(event, parentFragment, actionToExecute.replace(":{form}", JSON.stringify(formProps) ));
 };
 
-validate = function(type, value) {
-    debugLog(type);
+validate = function(type, value, arg1, arg2) {
+    /*  TODO:
+        digits(validations, field);
+        future(validations, field);
+        futureOrPresent(validations, field);
+        max(validations, field);
+        min(validations, field);
+        negative(validations, field);
+        negativeOrZero(validations, field);
+        notNull(validations, field);
+        isNull(validations, field);
+        past(validations, field);
+        pastOrPresent(validations, field);
+        positive(validations, field);
+        positiveOrZero(validations, field);
+        size(validations, field);*/
     if(type === "NotBlank") {
-        debugLog("- validation '"+type+"' /w '"+value+"' = " + (value !== undefined && value.length !== 0));
-        return (value !== undefined && value.length !== 0);
-    } else {
-        //...
+        return notBlank(value);
+    } else if(type === "NotEmpty") {
+        return notEmpty(value);
+    } else if(type === "Pattern") {
+        return pattern(value, arg1);
+    } else if(type === "AssertFalse") {
+        return assert(value, false);
+    } else if(type === "AssertTrue") {
+        return assert(value, true);
+    } else if(type === "DecimalMax") {
+        return decimalMax(value, arg1);
+    } else if(type === "DecimalMin") {
+        return decimalMin(value, arg1);
+    } else if(type === "Email") {
+        return email(value);
     }
     return true;
 };
+
+function decimalMin(value, minAsString) {
+    return value !== undefined && value.trim().length !== 0 && Number(value) >= Number(minAsString);
+}
+
+function decimalMax(value, maxAsString) {
+    return value !== undefined && value.trim().length !== 0 && Number(value) <= Number(maxAsString);
+}
+
+function notBlank(value) {
+    return value !== undefined && value.trim().length !== 0;
+}
+
+function notEmpty(value) {
+    return value !== undefined && value.length !== 0;
+}
+
+function pattern(value, pattern) {
+    return value !== undefined && XRegExp(pattern).test(value);
+}
+
+function assert(value, assertValue) {
+    return value !== undefined && /^true$/i.test(value) === assertValue;
+}
+
+function email(value) {
+    const emailPattern ="^[\\p{L}+\\p{M}0-9.!#$%&’'\\\"*+\\/=?^_ `{|}~-]+(\\.{1}[\\p{L}+\\p{M}0-9.!#$%&’'\\\"*+\\/=?^_ `{|}~-]+)*[0-9.!#$%&’'\\\"*+\\/=?^_ `{|}~-]*@[\\p{L}+\\p{M}0-9.!#$%&’'\\\"*+\\/=?^_ `{|}~-]+[0-9.!#$%&’'\\\"*+\\/=?^_ `{|}~-]*(\\.{1}[\\p{L}+\\p{M}0-9!#$%&’'\\\"*+\\/=?^_ `{|}~-]+)+$";
+    return pattern(value, emailPattern);
+}
 
 markFieldAsFailedValidation = function(name, message) {
     let field = document.querySelector("[validation='"+name+"']");

@@ -72,6 +72,7 @@ class ValidationExecutorTest {
     void testDecimalMax() {
         List<ValidationDetection.Validation> validations = List.of(new ValidationDetection.Validation(DecimalMax.class, "10.5", null, "x"));
         final ValidationDetection.ParamWithValidation patternParam = new ValidationDetection.ParamWithValidation("x", 0, validations);
+        Assertions.assertNull(v.validateParam(patternParam, "10.50"));
         Assertions.assertNull(v.validateParam(patternParam, "8.456"));
         Assertions.assertNull(v.validateParam(patternParam, "5"));
         Assertions.assertNull(v.validateParam(patternParam, "-2.2435"));
@@ -86,6 +87,7 @@ class ValidationExecutorTest {
     void testDecimalMin() {
         List<ValidationDetection.Validation> validations = List.of(new ValidationDetection.Validation(DecimalMin.class, "10.5", null, "x"));
         final ValidationDetection.ParamWithValidation patternParam = new ValidationDetection.ParamWithValidation("x", 0, validations);
+        Assertions.assertNull(v.validateParam(patternParam, "10.50"));
         Assertions.assertNull(v.validateParam(patternParam, "18.456"));
         Assertions.assertNull(v.validateParam(patternParam, "15"));
         Assertions.assertNull(v.validateParam(patternParam, "22.2435"));

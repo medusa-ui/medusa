@@ -123,7 +123,7 @@ public enum ValidationDetection {
                         for (Validation validationDefinition : param.validations) {
                             String validation = validationDefinition.type().getSimpleName();
                             String message = validationDefinition.message;
-                            list.add(new FrontEndValidation(fieldName, validation, message));
+                            list.add(new FrontEndValidation(fieldName, validation, message, validationDefinition.value(), validationDefinition.value2()));
                         }
                     }
                 }
@@ -139,11 +139,16 @@ public enum ValidationDetection {
         private final String validation;
         private String message;
 
-        public FrontEndValidation(String field, String validation, String message) {
+        private String value1;
+        private String value2;
+
+        public FrontEndValidation(String field, String validation, String message, String value1, String value2) {
             this.field = field;
             this.validation = validation;
             //TODO if Pattern, make sure we suggest UTF-8 checks vs [a-Z]
             this.message = message;
+            this.value1 = value1;
+            this.value2 = value2;
         }
 
         public String getField() {
@@ -160,6 +165,22 @@ public enum ValidationDetection {
 
         public String getMessage() {
             return message;
+        }
+
+        public String getValue1() {
+            return value1;
+        }
+
+        public void setValue1(String value1) {
+            this.value1 = value1;
+        }
+
+        public String getValue2() {
+            return value2;
+        }
+
+        public void setValue2(String value2) {
+            this.value2 = value2;
         }
     }
 
