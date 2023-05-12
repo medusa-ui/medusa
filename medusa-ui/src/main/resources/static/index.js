@@ -261,19 +261,12 @@ Medusa.prototype.doFormAction = function(event, parentFragment, actionToExecute)
 
 validate = function(type, value, arg1, arg2) {
     /*  TODO:
-        digits(validations, field);
         future(validations, field);
         futureOrPresent(validations, field);
-        max(validations, field);
-        min(validations, field);
-        negative(validations, field);
-        negativeOrZero(validations, field);
         notNull(validations, field);
         isNull(validations, field);
         past(validations, field);
         pastOrPresent(validations, field);
-        positive(validations, field);
-        positiveOrZero(validations, field);
         size(validations, field);*/
     if(type === "NotBlank") {
         return notBlank(value);
@@ -285,15 +278,45 @@ validate = function(type, value, arg1, arg2) {
         return assert(value, false);
     } else if(type === "AssertTrue") {
         return assert(value, true);
-    } else if(type === "DecimalMax") {
+    } else if(type === "DecimalMax" || type === "Max") {
         return decimalMax(value, arg1);
-    } else if(type === "DecimalMin") {
+    } else if(type === "DecimalMin" || type === "Min") {
         return decimalMin(value, arg1);
     } else if(type === "Email") {
         return email(value);
+    } else if(type === "Digits") {
+        return digits(value, arg1, arg2);
+    } else if(type === "Positive") {
+        return positive(value);
+    } else if(type === "Negative") {
+        return negative(value);
+    } else if(type === "PositiveOrZero") {
+        return positiveOrZero(value);
+    } else if(type === "NegativeOrZero") {
+        return negativeOrZero(value);
     }
     return true;
 };
+
+function negativeOrZero(value) {
+    return value !== undefined && value.trim().length !== 0 && Number(value) <= 0;
+}
+
+function negative(value) {
+    return value !== undefined && value.trim().length !== 0 && Number(value) < 0;
+}
+
+function positiveOrZero(value) {
+    return value !== undefined && value.trim().length !== 0 && Number(value) >= 0;
+}
+
+function positive(value) {
+    return value !== undefined && value.trim().length !== 0 && Number(value) > 0;
+}
+
+function digits(value, min, max) {
+    return value !== undefined && value.trim().length !== 0 && Number(value) >= Number(min) && Number(value) <= Number(max);
+}
 
 function decimalMin(value, minAsString) {
     return value !== undefined && value.trim().length !== 0 && Number(value) >= Number(minAsString);
