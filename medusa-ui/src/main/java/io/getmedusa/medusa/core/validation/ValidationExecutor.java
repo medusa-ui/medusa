@@ -1,14 +1,12 @@
 package io.getmedusa.medusa.core.validation;
 
 import io.getmedusa.medusa.core.boot.ValidationDetection;
+import io.getmedusa.medusa.core.util.JSONUtils;
 import jakarta.validation.constraints.*;
 import org.apache.commons.lang3.math.NumberUtils;
 
 import java.text.DecimalFormatSymbols;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Set;
+import java.util.*;
 
 public enum ValidationExecutor {
 
@@ -72,11 +70,57 @@ public enum ValidationExecutor {
                 return new ValidationError(param, validation);
             } else if(DecimalMin.class.equals(validation.type()) && failsMin(validation.value(), valueToValidate)) {
                 return new ValidationError(param, validation);
-            } else {
-                //TODO
+            } else if(Future.class.equals(validation.type()) && failsFuture(valueToValidate, false)) {
+                return new ValidationError(param, validation);
+            } else if(Past.class.equals(validation.type()) && failsPast(valueToValidate, false)) {
+                return new ValidationError(param, validation);
+            } else if(FutureOrPresent.class.equals(validation.type()) && failsFuture(valueToValidate, true)) {
+                return new ValidationError(param, validation);
+            } else if(PastOrPresent.class.equals(validation.type()) && failsPast(valueToValidate, true)) {
+                return new ValidationError(param, validation);
+            } else if(Size.class.equals(validation.type()) && failsSize(valueToValidate, validation.value(), validation.value2())) {
+                return new ValidationError(param, validation);
             }
         }
         return null;
+    }
+
+    private boolean failsSize(String valueToValidate, String minSize, String maxSize) {
+        if(minSize == null) {
+            minSize = "0";
+        }
+        valueToValidate = valueToValidate.trim();
+        int length = valueToValidate.length();
+        if (valueToValidate.startsWith("[")) {
+            length = JSONUtils.deserialize(valueToValidate, Object[].class).length;
+        } else if (valueToValidate.startsWith("{")) {
+            length = JSONUtils.deserialize(valueToValidate, Map.class).size();
+        }
+        return length > Long.parseLong(maxSize) || Long.parseLong(minSize) > length;
+    }
+
+    private boolean failsFuture(String valueToValidate, boolean allowPresent) {
+        try {
+            if (valueToValidate == null || !NumberUtils.isParsable(valueToValidate.trim())) return true;
+            long longToValidate = Long.parseLong(valueToValidate.trim());
+            long now = System.currentTimeMillis();
+            if(allowPresent) { now -= 10*1000; } //buffer of 10 seconds allowed
+            return longToValidate <= now;
+        } catch (NumberFormatException nfe) {
+            return true;
+        }
+    }
+
+    private boolean failsPast(String valueToValidate, boolean allowPresent) {
+        try {
+            if (valueToValidate == null || !NumberUtils.isParsable(valueToValidate.trim())) return true;
+            long longToValidate = Long.parseLong(valueToValidate.trim());
+            long now = System.currentTimeMillis();
+            if(allowPresent) { now += 10*1000; } //buffer of 10 seconds allowed
+            return longToValidate >= now;
+        } catch (NumberFormatException nfe) {
+            return true;
+        }
     }
 
     private boolean failsDigits(String min, String max, String valueToValidate) {

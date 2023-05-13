@@ -289,24 +289,92 @@ class ValidationExecutorTest {
 
     @Test
     void testSize() {
-        List<ValidationDetection.Validation> validations = List.of(new ValidationDetection.Validation(Size.class, "2", null, "x"));
+        List<ValidationDetection.Validation> validations = List.of(new ValidationDetection.Validation(Size.class, null, "2", "x"));
         final ValidationDetection.ParamWithValidation maxParam = new ValidationDetection.ParamWithValidation("x", 0, validations);
-        Assertions.assertNotNull(v.validateParam(maxParam, "-0"));
-        Assertions.assertNotNull(v.validateParam(maxParam, "-521134"));
-        Assertions.assertNotNull(v.validateParam(maxParam, "-4.324"));
-        Assertions.assertNotNull(v.validateParam(maxParam, "1"));
-        Assertions.assertNotNull(v.validateParam(maxParam, ""));
-        Assertions.assertNotNull(v.validateParam(maxParam, "  "));
-        Assertions.assertNotNull(v.validateParam(maxParam, "    "));
-        Assertions.assertNotNull(v.validateParam(maxParam, "~"));
-        Assertions.assertNull(v.validateParam(maxParam, null));
+
+        //string size
+        Assertions.assertNull(v.validateParam(maxParam, "ab"));
+        Assertions.assertNotNull(v.validateParam(maxParam, "abcde"));
+
+        //collection/array
+        Assertions.assertNull(v.validateParam(maxParam, "['a','b']"));
+        Assertions.assertNotNull(v.validateParam(maxParam, "['a','b','c','d','e']"));
+
+        //map
+        Assertions.assertNull(v.validateParam(maxParam, "{x: 'd', z: 3}"));
+        Assertions.assertNotNull(v.validateParam(maxParam, "{x: 'd',y: 't',r: 'w', z: 3}"));
     }
 
-    /*
-        //TODO
-        future(validations, field);
-        futureOrPresent(validations, field);
-        past(validations, field);
-        pastOrPresent(validations, field);
-    */
+    @Test
+    void testFuture() {
+        List<ValidationDetection.Validation> validations = List.of(new ValidationDetection.Validation(Future.class, null, null, "x"));
+        final ValidationDetection.ParamWithValidation futureParam = new ValidationDetection.ParamWithValidation("x", 0, validations);
+        Assertions.assertNull(v.validateParam(futureParam, datePlusDays(1)));
+        Assertions.assertNull(v.validateParam(futureParam, datePlusDays(365)));
+        Assertions.assertNotNull(v.validateParam(futureParam, datePlusDays(-1)));
+        Assertions.assertNotNull(v.validateParam(futureParam, datePlusDays(0)));
+        Assertions.assertNotNull(v.validateParam(futureParam, "0"));
+        Assertions.assertNotNull(v.validateParam(futureParam, "xxx"));
+        Assertions.assertNotNull(v.validateParam(futureParam, "-4.324"));
+        Assertions.assertNotNull(v.validateParam(futureParam, "1"));
+        Assertions.assertNotNull(v.validateParam(futureParam, ""));
+        Assertions.assertNotNull(v.validateParam(futureParam, "  "));
+        Assertions.assertNotNull(v.validateParam(futureParam, "    "));
+        Assertions.assertNotNull(v.validateParam(futureParam, "~"));
+    }
+
+    @Test
+    void testFutureOrPresent() {
+        List<ValidationDetection.Validation> validations = List.of(new ValidationDetection.Validation(FutureOrPresent.class, null, null, "x"));
+        final ValidationDetection.ParamWithValidation futureOrPresentParam = new ValidationDetection.ParamWithValidation("x", 0, validations);
+        Assertions.assertNull(v.validateParam(futureOrPresentParam, datePlusDays(1)));
+        Assertions.assertNull(v.validateParam(futureOrPresentParam, datePlusDays(365)));
+        Assertions.assertNull(v.validateParam(futureOrPresentParam, datePlusDays(0)));
+        Assertions.assertNotNull(v.validateParam(futureOrPresentParam, datePlusDays(-1)));
+        Assertions.assertNotNull(v.validateParam(futureOrPresentParam, "0"));
+        Assertions.assertNotNull(v.validateParam(futureOrPresentParam, "xxx"));
+        Assertions.assertNotNull(v.validateParam(futureOrPresentParam, "-4.324"));
+        Assertions.assertNotNull(v.validateParam(futureOrPresentParam, "1"));
+        Assertions.assertNotNull(v.validateParam(futureOrPresentParam, ""));
+        Assertions.assertNotNull(v.validateParam(futureOrPresentParam, "  "));
+        Assertions.assertNotNull(v.validateParam(futureOrPresentParam, "    "));
+        Assertions.assertNotNull(v.validateParam(futureOrPresentParam, "~"));
+    }
+
+    @Test
+    void testPast() {
+        List<ValidationDetection.Validation> validations = List.of(new ValidationDetection.Validation(Past.class, null, null, "x"));
+        final ValidationDetection.ParamWithValidation pastParam = new ValidationDetection.ParamWithValidation("x", 0, validations);
+        Assertions.assertNull(v.validateParam(pastParam, datePlusDays(-1)));
+        Assertions.assertNull(v.validateParam(pastParam, datePlusDays(-365)));
+        Assertions.assertNotNull(v.validateParam(pastParam, datePlusDays(1)));
+        Assertions.assertNotNull(v.validateParam(pastParam, Long.toString(Long.MAX_VALUE)));
+        Assertions.assertNotNull(v.validateParam(pastParam, "xxx"));
+        Assertions.assertNotNull(v.validateParam(pastParam, "-4.324"));
+        Assertions.assertNotNull(v.validateParam(pastParam, ""));
+        Assertions.assertNotNull(v.validateParam(pastParam, "  "));
+        Assertions.assertNotNull(v.validateParam(pastParam, "    "));
+        Assertions.assertNotNull(v.validateParam(pastParam, "~"));
+    }
+
+    @Test
+    void testPastOrPresent() {
+        List<ValidationDetection.Validation> validations = List.of(new ValidationDetection.Validation(PastOrPresent.class, null, null, "x"));
+        final ValidationDetection.ParamWithValidation pastOrPresentParam = new ValidationDetection.ParamWithValidation("x", 0, validations);
+        Assertions.assertNull(v.validateParam(pastOrPresentParam, datePlusDays(0)));
+        Assertions.assertNull(v.validateParam(pastOrPresentParam, datePlusDays(-1)));
+        Assertions.assertNull(v.validateParam(pastOrPresentParam, datePlusDays(-365)));
+        Assertions.assertNotNull(v.validateParam(pastOrPresentParam, datePlusDays(1)));
+        Assertions.assertNotNull(v.validateParam(pastOrPresentParam, Long.toString(Long.MAX_VALUE)));
+        Assertions.assertNotNull(v.validateParam(pastOrPresentParam, "xxx"));
+        Assertions.assertNotNull(v.validateParam(pastOrPresentParam, "-4.324"));
+        Assertions.assertNotNull(v.validateParam(pastOrPresentParam, ""));
+        Assertions.assertNotNull(v.validateParam(pastOrPresentParam, "  "));
+        Assertions.assertNotNull(v.validateParam(pastOrPresentParam, "    "));
+        Assertions.assertNotNull(v.validateParam(pastOrPresentParam, "~"));
+    }
+
+    private String datePlusDays(int days) {
+        return Long.toString(System.currentTimeMillis() + (days*1000*60*60*24L));
+    }
 }

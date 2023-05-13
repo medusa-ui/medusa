@@ -259,15 +259,9 @@ Medusa.prototype.doFormAction = function(event, parentFragment, actionToExecute)
     _M.doAction(event, parentFragment, actionToExecute.replace(":{form}", JSON.stringify(formProps) ));
 };
 
+//a true value passes the validation, a false value fails it
+//so if I enter a negative number for Positive, it will return false
 validate = function(type, value, arg1, arg2) {
-    /*  TODO:
-        future(validations, field);
-        futureOrPresent(validations, field);
-        notNull(validations, field);
-        isNull(validations, field);
-        past(validations, field);
-        pastOrPresent(validations, field);
-        size(validations, field);*/
     if(type === "NotBlank") {
         return notBlank(value);
     } else if(type === "NotEmpty") {
@@ -294,9 +288,52 @@ validate = function(type, value, arg1, arg2) {
         return positiveOrZero(value);
     } else if(type === "NegativeOrZero") {
         return negativeOrZero(value);
+    } else if(type === "Future") {
+        return future(value, false);
+    } else if(type === "FutureOrPresent") {
+        return future(value, true);
+    } else if(type === "Past") {
+        return past(value, false);
+    } else if(type === "PastOrPresent") {
+        return past(value, true);
+    } else if(type === "Null") {
+        return value === null || value === undefined;
+    } else if(type === "NotNull") {
+        return value !== null && value !== undefined;
+    } else if(type === "Size") {
+        return size(value, arg1, arg2);
     }
+
     return true;
 };
+
+function size(value, min, max) {
+    if (value === null || value === undefined) {
+        return false;
+    }
+    if(min === null || min === undefined) {
+        min = "0";
+    }
+    let length = value.length;
+    if (typeof value === "object") {
+        length = Object.keys(value).length;
+    }
+    return !(length < Number(min) || (max !== undefined && length > Number(max)));
+}
+
+function past(value, allowPresent) {
+    if(allowPresent) {
+        return new Date(value) <= new Date();
+    }
+    return new Date(value) < new Date();
+}
+
+function future(value, allowPresent) {
+    if(allowPresent) {
+        return new Date(value) >= new Date();
+    }
+    return new Date(value) > new Date();
+}
 
 function negativeOrZero(value) {
     return value !== undefined && value.trim().length !== 0 && Number(value) <= 0;
