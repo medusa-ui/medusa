@@ -32,13 +32,12 @@ public class ValidationMessageResolver implements EmbeddedValueResolverAware {
 
     private String resolve(String message, String field, String validation, Locale locale) {
         String newValue = message;
-        if(newValue.startsWith("{")) {  // TODO why this check? Ignore this for now
-            newValue = message.replace("{", "${");
-        }
 
         try {
-            String i18n = resourceBundleMessageSource.getMessage(message, new String[]{field}, locale);
-            newValue = resolver.resolveStringValue(i18n);
+            if(newValue.startsWith("{")) {
+                String i18n = resourceBundleMessageSource.getMessage(message, new String[]{field}, locale);
+                newValue = resolver.resolveStringValue(i18n);
+            }
         } catch (IllegalArgumentException | NoSuchMessageException e) {
             return StandardEnglishValidationMessages.resolve(validation, field, message);
         }
