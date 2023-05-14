@@ -184,6 +184,10 @@ public enum ValidationDetection {
         public void setValue2(String value2) {
             this.value2 = value2;
         }
+
+        public String getFormContext() {
+            return formContext;
+        }
     }
 
     record ClassWithValidation(String clazz, List<MethodWithValidation> methods) {
