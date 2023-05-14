@@ -154,14 +154,14 @@ class ValidationExecutorTest {
 
     @Test
     void testDigits() {
-        List<ValidationDetection.Validation> validations = List.of(new ValidationDetection.Validation(Digits.class, "2", "4", "x"));
+        List<ValidationDetection.Validation> validations = List.of(new ValidationDetection.Validation(Digits.class, "2", "2", "x"));
         final ValidationDetection.ParamWithValidation patternParam = new ValidationDetection.ParamWithValidation("x", 0, validations);
         Assertions.assertNull(v.validateParam("", patternParam, "2"));
-        Assertions.assertNull(v.validateParam("", patternParam, "3"));
-        Assertions.assertNull(v.validateParam("", patternParam, "4"));
-        Assertions.assertNotNull(v.validateParam("", patternParam, "1"));
-        Assertions.assertNotNull(v.validateParam("", patternParam, "-2"));
-        Assertions.assertNotNull(v.validateParam("", patternParam, "8"));
+        Assertions.assertNull(v.validateParam("", patternParam, "3.23"));
+        Assertions.assertNull(v.validateParam("", patternParam, "4.010"));
+        Assertions.assertNotNull(v.validateParam("", patternParam, "1.12345"));
+        Assertions.assertNotNull(v.validateParam("", patternParam, "-2.345345"));
+        Assertions.assertNotNull(v.validateParam("", patternParam, "8.331"));
         Assertions.assertNotNull(v.validateParam("", patternParam, "  "));
         Assertions.assertNotNull(v.validateParam("", patternParam, "    "));
         Assertions.assertNotNull(v.validateParam("", patternParam, "~"));

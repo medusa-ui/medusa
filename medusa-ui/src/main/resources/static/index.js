@@ -248,15 +248,23 @@ Medusa.prototype.doFormAction = function(event, parentFragment, actionToExecute)
         if(form.getAttribute("onsubmit").indexOf(validationDef.formContext) === -1) {
             continue;
         }
-
-        let fieldElement = form.querySelector("[name='"+validationDef.field+"']");
-        if(fieldElement === undefined || fieldElement === null) {
-            throw new Error("Validation field '{}' not present in form".replace("{}", validationDef.field));
+        const field = validationDef.field;
+        let valueToCheck = formProps[field];
+        let fieldElement = form.querySelector("[name='"+field+"']");
+        const fieldType = fieldElement.getAttribute("type");
+        if(fieldElement.getAttribute("value") === null && fieldType === "checkbox") {
+            valueToCheck = !!fieldElement.checked;
+        } else if(fieldType === "date" || fieldType === "datetime-local") {
+            valueToCheck = new Date(fieldElement.value).getTime() + ""; //+ "L"
         }
-        let validationResult = validate(validationDef.validation, fieldElement.value, validationDef.value1, validationDef.value2);
-        debugLog("Local validation of field '"+validationDef.field+"': " + validationResult);
+        if(valueToCheck === undefined) {
+            valueToCheck = null;
+        }
+        formProps[field] = valueToCheck;
+        let validationResult = validate(validationDef.validation, valueToCheck, validationDef.value1, validationDef.value2);
+        debugLog("Local validation of field '"+field+"': " + validationResult);
         if(!validationResult) {
-            validationPass = markFieldAsFailedValidation(form, validationDef.field, validationDef.message);
+            validationPass = markFieldAsFailedValidation(form, field, validationDef.message);
         }
     }
 
@@ -333,17 +341,19 @@ function size(value, min, max) {
 }
 
 function past(value, allowPresent) {
+    const valAsNum = Number(value.replace("L", ""));
     if(allowPresent) {
-        return new Date(value) <= new Date();
+        return new Date(valAsNum) <= new Date();
     }
-    return new Date(value) < new Date();
+    return new Date(valAsNum) < new Date();
 }
 
 function future(value, allowPresent) {
+    const valAsNum = Number(value.replace("L", ""));
     if(allowPresent) {
-        return new Date(value) >= new Date();
+        return new Date(valAsNum) >= new Date();
     }
-    return new Date(value) > new Date();
+    return new Date(valAsNum) > new Date();
 }
 
 function negativeOrZero(value) {
@@ -362,8 +372,12 @@ function positive(value) {
     return value !== undefined && value.trim().length !== 0 && Number(value) > 0;
 }
 
-function digits(value, min, max) {
-    return value !== undefined && value.trim().length !== 0 && Number(value) >= Number(min) && Number(value) <= Number(max);
+function digits(value, integer, fractions) {
+    let regex = new RegExp(`^[0-9]{1,${integer}}$`);
+    if(Number(fractions) !== 0) {
+        regex = new RegExp(`^[0-9]{1,${integer}}([,.][0-9]{1,${fractions}})?$`);
+    }
+    return regex.test(value);
 }
 
 function decimalMin(value, minAsString) {

@@ -6,7 +6,7 @@ public enum StandardEnglishValidationMessages {
     ASSERT_TRUE("{} must be true"),
     DECIMAL_MAX("{} exceeds allowed maximum value"),
     DECIMAL_MIN("{} below allowed minimum value"),
-    DIGITS("{} must be a number within accepted range"),
+    DIGITS("{} must be a valid number with appropriate digits before the decimal point and fraction digits after the decimal point."),
     EMAIL("{} is not a valid email"),
     FUTURE("{} must be in the future"),
     FUTURE_OR_PRESENT("{} must be in the present or future"),

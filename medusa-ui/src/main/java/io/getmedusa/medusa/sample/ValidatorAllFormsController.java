@@ -44,6 +44,10 @@ public class ValidatorAllFormsController {
         return Attribute.$$("result", form.value(), "form", "DigitsForm");
     }
 
+    public List<Attribute> doDigits2Form(@Valid DigitsForm2 form){
+        return Attribute.$$("result", form.value(), "form", "Digits2Form");
+    }
+
     public List<Attribute> doEmailForm(@Valid EmailForm form){
         return Attribute.$$("result", form.value(), "form", "EmailForm");
     }
@@ -96,7 +100,7 @@ public class ValidatorAllFormsController {
         return Attribute.$$("result", form.value(), "form", "FutureOrPresentForm");
     }
     public List<Attribute> doPastForm(@Valid PastForm form){
-        return Attribute.$$("result", form.value(), "form", "PastOrPresentForm");
+        return Attribute.$$("result", form.value(), "form", "PastForm");
     }
 
     public List<Attribute> doPastOrPresentForm(@Valid PastOrPresentForm form){
@@ -119,15 +123,17 @@ public class ValidatorAllFormsController {
         return Attribute.$$("result", form.value.toString(), "form", "SizeMapForm");
     }
 
-    public record AssertFalseForm(@AssertFalse Boolean value) { }
+    public record AssertFalseForm(@AssertFalse boolean value) { }
 
-    public record AssertTrueForm(@AssertTrue Boolean value) { }
+    public record AssertTrueForm(@AssertTrue boolean value) { }
 
     public record DecimalMaxForm(@DecimalMax(value = "10", inclusive = false) Double value) { }
 
     public record DecimalMinForm(@DecimalMin(value = "2", inclusive = false) Double value) { }
 
     public record DigitsForm(@Digits(integer = 1, fraction = 1) BigDecimal value) { }
+
+    public record DigitsForm2(@Digits(integer = 2, fraction = 0) Double value) { }
 
     public record EmailForm(@Email String value) { }
 

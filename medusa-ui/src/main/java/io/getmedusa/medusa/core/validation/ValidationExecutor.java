@@ -5,6 +5,8 @@ import io.getmedusa.medusa.core.util.JSONUtils;
 import jakarta.validation.constraints.*;
 import org.apache.commons.lang3.math.NumberUtils;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.DecimalFormatSymbols;
 import java.util.*;
 
@@ -101,8 +103,8 @@ public enum ValidationExecutor {
 
     private boolean failsFuture(String valueToValidate, boolean allowPresent) {
         try {
-            if (valueToValidate == null || !NumberUtils.isParsable(valueToValidate.trim())) return true;
-            long longToValidate = Long.parseLong(valueToValidate.trim());
+            if (valueToValidate == null || !NumberUtils.isParsable(valueToValidate.trim().replace("L", ""))) return true;
+            long longToValidate = Long.parseLong(valueToValidate.trim().replace("L", ""));
             long now = System.currentTimeMillis();
             if(allowPresent) { now -= 10*1000; } //buffer of 10 seconds allowed
             return longToValidate <= now;
@@ -113,8 +115,8 @@ public enum ValidationExecutor {
 
     private boolean failsPast(String valueToValidate, boolean allowPresent) {
         try {
-            if (valueToValidate == null || !NumberUtils.isParsable(valueToValidate.trim())) return true;
-            long longToValidate = Long.parseLong(valueToValidate.trim());
+            if (valueToValidate == null || !NumberUtils.isParsable(valueToValidate.trim().replace("L", ""))) return true;
+            long longToValidate = Long.parseLong(valueToValidate.trim().replace("L", ""));
             long now = System.currentTimeMillis();
             if(allowPresent) { now += 10*1000; } //buffer of 10 seconds allowed
             return longToValidate >= now;
@@ -123,10 +125,27 @@ public enum ValidationExecutor {
         }
     }
 
-    private boolean failsDigits(String min, String max, String valueToValidate) {
-        double minVal = Double.parseDouble(min);
-        double maxVal = Double.parseDouble(max);
-        return failsRange(minVal, maxVal, valueToValidate);
+    private boolean failsDigits(String integer, String fraction, String valueToValidate) {
+        if (valueToValidate == null) {
+            return false;
+        }
+
+        try {
+            BigDecimal interpretedValue = new BigDecimal(valueToValidate.replace(",", "."));
+
+            BigDecimal original = new BigDecimal(valueToValidate.replace(",", "."));
+            interpretedValue = interpretedValue.setScale(Integer.parseInt(fraction), RoundingMode.DOWN);
+            if (original.compareTo(interpretedValue) != 0) {
+                return true;
+            }
+
+            int integerDigits = interpretedValue.precision() - interpretedValue.scale();
+            int fractionDigits = Math.max(interpretedValue.scale(), 0);
+
+            return !(integerDigits <= Integer.parseInt(integer) && fractionDigits <= Integer.parseInt(fraction));
+        } catch (NumberFormatException nfe) {
+            return true;
+        }
     }
 
     private boolean failsMin(String min, String valueToValidate) {
