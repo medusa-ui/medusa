@@ -1,6 +1,7 @@
 package io.getmedusa.medusa.core.util;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -18,6 +19,8 @@ public final class JSONUtils {
     private static ObjectMapper buildObjectMapper() {
         ObjectMapper m = new ObjectMapper();
         m.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        m.configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true);
+        m.configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES, true);
         m.setSerializationInclusion(JsonInclude.Include.NON_NULL);
 
         SimpleModule simpleModule = new SimpleModule();

@@ -15,22 +15,18 @@
 <body>
 
     <form m:submit="displayName(123, :{form}, ' ')">
-        <ul class="error" m:validation="all" validation="form-global"></ul>
+        <ul m:validation="all"></ul>
         <p>
             <label for="firstName">First name: </label>
             <input type="text" id="firstName" name="firstName" />
         </p>
-
-        <p class="error hidden" th:if="${validation_firstName != null}" th:text="${validation_firstName}"></p>
-
-        <p class="error hidden" m:validation="firstName" validation="firstName"></p>
+        <p m:validation="firstName"></p>
 
         <p>
             <label for="lastName">Last name: </label>
             <input type="text" id="lastName" name="lastName" />
         </p>
-
-        <p class="error hidden" m:validation="lastName" ></p>
+        <p m:validation="lastName"></p>
 
         <input type="submit" value="Submit">
     </form>

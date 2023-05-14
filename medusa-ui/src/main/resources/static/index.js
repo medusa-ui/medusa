@@ -202,10 +202,10 @@ Medusa.prototype.doFormAction = function(event, parentFragment, actionToExecute)
         event.preventDefault();
     }
 
-    clearAllValidation();
-
     const multiElems = [];
     const form = event.target;
+
+    clearAllValidation(form);
 
     for(const multiElem of form.querySelectorAll("[multiple]")) {
         multiElems.push(multiElem.name);
@@ -242,10 +242,21 @@ Medusa.prototype.doFormAction = function(event, parentFragment, actionToExecute)
     let validationPass = true;
 
     for(let validationDef of _M.validationsPossible) {
-        let validationResult = validate(validationDef.validation, document.querySelector("[name='"+validationDef.field+"']").value, validationDef.value1, validationDef.value2);
+        //validationDef.formContext = doNotEmptyForm
+        //onsubmit="_M.doFormAction(event, '__FRAGMENT__', `doNotEmptyForm(:{form})`)"
+        //so this part makes it so that you only apply the right frontend validations to the right form
+        if(form.getAttribute("onsubmit").indexOf(validationDef.formContext) === -1) {
+            continue;
+        }
+
+        let fieldElement = form.querySelector("[name='"+validationDef.field+"']");
+        if(fieldElement === undefined || fieldElement === null) {
+            throw new Error("Validation field '{}' not present in form".replace("{}", validationDef.field));
+        }
+        let validationResult = validate(validationDef.validation, fieldElement.value, validationDef.value1, validationDef.value2);
         debugLog("Local validation of field '"+validationDef.field+"': " + validationResult);
         if(!validationResult) {
-            validationPass = markFieldAsFailedValidation(validationDef.field, validationDef.message);
+            validationPass = markFieldAsFailedValidation(form, validationDef.field, validationDef.message);
         }
     }
 
@@ -259,15 +270,9 @@ Medusa.prototype.doFormAction = function(event, parentFragment, actionToExecute)
     _M.doAction(event, parentFragment, actionToExecute.replace(":{form}", JSON.stringify(formProps) ));
 };
 
+//a true value passes the validation, a false value fails it
+//so if I enter a negative number for Positive, it will return false
 validate = function(type, value, arg1, arg2) {
-    /*  TODO:
-        future(validations, field);
-        futureOrPresent(validations, field);
-        notNull(validations, field);
-        isNull(validations, field);
-        past(validations, field);
-        pastOrPresent(validations, field);
-        size(validations, field);*/
     if(type === "NotBlank") {
         return notBlank(value);
     } else if(type === "NotEmpty") {
@@ -294,9 +299,52 @@ validate = function(type, value, arg1, arg2) {
         return positiveOrZero(value);
     } else if(type === "NegativeOrZero") {
         return negativeOrZero(value);
+    } else if(type === "Future") {
+        return future(value, false);
+    } else if(type === "FutureOrPresent") {
+        return future(value, true);
+    } else if(type === "Past") {
+        return past(value, false);
+    } else if(type === "PastOrPresent") {
+        return past(value, true);
+    } else if(type === "Null") {
+        return value === null || value === undefined;
+    } else if(type === "NotNull") {
+        return value !== null && value !== undefined;
+    } else if(type === "Size") {
+        return size(value, arg1, arg2);
     }
+
     return true;
 };
+
+function size(value, min, max) {
+    if (value === null || value === undefined) {
+        return false;
+    }
+    if(min === null || min === undefined) {
+        min = "0";
+    }
+    let length = value.length;
+    if (typeof value === "object") {
+        length = Object.keys(value).length;
+    }
+    return !(length < Number(min) || (max !== undefined && length > Number(max)));
+}
+
+function past(value, allowPresent) {
+    if(allowPresent) {
+        return new Date(value) <= new Date();
+    }
+    return new Date(value) < new Date();
+}
+
+function future(value, allowPresent) {
+    if(allowPresent) {
+        return new Date(value) >= new Date();
+    }
+    return new Date(value) > new Date();
+}
 
 function negativeOrZero(value) {
     return value !== undefined && value.trim().length !== 0 && Number(value) <= 0;
@@ -347,52 +395,46 @@ function email(value) {
     return pattern(value, emailPattern);
 }
 
-markFieldAsFailedValidation = function(name, message) {
-    let field = document.querySelector("[validation='"+name+"']");
+markFieldAsFailedValidation = function(form, name, message) {
+    let field = form.querySelector("[validation='"+name+"']");
     if(null !== field) {
         //- make visible, add error class, add message
         field.innerText = message;
         field.classList.remove("hidden");
     }
 
-    let form = document.querySelector("[name='"+name+"']").closest("form");
-    if(null !== form) {
-        let validationGlobal = form.querySelector("ul[validation='form-global']");
-        if(null !== validationGlobal) {
-            //- make visible, added li with message
-            const li = document.createElement('li');
-            li.innerText = message;
-            validationGlobal.appendChild(li);
-        }
+    let validationGlobal = form.querySelector("ul[validation='form-global']");
+    if(null !== validationGlobal) {
+        //- make visible, added li with message
+        const li = document.createElement('li');
+        li.innerText = message;
+        validationGlobal.appendChild(li);
     }
 
     return false;
 };
 
-clearAllValidation = function () {
-    let allLi = document.querySelectorAll("ul[validation='form-global'] li");
+clearAllValidation = function (form) {
+    let allLi = form.querySelectorAll("ul[validation='form-global'] li");
     for(let li of allLi) {
         li.remove();
     }
-    for (const validationElement of document.querySelectorAll("[validation]:not([validation='form-global'])")) {
-        clearValidationErrorForField(validationElement.getAttribute("validation"));
+    for (const validationElement of form.querySelectorAll("[validation]:not([validation='form-global'])")) {
+        clearValidationErrorForField(form, validationElement.getAttribute("validation"));
     }
 }
 
-clearValidationErrorForField = function (name) {
-    let field = document.querySelector("[validation='"+name+"']");
+clearValidationErrorForField = function (form, name) {
+    let field = form.querySelector("[validation='"+name+"']");
     if(null !== field) {
         field.innerText = "";
         field.classList.add("hidden");
 
-        let form = document.querySelector("[name='" + name + "']").closest("form");
-        if(null !== form) {
-            let validationGlobal = form.querySelector("ul[validation='form-global']");
-            if(null !== validationGlobal) {
-                let relatedValidationError = validationGlobal.querySelector("[validation-error='" + name + "']");
-                if(null !== relatedValidationError) {
-                    relatedValidationError.remove();
-                }
+        let validationGlobal = form.querySelector("ul[validation='form-global']");
+        if(null !== validationGlobal) {
+            let relatedValidationError = validationGlobal.querySelector("[validation-error='" + name + "']");
+            if(null !== relatedValidationError) {
+                relatedValidationError.remove();
             }
         }
     }
@@ -532,6 +574,10 @@ handleRemoval = function(obj) {
     }
 };
 
+function findFormBasedOnContext(formContext) {
+    return document.querySelector("form[onsubmit*='{}']".replace("{}", formContext));
+}
+
 applyAllChanges = function (listOfDiffs) {
     for(let diff of listOfDiffs) {
         //main
@@ -551,7 +597,8 @@ applyAllChanges = function (listOfDiffs) {
         } else if(diff.type === "LOADING") {
             applyLoadingUpdate(escape(diff.content));
         } else if(diff.type === "VALIDATION") {
-            markFieldAsFailedValidation(diff.attributeKey, diff.attributeValue);
+            const formAttributeSplit = diff.attributeKey.split("#");
+            markFieldAsFailedValidation(findFormBasedOnContext(formAttributeSplit[0]), formAttributeSplit[1], diff.attributeValue);
         }
     }
 };
