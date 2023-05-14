@@ -420,24 +420,21 @@ clearAllValidation = function (form) {
         li.remove();
     }
     for (const validationElement of form.querySelectorAll("[validation]:not([validation='form-global'])")) {
-        clearValidationErrorForField(validationElement.getAttribute("validation"));
+        clearValidationErrorForField(form, validationElement.getAttribute("validation"));
     }
 }
 
-clearValidationErrorForField = function (name) {
-    let field = document.querySelector("[validation='"+name+"']");
+clearValidationErrorForField = function (form, name) {
+    let field = form.querySelector("[validation='"+name+"']");
     if(null !== field) {
         field.innerText = "";
         field.classList.add("hidden");
 
-        let form = document.querySelector("[name='" + name + "']").closest("form");
-        if(null !== form) {
-            let validationGlobal = form.querySelector("ul[validation='form-global']");
-            if(null !== validationGlobal) {
-                let relatedValidationError = validationGlobal.querySelector("[validation-error='" + name + "']");
-                if(null !== relatedValidationError) {
-                    relatedValidationError.remove();
-                }
+        let validationGlobal = form.querySelector("ul[validation='form-global']");
+        if(null !== validationGlobal) {
+            let relatedValidationError = validationGlobal.querySelector("[validation-error='" + name + "']");
+            if(null !== relatedValidationError) {
+                relatedValidationError.remove();
             }
         }
     }

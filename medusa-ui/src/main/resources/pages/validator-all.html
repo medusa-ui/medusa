@@ -15,43 +15,88 @@
             margin: 2em;
             padding: 1em;
         }
+        div#top {
+            position: fixed;
+            right: 1em;
+            width: 50%;
+            background: white;
+            top: 1em;
+        }
     </style>
 </head>
 <body>
-    <div class="wrapper">
+    <div id="top" class="wrapper">
         <p id="form-ran" th:text="${form}"></p>
         <p id="result" th:text="${result}"></p>
     </div>
 
     <form m:submit="doNoValidationForm(:{form})" class="wrapper">
         <h1>No validation check</h1>
-        <ul class="error" m:validation="all" validation="form-global"></ul>
+        <ul m:validation="all"></ul>
         <p><input type="text" name="value" /></p>
-        <p class="error hidden" th:if="${validation_value != null}" th:text="${validation_value}"></p>
-        <p class="error hidden" m:validation="value" validation="value"></p>
+        <p m:validation="value"></p>
 
         <input type="submit" value="Submit">
     </form>
 
     <form m:submit="doNotEmptyForm(:{form})" class="wrapper">
         <h1>Not Empty check</h1>
-        <ul class="error" m:validation="all" validation="form-global"></ul>
+        <ul m:validation="all"></ul>
          <p><input type="text" name="value" /></p>
-        <p class="error hidden" th:if="${validation_value != null}" th:text="${validation_value}"></p>
-        <p class="error hidden" m:validation="value" validation="value"></p>
+        <p m:validation="value"></p>
 
         <input type="submit" value="Submit">
     </form>
 
     <form m:submit="doNotBlankForm(:{form})" class="wrapper">
         <h1>Not Blank check</h1>
-        <ul class="error" m:validation="all" validation="form-global"></ul>
+        <ul m:validation="all"></ul>
         <p><input type="text" name="value" /></p>
-        <p class="error hidden" th:if="${validation_value != null}" th:text="${validation_value}"></p>
-        <p class="error hidden" m:validation="value" validation="value"></p>
+        <p m:validation="value"></p>
 
         <input type="submit" value="Submit">
     </form>
+
+    <form m:submit="doPatternForm(:{form})" class="wrapper">
+        <h1>Pattern check (b[aeiou]bble)</h1>
+        <ul m:validation="all"></ul>
+        <p><input type="text" name="value" /></p>
+        <p m:validation="value"></p>
+
+        <input type="submit" value="Submit">
+    </form>
+
+    <form m:submit="doEmailForm(:{form})" class="wrapper">
+        <h1>E-mail check</h1>
+        <ul m:validation="all"></ul>
+        <p><input type="text" name="value" /></p>
+        <p m:validation="value"></p>
+
+        <input type="submit" value="Submit">
+    </form>
+
+    <!--
+List<Attribute> doAssertFalseForm(@Valid AssertFalseForm form){
+List<Attribute> doAssertTrueForm(@Valid AssertTrueForm form){
+List<Attribute> doDecimalMaxForm(@Valid DecimalMaxForm form){
+List<Attribute> doDecimalMinForm(@Valid DecimalMinForm form){
+List<Attribute> doDigitsForm(@Valid DigitsForm form){
+List<Attribute> doMaxForm(@Valid MaxForm form){
+List<Attribute> doMinForm(@Valid MinForm form){
+List<Attribute> doNegativeForm(@Valid NegativeForm form){
+List<Attribute> doNegativeOrZeroForm(@Valid NegativeOrZeroForm form){
+List<Attribute> doPositiveForm(@Valid PositiveForm form){
+List<Attribute> doPositiveOrZeroForm(@Valid PositiveOrZeroForm form){
+List<Attribute> doNotNullForm(@Valid NotNullForm form){
+List<Attribute> doNullForm(@Valid NullForm form){
+List<Attribute> doFutureForm(@Valid FutureForm form){
+List<Attribute> doFutureOrPresentForm(@Valid FutureOrPresentForm form){
+List<Attribute> doPastForm(@Valid PastForm form){
+List<Attribute> doPastOrPresentForm(@Valid PastOrPresentForm form){
+List<Attribute> doSizeStringForm(@Valid SizeStringForm form){
+List<Attribute> doSizeArrayForm(@Valid SizeArrayForm form){
+List<Attribute> doSizeMapForm(@Valid SizeMapForm form){
+-->
 
 </body>
 </html>
