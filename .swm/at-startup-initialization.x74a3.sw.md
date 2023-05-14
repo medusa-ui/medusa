@@ -2,22 +2,23 @@
 id: x74a3
 title: At startup initialization
 file_version: 1.1.2
-app_version: 0.9.6-1
+app_version: 1.8.5
 ---
 
 ## Before each bean initialization
 
 Before any requests are served, the app goes through its startup initialization.
 
-This is a sequence of classes that get executed at in [[sym-text:RootDetector(240e0b25-4906-4e73-b0e3-2ec660823a0a)]]'s[[sym-text:postProcessBeforeInitialization(14de0be2-f4f3-4d4f-a769-80d564cad7a9)]] .
+This is a sequence of classes that get executed at in `RootDetector`'s`postProcessBeforeInitialization` .
 
 They are used for anything that is build-dependent and are usually intended to increase efficiency at runtime. Code that requires Reflection calls or Thymeleaf parsing, for example, is slow - but most likely they are not dynamic beyond compile time. As such, we sacrifice startup time to have a quicker runtime.
 
 Examples of this are determining which routes exist (which means going over all controllers and creating a routing map) or which fragments could be loaded.
 
-It all starts with the [[sym-text:RootDetector(240e0b25-4906-4e73-b0e3-2ec660823a0a)]]. This is the class that kicks off any initialization. That's all it does. Effectively this kicks off before each bean is initialized.
+It all starts with the `RootDetector`. This is the class that kicks off any initialization. That's all it does. Effectively this kicks off before each bean is initialized.
 
 <br/>
+
 
 <!-- NOTE-swimm-snippet: the lines below link your snippet to Swimm -->
 ### 📄 medusa-ui/src/main/java/io/getmedusa/medusa/core/boot/RootDetector.java
