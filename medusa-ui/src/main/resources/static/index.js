@@ -202,10 +202,10 @@ Medusa.prototype.doFormAction = function(event, parentFragment, actionToExecute)
         event.preventDefault();
     }
 
-    clearAllValidation();
-
     const multiElems = [];
     const form = event.target;
+
+    clearAllValidation(form);
 
     for(const multiElem of form.querySelectorAll("[multiple]")) {
         multiElems.push(multiElem.name);
@@ -242,10 +242,21 @@ Medusa.prototype.doFormAction = function(event, parentFragment, actionToExecute)
     let validationPass = true;
 
     for(let validationDef of _M.validationsPossible) {
-        let validationResult = validate(validationDef.validation, document.querySelector("[name='"+validationDef.field+"']").value, validationDef.value1, validationDef.value2);
+        //validationDef.formContext = doNotEmptyForm
+        //onsubmit="_M.doFormAction(event, '__FRAGMENT__', `doNotEmptyForm(:{form})`)"
+        //so this part makes it so that you only apply the right frontend validations to the right form
+        if(form.getAttribute("onsubmit").indexOf(validationDef.formContext) === -1) {
+            continue;
+        }
+
+        let fieldElement = form.querySelector("[name='"+validationDef.field+"']");
+        if(fieldElement === undefined || fieldElement === null) {
+            throw new Error("Validation field '{}' not present in form".replace("{}", validationDef.field));
+        }
+        let validationResult = validate(validationDef.validation, fieldElement.value, validationDef.value1, validationDef.value2);
         debugLog("Local validation of field '"+validationDef.field+"': " + validationResult);
         if(!validationResult) {
-            validationPass = markFieldAsFailedValidation(validationDef.field, validationDef.message);
+            validationPass = markFieldAsFailedValidation(form, validationDef.field, validationDef.message);
         }
     }
 
@@ -384,34 +395,31 @@ function email(value) {
     return pattern(value, emailPattern);
 }
 
-markFieldAsFailedValidation = function(name, message) {
-    let field = document.querySelector("[validation='"+name+"']");
+markFieldAsFailedValidation = function(form, name, message) {
+    let field = form.querySelector("[validation='"+name+"']");
     if(null !== field) {
         //- make visible, add error class, add message
         field.innerText = message;
         field.classList.remove("hidden");
     }
 
-    let form = document.querySelector("[name='"+name+"']").closest("form");
-    if(null !== form) {
-        let validationGlobal = form.querySelector("ul[validation='form-global']");
-        if(null !== validationGlobal) {
-            //- make visible, added li with message
-            const li = document.createElement('li');
-            li.innerText = message;
-            validationGlobal.appendChild(li);
-        }
+    let validationGlobal = form.querySelector("ul[validation='form-global']");
+    if(null !== validationGlobal) {
+        //- make visible, added li with message
+        const li = document.createElement('li');
+        li.innerText = message;
+        validationGlobal.appendChild(li);
     }
 
     return false;
 };
 
-clearAllValidation = function () {
-    let allLi = document.querySelectorAll("ul[validation='form-global'] li");
+clearAllValidation = function (form) {
+    let allLi = form.querySelectorAll("ul[validation='form-global'] li");
     for(let li of allLi) {
         li.remove();
     }
-    for (const validationElement of document.querySelectorAll("[validation]:not([validation='form-global'])")) {
+    for (const validationElement of form.querySelectorAll("[validation]:not([validation='form-global'])")) {
         clearValidationErrorForField(validationElement.getAttribute("validation"));
     }
 }
@@ -569,6 +577,10 @@ handleRemoval = function(obj) {
     }
 };
 
+function findFormBasedOnContext(formContext) {
+    return document.querySelector("form[onsubmit*='{}']".replace("{}", formContext));
+}
+
 applyAllChanges = function (listOfDiffs) {
     for(let diff of listOfDiffs) {
         //main
@@ -588,7 +600,8 @@ applyAllChanges = function (listOfDiffs) {
         } else if(diff.type === "LOADING") {
             applyLoadingUpdate(escape(diff.content));
         } else if(diff.type === "VALIDATION") {
-            markFieldAsFailedValidation(diff.attributeKey, diff.attributeValue);
+            const formAttributeSplit = diff.attributeKey.split("#");
+            markFieldAsFailedValidation(findFormBasedOnContext(formAttributeSplit[0]), formAttributeSplit[1], diff.attributeValue);
         }
     }
 };

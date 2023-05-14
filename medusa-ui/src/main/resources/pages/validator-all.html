@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:m="https://www.getmedusa.io/medusa.xsd">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        .error {
+            color: red;
+        }
+        .hidden {
+            display: none;
+        }
+        .wrapper {
+            border: 1px solid black;
+            margin: 2em;
+            padding: 1em;
+        }
+    </style>
+</head>
+<body>
+    <div class="wrapper">
+        <p id="form-ran" th:text="${form}"></p>
+        <p id="result" th:text="${result}"></p>
+    </div>
+
+    <form m:submit="doNoValidationForm(:{form})" class="wrapper">
+        <h1>No validation check</h1>
+        <ul class="error" m:validation="all" validation="form-global"></ul>
+        <p><input type="text" name="value" /></p>
+        <p class="error hidden" th:if="${validation_value != null}" th:text="${validation_value}"></p>
+        <p class="error hidden" m:validation="value" validation="value"></p>
+
+        <input type="submit" value="Submit">
+    </form>
+
+    <form m:submit="doNotEmptyForm(:{form})" class="wrapper">
+        <h1>Not Empty check</h1>
+        <ul class="error" m:validation="all" validation="form-global"></ul>
+         <p><input type="text" name="value" /></p>
+        <p class="error hidden" th:if="${validation_value != null}" th:text="${validation_value}"></p>
+        <p class="error hidden" m:validation="value" validation="value"></p>
+
+        <input type="submit" value="Submit">
+    </form>
+
+    <form m:submit="doNotBlankForm(:{form})" class="wrapper">
+        <h1>Not Blank check</h1>
+        <ul class="error" m:validation="all" validation="form-global"></ul>
+        <p><input type="text" name="value" /></p>
+        <p class="error hidden" th:if="${validation_value != null}" th:text="${validation_value}"></p>
+        <p class="error hidden" m:validation="value" validation="value"></p>
+
+        <input type="submit" value="Submit">
+    </form>
+
+</body>
+</html>
