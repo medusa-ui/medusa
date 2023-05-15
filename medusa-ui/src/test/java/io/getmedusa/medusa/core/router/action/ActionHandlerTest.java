@@ -18,7 +18,7 @@ class ActionHandlerTest {
 
     @BeforeEach
     public void setup() {
-        actionHandler = new ActionHandler(new ValidationMessageResolver());
+        actionHandler = new ActionHandler(new ValidationMessageResolver(null));
     }
 
     @Test

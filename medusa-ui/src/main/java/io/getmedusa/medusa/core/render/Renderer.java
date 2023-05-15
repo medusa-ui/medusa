@@ -16,6 +16,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.MessageSource;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DataBufferFactory;
 import org.springframework.core.io.buffer.DefaultDataBufferFactory;
@@ -51,10 +52,10 @@ public class Renderer {
     //see https://www.baeldung.com/spring-thymeleaf-fragments#markup-selector
     protected static final Set<String> MARKUP_SELECTORS = new HashSet<>();
     protected static final HashMap<String, Object> TEMPLATE_RESOLUTION_ATTRIBUTES = new HashMap<>();
-    protected static final Locale LOCALE = Locale.getDefault();
 
     private final String selfName;
     private final ValidationMessageResolver resolver;
+    private final MessageSource messageSource;
 
     /**
      * Thymeleaf renderer
@@ -63,11 +64,12 @@ public class Renderer {
     public Renderer(Set<AbstractProcessorDialect> dialects,
                     @Autowired(required = false) HydraConnectionController hydraConnectionController,
                     @Value("${medusa.name:self}") String selfName,
-                    ValidationMessageResolver resolver) {
+                    ValidationMessageResolver resolver, MessageSource messageSource) {
         this.bufferFactory = new DefaultDataBufferFactory();
 
         SpringWebFluxTemplateEngine templateEngine = new SpringWebFluxTemplateEngine();
         templateEngine.setEnableSpringELCompiler(true);
+        templateEngine.setMessageSource(messageSource);
         dialects.forEach(templateEngine::addDialect);
         this.engine = templateEngine;
         this.configuration = engine.getConfiguration();
@@ -75,12 +77,13 @@ public class Renderer {
 
         this.selfName = selfName;
         this.resolver = resolver;
+        this.messageSource = messageSource;
     }
 
     public Flux<DataBuffer> render(String templateHTML, Session session) {
         return loadFragments(templateHTML, session).flatMapMany(html -> {
-            //TODO try making this a SpringWebFluxEngineContext?
-            IContext context = new EngineContext(configuration, null, TEMPLATE_RESOLUTION_ATTRIBUTES, LOCALE, session.toLastParameterMap());
+            //TODO try making this a SpringWebFluxEngineContext / SpringWebFluxThymeleafRequestContext?
+            IContext context = new EngineContext(configuration, null, TEMPLATE_RESOLUTION_ATTRIBUTES, session.getLocale(), session.toLastParameterMap());
             return Flux.from(engine.processStream(
                     appendRSocketScriptAndAddHydraPath(convertToXHTML(html), session),
                     MARKUP_SELECTORS, context, bufferFactory, TEXT_HTML, UTF_8)
@@ -228,8 +231,8 @@ public class Renderer {
     }
 
     @Deprecated
-    public Flux<DataBuffer> renderFragment(String html, Map<String, Object> attributes) {
-        IContext context = new EngineContext(configuration, null, TEMPLATE_RESOLUTION_ATTRIBUTES, LOCALE, attributes);
+    public Flux<DataBuffer> renderFragment(String html, Map<String, Object> attributes, Locale locale) {
+        IContext context = new EngineContext(configuration, null, TEMPLATE_RESOLUTION_ATTRIBUTES, locale, attributes);
         return Flux.from(engine.processStream(convertToXHTML(html), MARKUP_SELECTORS, context, bufferFactory, TEXT_HTML, UTF_8));
     }
 
@@ -239,7 +242,7 @@ public class Renderer {
             return Flux.just(FluxUtils.stringToDataBuffer(html));
         }
         return loadFragments(html, session).flatMapMany(parsedHTML -> {
-            IContext context = new EngineContext(configuration, null, TEMPLATE_RESOLUTION_ATTRIBUTES, LOCALE, session.toLastParameterMap());
+            IContext context = new EngineContext(configuration, null, TEMPLATE_RESOLUTION_ATTRIBUTES, session.getLocale(), session.toLastParameterMap());
             return Flux.from(engine.processStream(convertToXHTML(parsedHTML), MARKUP_SELECTORS, context, bufferFactory, TEXT_HTML, UTF_8));
         });
     }

@@ -651,7 +651,8 @@ debugLog = function (objToLog) {
 };
 
 async function buildStream(rsocket) {
-    const encodedRoute = encodeRoute("event-emitter/" + _M.controller + "/" + _M.sessionId);
+    const locale = (navigator.language || navigator.userLanguage);
+    const encodedRoute = encodeRoute("event-emitter/" + _M.controller + "/" + _M.sessionId + "/" + locale);
     const map = new Map();
     map.set(WellKnownMimeType.MESSAGE_RSOCKET_ROUTING, encodedRoute);
     map.set(WellKnownMimeType.MESSAGE_RSOCKET_AUTHENTICATION, encodeSimpleAuthMetadata(_M.sessionId, _M.wsP));

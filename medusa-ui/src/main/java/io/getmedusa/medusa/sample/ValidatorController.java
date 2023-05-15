@@ -19,7 +19,7 @@ public class ValidatorController {
         return Attribute.$$("result", form.fullname());
     }
 
-    public record SampleForm(@NotBlank String firstName, @Pattern(regexp = "[a-zA-Z0-9]+") @NotBlank String lastName) {
+    public record SampleForm(@NotBlank(message = "{valid.firstname}") String firstName, @Pattern(regexp = "[a-zA-Z0-9]+") @NotBlank String lastName) {
         public String fullname() {
             return firstName + " " + lastName;
         }

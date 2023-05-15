@@ -15,7 +15,7 @@ class MedusaValidateTest extends MedusaTagTest {
 
     @BeforeEach
     public void init() {
-        this.renderer = new Renderer(Set.of(new MedusaDialect(Set.of(new MedusaValidate()))), null, "self", new ValidationMessageResolver());
+        this.renderer = new Renderer(Set.of(new MedusaDialect(Set.of(new MedusaValidate()))), null, "self", new ValidationMessageResolver(null));
     }
 
     private final String basicTemplateHTML = """

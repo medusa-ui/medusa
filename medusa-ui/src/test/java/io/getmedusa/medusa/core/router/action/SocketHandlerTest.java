@@ -66,7 +66,8 @@ class SocketHandlerTest {
         socketHandler.eventEmitter(new HashMap<>(),
                 Flux.just(socketAction),
                 findSampleHash(),
-                "sessionId");
+                "sessionId",
+                "en-US");
 
         //TODO StepVerifier.create(ServerSideDiffFlux).assertNext(Assertions::assertNotNull).then(ServerSideDiffFlux.ter)
     }
