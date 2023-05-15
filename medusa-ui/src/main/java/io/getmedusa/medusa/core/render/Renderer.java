@@ -55,7 +55,6 @@ public class Renderer {
 
     private final String selfName;
     private final ValidationMessageResolver resolver;
-    private final MessageSource messageSource;
 
     /**
      * Thymeleaf renderer
@@ -77,7 +76,6 @@ public class Renderer {
 
         this.selfName = selfName;
         this.resolver = resolver;
-        this.messageSource = messageSource;
     }
 
     public Flux<DataBuffer> render(String templateHTML, Session session) {
