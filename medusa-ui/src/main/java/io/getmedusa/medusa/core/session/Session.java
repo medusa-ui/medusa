@@ -5,7 +5,6 @@ import io.getmedusa.medusa.core.attributes.Attribute;
 import io.getmedusa.medusa.core.attributes.StandardAttributeKeys;
 import io.getmedusa.medusa.core.router.action.FileUploadMeta;
 import io.getmedusa.medusa.core.router.action.SocketSink;
-import io.getmedusa.medusa.core.router.request.IRequestStreamHandler;
 import io.getmedusa.medusa.core.router.request.Route;
 import io.getmedusa.medusa.core.util.AttributeUtils;
 import io.getmedusa.medusa.core.util.RandomUtils;
@@ -25,7 +24,8 @@ public class Session {
     private final String hydraPath;
     private boolean matched;
     private boolean initialRender = true;
-    private Locale locale;
+    private Locale locale = Locale.US;
+
     private Map<String, FileUploadMeta> pendingFileUploads = new HashMap<>();
 
     private int depth;
@@ -53,16 +53,6 @@ public class Session {
         setLastUsedHash(route.generateHash());
         getTags().put(StandardSessionTagKeys.ROUTE, request.path());
         getTags().put(StandardSessionTagKeys.CONTROLLER, route.getController().getClass().getName());
-    }
-
-    public void setLocale(Locale locale) { // TODO not a real setter
-        if(null != locale && IRequestStreamHandler.AVAILABLE_LOCALES.contains(locale)) {
-            this.locale = locale;
-        }
-    }
-
-    public Locale getLocale() {  // TODO not a real getter
-        return locale == null ? Locale.US : locale;
     }
 
     public String getLastUsedTemplate() {
@@ -210,5 +200,18 @@ public class Session {
 
     public void setPendingFileUploads(Map<String, FileUploadMeta> pendingFileUploads) {
         this.pendingFileUploads = pendingFileUploads;
+    }
+
+    public Locale getLocale() {
+        return locale;
+    }
+
+    public void setLocale(Locale locale) {
+        this.locale = locale;
+    }
+
+    public Session withLocale(String localeString) {
+        this.setLocale(Locale.forLanguageTag(localeString.trim()));
+        return this;
     }
 }

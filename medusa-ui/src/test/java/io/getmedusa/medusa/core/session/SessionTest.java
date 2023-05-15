@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 class SessionTest {
@@ -33,6 +34,19 @@ class SessionTest {
 
         Assertions.assertEquals(3, lastParameters.get("x"));
         Assertions.assertEquals(2, lastParameters.get("y"));
+    }
+
+    @Test
+    void testLocaleSetting() {
+        Session session = new Session();
+        session = session.withLocale("en-US");
+        Assertions.assertEquals(Locale.US, session.getLocale());
+
+        session = session.withLocale("en-GB");
+        Assertions.assertEquals(Locale.UK, session.getLocale());
+
+        session = session.withLocale("it");
+        Assertions.assertEquals(Locale.ITALIAN, session.getLocale());
     }
 
 }

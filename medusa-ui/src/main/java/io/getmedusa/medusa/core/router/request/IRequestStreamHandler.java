@@ -13,14 +13,9 @@ import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.util.List;
-import java.util.Locale;
-
 import static org.springframework.web.reactive.function.server.ServerResponse.ok;
 
 public interface IRequestStreamHandler {
-
-    List<Locale> AVAILABLE_LOCALES = List.of(Locale.US, Locale.of("nl"), Locale.of("en")); // TODO make configurable via properties
 
     HandlerFunction<ServerResponse> startSessionAndBuildHTML(Route route);
 
@@ -37,7 +32,6 @@ public interface IRequestStreamHandler {
 
     private Flux<DataBuffer> renderWithSession(ServerRequest request, Route route, Renderer renderer, SessionMemoryRepository sessionMemoryRepository) {
         final Session session = new Session(route, request);
-        session.setLocale(Locale.lookup(request.headers().acceptLanguage(), AVAILABLE_LOCALES));
         final Flux<DataBuffer> render = renderer.render(route.getTemplateHTML(), session);
         session.setLastRenderedHTML(FluxUtils.dataBufferFluxToString(render));
         sessionMemoryRepository.store(session);

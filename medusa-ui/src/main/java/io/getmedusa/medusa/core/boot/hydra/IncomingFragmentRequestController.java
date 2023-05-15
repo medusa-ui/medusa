@@ -20,6 +20,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
+import java.util.Locale;
 
 @RestController
 @ConditionalOnProperty(name = "medusa.hydra.uri")
@@ -45,7 +46,7 @@ public class IncomingFragmentRequestController {
         if(this.publicKey.equals(publicKey)) {
             for (Fragment request : fragmentRequestWrapper.getRequests()) {
                 final String rawHTML = RefDetection.INSTANCE.findRef(request.getRef());
-                final Flux<DataBuffer> bufferFlux = renderer.renderFragment(rawHTML, fragmentRequestWrapper.getAttributes());
+                final Flux<DataBuffer> bufferFlux = renderer.renderFragment(rawHTML, fragmentRequestWrapper.getAttributes(), Locale.US); //TODO locale
                 flux = flux.concatWith(bufferFlux.map(dataBuffer -> {
                     final RenderedFragment renderedFragment = new RenderedFragment();
                     renderedFragment.setId(request.getId());

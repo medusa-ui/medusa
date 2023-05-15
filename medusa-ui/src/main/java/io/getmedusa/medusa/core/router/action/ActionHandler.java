@@ -94,7 +94,7 @@ public class ActionHandler {
             } else {
                 List<ServerSideDiff> validatorViolation = new ArrayList<>();
                 for(ValidationError violation : violations) {
-                    validatorViolation.add(ServerSideDiff.buildValidation(violation.formContext() + "#" + violation.field(), resolver.resolveMessage(violation)));
+                    validatorViolation.add(ServerSideDiff.buildValidation(violation.formContext() + "#" + violation.field(), resolver.resolveMessage(violation, session.getLocale())));
                 }
                 return List.of(new Attribute(StandardAttributeKeys.VALIDATION, validatorViolation));
             }
