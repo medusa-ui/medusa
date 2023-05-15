@@ -6,6 +6,7 @@ import io.getmedusa.medusa.core.validation.ValidationError;
 import io.getmedusa.medusa.core.validation.ValidationExecutor;
 import io.getmedusa.medusa.core.validation.ValidationMessageResolver;
 import jakarta.validation.Valid;
+import org.springframework.expression.spel.standard.SpelExpressionParser;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
@@ -16,6 +17,7 @@ public enum ValidationDetection {
 
     INSTANCE;
 
+    public static final SpelExpressionParser SPEL_EXPRESSION_PARSER = new SpelExpressionParser();
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     private final ValidationList classesWithValidMethods = new ValidationList(new ArrayList<>());
@@ -75,12 +77,8 @@ public enum ValidationDetection {
     private String getValue(ParamWithValidation param, List<String> parameters) {
         String field = parameters.get(param.index).trim();
         if(field.startsWith("{") && field.endsWith("}")) {
-            try {
-                Map map = objectMapper.readValue(field, Map.class);
-                return map.getOrDefault(param.field, "").toString();
-            } catch (JsonProcessingException e) {
-                throw new RuntimeException(e);
-            }
+            Map map = SPEL_EXPRESSION_PARSER.parseExpression(field).getValue(Map.class);
+            return map.getOrDefault(param.field, "").toString();
         }
         return field;
     }

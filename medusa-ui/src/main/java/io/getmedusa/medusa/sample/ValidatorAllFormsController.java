@@ -18,7 +18,10 @@ import java.util.Map;
 public class ValidatorAllFormsController {
 
     public List<Attribute> setupAttributes(){
-        return Attribute.$$("result", "No result yet", "form", "No form run yet");
+        return Attribute.$$(
+                "result", "No result yet",
+                "form", "No form run yet",
+                "fruits", List.of("Apple", "Banana", "Lemon", "Orange", "Strawberry"));
     }
 
     public List<Attribute> doNoValidationForm(EmailForm form){
@@ -116,7 +119,7 @@ public class ValidatorAllFormsController {
     }
 
     public List<Attribute> doSizeArrayForm(@Valid SizeArrayForm form){
-        return Attribute.$$("result", Arrays.toString(form.value()), "form", "SizeArrayForm");
+        return Attribute.$$("result", Arrays.toString(form.value().toArray()), "form", "SizeArrayForm");
     }
 
     public List<Attribute> doSizeMapForm(@Valid SizeMapForm form){
@@ -168,7 +171,7 @@ public class ValidatorAllFormsController {
 
     public record SizeStringForm(@Size(max = 12) String value) { }
 
-    public record SizeArrayForm(@Size(max = 2) String[] value) { }
+    public record SizeArrayForm(@Size(max = 2) List<String> value) { }
 
     public record SizeMapForm(@Size(max = 2) Map<String, String> value) { }
 

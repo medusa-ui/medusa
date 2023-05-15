@@ -4,6 +4,7 @@ import io.getmedusa.medusa.core.boot.ValidationDetection;
 import io.getmedusa.medusa.core.util.JSONUtils;
 import jakarta.validation.constraints.*;
 import org.apache.commons.lang3.math.NumberUtils;
+import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -87,6 +88,7 @@ public enum ValidationExecutor {
         return null;
     }
 
+
     private boolean failsSize(String valueToValidate, String minSize, String maxSize) {
         if(minSize == null) {
             minSize = "0";
@@ -94,7 +96,14 @@ public enum ValidationExecutor {
         valueToValidate = valueToValidate.trim();
         int length = valueToValidate.length();
         if (valueToValidate.startsWith("[")) {
-            length = JSONUtils.deserialize(valueToValidate, Object[].class).length;
+            String substring = valueToValidate.substring(1, valueToValidate.length()-1);
+            if(substring.startsWith("\"")) {
+                length = StringUtils.countOccurrencesOf(valueToValidate, "\",") + 1;
+            } else if(substring.startsWith("'")) {
+                length = StringUtils.countOccurrencesOf(valueToValidate, "',") + 1;
+            } else {
+                length = StringUtils.countOccurrencesOf(valueToValidate, ",") + 1;
+            }
         } else if (valueToValidate.startsWith("{")) {
             length = JSONUtils.deserialize(valueToValidate, Map.class).size();
         }

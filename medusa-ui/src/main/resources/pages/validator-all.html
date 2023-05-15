@@ -146,6 +146,15 @@
         <input type="submit" value="Submit">
     </form>
 
+    <form m:submit="doFutureOrPresentForm(:{form})" class="wrapper">
+        <h1>Future check</h1>
+        <ul m:validation="all"></ul>
+        <p><input type="date" name="value" /></p>
+        <p m:validation="value"></p>
+
+        <input type="submit" value="Submit">
+    </form>
+
     <form m:submit="doPastForm(:{form})" class="wrapper">
         <h1>Past check</h1>
         <ul m:validation="all"></ul>
@@ -154,23 +163,118 @@
 
         <input type="submit" value="Submit">
     </form>
-<!--
-List<Attribute> doMaxForm(@Valid MaxForm form){
-List<Attribute> doMinForm(@Valid MinForm form){
-List<Attribute> doNegativeForm(@Valid NegativeForm form){
-List<Attribute> doNegativeOrZeroForm(@Valid NegativeOrZeroForm form){
-List<Attribute> doPositiveForm(@Valid PositiveForm form){
-List<Attribute> doPositiveOrZeroForm(@Valid PositiveOrZeroForm form){
-List<Attribute> doNotNullForm(@Valid NotNullForm form){
-List<Attribute> doNullForm(@Valid NullForm form){
-List<Attribute> doFutureForm(@Valid FutureForm form){
-List<Attribute> doFutureOrPresentForm(@Valid FutureOrPresentForm form){
-List<Attribute> doPastForm(@Valid PastForm form){
-List<Attribute> doPastOrPresentForm(@Valid PastOrPresentForm form){
-List<Attribute> doSizeStringForm(@Valid SizeStringForm form){
-List<Attribute> doSizeArrayForm(@Valid SizeArrayForm form){
-List<Attribute> doSizeMapForm(@Valid SizeMapForm form){
--->
+
+    <form m:submit="doPastOrPresentForm(:{form})" class="wrapper">
+        <h1>Past check</h1>
+        <ul m:validation="all"></ul>
+        <p><input type="datetime-local" name="value" /></p>
+        <p m:validation="value"></p>
+
+        <input type="submit" value="Submit">
+    </form>
+
+    <form m:submit="doMaxForm(:{form})" class="wrapper">
+        <h1>Max check (123)</h1>
+        <ul m:validation="all"></ul>
+        <p><input type="text" name="value" /></p>
+        <p m:validation="value"></p>
+
+        <input type="submit" value="Submit">
+    </form>
+
+    <form m:submit="doMinForm(:{form})" class="wrapper">
+        <h1>Min check (300)</h1>
+        <ul m:validation="all"></ul>
+        <p><input type="text" name="value" /></p>
+        <p m:validation="value"></p>
+
+        <input type="submit" value="Submit">
+    </form>
+
+    <form m:submit="doNegativeForm(:{form})" class="wrapper">
+        <h1>Negative check</h1>
+        <ul m:validation="all"></ul>
+        <p><input type="number" name="value" /></p>
+        <p m:validation="value"></p>
+
+        <input type="submit" value="Submit">
+    </form>
+
+    <form m:submit="doNegativeOrZeroForm(:{form})" class="wrapper">
+        <h1>Negative or zero check</h1>
+        <ul m:validation="all"></ul>
+        <p><input type="number" name="value" /></p>
+        <p m:validation="value"></p>
+
+        <input type="submit" value="Submit">
+    </form>
+
+    <form m:submit="doPositiveForm(:{form})" class="wrapper">
+        <h1>Positive check</h1>
+        <ul m:validation="all"></ul>
+        <p><input type="number" name="value" /></p>
+        <p m:validation="value"></p>
+
+        <input type="submit" value="Submit">
+    </form>
+
+    <form m:submit="doPositiveOrZeroForm(:{form})" class="wrapper">
+        <h1>Positive or zero check</h1>
+        <ul m:validation="all"></ul>
+        <p><input type="number" name="value" /></p>
+        <p m:validation="value"></p>
+
+        <input type="submit" value="Submit">
+    </form>
+
+    <form m:submit="doSizeStringForm(:{form})" class="wrapper">
+        <h1>Size (String, max 12)</h1>
+        <ul m:validation="all"></ul>
+        <p><input type="text" name="value" /></p>
+        <p m:validation="value"></p>
+
+        <input type="submit" value="Submit">
+    </form>
+
+    <form m:submit="doSizeArrayForm(:{form})" class="wrapper">
+        <h1>Size (Array, max 2)</h1>
+        <ul m:validation="all"></ul>
+        <p>
+            <select name="value" multiple="multiple" size="4">
+                <option
+                        th:each="fruit: ${fruits}"
+                        th:value="${fruit}"
+                        th:text="${fruit}"
+                > a fruit</option>
+            </select>
+        </p>
+        <p m:validation="value"></p>
+
+        <input type="submit" value="Submit">
+    </form>
+
+    <form m:submit="doSizeMapForm(:{form})" class="wrapper">
+        <h1>Size (Map, max 2)</h1>
+        <ul m:validation="all"></ul>
+        <p>???</p>
+        <p m:validation="value"></p>
+
+        <input type="submit" value="Submit">
+    </form>
+
+    <form m:submit="doNotNullForm(:{form})" class="wrapper">
+        <h1>Not null</h1>
+        <ul m:validation="all"></ul>
+        <p><input type="text" name="value" /></p>
+        <p m:validation="value"></p>
+
+        <input type="submit" value="Submit">
+    </form>
+
+    <form m:submit="doNullForm(:{form})" class="wrapper">
+        <h1>Null</h1>
+        <p>??</p>
+    </form>
 
 </body>
 </html>

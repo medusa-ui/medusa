@@ -255,7 +255,7 @@ Medusa.prototype.doFormAction = function(event, parentFragment, actionToExecute)
         if(fieldElement.getAttribute("value") === null && fieldType === "checkbox") {
             valueToCheck = !!fieldElement.checked;
         } else if(fieldType === "date" || fieldType === "datetime-local") {
-            valueToCheck = new Date(fieldElement.value).getTime() + ""; //+ "L"
+            valueToCheck = new Date(fieldElement.value).getTime() + "";
         }
         if(valueToCheck === undefined) {
             valueToCheck = null;
