@@ -40,7 +40,7 @@ public abstract class MedusaTagTest {
 
     @BeforeEach
     public void init() {
-        this.renderer = new Renderer(Set.of(medusaDialect), null,  "self", new ValidationMessageResolver(null));
+        this.renderer = new Renderer(Set.of(medusaDialect), null,  "self", new ValidationMessageResolver(null), null);
     }
 
 }
