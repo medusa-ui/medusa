@@ -13,8 +13,8 @@
     </style>
 </head>
 <body>
-
-    <form m:submit="displayName(123, :{form}, ' ')">
+    <h5 th:text="#{validation.title}"></h5>
+    <form m:ref="validation-form" m:submit="displayName(123, :{form}, ' ')">
         <ul m:validation="all"></ul>
         <p>
             <label for="firstName">First name: </label>
