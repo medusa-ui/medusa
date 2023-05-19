@@ -28,7 +28,7 @@ public enum RouteDetection {
         final UIEventPage annotation = retrieveAnnotation(bean);
         if(null != annotation) {
             final String rawHTML = FileUtils.load(annotation.file());
-            final String fragmentDetectedHTML = FragmentDetection.INSTANCE.prepFile(rawHTML);
+            final String fragmentDetectedHTML = FragmentDetection.INSTANCE.prepFile(bean, rawHTML);
             FormDetection.INSTANCE.prepFile(fragmentDetectedHTML, bean);
             final String staticResourceDetectedHTML = StaticResourcesDetection.INSTANCE.detectUsedResources(fragmentDetectedHTML);
             Route route = new Route(

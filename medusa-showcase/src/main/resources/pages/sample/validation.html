@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:m="https://www.getmedusa.io/medusa.xsd">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medusa - Component detail</title>
+</head>
+<body>
+
+<div id="container" m:ref="validation">
+    <section id="hero">
+        <h1>Validation</h1>
+
+        <p class="lead">Validation works with annotations from the jakarta.validation library. These get generated into both JS checks and backend checks. As a developer, you only need to configure the annotations and the HTML.</p>
+
+        <a id="back-to-overview" href="/">Back to overview</a>
+    </section>
+
+    <h2>Validation</h2>
+    <p>Validate a form being submitted by adding the @Valid annotation in front of the form as method parameter. The annotations used in your form determine both the frontend and backend validation checks.</p>
+
+    <section class="example">
+
+        <div style="display: flex">
+            <form m:submit="validateMyForm(:{form})">
+                <ul m:validation="all"></ul>
+
+                <p><label for="email">Email: </label> <input type="text" id="email" name="email" /></p>
+                <p m:validation="email"></p>
+
+                <p><label for="yearOfBirth">Year of birth: </label> <input type="text" id="yearOfBirth" name="yearOfBirth" /></p>
+                <p m:validation="yearOfBirth"></p>
+
+                <input id="btn_displayForm" type="submit" value="Submit">
+            </form>
+
+            <div class="example-result" th:text="${result}"></div>
+        </div>
+
+        <footer th:text="${version}"></footer>
+    </section>
+
+    <section class="client">
+        <h3>Client</h3>
+        <pre><code class="language-html hljs" th:text="${clientCode[0]}"></code></pre>
+    </section>
+
+    <section class="server">
+        <h3>Server</h3>
+        <pre><code class="language-java hljs" th:text="${serverCode[0]}"></code></pre>
+    </section>
+
+</div>
+</body>
+</html>

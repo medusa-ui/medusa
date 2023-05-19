@@ -11,6 +11,14 @@ public class Component {
     private static Map<String, List<Component>> buildCategories() {
         final Map<String, List<Component>> map = new LinkedHashMap<>();
 
+        map.put("Controller", List.of(
+                new Component("Path variables", "pathvariable",
+                        new String[]{"/samples/button/basic/page.txt"},
+                        new String[]{"/samples/button/basic/controller.txt"}),
+                new Component("URL parameters"),
+                new Component("Headers")
+        ));
+
         map.put("Button", List.of(
                 new Component("Basic button", "basic-button",
                         new String[]{"/samples/button/basic/page.txt"},
@@ -24,7 +32,9 @@ public class Component {
                         new String[]{"/samples/textinputs/formsubmit/page_map.txt", "/samples/textinputs/formsubmit/page_form.txt"},
                         new String[]{"/samples/textinputs/formsubmit/controller_map.txt", "/samples/textinputs/formsubmit/controller_form.txt"}),
                 new Component("Search"),
-                new Component("Validation")
+                new Component("Validation", "validation",
+                        new String[]{"/samples/textinputs/validation/page.txt"},
+                        new String[]{"/samples/textinputs/validation/controller.txt"})
         ));
 
         map.put("Var inputs", List.of(
@@ -65,6 +75,10 @@ public class Component {
                         new String[]{"/samples/navigation/ForwardingController_page.txt", "/samples/navigation/ForwardingServerInitController_page.txt"},
                         new String[]{"/samples/navigation/ForwardingController.txt", "/samples/navigation/ForwardingServerInitController.txt"}),
                 new Component("Menubar")
+        ));
+
+        map.put("Javascript", List.of(
+                new Component("Event hooks")
         ));
 
         map.put("Embedding", List.of(

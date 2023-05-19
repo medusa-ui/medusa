@@ -2,6 +2,9 @@ package io.getmedusa.medusa.core.boot;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
+import io.getmedusa.medusa.core.annotation.UIEventPageCallWrapper;
 import io.getmedusa.medusa.core.validation.ValidationError;
 import io.getmedusa.medusa.core.validation.ValidationExecutor;
 import io.getmedusa.medusa.core.validation.ValidationMessageResolver;
@@ -22,13 +25,48 @@ public enum ValidationDetection {
 
     private final ValidationList classesWithValidMethods = new ValidationList(new ArrayList<>());
 
+    private Cache<String, String> frontendValidationsCache = Caffeine.newBuilder()
+            .maximumSize(2000L)
+            .build();
+
+    /*
+    * on boot //
+    * look through all controllers and find each of their templates (maybe this is already done)
+    * if the template has a m:fragment="...", we need to store the relevant controller as ROOT
+    * if the template has a m:ref="...", we need to store the relevant controller as REF
+    *
+    *
+    * on render //
+    * if we render a ROOT, and thus check its buildFrontendValidations with ROOT as String controller
+    * then we need to see if any controllers are related as REF
+    * if they are, we need to also go over them and attach these as FrontendValidations
+    */
     public String buildFrontendValidations(String controller, ValidationMessageResolver resolver) {
-        try {
-            List<FrontEndValidation> frontEndValidations = resolver.resolveMessages(classesWithValidMethods.findFrontEndValidationsForController(controller));
-            return objectMapper.writeValueAsString(frontEndValidations);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
+        return frontendValidationsCache.get(controller, c -> {
+            try {
+                List<FrontEndValidation> frontEndValidations = resolver.resolveMessages(classesWithValidMethods.findFrontEndValidationsForController(controller));
+                List<String> controllerFragments = findFragmentsForController(controller);
+                for(String controllerFragment : controllerFragments) {
+                    List<FrontEndValidation> additionalFrontEndValidations = resolver.resolveMessages(classesWithValidMethods.findFrontEndValidationsForController(controllerFragment));
+                    frontEndValidations.addAll(additionalFrontEndValidations);
+                }
+                return objectMapper.writeValueAsString(frontEndValidations);
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException(e);
+            }
+        });
+    }
+
+    private List<String> findFragmentsForController(String controller) {
+        List<String> refsRelatedToController = FragmentDetection.INSTANCE.getRootFragmentsUsed().getOrDefault(controller, List.of());
+        List<String> fragmentControllers = new ArrayList<>();
+        for(String refRelatedToController : refsRelatedToController) {
+            UIEventPageCallWrapper wrapper = RefDetection.INSTANCE.getRefToBeanMap().getOrDefault(refRelatedToController, null);
+            if(wrapper != null) {
+                fragmentControllers.add(wrapper.getController().getClass().getName());
+            }
         }
+        return fragmentControllers;
     }
 
     public void consider(Object bean) {

@@ -1,0 +1,15 @@
+<form m:submit="validateMyForm(:{form})">
+    <ul m:validation="all"></ul> <!-- This creates a generic validation list up top -->
+
+    <p><label for="email">Email: </label>
+    <input type="text" id="email" name="email" /></p>
+    <p m:validation="email"></p> <!-- This adds the validation message for email -->
+
+    <p><label for="yearOfBirth">Year of birth: </label>
+    <input type="text" id="yearOfBirth" name="yearOfBirth" /></p>
+    <p m:validation="yearOfBirth"></p> <!-- Same for the year -->
+
+    <input id="btn_displayForm" type="submit" value="Submit">
+</form>
+
+<div class="example-result" th:text="${result}"></div>

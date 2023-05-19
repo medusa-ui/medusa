@@ -84,12 +84,12 @@ class FragmentDetectionTest {
 
     @Test
     void testFindingFragments() {
-        String html = FragmentDetection.INSTANCE.prepFile(htmlWithoutTags);
+        String html = FragmentDetection.INSTANCE.prepFile(null, htmlWithoutTags);
         Assertions.assertEquals(0, FragmentDetection.INSTANCE.getFragmentIds().size());
         Assertions.assertEquals(htmlWithoutTags, html);
         Assertions.assertEquals(0, FragmentDetection.INSTANCE.detectWhichFragmentsArePresent(html, null).size());
 
-        html = FragmentDetection.INSTANCE.prepFile(htmlWithTags);
+        html = FragmentDetection.INSTANCE.prepFile(null, htmlWithTags);
         Assertions.assertEquals(2, FragmentDetection.INSTANCE.getFragmentIds().size());
         Assertions.assertFalse(html.contains(":fragment"));
 
