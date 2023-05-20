@@ -11,7 +11,7 @@
     <section id="hero">
         <h1>Validation</h1>
 
-        <p class="lead">Validation works with annotations from the jakarta.validation library. These get generated into both JS checks and backend checks. As a developer, you only need to configure the annotations and the HTML.</p>
+        <p class="lead">Validation works with annotations from the jakarta.validation library. These are generated into both frontend javascript and backend java checks. As a developer, you only need to configure the annotations and the HTML.</p>
 
         <a id="back-to-overview" href="/">Back to overview</a>
     </section>
@@ -48,6 +48,37 @@
     <section class="server">
         <h3>Server</h3>
         <pre><code class="language-java hljs" th:text="${serverCode[0]}"></code></pre>
+    </section>
+
+
+    <h2>Custom messages</h2>
+    <p>When a validation fails, it will show a message. This message can be customized. By default, each annotation has a generic english message associated with it. You can customize the messages by adding a properties tag to the annotation. This will affect both the frontend and backend messaging. The locale used is based on what the browser sends during the creation of the session.</p>
+
+    <section class="example">
+
+        <div style="display: flex">
+            <form m:submit="validateMyFormWithACustomMessage(:{form}.email2)">
+
+                <p><label for="email_custom_message">Email: </label> <input type="text" id="email_custom_message" name="email2" /></p>
+                <p m:validation="email2"></p>
+
+                <input id="btn_displayForm_custom_message" type="submit" value="Submit">
+            </form>
+
+            <div class="example-result" th:text="${result_customMessage}"></div>
+        </div>
+
+        <footer th:text="${version}"></footer>
+    </section>
+
+    <section class="client">
+        <h3>Client</h3>
+        <pre><code class="language-html hljs" th:text="${clientCode[1]}"></code></pre>
+    </section>
+
+    <section class="server">
+        <h3>Server</h3>
+        <pre><code class="language-java hljs" th:text="${serverCode[1]}"></code></pre>
     </section>
 
 </div>

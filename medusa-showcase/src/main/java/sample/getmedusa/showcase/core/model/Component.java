@@ -12,9 +12,7 @@ public class Component {
         final Map<String, List<Component>> map = new LinkedHashMap<>();
 
         map.put("Controller", List.of(
-                new Component("Path variables", "pathvariable",
-                        new String[]{"/samples/button/basic/page.txt"},
-                        new String[]{"/samples/button/basic/controller.txt"}),
+                new Component("Path variables"),
                 new Component("URL parameters"),
                 new Component("Headers")
         ));
@@ -33,8 +31,8 @@ public class Component {
                         new String[]{"/samples/textinputs/formsubmit/controller_map.txt", "/samples/textinputs/formsubmit/controller_form.txt"}),
                 new Component("Search"),
                 new Component("Validation", "validation",
-                        new String[]{"/samples/textinputs/validation/page.txt"},
-                        new String[]{"/samples/textinputs/validation/controller.txt"})
+                        new String[]{"/samples/textinputs/validation/page.txt", "/samples/textinputs/validation/page_custom_message.txt"},
+                        new String[]{"/samples/textinputs/validation/controller.txt", "/samples/textinputs/validation/controller_custom_message.txt"})
         ));
 
         map.put("Var inputs", List.of(

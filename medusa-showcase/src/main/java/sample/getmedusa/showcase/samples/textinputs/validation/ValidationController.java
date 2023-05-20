@@ -13,16 +13,16 @@ import java.util.List;
 public class ValidationController {
 
     public List<Attribute> setupAttributes(){
-        return Attribute.$$("result", "");
+        return Attribute.$$("result", "",
+                "result_customMessage", "");
     }
 
     public List<Attribute> validateMyForm(@Valid SampleForm form){
         return List.of(new Attribute("result", form.email() + " " + form.yearOfBirth()));
     }
 
-    public List<Attribute> validateMyFormWithACustomMessage(Integer i, SampleForm form, String s){
-        //return List.of(new Attribute("resultFromForm", form.firstName() + " " + form.lastName()));
-        return null;
+    public List<Attribute> validateMyFormWithACustomMessage(@Valid @Email(message = "Gelieve een geldig e-mail in te vullen") String email2){
+        return List.of(new Attribute("result_customMessage", email2.split("@")[0]));
     }
 
     public record SampleForm(@Email String email, @NotBlank @Pattern(regexp = "^(19\\d{2}|2\\d{3}|3000)$") Integer yearOfBirth) { }

@@ -251,6 +251,10 @@ Medusa.prototype.doFormAction = function(event, parentFragment, actionToExecute)
         const field = validationDef.field;
         let valueToCheck = formProps[field];
         let fieldElement = form.querySelector("[name='"+field+"']");
+        if(null === fieldElement) {
+            //not in this form
+            continue;
+        }
         const fieldType = fieldElement.getAttribute("type");
         if(fieldElement.getAttribute("value") === null && fieldType === "checkbox") {
             valueToCheck = !!fieldElement.checked;

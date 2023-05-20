@@ -6,6 +6,8 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+
 class ValidationDetectionTest {
 
     final TestControllerWithValid testControllerWithValid = new TestControllerWithValid();
@@ -26,6 +28,33 @@ class ValidationDetectionTest {
     void testDoesMethodHaveValidationParameters() {
         Assertions.assertTrue(ValidationDetection.INSTANCE.doesMethodHaveValidationParameters(testControllerWithValid, "testMethodWithValid"));
         Assertions.assertFalse(ValidationDetection.INSTANCE.doesMethodHaveValidationParameters(testControllerWithValid, "testMethodWithoutValid"));
+    }
+
+    @Test
+    void testGetValueComplex() {
+        final String complexValue = "{\"firstName\":\"\",\"lastName\":\"dfsdfdf\"}.lastName";
+        ValidationDetection.ParamWithValidation paramValue = new ValidationDetection.ParamWithValidation("lastName", 0, List.of(new ValidationDetection.Validation(NotBlank.class, null, null, "x")));
+        List<String> parameters = List.of(complexValue);
+        final String foundValue = ValidationDetection.INSTANCE.getValue(paramValue, parameters);
+        Assertions.assertEquals("dfsdfdf", foundValue);
+    }
+
+    @Test
+    void testGetValueSimpleValue() {
+        final String complexValue = "Zombab";
+        ValidationDetection.ParamWithValidation paramValue = new ValidationDetection.ParamWithValidation("lastName", 0, List.of(new ValidationDetection.Validation(NotBlank.class, null, null, "x")));
+        List<String> parameters = List.of(complexValue);
+        final String foundValue = ValidationDetection.INSTANCE.getValue(paramValue, parameters);
+        Assertions.assertEquals("Zombab", foundValue);
+    }
+
+    @Test
+    void testGetValueSimpleObject() {
+        final String complexValue = "{\"firstName\":\"\",\"lastName\":\"dfsdfdf\"}";
+        ValidationDetection.ParamWithValidation paramValue = new ValidationDetection.ParamWithValidation("lastName", 0, List.of(new ValidationDetection.Validation(NotBlank.class, null, null, "x")));
+        List<String> parameters = List.of(complexValue);
+        final String foundValue = ValidationDetection.INSTANCE.getValue(paramValue, parameters);
+        Assertions.assertEquals("dfsdfdf", foundValue);
     }
 
 

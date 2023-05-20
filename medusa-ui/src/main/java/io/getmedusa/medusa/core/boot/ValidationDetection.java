@@ -17,6 +17,7 @@ import org.springframework.expression.spel.standard.SpelExpressionParser;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
 import java.util.*;
 
 public enum ValidationDetection {
@@ -122,10 +123,11 @@ public enum ValidationDetection {
         return set;
     }
 
-    private String getValue(ParamWithValidation param, List<String> parameters) {
+    public String getValue(ParamWithValidation param, List<String> parameters) {
         String field = parameters.get(param.index).trim();
-        if(field.startsWith("{") && field.endsWith("}")) {
-            Map map = SPEL_EXPRESSION_PARSER.parseExpression(field).getValue(Map.class);
+        if(field.startsWith("{") && field.contains("}")) {
+            String objectPart = field.substring(0, field.indexOf("}") + 1);
+            Map map = SPEL_EXPRESSION_PARSER.parseExpression(objectPart).getValue(Map.class);
             return map.getOrDefault(param.field, "").toString();
         }
         return field;
@@ -270,9 +272,15 @@ public enum ValidationDetection {
 
     record MethodWithValidation(String method, List<ParamWithValidation> params) {
         public void add(Method method, int i) {
-            Class paramType = method.getParameterTypes()[i];
-            if(paramType.isPrimitive()) {
-                //TODO
+            Class<?> paramType = method.getParameterTypes()[i];
+            List<Annotation> paramAnnotations = findValidationsOnDirectParam(method.getParameterAnnotations()[i]);
+            if(!paramAnnotations.isEmpty()) {
+                Parameter parameter = method.getParameters()[i];
+                ParamWithValidation paramWithValidation = new ParamWithValidation(parameter.getName(), i, new ArrayList<>());
+                paramWithValidation.validations().addAll(AnnotationToValidation.findValidations(parameter));
+                if (!paramWithValidation.validations.isEmpty()) {
+                    params.add(paramWithValidation);
+                }
             } else {
                 Field[] declaredFields = paramType.getDeclaredFields();
                 for (Field field : declaredFields) {
@@ -283,6 +291,17 @@ public enum ValidationDetection {
                     }
                 }
             }
+        }
+
+        private List<Annotation> findValidationsOnDirectParam(Annotation[] parameterAnnotation) {
+            if(parameterAnnotation.length == 0) return List.of();
+            List<Annotation> annotations = new ArrayList<>();
+            for(Annotation annotation : parameterAnnotation) {
+                if(annotation.annotationType().getPackageName().startsWith("jakarta.validation.constraints")) {
+                    annotations.add(annotation);
+                }
+            }
+            return annotations;
         }
     }
 

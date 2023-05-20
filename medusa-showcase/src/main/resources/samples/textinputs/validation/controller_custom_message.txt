@@ -1,0 +1,23 @@
+package sample.getmedusa.showcase.samples.textinputs.validation;
+
+import io.getmedusa.medusa.core.annotation.UIEventPage;
+import io.getmedusa.medusa.core.attributes.Attribute;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+
+import java.util.List;
+
+@UIEventPage(path = "/detail/sample/validation", file = "/pages/sample/validation.html")
+public class ValidationController {
+
+    public List<Attribute> setupAttributes(){
+        return Attribute.$$("result", "");
+    }
+
+    public List<Attribute> validateMyFormWithACustomMessage(
+        @Valid @Email(message = "{my.custom.message}") String email){
+        return List.of(new Attribute("result", email.split("@")[0]));
+    }
+}
