@@ -50,12 +50,20 @@ public enum ValidationDetection {
         return frontendValidationsCache.get(controller, c -> {
             try {
                 List<FrontEndValidation> frontEndValidations = resolver.resolveMessages(classesWithValidMethods.findFrontEndValidationsForController(controller));
-                findFragmentsForController(session, controller);
+                findFragmentsForController(session, resolver, controller, frontEndValidations);
                 return objectMapper.writeValueAsString(frontEndValidations);
             } catch (JsonProcessingException e) {
                 throw new RuntimeException(e);
             }
         });
+    }
+
+    private void findFragmentsForController(Session session, ValidationMessageResolver resolver, String controller, List<FrontEndValidation> frontEndValidations) {
+        List<String> controllerFragments = findFragmentsForController(session, controller);
+        for(String controllerFragment : controllerFragments) {
+            List<FrontEndValidation> additionalFrontEndValidations = resolver.resolveMessages(classesWithValidMethods.findFrontEndValidationsForController(controllerFragment));
+            frontEndValidations.addAll(additionalFrontEndValidations);
+        }
     }
 
     private List<String> findFragmentsForController(Session session, String controller) {
