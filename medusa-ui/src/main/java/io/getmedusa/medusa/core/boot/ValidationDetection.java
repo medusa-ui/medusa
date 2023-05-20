@@ -5,6 +5,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import io.getmedusa.medusa.core.annotation.UIEventPageCallWrapper;
+import io.getmedusa.medusa.core.session.Session;
+import io.getmedusa.medusa.core.session.StandardSessionTagKeys;
+import io.getmedusa.medusa.core.util.SpELUtils;
 import io.getmedusa.medusa.core.validation.ValidationError;
 import io.getmedusa.medusa.core.validation.ValidationExecutor;
 import io.getmedusa.medusa.core.validation.ValidationMessageResolver;
@@ -41,15 +44,13 @@ public enum ValidationDetection {
     * then we need to see if any controllers are related as REF
     * if they are, we need to also go over them and attach these as FrontendValidations
     */
-    public String buildFrontendValidations(String controller, ValidationMessageResolver resolver) {
+    public String buildFrontendValidations(Session session, ValidationMessageResolver resolver) {
+        final String controller = session.getTag(StandardSessionTagKeys.CONTROLLER);
+        if(controller == null) return "[]";
         return frontendValidationsCache.get(controller, c -> {
             try {
                 List<FrontEndValidation> frontEndValidations = resolver.resolveMessages(classesWithValidMethods.findFrontEndValidationsForController(controller));
-                List<String> controllerFragments = findFragmentsForController(controller);
-                for(String controllerFragment : controllerFragments) {
-                    List<FrontEndValidation> additionalFrontEndValidations = resolver.resolveMessages(classesWithValidMethods.findFrontEndValidationsForController(controllerFragment));
-                    frontEndValidations.addAll(additionalFrontEndValidations);
-                }
+                findFragmentsForController(session, resolver, controller, frontEndValidations);
                 return objectMapper.writeValueAsString(frontEndValidations);
             } catch (JsonProcessingException e) {
                 throw new RuntimeException(e);
@@ -57,11 +58,20 @@ public enum ValidationDetection {
         });
     }
 
-    private List<String> findFragmentsForController(String controller) {
+    private void findFragmentsForController(Session session, ValidationMessageResolver resolver, String controller, List<FrontEndValidation> frontEndValidations) {
+        List<String> controllerFragments = findFragmentsForController(session, controller);
+        for(String controllerFragment : controllerFragments) {
+            List<FrontEndValidation> additionalFrontEndValidations = resolver.resolveMessages(classesWithValidMethods.findFrontEndValidationsForController(controllerFragment));
+            frontEndValidations.addAll(additionalFrontEndValidations);
+        }
+    }
+
+    private List<String> findFragmentsForController(Session session, String controller) {
         List<String> refsRelatedToController = FragmentDetection.INSTANCE.getRootFragmentsUsed().getOrDefault(controller, List.of());
         List<String> fragmentControllers = new ArrayList<>();
         for(String refRelatedToController : refsRelatedToController) {
-            UIEventPageCallWrapper wrapper = RefDetection.INSTANCE.getRefToBeanMap().getOrDefault(refRelatedToController, null);
+            String parsedRef = SpELUtils.parseExpression(refRelatedToController, session);
+            UIEventPageCallWrapper wrapper = RefDetection.INSTANCE.getRefToBeanMap().getOrDefault(parsedRef, null);
             if(wrapper != null) {
                 fragmentControllers.add(wrapper.getController().getClass().getName());
             }
