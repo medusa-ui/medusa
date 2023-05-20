@@ -46,6 +46,7 @@ public enum ValidationDetection {
     */
     public String buildFrontendValidations(Session session, ValidationMessageResolver resolver) {
         final String controller = session.getTag(StandardSessionTagKeys.CONTROLLER);
+        if(controller == null) return "[]";
         return frontendValidationsCache.get(controller, c -> {
             try {
                 List<FrontEndValidation> frontEndValidations = resolver.resolveMessages(classesWithValidMethods.findFrontEndValidationsForController(controller));
