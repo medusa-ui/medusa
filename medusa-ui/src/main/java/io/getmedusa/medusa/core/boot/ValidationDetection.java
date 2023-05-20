@@ -49,7 +49,7 @@ public enum ValidationDetection {
         return frontendValidationsCache.get(controller, c -> {
             try {
                 List<FrontEndValidation> frontEndValidations = resolver.resolveMessages(classesWithValidMethods.findFrontEndValidationsForController(controller));
-                findFragmentsForController(session, resolver, controller, frontEndValidations);
+                findFragmentsForController(session, controller);
                 return objectMapper.writeValueAsString(frontEndValidations);
             } catch (JsonProcessingException e) {
                 throw new RuntimeException(e);
