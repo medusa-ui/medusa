@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:m="https://www.getmedusa.io/medusa.xsd">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        .error {
+            color: red;
+        }
+        .hidden {
+            display: none;
+        }
+        .wrapper {
+            border: 1px solid black;
+            margin: 2em;
+            padding: 1em;
+        }
+        div#top {
+            position: fixed;
+            right: 1em;
+            width: 50%;
+            background: white;
+            top: 1em;
+        }
+    </style>
+</head>
+<body>
+    <div id="top" class="wrapper">
+        <p id="form-ran" th:text="${form}"></p>
+        <p id="result" th:text="${result}"></p>
+    </div>
+
+    <form m:submit="doNoValidationForm(:{form})" class="wrapper">
+        <h1>No validation check</h1>
+        <ul m:validation="all"></ul>
+        <p><input type="text" name="value" /></p>
+        <p m:validation="value"></p>
+
+        <input type="submit" value="Submit">
+    </form>
+
+    <form m:submit="doNotEmptyForm(:{form})" class="wrapper">
+        <h1>Not Empty check</h1>
+        <ul m:validation="all"></ul>
+         <p><input type="text" name="value" /></p>
+        <p m:validation="value"></p>
+
+        <input type="submit" value="Submit">
+    </form>
+
+    <form m:submit="doNotBlankForm(:{form})" class="wrapper">
+        <h1>Not Blank check</h1>
+        <ul m:validation="all"></ul>
+        <p><input type="text" name="value" /></p>
+        <p m:validation="value"></p>
+
+        <input type="submit" value="Submit">
+    </form>
+
+    <form m:submit="doPatternForm(:{form})" class="wrapper">
+        <h1>Pattern check (b[aeiou]bble)</h1>
+        <ul m:validation="all"></ul>
+        <p><input type="text" name="value" /></p>
+        <p m:validation="value"></p>
+
+        <input type="submit" value="Submit">
+    </form>
+
+    <form m:submit="doEmailForm(:{form})" class="wrapper">
+        <h1>E-mail check</h1>
+        <ul m:validation="all"></ul>
+        <p><input type="text" name="value" /></p>
+        <p m:validation="value"></p>
+
+        <input type="submit" value="Submit">
+    </form>
+
+    <form m:submit="doAssertFalseForm(:{form})" class="wrapper">
+        <h1>Assert false check</h1>
+        <ul m:validation="all"></ul>
+        <p>
+            <label>
+                <input type="radio" name="value" value="true" checked="checked">
+                True
+            </label>
+            <label>
+                <input type="radio" name="value" value="false">
+                False
+            </label>
+        </p>
+        <p m:validation="value"></p>
+        <input type="submit" value="Submit">
+    </form>
+
+    <form m:submit="doAssertTrueForm(:{form})" class="wrapper">
+        <h1>Assert true check</h1>
+        <ul m:validation="all"></ul>
+        <p><input type="checkbox" name="value" /></p>
+        <p m:validation="value"></p>
+
+        <input type="submit" value="Submit">
+    </form>
+
+    <form m:submit="doDecimalMaxForm(:{form})" class="wrapper">
+        <h1>Decimal max check (max 10)</h1>
+        <ul m:validation="all"></ul>
+        <p><input type="text" name="value" /></p>
+        <p m:validation="value"></p>
+
+        <input type="submit" value="Submit">
+    </form>
+
+    <form m:submit="doDecimalMinForm(:{form})" class="wrapper">
+        <h1>Decimal min check (min 2)</h1>
+        <ul m:validation="all"></ul>
+        <p><input type="text" name="value" /></p>
+        <p m:validation="value"></p>
+
+        <input type="submit" value="Submit">
+    </form>
+
+    <form m:submit="doDigitsForm(:{form})" class="wrapper">
+        <h1>Digits check (1 integer, 1 fraction)</h1>
+        <ul m:validation="all"></ul>
+        <p><input type="text" name="value" /></p>
+        <p m:validation="value"></p>
+
+        <input type="submit" value="Submit">
+    </form>
+
+    <form m:submit="doDigits2Form(:{form})" class="wrapper">
+        <h1>Digits check (2 integer, 0 fraction)</h1>
+        <ul m:validation="all"></ul>
+        <p><input type="text" name="value" /></p>
+        <p m:validation="value"></p>
+
+        <input type="submit" value="Submit">
+    </form>
+
+    <form m:submit="doFutureForm(:{form})" class="wrapper">
+        <h1>Future check</h1>
+        <ul m:validation="all"></ul>
+        <p><input type="date" name="value" /></p>
+        <p m:validation="value"></p>
+
+        <input type="submit" value="Submit">
+    </form>
+
+    <form m:submit="doFutureOrPresentForm(:{form})" class="wrapper">
+        <h1>Future check</h1>
+        <ul m:validation="all"></ul>
+        <p><input type="date" name="value" /></p>
+        <p m:validation="value"></p>
+
+        <input type="submit" value="Submit">
+    </form>
+
+    <form m:submit="doPastForm(:{form})" class="wrapper">
+        <h1>Past check</h1>
+        <ul m:validation="all"></ul>
+        <p><input type="datetime-local" name="value" /></p>
+        <p m:validation="value"></p>
+
+        <input type="submit" value="Submit">
+    </form>
+
+    <form m:submit="doPastOrPresentForm(:{form})" class="wrapper">
+        <h1>Past check</h1>
+        <ul m:validation="all"></ul>
+        <p><input type="datetime-local" name="value" /></p>
+        <p m:validation="value"></p>
+
+        <input type="submit" value="Submit">
+    </form>
+
+    <form m:submit="doMaxForm(:{form})" class="wrapper">
+        <h1>Max check (123)</h1>
+        <ul m:validation="all"></ul>
+        <p><input type="text" name="value" /></p>
+        <p m:validation="value"></p>
+
+        <input type="submit" value="Submit">
+    </form>
+
+    <form m:submit="doMinForm(:{form})" class="wrapper">
+        <h1>Min check (300)</h1>
+        <ul m:validation="all"></ul>
+        <p><input type="text" name="value" /></p>
+        <p m:validation="value"></p>
+
+        <input type="submit" value="Submit">
+    </form>
+
+    <form m:submit="doNegativeForm(:{form})" class="wrapper">
+        <h1>Negative check</h1>
+        <ul m:validation="all"></ul>
+        <p><input type="number" name="value" /></p>
+        <p m:validation="value"></p>
+
+        <input type="submit" value="Submit">
+    </form>
+
+    <form m:submit="doNegativeOrZeroForm(:{form})" class="wrapper">
+        <h1>Negative or zero check</h1>
+        <ul m:validation="all"></ul>
+        <p><input type="number" name="value" /></p>
+        <p m:validation="value"></p>
+
+        <input type="submit" value="Submit">
+    </form>
+
+    <form m:submit="doPositiveForm(:{form})" class="wrapper">
+        <h1>Positive check</h1>
+        <ul m:validation="all"></ul>
+        <p><input type="number" name="value" /></p>
+        <p m:validation="value"></p>
+
+        <input type="submit" value="Submit">
+    </form>
+
+    <form m:submit="doPositiveOrZeroForm(:{form})" class="wrapper">
+        <h1>Positive or zero check</h1>
+        <ul m:validation="all"></ul>
+        <p><input type="number" name="value" /></p>
+        <p m:validation="value"></p>
+
+        <input type="submit" value="Submit">
+    </form>
+
+    <form m:submit="doSizeStringForm(:{form})" class="wrapper">
+        <h1>Size (String, max 12)</h1>
+        <ul m:validation="all"></ul>
+        <p><input type="text" name="value" /></p>
+        <p m:validation="value"></p>
+
+        <input type="submit" value="Submit">
+    </form>
+
+    <form m:submit="doSizeArrayForm(:{form})" class="wrapper">
+        <h1>Size (Array, max 2)</h1>
+        <ul m:validation="all"></ul>
+        <p>
+            <select name="value" multiple="multiple" size="4">
+                <option
+                        th:each="fruit: ${fruits}"
+                        th:value="${fruit}"
+                        th:text="${fruit}"
+                > a fruit</option>
+            </select>
+        </p>
+        <p m:validation="value"></p>
+
+        <input type="submit" value="Submit">
+    </form>
+
+    <form m:submit="doSizeMapForm(:{form})" class="wrapper">
+        <h1>Size (Map, max 2)</h1>
+        <ul m:validation="all"></ul>
+        <p>???</p>
+        <p m:validation="value"></p>
+
+        <input type="submit" value="Submit">
+    </form>
+
+    <form m:submit="doNotNullForm(:{form})" class="wrapper">
+        <h1>Not null</h1>
+        <ul m:validation="all"></ul>
+        <p><input type="text" name="value" /></p>
+        <p m:validation="value"></p>
+
+        <input type="submit" value="Submit">
+    </form>
+
+    <form m:submit="doNullForm(:{form})" class="wrapper">
+        <h1>Null</h1>
+        <p>??</p>
+    </form>
+
+    <div class="wrapper">
+        <h1>Fragment</h1>
+        <m:fragment service="self" ref="validation-form">
+        </m:fragment>
+    </div>
+</body>
+</html>

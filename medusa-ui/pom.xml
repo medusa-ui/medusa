@@ -42,6 +42,12 @@
 		</dependency>
 
 		<dependency>
+			<groupId>jakarta.validation</groupId>
+			<artifactId>jakarta.validation-api</artifactId>
+			<version>3.0.2</version>
+		</dependency>
+
+		<dependency>
 			<groupId>org.webjars</groupId>
 			<artifactId>webjars-locator</artifactId>
 			<version>0.46</version>
@@ -146,7 +152,13 @@
 						<exclude>**/static/package-lock.json</exclude>
 						<exclude>**/static/package.json</exclude>
 						<exclude>**/static/index.js</exclude>
+						<exclude>**/static/css/stylesheet.css</exclude>
 						<exclude>**/static/*.bat</exclude>
+						<exclude>**/pages/*.html</exclude>
+						<exclude>**/pages/fragments/*.html</exclude>
+						<exclude>**/*.properties</exclude>
+						<exclude>**/io/getmedusa/medusa/sample/*.class</exclude>
+						<exclude>**/io/getmedusa/medusa/Application.class</exclude>
 					</excludes>
 				</configuration>
 			</plugin>

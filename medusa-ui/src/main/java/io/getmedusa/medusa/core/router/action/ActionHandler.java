@@ -1,13 +1,18 @@
 package io.getmedusa.medusa.core.router.action;
 
+import io.getmedusa.diffengine.model.ServerSideDiff;
 import io.getmedusa.medusa.core.annotation.UIEventPageCallWrapper;
 import io.getmedusa.medusa.core.attributes.Attribute;
+import io.getmedusa.medusa.core.attributes.StandardAttributeKeys;
 import io.getmedusa.medusa.core.boot.FormDetection;
 import io.getmedusa.medusa.core.boot.MethodDetection;
 import io.getmedusa.medusa.core.boot.RefDetection;
 import io.getmedusa.medusa.core.router.action.converter.PojoTypeConverter;
 import io.getmedusa.medusa.core.router.request.Route;
 import io.getmedusa.medusa.core.session.Session;
+import io.getmedusa.medusa.core.validation.ValidationError;
+import io.getmedusa.medusa.core.validation.ValidationExecutor;
+import io.getmedusa.medusa.core.validation.ValidationMessageResolver;
 import org.springframework.context.expression.MapAccessor;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
@@ -18,6 +23,7 @@ import java.net.URLDecoder;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -25,6 +31,12 @@ import java.util.regex.Pattern;
 public class ActionHandler {
 
     private static final SpelExpressionParser SPEL_EXPRESSION_PARSER = new SpelExpressionParser();
+
+    private final ValidationMessageResolver resolver;
+
+    public ActionHandler(ValidationMessageResolver resolver) {
+        this.resolver = resolver;
+    }
 
     public Session executeAndMerge(SocketAction socketAction, Route route, Session session) {
         //find controller from cache
@@ -73,9 +85,19 @@ public class ActionHandler {
                         .replace("(,#session", "(#session");
             }
 
-            result = SPEL_EXPRESSION_PARSER
-                    .parseExpression(expression)
-                    .getValue(evaluationContext, bean);
+
+            final Set<ValidationError> violations = ValidationExecutor.INSTANCE.validate(expression, bean);
+            if(violations.isEmpty()) {
+                result = SPEL_EXPRESSION_PARSER
+                        .parseExpression(expression)
+                        .getValue(evaluationContext, bean);
+            } else {
+                List<ServerSideDiff> validatorViolation = new ArrayList<>();
+                for(ValidationError violation : violations) {
+                    validatorViolation.add(ServerSideDiff.buildValidation(violation.formContext() + "#" + violation.field(), resolver.resolveMessage(violation, session.getLocale())));
+                }
+                return List.of(new Attribute(StandardAttributeKeys.VALIDATION, validatorViolation));
+            }
         }
 
         if(null == result) {
@@ -83,6 +105,8 @@ public class ActionHandler {
         }
         return (List<Attribute>) result;
     }
+
+
 
     private static String handleArrayParsing(String expression) {
         Pattern pattern = Pattern.compile("\\[.*?]");

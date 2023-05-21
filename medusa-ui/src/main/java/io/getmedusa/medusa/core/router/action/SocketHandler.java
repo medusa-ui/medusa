@@ -50,18 +50,18 @@ public class SocketHandler {
     }
 
     @PreAuthorize("hasRole('USER')")
-    @MessageMapping("event-emitter/{hash}/{sessionId}")
+    @MessageMapping("event-emitter/{hash}/{sessionId}/{locale}")
     public Flux<Set<ServerSideDiff>> eventEmitter(final @Headers Map<String, Object> metadata,
                                                   final @Payload Flux<SocketAction> request,
                                                   final @DestinationVariable String hash,
-                                                  final @DestinationVariable String sessionId) {
+                                                  final @DestinationVariable String sessionId,
+                                                  final @DestinationVariable String locale) {
 
         final Route route = RouteDetection.INSTANCE.findRoute(hash);
 
         //retrieve session
-        //TODO can this be done via metadata/a more secure way?
         final Session session = sessionMemoryRepository.retrieve(sessionId, route);
-        session.setInitialRender(false);
+        session.withLocale(locale).setInitialRender(false);
 
         request.doOnError(t -> onErrorReturnEmptyAction(session, route))
                 .onErrorReturn(new SocketAction())

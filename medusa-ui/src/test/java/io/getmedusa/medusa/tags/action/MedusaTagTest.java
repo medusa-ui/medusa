@@ -9,6 +9,7 @@ import io.getmedusa.medusa.core.tags.action.MedusaOnEnter;
 import io.getmedusa.medusa.core.tags.action.MedusaOnKeyUp;
 import io.getmedusa.medusa.core.tags.action.MedusaOnSelect;
 import io.getmedusa.medusa.core.tags.action.MedusaOnSubmit;
+import io.getmedusa.medusa.core.validation.ValidationMessageResolver;
 import org.junit.jupiter.api.BeforeEach;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,7 +40,7 @@ public abstract class MedusaTagTest {
 
     @BeforeEach
     public void init() {
-        this.renderer = new Renderer(Set.of(medusaDialect), null,  "self");
+        this.renderer = new Renderer(Set.of(medusaDialect), null,  "self", new ValidationMessageResolver(null), null);
     }
 
 }

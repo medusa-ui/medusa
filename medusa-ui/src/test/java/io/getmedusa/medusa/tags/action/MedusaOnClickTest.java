@@ -5,6 +5,7 @@ import io.getmedusa.medusa.core.render.Renderer;
 import io.getmedusa.medusa.core.tags.action.MedusaOnClick;
 import io.getmedusa.medusa.core.util.FluxUtils;
 import io.getmedusa.medusa.core.tags.MedusaDialect;
+import io.getmedusa.medusa.core.validation.ValidationMessageResolver;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,7 +17,7 @@ class MedusaOnClickTest extends MedusaTagTest {
 
     @BeforeEach
     public void init() {
-        this.renderer = new Renderer(Set.of(new MedusaDialect(Set.of(new MedusaOnClick()))), null, "self");
+        this.renderer = new Renderer(Set.of(new MedusaDialect(Set.of(new MedusaOnClick()))), null, "self", new ValidationMessageResolver(null), null);
     }
 
     private final String basicTemplateHTML = """

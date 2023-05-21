@@ -18,6 +18,8 @@ public enum FragmentDetection {
 
     private final Map<String, Fragment> detectedFragments = new HashMap<>();
 
+    private final Map<String, List<String>> rootFragmentsUsed = new HashMap<>();
+
     public static String findPrefix(Document document) {
         try {
             final Element htmlTag = document.getElementsByTag("html").get(0);
@@ -42,7 +44,7 @@ public enum FragmentDetection {
     }
 
     //this method detects fragments and registers them, within the rendering process we can then easily check for the presence of these fragments and replace them as needed
-    String prepFile(final String html) {
+    String prepFile(final Object bean, final String html) {
         if(html.contains(":fragment>")) {
             final Document document = Jsoup.parse(html);
             document.outputSettings().indentAmount(0).prettyPrint(false);
@@ -67,6 +69,12 @@ public enum FragmentDetection {
                 fragment.setId("$#FRGM-" + RandomUtils.generateId());
 
                 detectedFragments.put(fragment.getId(), fragment);
+                if(null != bean) {
+                    final String controller = bean.getClass().getName();
+                    List<String> refs = rootFragmentsUsed.getOrDefault(controller, new ArrayList<>());
+                    refs.add(fragment.getRef());
+                    rootFragmentsUsed.put(controller, refs);
+                }
             }
 
             boolean isFragment = FragmentUtils.determineIfFragment(document);
@@ -74,12 +82,14 @@ public enum FragmentDetection {
             if(isFragment) {
                 outerHtml = document.body().html();
             }
-            return prepFile(outerHtml.replace(refElement.outerHtml(), fragment.getId()));
+            return prepFile(bean, outerHtml.replace(refElement.outerHtml(), fragment.getId()));
         }
         return html;
     }
 
-
+    public Map<String, List<String>> getRootFragmentsUsed() {
+        return rootFragmentsUsed;
+    }
 
     private Optional<Fragment> findExistingRef(Element refElement) {
         return detectedFragments.values().stream()

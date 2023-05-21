@@ -1,0 +1,8 @@
+<form m:submit="validateMyFormWithACustomMessage(:{form}.email)">
+    <p><label for="email">Email: </label> <input type="text" id="email" name="email" /></p>
+    <p m:validation="email"></p>
+
+    <input id="btn_displayForm" type="submit" value="Submit">
+</form>
+
+<div class="example-result" th:text="${result}"></div>

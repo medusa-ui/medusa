@@ -1,44 +1,35 @@
 ---
 id: x74a3
-name: At startup initialization
-file_version: 1.0.2
-app_version: 0.9.6-1
-file_blobs:
-  medusa-ui/src/main/java/io/getmedusa/medusa/core/boot/RootDetector.java: d3f5db5662a524ded68984c602390e33db0474b8
-  medusa-ui/src/main/java/io/getmedusa/medusa/core/config/MedusaAutoConfiguration.java: 39dc8ce7e020cbf1b95c8c4e56d8a8c79dcb0ef0
+title: At startup initialization
+file_version: 1.1.2
+app_version: 1.8.5
 ---
 
 ## Before each bean initialization
 
 Before any requests are served, the app goes through its startup initialization.
 
-This is a sequence of classes that get executed at in [[sym-text:RootDetector(240e0b25-4906-4e73-b0e3-2ec660823a0a)]]'s[[sym-text:postProcessBeforeInitialization(14de0be2-f4f3-4d4f-a769-80d564cad7a9)]] .
+This is a sequence of classes that get executed at in `RootDetector`'s`postProcessBeforeInitialization` .
 
 They are used for anything that is build-dependent and are usually intended to increase efficiency at runtime. Code that requires Reflection calls or Thymeleaf parsing, for example, is slow - but most likely they are not dynamic beyond compile time. As such, we sacrifice startup time to have a quicker runtime.
 
 Examples of this are determining which routes exist (which means going over all controllers and creating a routing map) or which fragments could be loaded.
 
-It all starts with the [[sym-text:RootDetector(240e0b25-4906-4e73-b0e3-2ec660823a0a)]]. This is the class that kicks off any initialization. That's all it does. Effectively this kicks off before each bean is initialized.
+It all starts with the `RootDetector`. This is the class that kicks off any initialization. That's all it does. Effectively this kicks off before each bean is initialized.
 
 <br/>
-
 
 
 <!-- NOTE-swimm-snippet: the lines below link your snippet to Swimm -->
 ### 📄 medusa-ui/src/main/java/io/getmedusa/medusa/core/boot/RootDetector.java
 ```java
-⬜ 20         }
-⬜ 21     
-⬜ 22         @Override
-🟩 23         public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
-🟩 24             RouteDetection.INSTANCE.consider(bean);
-🟩 25             RefDetection.INSTANCE.consider(bean);
-🟩 26             MethodDetection.INSTANCE.consider(bean);
-🟩 27             return BeanPostProcessor.super.postProcessBeforeInitialization(bean, beanName);
-🟩 28         }
-⬜ 29     
-⬜ 30         @Override
-⬜ 31         public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
+23         public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
+24             RouteDetection.INSTANCE.consider(bean);
+25             RefDetection.INSTANCE.consider(bean);
+26             MethodDetection.INSTANCE.consider(bean);
+27             ValidationDetection.INSTANCE.consider(bean);
+28             return BeanPostProcessor.super.postProcessBeforeInitialization(bean, beanName);
+29         }
 ```
 
 <br/>
@@ -53,38 +44,17 @@ Just once during the startup process, only once: after all beans have been initi
 
 <br/>
 
-`postProcessAfterInitialization`[<sup id="SSsEQ">↓</sup>](#f-SSsEQ) would be called after each bean's initialization. By filtering on the `MedusaAutoConfiguration`[<sup id="1UOdgA">↓</sup>](#f-1UOdgA) bean, we ensure it only occurs once. The auto-config bean also ends up being the one that gets called _last_.
+`postProcessAfterInitialization`<swm-token data-swm-token=":medusa-ui/src/main/java/io/getmedusa/medusa/core/boot/RootDetector.java:32:5:5:`    public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {`"/> would be called after each bean's initialization. By filtering on the `MedusaAutoConfiguration`<swm-token data-swm-token=":medusa-ui/src/main/java/io/getmedusa/medusa/core/config/MedusaAutoConfiguration.java:18:4:4:`public class MedusaAutoConfiguration {`"/> bean, we ensure it only occurs once. The auto-config bean also ends up being the one that gets called _last_.
 <!-- NOTE-swimm-snippet: the lines below link your snippet to Swimm -->
 ### 📄 medusa-ui/src/main/java/io/getmedusa/medusa/core/boot/RootDetector.java
 ```java
-⬜ 28         }
-⬜ 29     
-⬜ 30         @Override
-🟩 31         public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
-🟩 32             if(beanName.equalsIgnoreCase(MedusaAutoConfiguration.class.getName())){ //execute post init, as last
-⬜ 33                 RefDetection.INSTANCE.updateAllRefsWithNestedFragments();
-⬜ 34     
-⬜ 35                 if(hydraConnectionController != null) {
+32         public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
+33             if(beanName.equalsIgnoreCase(MedusaAutoConfiguration.class.getName())){ //execute post init, as last
 ```
 
 <br/>
 
 One example of this is the trigger for connecting with Hydra. For this to work, all routes need to be known, so we can only run this as the last action. The connection with Hydra registers the Medusa app.
-
-<br/>
-
-<!-- THIS IS AN AUTOGENERATED SECTION. DO NOT EDIT THIS SECTION DIRECTLY -->
-### Swimm Note
-
-<span id="f-1UOdgA">MedusaAutoConfiguration</span>[^](#1UOdgA) - "medusa-ui/src/main/java/io/getmedusa/medusa/core/config/MedusaAutoConfiguration.java" L18
-```java
-public class MedusaAutoConfiguration {
-```
-
-<span id="f-SSsEQ">postProcessAfterInitialization</span>[^](#SSsEQ) - "medusa-ui/src/main/java/io/getmedusa/medusa/core/boot/RootDetector.java" L31
-```java
-    public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
-```
 
 <br/>
 

@@ -7,12 +7,12 @@ const {
     WellKnownMimeType,
     encodeSimpleAuthMetadata,
 } = require("rsocket-composite-metadata");
-const {fragment} = require("./websocket");
 
 function Medusa() {}
 const _M = new Medusa();
 
 const debugMode = true;
+const XRegExp = require('xregexp');
 
 const MAX_REQUEST_N = 2147483647;
 let stream;
@@ -198,8 +198,14 @@ function sendFileCompletion(fragment, fileId) {
 }
 
 Medusa.prototype.doFormAction = function(event, parentFragment, actionToExecute) {
+    if(typeof event !== "undefined") {
+        event.preventDefault();
+    }
+
     const multiElems = [];
     const form = event.target;
+
+    clearAllValidation(form);
 
     for(const multiElem of form.querySelectorAll("[multiple]")) {
         multiElems.push(multiElem.name);
@@ -232,19 +238,227 @@ Medusa.prototype.doFormAction = function(event, parentFragment, actionToExecute)
             formProps[key] = v;
         }
     }
+
+    let validationPass = true;
+
+    for(let validationDef of _M.validationsPossible) {
+        //validationDef.formContext = doNotEmptyForm
+        //onsubmit="_M.doFormAction(event, '__FRAGMENT__', `doNotEmptyForm(:{form})`)"
+        //so this part makes it so that you only apply the right frontend validations to the right form
+        if(form.getAttribute("onsubmit").indexOf(validationDef.formContext) === -1) {
+            continue;
+        }
+        const field = validationDef.field;
+        let valueToCheck = formProps[field];
+        let fieldElement = form.querySelector("[name='"+field+"']");
+        if(null === fieldElement) {
+            //not in this form
+            continue;
+        }
+        const fieldType = fieldElement.getAttribute("type");
+        if(fieldElement.getAttribute("value") === null && fieldType === "checkbox") {
+            valueToCheck = !!fieldElement.checked;
+        } else if(fieldType === "date" || fieldType === "datetime-local") {
+            valueToCheck = new Date(fieldElement.value).getTime() + "";
+        }
+        if(valueToCheck === undefined) {
+            valueToCheck = null;
+        }
+        formProps[field] = valueToCheck;
+        let validationResult = validate(validationDef.validation, valueToCheck, validationDef.value1, validationDef.value2);
+        debugLog("Local validation of field '"+field+"': " + validationResult);
+        if(!validationResult) {
+            validationPass = markFieldAsFailedValidation(form, field, validationDef.message);
+        }
+    }
+
+    if(!validationPass) {
+        debugLog("Local validation did not pass, so no backend call is made");
+        return;
+    } else {
+        debugLog("Local validation passed, so proceeding to backend");
+    }
+
     _M.doAction(event, parentFragment, actionToExecute.replace(":{form}", JSON.stringify(formProps) ));
 };
 
-const buttonLoader = document.getElementById("m-template-button-load").content.firstElementChild.outerHTML;
-
-Medusa.prototype.doUpload = function(event, file) {
-    if(typeof event !== "undefined") {
-        event.preventDefault();
+//a true value passes the validation, a false value fails it
+//so if I enter a negative number for Positive, it will return false
+validate = function(type, value, arg1, arg2) {
+    if(type === "NotBlank") {
+        return notBlank(value);
+    } else if(type === "NotEmpty") {
+        return notEmpty(value);
+    } else if(type === "Pattern") {
+        return pattern(value, arg1);
+    } else if(type === "AssertFalse") {
+        return assert(value, false);
+    } else if(type === "AssertTrue") {
+        return assert(value, true);
+    } else if(type === "DecimalMax" || type === "Max") {
+        return decimalMax(value, arg1);
+    } else if(type === "DecimalMin" || type === "Min") {
+        return decimalMin(value, arg1);
+    } else if(type === "Email") {
+        return email(value);
+    } else if(type === "Digits") {
+        return digits(value, arg1, arg2);
+    } else if(type === "Positive") {
+        return positive(value);
+    } else if(type === "Negative") {
+        return negative(value);
+    } else if(type === "PositiveOrZero") {
+        return positiveOrZero(value);
+    } else if(type === "NegativeOrZero") {
+        return negativeOrZero(value);
+    } else if(type === "Future") {
+        return future(value, false);
+    } else if(type === "FutureOrPresent") {
+        return future(value, true);
+    } else if(type === "Past") {
+        return past(value, false);
+    } else if(type === "PastOrPresent") {
+        return past(value, true);
+    } else if(type === "Null") {
+        return value === null || value === undefined;
+    } else if(type === "NotNull") {
+        return value !== null && value !== undefined;
+    } else if(type === "Size") {
+        return size(value, arg1, arg2);
     }
-    const target = event.target;
 
-    console.log(file);
+    return true;
+};
+
+function size(value, min, max) {
+    if (value === null || value === undefined) {
+        return false;
+    }
+    if(min === null || min === undefined) {
+        min = "0";
+    }
+    let length = value.length;
+    if (typeof value === "object") {
+        length = Object.keys(value).length;
+    }
+    return !(length < Number(min) || (max !== undefined && length > Number(max)));
 }
+
+function past(value, allowPresent) {
+    const valAsNum = Number(value.replace("L", ""));
+    if(allowPresent) {
+        return new Date(valAsNum) <= new Date();
+    }
+    return new Date(valAsNum) < new Date();
+}
+
+function future(value, allowPresent) {
+    const valAsNum = Number(value.replace("L", ""));
+    if(allowPresent) {
+        return new Date(valAsNum) >= new Date();
+    }
+    return new Date(valAsNum) > new Date();
+}
+
+function negativeOrZero(value) {
+    return value !== undefined && value.trim().length !== 0 && Number(value) <= 0;
+}
+
+function negative(value) {
+    return value !== undefined && value.trim().length !== 0 && Number(value) < 0;
+}
+
+function positiveOrZero(value) {
+    return value !== undefined && value.trim().length !== 0 && Number(value) >= 0;
+}
+
+function positive(value) {
+    return value !== undefined && value.trim().length !== 0 && Number(value) > 0;
+}
+
+function digits(value, integer, fractions) {
+    let regex = new RegExp(`^[0-9]{1,${integer}}$`);
+    if(Number(fractions) !== 0) {
+        regex = new RegExp(`^[0-9]{1,${integer}}([,.][0-9]{1,${fractions}})?$`);
+    }
+    return regex.test(value);
+}
+
+function decimalMin(value, minAsString) {
+    return value !== undefined && value.trim().length !== 0 && Number(value) >= Number(minAsString);
+}
+
+function decimalMax(value, maxAsString) {
+    return value !== undefined && value.trim().length !== 0 && Number(value) <= Number(maxAsString);
+}
+
+function notBlank(value) {
+    return value !== undefined && value.trim().length !== 0;
+}
+
+function notEmpty(value) {
+    return value !== undefined && value.length !== 0;
+}
+
+function pattern(value, pattern) {
+    return value !== undefined && XRegExp(pattern).test(value);
+}
+
+function assert(value, assertValue) {
+    return value !== undefined && /^true$/i.test(value) === assertValue;
+}
+
+function email(value) {
+    const emailPattern ="^[\\p{L}+\\p{M}0-9.!#$%&’'\\\"*+\\/=?^_ `{|}~-]+(\\.{1}[\\p{L}+\\p{M}0-9.!#$%&’'\\\"*+\\/=?^_ `{|}~-]+)*[0-9.!#$%&’'\\\"*+\\/=?^_ `{|}~-]*@[\\p{L}+\\p{M}0-9.!#$%&’'\\\"*+\\/=?^_ `{|}~-]+[0-9.!#$%&’'\\\"*+\\/=?^_ `{|}~-]*(\\.{1}[\\p{L}+\\p{M}0-9!#$%&’'\\\"*+\\/=?^_ `{|}~-]+)+$";
+    return pattern(value, emailPattern);
+}
+
+markFieldAsFailedValidation = function(form, name, message) {
+    let field = form.querySelector("[validation='"+name+"']");
+    if(null !== field) {
+        //- make visible, add error class, add message
+        field.innerText = message;
+        field.classList.remove("hidden");
+    }
+
+    let validationGlobal = form.querySelector("ul[validation='form-global']");
+    if(null !== validationGlobal) {
+        //- make visible, added li with message
+        const li = document.createElement('li');
+        li.innerText = message;
+        validationGlobal.appendChild(li);
+    }
+
+    return false;
+};
+
+clearAllValidation = function (form) {
+    let allLi = form.querySelectorAll("ul[validation='form-global'] li");
+    for(let li of allLi) {
+        li.remove();
+    }
+    for (const validationElement of form.querySelectorAll("[validation]:not([validation='form-global'])")) {
+        clearValidationErrorForField(form, validationElement.getAttribute("validation"));
+    }
+}
+
+clearValidationErrorForField = function (form, name) {
+    let field = form.querySelector("[validation='"+name+"']");
+    if(null !== field) {
+        field.innerText = "";
+        field.classList.add("hidden");
+
+        let validationGlobal = form.querySelector("ul[validation='form-global']");
+        if(null !== validationGlobal) {
+            let relatedValidationError = validationGlobal.querySelector("[validation-error='" + name + "']");
+            if(null !== relatedValidationError) {
+                relatedValidationError.remove();
+            }
+        }
+    }
+}
+
+const buttonLoader = document.getElementById("m-template-button-load").content.firstElementChild.outerHTML;
 
 Medusa.prototype.doAction = function(event, parentFragment, actionToExecute) {
     if(typeof event !== "undefined") {
@@ -378,6 +592,10 @@ handleRemoval = function(obj) {
     }
 };
 
+function findFormBasedOnContext(formContext) {
+    return document.querySelector("form[onsubmit*='{}']".replace("{}", formContext));
+}
+
 applyAllChanges = function (listOfDiffs) {
     for(let diff of listOfDiffs) {
         //main
@@ -396,6 +614,9 @@ applyAllChanges = function (listOfDiffs) {
             runFunction(escape(diff.content), []);
         } else if(diff.type === "LOADING") {
             applyLoadingUpdate(escape(diff.content));
+        } else if(diff.type === "VALIDATION") {
+            const formAttributeSplit = diff.attributeKey.split("#");
+            markFieldAsFailedValidation(findFormBasedOnContext(formAttributeSplit[0]), formAttributeSplit[1], diff.attributeValue);
         }
     }
 };
@@ -434,7 +655,8 @@ debugLog = function (objToLog) {
 };
 
 async function buildStream(rsocket) {
-    const encodedRoute = encodeRoute("event-emitter/" + _M.controller + "/" + _M.sessionId);
+    const locale = (navigator.language || navigator.userLanguage);
+    const encodedRoute = encodeRoute("event-emitter/" + _M.controller + "/" + _M.sessionId + "/" + locale);
     const map = new Map();
     map.set(WellKnownMimeType.MESSAGE_RSOCKET_ROUTING, encodedRoute);
     map.set(WellKnownMimeType.MESSAGE_RSOCKET_AUTHENTICATION, encodeSimpleAuthMetadata(_M.sessionId, _M.wsP));

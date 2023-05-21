@@ -24,6 +24,7 @@ public class Session {
     private final String hydraPath;
     private boolean matched;
     private boolean initialRender = true;
+    private Locale locale = Locale.US;
 
     private Map<String, FileUploadMeta> pendingFileUploads = new HashMap<>();
 
@@ -51,6 +52,7 @@ public class Session {
         setLastUsedTemplate(route.getTemplateHTML());
         setLastUsedHash(route.generateHash());
         getTags().put(StandardSessionTagKeys.ROUTE, request.path());
+        getTags().put(StandardSessionTagKeys.CONTROLLER, route.getController().getClass().getName());
     }
 
     public String getLastUsedTemplate() {
@@ -198,5 +200,18 @@ public class Session {
 
     public void setPendingFileUploads(Map<String, FileUploadMeta> pendingFileUploads) {
         this.pendingFileUploads = pendingFileUploads;
+    }
+
+    public Locale getLocale() {
+        return locale;
+    }
+
+    public void setLocale(Locale locale) {
+        this.locale = locale;
+    }
+
+    public Session withLocale(String localeString) {
+        this.setLocale(Locale.forLanguageTag(localeString.trim()));
+        return this;
     }
 }

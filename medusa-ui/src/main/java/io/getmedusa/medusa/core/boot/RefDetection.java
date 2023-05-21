@@ -85,9 +85,13 @@ public enum RefDetection {
         for(Map.Entry<String, String> refEntry : detectedRefs.entrySet()) {
             final String html = refEntry.getValue();
             if(html.contains(":fragment>")) {
-                updatesToRefs.put(refEntry.getKey(), FragmentDetection.INSTANCE.prepFile(html));
+                updatesToRefs.put(refEntry.getKey(), FragmentDetection.INSTANCE.prepFile(null, html));
             }
         }
         detectedRefs.putAll(updatesToRefs);
+    }
+
+    public Map<String, UIEventPageCallWrapper> getRefToBeanMap() {
+        return refToBeanMap;
     }
 }

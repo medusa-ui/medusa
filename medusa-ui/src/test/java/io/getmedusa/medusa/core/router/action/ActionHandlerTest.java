@@ -5,6 +5,7 @@ import io.getmedusa.medusa.core.attributes.Attribute;
 import io.getmedusa.medusa.core.boot.RouteDetection;
 import io.getmedusa.medusa.core.router.request.Route;
 import io.getmedusa.medusa.core.session.Session;
+import io.getmedusa.medusa.core.validation.ValidationMessageResolver;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,7 +18,7 @@ class ActionHandlerTest {
 
     @BeforeEach
     public void setup() {
-        actionHandler = new ActionHandler();
+        actionHandler = new ActionHandler(new ValidationMessageResolver(null));
     }
 
     @Test
