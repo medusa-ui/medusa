@@ -12,7 +12,7 @@ public class Component {
         final Map<String, List<Component>> map = new LinkedHashMap<>();
 
         map.put("Controller", List.of(
-                new Component("Path variables"),
+                new Component("Path variables", "path/someValue123/anotherValue432"),
                 new Component("URL parameters"),
                 new Component("Headers")
         ));
