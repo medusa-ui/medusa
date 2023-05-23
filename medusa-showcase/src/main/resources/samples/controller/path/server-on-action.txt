@@ -1,0 +1,25 @@
+import io.getmedusa.medusa.core.annotation.UIEventPage;
+import io.getmedusa.medusa.core.attributes.Attribute;
+import io.getmedusa.medusa.core.session.Session;
+import org.springframework.web.reactive.function.server.ServerRequest;
+
+import static io.getmedusa.medusa.core.attributes.Attribute.$$;
+
+@UIEventPage(path = "/detail/path/{sample1}/{sample2}", file = "/pages/sample/path.html")
+public class PathVariableController {
+
+    public List<Attribute> setupAttributes(ServerRequest request) {
+        return $$(
+                "sessionVar1", request.pathVariable("sample1"),
+                "sessionVar2", request.pathVariable("sample2")
+        );
+    }
+
+    public List<Attribute> runAction(Session session) {
+        return $$("actionOutput",
+                session.getAttribute("sessionVar1")
+                + "/" +
+                session.getAttribute("sessionVar2"));
+    }
+
+}
