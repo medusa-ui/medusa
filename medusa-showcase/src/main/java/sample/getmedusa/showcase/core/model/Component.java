@@ -13,7 +13,7 @@ public class Component {
 
         map.put("Controller", List.of(
                 new Component("Path variables", "path/someValue123/anotherValue432"),
-                new Component("URL parameters"),
+                new Component("Query parameters", "query?sample1=123someValue&sample2=543anotherValue"),
                 new Component("Headers")
         ));
 

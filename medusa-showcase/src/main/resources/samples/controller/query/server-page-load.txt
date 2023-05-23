@@ -1,0 +1,16 @@
+import io.getmedusa.medusa.core.annotation.UIEventPage;
+import io.getmedusa.medusa.core.attributes.Attribute;
+import org.springframework.web.reactive.function.server.ServerRequest;
+
+import static io.getmedusa.medusa.core.attributes.Attribute.$$;
+
+@UIEventPage(path = "/detail/query", file = "/pages/query-param.html")
+public class QueryParamController {
+
+    public List<Attribute> setupAttributes(ServerRequest request) {
+        return $$("sessionVar1", request.queryParam("sample1").orElse("No 'sample1' param provided?"),
+                  "sessionVar2", request.queryParam("sample2").orElse("No 'sample2' param provided?"));
+    }
+
+}
+

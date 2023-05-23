@@ -1,0 +1,76 @@
+
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:m="https://www.getmedusa.io/medusa.xsd">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Medusa - Component overview</title>
+    <link rel="stylesheet" href="/css/style-light.css" />
+    <link rel="stylesheet" href="/css/style-dark.css" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono&family=Karla:wght@300;500&display=swap" rel="stylesheet">
+
+    <link id="dark-code" rel="stylesheet" href="/webjars/highlightjs/styles/stackoverflow-dark.min.css">
+    <link id="light-code" rel="stylesheet" href="/webjars/highlightjs/styles/stackoverflow-light.min.css" disabled="disabled">
+</head>
+<body class="dark">
+
+<script src="/webjars/highlightjs/highlight.min.js"></script>
+<m:fragment ref="darkmode"></m:fragment>
+
+<section id="container">
+    <div>
+        <section id="hero">
+            <h1>Query params</h1>
+
+            <p class="lead">An introduction to url parameters in a Medusa context. The values of the query parameter used here can be changed to other values, if you want to experiment. You can already remove them.</p>
+
+            <a id="back-to-overview" href="/">Back to overview</a>
+        </section>
+
+        <h2>Query param on page load</h2>
+        <p>Use <i>ServerRequest</i> in the setupAttributes() method to gain access to the entire incoming request metadata, including query parameters. Keep in mind that these are Optionals, so you should return a fallback value in case no value is provided via <i>.else()</i>.</p>
+
+        <section class="example">
+            <span class="sample-counter" th:text="${sessionVar1}"></span>
+            <span class="sample-counter" th:text="${sessionVar2}"></span>
+
+            <footer th:text="${version}"></footer>
+        </section>
+
+        <section class="server">
+            <h3>Server</h3>
+            <pre><code class="language-java hljs" th:text="${serverCodeOnPageLoad}"></code></pre>
+        </section>
+
+        <h2>Query param on actions</h2>
+        <p>You could also add these to the attributes so that they are part of the Session (without the need to render them visually).
+            You can then use them anywhere, as you can always use the session. The <i>Session</i> object is always optionally available for any action method,
+            if you add it to the beginning or end of your parameters: myMethod(Session session, ... ) or myMethod(..., Session session)</p>
+
+        <section class="example">
+            <span id="counter_value" class="sample-counter" th:text="${actionOutput}"></span>
+
+            <button id="btn_action"  m:click="runAction()">Get query params on action from session</button>
+
+            <footer th:text="${version}"></footer>
+        </section>
+
+        <section class="client">
+            <h3>Client</h3>
+            <pre><code class="language-html hljs" th:text="${clientOnAction}"></code></pre>
+        </section>
+
+        <section class="server">
+            <h3>Server</h3>
+            <pre><code class="language-java hljs" th:text="${serverCodeOnAction}"></code></pre>
+        </section>
+
+
+    </div>
+</section>
+
+</body>
+</html>
