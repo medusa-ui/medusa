@@ -10,6 +10,7 @@ import io.getmedusa.medusa.core.util.FluxUtils;
 import io.getmedusa.medusa.core.util.FragmentUtils;
 import io.getmedusa.medusa.core.util.LoaderStatics;
 import io.getmedusa.medusa.core.validation.ValidationMessageResolver;
+import io.opentelemetry.instrumentation.annotations.WithSpan;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -77,6 +78,7 @@ public class Renderer {
         this.resolver = resolver;
     }
 
+    @WithSpan
     public Flux<DataBuffer> render(String templateHTML, Session session) {
         return loadFragments(templateHTML, session).flatMapMany(html -> {
             //TODO try making this a SpringWebFluxEngineContext / SpringWebFluxThymeleafRequestContext?
