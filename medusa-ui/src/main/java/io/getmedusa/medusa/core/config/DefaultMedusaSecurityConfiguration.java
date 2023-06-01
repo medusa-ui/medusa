@@ -18,9 +18,7 @@ public class DefaultMedusaSecurityConfiguration {
     @Bean
     public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
         return MedusaSecurity.defaultSecurity(http)
-                .authorizeExchange()
-                .anyExchange().permitAll()
-                .and()
+                .authorizeExchange(authorizeExchangeSpec -> authorizeExchangeSpec.anyExchange().permitAll())
                 .build();
     }
 
