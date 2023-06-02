@@ -16,7 +16,9 @@ public enum ValidationExecutor {
     INSTANCE;
 
     private static final String EMAIL_PATTERN = "^[\\p{L}+\\p{M}0-9.!#$%&’'\\\"*+\\/=?^_ `{|}~-]+(\\.{1}[\\p{L}+\\p{M}0-9.!#$%&’'\\\"*+\\/=?^_ `{|}~-]+)*[0-9.!#$%&’'\\\"*+\\/=?^_ `{|}~-]*@[\\p{L}+\\p{M}0-9.!#$%&’'\\\"*+\\/=?^_ `{|}~-]+[0-9.!#$%&’'\\\"*+\\/=?^_ `{|}~-]*(\\.{1}[\\p{L}+\\p{M}0-9!#$%&’'\\\"*+\\/=?^_ `{|}~-]+)+$";
-    private static final String DECIMAL_SYMBOL = getDecimalSymbol();
+
+    /* TODO remove: it makes no sense to determine decimal symbol at serverside (jvm always expects a '.' for decimals) */
+    private static final String DECIMAL_SYMBOL = "."; // getDecimalSymbol();
 
     public Set<ValidationError> validate(String expression, Object bean) {
         Set<ValidationError> violationSet = new HashSet<>();
@@ -33,7 +35,7 @@ public enum ValidationExecutor {
         return violationSet;
     }
 
-    // I'm not sure if its best to make an implementation ourselves or use something like Hibernate Validator
+    // I'm not sure if it's best to make an implementation ourselves or use something like Hibernate Validator
     // you might think: no need to re-implement; but actually we need this information anyway for the front-end
     // so the effort to have manual validation is kind of minimal compared to all the up-front work, and we save a dependency?
     // (basically just this method)
@@ -179,6 +181,7 @@ public enum ValidationExecutor {
         }
     }
 
+    /* TODO why should we need this? */
     private static String getDecimalSymbol() {
         Locale currentLocale = Locale.getDefault();
         DecimalFormatSymbols symbols = DecimalFormatSymbols.getInstance(currentLocale);
