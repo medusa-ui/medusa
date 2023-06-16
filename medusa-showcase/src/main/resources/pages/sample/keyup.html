@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:m="https://www.getmedusa.io/medusa.xsd">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medusa - Component detail</title>
+</head>
+<body>
+
+<div id="container" m:ref="keyup">
+    <section id="hero">
+        <h1>Backend calls on keyUp</h1>
+
+        <p class="lead">An example of command-prompt style actions being triggered when you press a certain key in an input.</p>
+
+        <a id="back-to-overview" href="/">Back to overview</a>
+    </section>
+
+    <h2>On enter</h2>
+    <p>The most common example is, most likely, entering a command and then pressing 'Enter'. This is a common enough scenario it gets its own unique tag.</p>
+
+    <section class="example">
+        <span class="sample-counter" th:text="${onEnterValue}"></span>
+
+        <input type="text" m:enter="sendTextOnEnter(:{this})" placeholder="Type in some text and then press 'Enter'" />
+
+        <footer th:text="${version}"></footer>
+    </section>
+
+    <section class="client">
+        <h3>Client</h3>
+        <pre><code class="language-html hljs" th:text="${clientCode[0]}"></code></pre>
+    </section>
+
+    <section class="server">
+        <h3>Server</h3>
+        <pre><code class="language-java hljs" th:text="${serverCode[0]}"></code></pre>
+    </section>
+
+    <h2>On any key</h2>
+    <p>More generically, the same logic can be applied for any other key as well. You can use the m:key attribute to specify the key required to trigger the call.</p>
+    <section class="example">
+        <span class="sample-counter" th:text="${onSpaceValue}"></span>
+
+        <input type="text" m:key=" " m:keyup="sendTextOnSpace(:{this})" placeholder="Type in some text and then press 'Space'" />
+
+        <footer th:text="${version}"></footer>
+    </section>
+
+    <section class="client">
+        <h3>Client</h3>
+        <pre><code class="language-html hljs" th:text="${clientCode[1]}"></code></pre>
+    </section>
+
+    <section class="server">
+        <h3>Server</h3>
+        <pre><code class="language-java hljs" th:text="${serverCode[1]}"></code></pre>
+    </section>
+
+</div>
+</body>
+</html>

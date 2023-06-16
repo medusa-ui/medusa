@@ -1,0 +1,2 @@
+<span th:text="${onSpaceValue}"></span>
+<input type="text" m:key=" " m:keyup="sendTextOnSpace(:{this})" />
