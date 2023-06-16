@@ -12,8 +12,8 @@ import static io.getmedusa.medusa.core.attributes.Attribute.$$;
 public class KeyUpController {
 
     public List<Attribute> setupAttributes() {
-        return $$("onEnterValue", " ",
-                "onSpaceValue", " ");
+        return $$("onEnterValue", "-",
+                "onSpaceValue", "-");
     }
 
     public List<Attribute> sendTextOnSpace(String value) {
