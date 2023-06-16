@@ -252,3 +252,16 @@ button:disabled {
 .hidden {
   display: none;
 }
+
+::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
+  color: #f3c4ffdb;
+  opacity: 1; /* Firefox */
+}
+
+:-ms-input-placeholder { /* Internet Explorer 10-11 */
+  color: #f3c4ffdb;
+}
+
+::-ms-input-placeholder { /* Microsoft Edge */
+  color: #f3c4ffdb;
+}
