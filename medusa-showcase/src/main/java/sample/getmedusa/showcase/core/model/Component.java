@@ -25,6 +25,9 @@ public class Component {
         ));
 
         map.put("Text inputs", List.of(
+                new Component("Action on keyUp", "keyup",
+                        new String[]{"/samples/textinputs/keyup/page_enter.txt", "/samples/textinputs/keyup/page_space.txt"},
+                        new String[]{"/samples/textinputs/keyup/controller_enter.txt", "/samples/textinputs/keyup/controller_space.txt"}),
                 new Component("Submit with reference"),
                 new Component("Form submit tag", "form-submit",
                         new String[]{"/samples/textinputs/formsubmit/page_map.txt", "/samples/textinputs/formsubmit/page_form.txt"},
