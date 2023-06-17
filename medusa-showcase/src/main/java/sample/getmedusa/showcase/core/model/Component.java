@@ -79,7 +79,9 @@ public class Component {
         ));
 
         map.put("Javascript", List.of(
-                new Component("Event hooks")
+                new Component("Event hooks", "js-hooks",
+                        new String[]{"/samples/jshooks/page.txt"},
+                        new String[]{"/samples/jshooks/controller.txt"})
         ));
 
         map.put("Embedding", List.of(

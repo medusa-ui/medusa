@@ -1,0 +1,25 @@
+<p id="pre-render">No pre-render call</p>
+<p id="pre-event">No pre-event call</p>
+<p id="post-event">No post-event call</p>
+<p id="post-render">No post-render call</p>
+
+<div th:text="${counter}"></div>
+
+<button m:click="updateCounter(1)">Increase counter</button>
+<button m:click="reset()">Reset counter</button>
+
+<script>
+    _M_extend = {};
+    _M_extend.preRender = function(listOfDiffs) {
+        document.getElementById("pre-render").textContent = JSON.stringify(listOfDiffs);
+    };
+    _M_extend.preEvent = function(diff) {
+        document.getElementById("pre-event").textContent = JSON.stringify(diff);
+    };
+    _M_extend.postEvent = function(diff) {
+        document.getElementById("post-event").textContent = JSON.stringify(diff);
+    };
+    _M_extend.postRender = function(listOfDiffs) {
+        document.getElementById("post-render").textContent = JSON.stringify(listOfDiffs);
+    };
+</script>

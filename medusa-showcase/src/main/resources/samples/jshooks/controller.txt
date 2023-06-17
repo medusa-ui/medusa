@@ -1,0 +1,26 @@
+import io.getmedusa.medusa.core.annotation.UIEventPage;
+import io.getmedusa.medusa.core.attributes.Attribute;
+import io.getmedusa.medusa.core.session.Session;
+
+import static io.getmedusa.medusa.core.attributes.Attribute.$$;
+
+import java.util.List;
+
+@UIEventPage(path = "/detail/js-hooks", file = "/pages/js-hooks.html")
+public class Controller {
+
+    public List<Attribute> setupAttributes() {
+        return $$("counter", 0);
+    }
+
+    public List<Attribute> updateCounter(int amount, Session session) {
+        int counter = session.getAttribute("counter");
+        counter += amount;
+        return $$("counter", counter);
+    }
+
+    public List<Attribute> reset() {
+        return $$("counter", 0);
+    }
+
+}

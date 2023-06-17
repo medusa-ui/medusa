@@ -597,7 +597,10 @@ function findFormBasedOnContext(formContext) {
 }
 
 applyAllChanges = function (listOfDiffs) {
+    const extend = (typeof _M_extend !== 'undefined') ? _M_extend : {};
+    if(typeof extend.preRender === 'function') { extend.preRender(listOfDiffs); }
     for(let diff of listOfDiffs) {
+        if(typeof extend.preEvent === 'function') { extend.preEvent(diff); }
         //main
         if(diff.type === "ADDITION") {
             handleIncomingAddition(diff);
@@ -618,7 +621,9 @@ applyAllChanges = function (listOfDiffs) {
             const formAttributeSplit = diff.attributeKey.split("#");
             markFieldAsFailedValidation(findFormBasedOnContext(formAttributeSplit[0]), formAttributeSplit[1], diff.attributeValue);
         }
+        if(typeof extend.postEvent === 'function') { extend.postEvent(diff); }
     }
+    if(typeof extend.postRender === 'function') { extend.postRender(listOfDiffs); }
 };
 
 applyLoadingUpdate = function(loadingName) {

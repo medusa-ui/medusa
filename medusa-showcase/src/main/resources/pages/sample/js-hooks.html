@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:m="https://www.getmedusa.io/medusa.xsd">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medusa - Component detail</title>
+</head>
+<body>
+
+<div id="container" m:ref="js-hooks">
+    <section id="hero">
+        <h1>JS hooks</h1>
+
+        <p class="lead">An example of how to hook in custom JS events into Medusa</p>
+
+        <a id="back-to-overview" href="/">Back to overview</a>
+    </section>
+
+    <h2>Render events</h2>
+    <p>This example is identical to the basic button example, however it is extended with custom JS functions within the rendering process.
+    You can hook into the following events:</p>
+    <ul>
+        <li>Pre-render: This happens just as the response from the server is received, but before any rendering is done. As parameter it has the entire list of changes incoming.</li>
+        <li>Pre-event: This gets called before each change is about to be rendered. As parameter, you get the specific change.</li>
+        <li>Post-event: This gets called just after each change was rendered. As parameter, you get the specific change.</li>
+        <li>Post-render: This happens when all items have been rendered, just before the rendering function is about to stop. As parameter you get the entire list of items that were just rendered.</li>
+    </ul>
+
+    <section class="example">
+
+        <p id="pre-render" class="debug-text">No pre-render call</p>
+        <p id="pre-event" class="debug-text">No pre-event call</p>
+        <p id="post-event" class="debug-text">No post-event call</p>
+        <p id="post-render" class="debug-text">No post-render call</p>
+
+        <span id="counter_value" class="sample-counter" th:text="${counter}"></span>
+
+        <button id="btn_update"  m:click="updateCounter(1)">Increase counter</button>
+        <button id="btn_reset" m:click="reset()">Reset counter</button>
+
+        <footer th:text="${version}"></footer>
+    </section>
+
+    <section class="client">
+        <h3>Client</h3>
+        <pre><code class="language-html hljs" th:text="${clientCode[0]}"></code></pre>
+    </section>
+
+    <section class="server">
+        <h3>Server</h3>
+        <pre><code class="language-java hljs" th:text="${serverCode[0]}"></code></pre>
+    </section>
+
+    <script>
+        _M_extend = {};
+        _M_extend.preRender = function(listOfDiffs) {
+            document.getElementById("pre-render").textContent = JSON.stringify(listOfDiffs);
+        };
+        _M_extend.preEvent = function(diff) {
+            document.getElementById("pre-event").textContent = JSON.stringify(diff);
+        };
+        _M_extend.postEvent = function(diff) {
+            document.getElementById("post-event").textContent = JSON.stringify(diff);
+        };
+        _M_extend.postRender = function(listOfDiffs) {
+            document.getElementById("post-render").textContent = JSON.stringify(listOfDiffs);
+        };
+    </script>
+
+</div>
+</body>
+</html>

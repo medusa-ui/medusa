@@ -265,3 +265,14 @@ button:disabled {
 ::-ms-input-placeholder { /* Microsoft Edge */
   color: #f3c4ffdb;
 }
+
+.debug-text {
+  font-family: monospace;
+  font-size: 12px;
+  line-height: 12px;
+  height: 12px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding-bottom: 0.5em;
+}
