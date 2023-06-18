@@ -34,7 +34,8 @@ public class UploadsController implements UploadableUI {
     public void uploadChunk(DataChunk dataChunk, Session session) {
         String fileName = dataChunk.getFileName();
         SessionImage image = session.getAttribute("image");
-        if(image == null) {
+        if(image == null || !image.getName().equals(fileName)) { // check the name if there is a new image
+            session.removeAttributeByName("image");
             image = new SessionImage(fileName, dataChunk.getMimeType());
             session.getLastParameters().add($("image", image));
         }
@@ -45,7 +46,6 @@ public class UploadsController implements UploadableUI {
             serverToClient.sendAttributesToSession($$("image", image), session);
         }
     }
-
 
     public static class SessionImage {
         String base64PrefixFormat = "data:%s;base64, ";
