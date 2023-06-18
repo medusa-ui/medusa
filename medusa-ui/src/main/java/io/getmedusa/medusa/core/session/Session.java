@@ -94,6 +94,10 @@ public class Session {
         return AttributeUtils.toLastParameterMap(this.lastParameters);
     }
 
+    public boolean removeAttributeByName(String name) {
+        return lastParameters.removeIf(attribute -> attribute.name().equals(name));
+    }
+
     public Map<String, String> getTags() {
         return tags;
     }
