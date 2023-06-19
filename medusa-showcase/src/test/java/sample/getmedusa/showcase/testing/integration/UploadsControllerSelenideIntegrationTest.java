@@ -34,5 +34,18 @@ public class UploadsControllerSelenideIntegrationTest extends SelenideIntegratio
 
         // and
         $(id("img_upload")).shouldBe(visible);
+
+        // upload another file
+        $(id("single_file")).uploadFromClasspath("tree_2.png");
+        $(id("btn_upload")).click();
+
+        // then
+        $(id("prg_upload")).shouldBe(appear);
+
+        // and
+        $(id("prg_upload")).should(disappear);
+
+        // then
+        $(id("img_upload")).shouldBe(visible);
     }
 }
