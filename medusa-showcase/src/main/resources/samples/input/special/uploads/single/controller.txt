@@ -30,13 +30,14 @@ public class UploadsController implements UploadableUI {
     public void uploadChunk(DataChunk dataChunk, Session session) {
         String fileName = dataChunk.getFileName();
         SessionImage image = session.getAttribute("image");
-        if(image == null) {
+        if(image == null || !image.getName().equals(fileName)) { // check the name if there is a new image
+            session.removeAttributeByName("image");
             image = new SessionImage(fileName, dataChunk.getMimeType());
             session.getLastParameters().add($("image", image));
         }
         image.writeBytes(dataChunk.getChunk());
         image.setCompletion(dataChunk.getCompletion());
-        if (image.hasProgress(10) || image.isCompleted()) {);
+        if (image.hasProgress(10) || image.isCompleted()) {
             serverToClient.sendAttributesToSession($$("image", image), session);
         }
     }
