@@ -43,8 +43,8 @@ public class HelloWorldController {
                 new Attribute("people", people)));
     }
 
-    public List<Attribute> increaseCounter(){
-        return List.of(new Attribute("counterValue", ++counter));
+    public Mono<List<Attribute>> increaseCounter(){
+        return Mono.just(List.of(new Attribute("counterValue", ++counter)));
     }
 
     public List<Attribute> increaseCounterWith(Integer increaseWith) {
