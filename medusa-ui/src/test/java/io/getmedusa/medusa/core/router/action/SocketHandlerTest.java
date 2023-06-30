@@ -18,6 +18,7 @@ import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DataBufferFactory;
 import org.springframework.core.io.buffer.DefaultDataBufferFactory;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
@@ -59,7 +60,7 @@ class SocketHandlerTest {
 
         Session session = new Session();
         Mockito.when(sessionMemoryRepository.retrieve(anyString(), any())).thenReturn(session);
-        Mockito.when(actionHandler.executeAndMerge(any(), any(), any())).thenReturn(session);
+        Mockito.when(actionHandler.executeAndMerge(any(), any(), any())).thenReturn(Mono.just(session));
         Mockito.when(renderer.render(anyString(), any())).thenReturn(createDataBuffer("test"));
         Mockito.when(diffEngine.calculate(nullable(String.class), nullable(String.class))).thenReturn(Set.of(new ServerSideDiff(AbstractDiff.DiffType.ADDITION)));
 
