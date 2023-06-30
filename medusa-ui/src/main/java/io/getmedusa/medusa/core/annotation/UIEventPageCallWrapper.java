@@ -48,12 +48,7 @@ public class UIEventPageCallWrapper {
             if(setupAttributesMethod == null) { return Mono.just(new ArrayList<>()); }
 
             if(setupAttributesMethod.getParameterCount() == 0) {
-                Object methodResponse = setupAttributesMethod.invoke(controller);
-                if(!"reactor.core.publisher.MonoCallableOnAssembly".equals(methodResponse.getClass().getName())) {
-                    return Mono.just((List<Attribute>) methodResponse);
-                } else {
-                    return (Mono<List<Attribute>>) methodResponse;
-                }
+                return returnMonoVersion(setupAttributesMethod.invoke(controller));
             }
 
             List<Object> arguments = new ArrayList<>();
@@ -64,10 +59,19 @@ public class UIEventPageCallWrapper {
                     arguments.add(session);
                 }
             }
-            return (Mono<List<Attribute>>) setupAttributesMethod.invoke(controller, arguments.toArray());
+
+            return returnMonoVersion(setupAttributesMethod.invoke(controller, arguments.toArray()));
         } catch (InvocationTargetException | IllegalAccessException e) {
             logger.error("setup attributes failed due to: " + e.getMessage(), e);
             throw new IllegalStateException("setup attributes failed", e);
+        }
+    }
+
+    private static Mono<List<Attribute>> returnMonoVersion(Object methodResponse) {
+        if(!"reactor.core.publisher.MonoCallableOnAssembly".equals(methodResponse.getClass().getName())) {
+            return Mono.just((List<Attribute>) methodResponse);
+        } else {
+            return (Mono<List<Attribute>>) methodResponse;
         }
     }
 
