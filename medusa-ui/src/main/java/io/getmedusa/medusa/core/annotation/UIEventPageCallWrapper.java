@@ -48,7 +48,12 @@ public class UIEventPageCallWrapper {
             if(setupAttributesMethod == null) { return Mono.just(new ArrayList<>()); }
 
             if(setupAttributesMethod.getParameterCount() == 0) {
-                return (Mono<List<Attribute>>) setupAttributesMethod.invoke(controller);
+                Object methodResponse = setupAttributesMethod.invoke(controller);
+                if(!"reactor.core.publisher.MonoCallableOnAssembly".equals(methodResponse.getClass().getName())) {
+                    return Mono.just((List<Attribute>) methodResponse);
+                } else {
+                    return (Mono<List<Attribute>>) methodResponse;
+                }
             }
 
             List<Object> arguments = new ArrayList<>();

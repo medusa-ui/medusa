@@ -33,7 +33,7 @@ class RouteTest {
     @Test
     void testSetupAttributes() {
         Route route = new Route("/test", "", new EmbeddedSampleController());
-        List<Attribute> attributes = route.getSetupAttributes(null, null);
+        List<Attribute> attributes = route.getSetupAttributes(null, null).block();
         Assertions.assertNotNull(attributes);
         Assertions.assertEquals(1, attributes.size());
         Assertions.assertEquals(456, attributes.get(0).value());

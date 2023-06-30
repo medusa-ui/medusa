@@ -1,7 +1,5 @@
 package io.getmedusa.medusa.core.render;
 
-import io.getmedusa.medusa.core.annotation.UIEventPageCallWrapper;
-import io.getmedusa.medusa.core.attributes.Attribute;
 import io.getmedusa.medusa.core.boot.*;
 import io.getmedusa.medusa.core.boot.hydra.HydraConnectionController;
 import io.getmedusa.medusa.core.boot.hydra.model.meta.RenderedFragment;
@@ -118,26 +116,22 @@ public class Renderer {
     private Flux<RenderedFragment> renderLocalFragment(Fragment fragment, Session session) {
         final String ref = fragment.getRef();
         String rawHTML = RefDetection.INSTANCE.findRef(ref);
+        final boolean fragmentFallback = rawHTML == null;
 
-        if(rawHTML == null) {
+        if(fragmentFallback) {
             rawHTML = fragment.getFallback();
-        } else {
-            UIEventPageCallWrapper bean = RefDetection.INSTANCE.findBeanByRef(ref);
-            if(session.isInitialRender()) { //TODO ? what happens 'on action'?
-                //call controller startup and use for render (add to session? separate?)
-                List<Attribute> attributes = bean.setupAttributes(null, session);
-                session = session.merge(attributes);
-            }
         }
 
         //TODO deal with the export/imports here as well later on
 
-        return renderFragment(rawHTML, session).map(dataBuffer -> {
+        final String html = rawHTML;
+
+        return session.setupAttributes(ref, fragmentFallback).flatMap(s -> renderFragment(html, s).map(dataBuffer -> {
             final RenderedFragment renderedFragment = new RenderedFragment();
             renderedFragment.setId(fragment.getId());
             renderedFragment.setRenderedHTML(FragmentUtils.addFragmentRefToHTML(FluxUtils.dataBufferToString(dataBuffer), ref));
             return renderedFragment;
-        });
+        }));
     }
 
     private Mono<List<RenderedFragment>> buildFallbackFlux(Mono<List<RenderedFragment>> selfLoadedFragments, Map<String, List<Fragment>> fragmentsToLoad) {

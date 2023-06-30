@@ -92,6 +92,10 @@ public class ActionHandler {
                 result = SPEL_EXPRESSION_PARSER
                         .parseExpression(expression)
                         .getValue(evaluationContext, bean);
+                //if response is not a Mono<List<Attributes>> but a List<Attributes>, just wrap it!
+                if(!"reactor.core.publisher.MonoCallableOnAssembly".equals(result.getClass().getName())) {
+                    result = Mono.just(result);
+                }
             } else {
                 List<ServerSideDiff> validatorViolation = new ArrayList<>();
                 for(ValidationError violation : violations) {
@@ -106,8 +110,6 @@ public class ActionHandler {
         }
         return (Mono<List<Attribute>>) result;
     }
-
-
 
     private static String handleArrayParsing(String expression) {
         Pattern pattern = Pattern.compile("\\[.*?]");
