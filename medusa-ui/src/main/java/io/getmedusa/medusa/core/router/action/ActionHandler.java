@@ -93,7 +93,7 @@ public class ActionHandler {
                         .parseExpression(expression)
                         .getValue(evaluationContext, bean);
                 //if response is not a Mono<List<Attributes>> but a List<Attributes>, just wrap it!
-                if(!"reactor.core.publisher.MonoCallableOnAssembly".equals(result.getClass().getName())) {
+                if(result != null && !"reactor.core.publisher.MonoCallableOnAssembly".equals(result.getClass().getName())) {
                     result = Mono.just(result);
                 }
             } else {
