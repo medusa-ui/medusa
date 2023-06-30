@@ -67,8 +67,8 @@ public class UIEventPageCallWrapper {
         }
     }
 
-    private static Mono<List<Attribute>> returnMonoVersion(Object methodResponse) {
-        if(methodResponse != null && !"reactor.core.publisher.MonoCallableOnAssembly".equals(methodResponse.getClass().getName())) {
+    public static Mono<List<Attribute>> returnMonoVersion(Object methodResponse) {
+        if(methodResponse != null && !methodResponse.getClass().getName().contains("publisher.Mono")) {
             return Mono.just((List<Attribute>) methodResponse);
         } else {
             return (Mono<List<Attribute>>) methodResponse;
