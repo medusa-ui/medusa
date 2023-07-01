@@ -9,8 +9,7 @@ import sample.getmedusa.showcase.testing.integration.meta.SelenideIntegrationTes
 import static com.codeborne.selenide.CollectionCondition.containExactTextsCaseSensitive;
 import static com.codeborne.selenide.Condition.exactText;
 import static com.codeborne.selenide.Condition.selectedText;
-import static com.codeborne.selenide.Selenide.$;
-import static com.codeborne.selenide.Selenide.$$;
+import static com.codeborne.selenide.Selenide.*;
 import static org.openqa.selenium.By.className;
 import static org.openqa.selenium.By.id;
 
