@@ -9,8 +9,7 @@ import static com.codeborne.selenide.Condition.exactText;
 import static com.codeborne.selenide.Condition.selectedText;
 import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.$$;
-import static org.openqa.selenium.By.className;
-import static org.openqa.selenium.By.id;
+import static org.openqa.selenium.By.*;
 
 public class OptionListControllerSelenideTest extends SelenideIntegrationTest {
 
@@ -46,10 +45,11 @@ public class OptionListControllerSelenideTest extends SelenideIntegrationTest {
         $(id("slc_drinks")).shouldBe(selectedText("Hot Drinks"));
 
         // and when
-        $(id("slc_order")).selectOption("Coffee");
-        $(id("slc_order")).selectOption("Hot chocolate");
+        $(id("slc_order")).selectOptionByValue("Coffee");
+        $(id("slc_order")).selectOptionByValue("Hot chocolate");
+
         $(id("slc_drinks")).selectOption("Beers");
-        $(id("slc_order")).selectOption("Dark ale");
+        $(id("slc_order")).selectOptionByValue("Dark ale");
 
         // then
         $$(className("order")).should(containExactTextsCaseSensitive("Coffee", "Hot chocolate", "Dark ale"));

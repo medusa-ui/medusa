@@ -63,6 +63,7 @@
                 <select id="slc_order" m:change="order(:{this})" style="width: 156px">
                     <option th:each="drinkType: ${drinksList}"
                             th:text="${drinkType}"
+                            th:value="${drinkType}"
                             th:selected="${drinkType} == ${type}">
                         Selected Drink
                     </option>
