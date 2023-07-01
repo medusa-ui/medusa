@@ -32,10 +32,16 @@ public interface IRequestStreamHandler {
 
     private Flux<DataBuffer> renderWithSession(ServerRequest request, Route route, Renderer renderer, SessionMemoryRepository sessionMemoryRepository) {
         final Session session = new Session(route, request);
-        final Flux<DataBuffer> render = renderer.render(route.getTemplateHTML(), session);
-        session.setLastRenderedHTML(FluxUtils.dataBufferFluxToString(render));
-        sessionMemoryRepository.store(session);
-        return render;
+        return route.getSetupAttributes(request, session).flatMapMany(
+                setupAttributes -> {
+                    session.setLastParameters(setupAttributes);
+
+                    final Flux<DataBuffer> render = renderer.render(route.getTemplateHTML(), session);
+                    session.setLastRenderedHTML(FluxUtils.dataBufferFluxToString(render));
+                    sessionMemoryRepository.store(session);
+                    return render;
+                }
+        );
     }
 
 }

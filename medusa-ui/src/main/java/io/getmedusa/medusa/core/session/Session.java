@@ -53,13 +53,6 @@ public class Session {
         this.password = RandomUtils.generatePassword(id);
         this.hydraPath = findHydraPath(request.headers());
 
-        route.getSetupAttributes(request, this).map(
-                s-> {
-                    setLastParameters(s);
-                    return this;
-                }
-        ).subscribe();
-
         setLastUsedTemplate(route.getTemplateHTML());
         setLastUsedHash(route.generateHash());
         getTags().put(StandardSessionTagKeys.ROUTE, request.path());
