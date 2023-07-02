@@ -14,7 +14,10 @@ public class Component {
         map.put("Controller", List.of(
                 new Component("Path variables", "path/someValue123/anotherValue432"),
                 new Component("Query parameters", "query?sample1=123someValue&sample2=543anotherValue"),
-                new Component("Headers")
+                new Component("Headers"),
+                new Component("Reactive methods", "reactive",
+                        new String[]{"/samples/reactive/page.txt"},
+                        new String[]{"/samples/reactive/controller.txt"})
         ));
 
         map.put("Button", List.of(

@@ -1,0 +1,25 @@
+package sample.getmedusa.showcase.samples.reactive;
+
+import io.getmedusa.medusa.core.annotation.UIEventPage;
+import io.getmedusa.medusa.core.attributes.Attribute;
+import io.getmedusa.medusa.core.session.Session;
+import reactor.core.publisher.Mono;
+
+import java.util.List;
+
+import static io.getmedusa.medusa.core.attributes.Attribute.$$;
+
+@UIEventPage(path = "/detail/sample/reactive", file = "/pages/sample/reactive.html")
+public class ReactiveController {
+
+    public Mono<List<Attribute>> setupAttributes() {
+        return Mono.just(0)
+                .map(i -> $$("counter", i));
+    }
+
+    public Mono<List<Attribute>> updateCounter(int amount, Session session) {
+        int counter = session.getAttribute("counter");
+        counter += amount;
+        return Mono.just($$("counter", counter));
+    }
+}

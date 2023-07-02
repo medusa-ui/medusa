@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:m="https://www.getmedusa.io/medusa.xsd">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medusa - Component detail</title>
+</head>
+<body>
+
+<div id="container" m:ref="reactive">
+    <section id="hero">
+        <h1>Basic button, but reactive</h1>
+
+        <p class="lead">An example of a using Reactive classes with Medusa controllers</p>
+
+        <a id="back-to-overview" href="/">Back to overview</a>
+    </section>
+
+    <h2>Reactive method usage</h2>
+    <p>Any controller method, be it setupAttributes() or any action method, provides two different implementations.
+        You can either use a simple List<Attribute> when not using anything but a simple implementation. Or, when using reactive streams, you could use Mono<List<Attribute>> instead.</p>
+
+    <p>Behind the scenes, we're always using Reactive streams. If you use a List<Attribute>, we will wrap it with a Mono internally.</p>
+
+
+    <section class="example">
+        <span id="counter_value" class="sample-counter" th:text="${counter}"></span>
+
+        <button id="btn_update"  m:click="updateCounter(1)">Increase counter</button>
+
+        <footer th:text="${version}"></footer>
+    </section>
+
+    <section class="client">
+        <h3>Client</h3>
+        <pre><code class="language-html hljs" th:text="${clientCode[0]}"></code></pre>
+    </section>
+
+    <section class="server">
+        <h3>Server</h3>
+        <pre><code class="language-java hljs" th:text="${serverCode[0]}"></code></pre>
+    </section>
+
+
+</div>
+</body>
+</html>
