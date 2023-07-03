@@ -26,7 +26,7 @@ class ActionHandlerTest {
         SocketAction socketAction = new SocketAction();
         socketAction.setAction("doActionWithoutParams()");
 
-        final Session updatedSession = actionHandler.executeAndMerge(socketAction, getRoute(), new Session());
+        final Session updatedSession = actionHandler.executeAndMerge(socketAction, getRoute(), new Session()).block();
         System.out.println(updatedSession.toLastParameterMap());
         Assertions.assertEquals(updatedSession.toLastParameterMap().get("counterValue"), 1);
     }
@@ -36,7 +36,7 @@ class ActionHandlerTest {
         SocketAction socketAction = new SocketAction();
         socketAction.setAction("doActionWithParam('zyw-123-3213', 5678)");
 
-        final Session updatedSession = actionHandler.executeAndMerge(socketAction, getRoute(), new Session());
+        final Session updatedSession = actionHandler.executeAndMerge(socketAction, getRoute(), new Session()).block();
         System.out.println(updatedSession.toLastParameterMap());
         Assertions.assertEquals(updatedSession.toLastParameterMap().get("counterValue"), 5678);
         Assertions.assertEquals(updatedSession.toLastParameterMap().get("zyw-123-3213"), "123");

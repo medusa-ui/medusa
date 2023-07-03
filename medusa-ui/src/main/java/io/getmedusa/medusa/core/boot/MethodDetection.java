@@ -11,6 +11,7 @@ public enum MethodDetection {
     INSTANCE;
 
     private static final String LIST_OF_ATTRIBUTES = "java.util.List<io.getmedusa.medusa.core.attributes.Attribute>";
+    private static final String MONO_LIST_OF_ATTRIBUTES = "reactor.core.publisher.Mono<java.util.List<io.getmedusa.medusa.core.attributes.Attribute>>";
     private static final String VOID = "void";
 
     private static final String ERROR_MESSAGE = "'%s' has multiple callable methods named '%s' that could be mapped to a Medusa action. All callable method names must be unique.";
@@ -66,7 +67,7 @@ public enum MethodDetection {
         final String returnType = method.getAnnotatedReturnType().toString();
         final String methodName = method.getName();
 
-        return !methodName.equals(annotation.setup()) && (LIST_OF_ATTRIBUTES.equals(returnType) || VOID.equals(returnType));
+        return !methodName.equals(annotation.setup()) && (LIST_OF_ATTRIBUTES.equals(returnType) || VOID.equals(returnType) || MONO_LIST_OF_ATTRIBUTES.equals(returnType));
     }
 
     private UIEventPage retrieveAnnotation(Object bean) {

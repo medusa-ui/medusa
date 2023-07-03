@@ -7,6 +7,7 @@ import io.getmedusa.medusa.core.session.Session;
 import io.getmedusa.medusa.core.session.StandardSessionTagKeys;
 import io.getmedusa.medusa.core.session.StandardSessionTagValues;
 import org.springframework.web.reactive.function.server.ServerRequest;
+import reactor.core.publisher.Mono;
 
 import java.security.SecureRandom;
 import java.util.ArrayList;
@@ -33,17 +34,17 @@ public class HelloWorldController {
                 StandardSessionTagValues.ALL); //TODO gotta improve this somehow
     }
 
-    public List<Attribute> setupAttributes(ServerRequest serverRequest, Session session) {
+    public Mono<List<Attribute>> setupAttributes(ServerRequest serverRequest, Session session) {
         List<Person> people = new ArrayList<>();//generateListOfPeople();
-        return List.of(
+        return Mono.just(List.of(
                 //new Attribute("counterValue", Integer.parseInt(serverRequest.pathVariable("samplePathVariable"))),
                 new Attribute("counterValue", 0),
                 new Attribute("expectedTableCount", people.size()),
-                new Attribute("people", people));
+                new Attribute("people", people)));
     }
 
-    public List<Attribute> increaseCounter(){
-        return List.of(new Attribute("counterValue", ++counter));
+    public Mono<List<Attribute>> increaseCounter(){
+        return Mono.just(List.of(new Attribute("counterValue", ++counter)));
     }
 
     public List<Attribute> increaseCounterWith(Integer increaseWith) {

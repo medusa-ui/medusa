@@ -1,0 +1,4 @@
+<div th:text="${counter}"></div>
+
+<button m:click="updateCounter(1)">Increase counter</button>
+<button m:click="reset()">Reset counter</button>

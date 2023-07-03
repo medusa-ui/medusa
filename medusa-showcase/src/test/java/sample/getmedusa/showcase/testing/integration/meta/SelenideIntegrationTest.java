@@ -2,6 +2,7 @@ package sample.getmedusa.showcase.testing.integration.meta;
 
 
 import com.codeborne.selenide.Configuration;
+import com.codeborne.selenide.Selenide;
 import com.codeborne.selenide.junit5.TextReportExtension;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -33,5 +34,6 @@ public abstract class SelenideIntegrationTest {
 
     protected void openPage(String page) {
         open("http://localhost:%d/detail/%s".formatted(port, page));
+        Selenide.sleep(500);
     }
 }

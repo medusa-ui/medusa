@@ -5,6 +5,7 @@ import io.getmedusa.medusa.core.attributes.Attribute;
 import io.getmedusa.medusa.core.session.Session;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.util.UriUtils;
+import reactor.core.publisher.Mono;
 
 import java.nio.charset.StandardCharsets;
 import java.util.HashSet;
@@ -41,7 +42,7 @@ public class Route {
         return controller.getController();
     }
 
-    public List<Attribute> getSetupAttributes(ServerRequest request, Session session) {
+    public Mono<List<Attribute>> getSetupAttributes(ServerRequest request, Session session) {
         return controller.setupAttributes(request, session);
     }
 

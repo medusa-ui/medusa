@@ -21,6 +21,7 @@ import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.util.List;
 import java.util.Map;
@@ -69,22 +70,23 @@ public class SocketHandler {
                 .subscribe(r -> {
             if(!isUploadRelated(r)) {
                 //execute action and combine attributes
-                Session updatedSession = actionHandler.executeAndMerge(r, route, session);
+                Mono<Session> updatedSession = actionHandler.executeAndMerge(r, route, session);
+                updatedSession.subscribe(s -> {
+                    //not all attributes are used for rendering - some are pass-through, like redirections.
+                    //these get filtered out first
+                    List<Attribute> passThroughAttributes = s.findPassThroughAttributes();
 
-                //not all attributes are used for rendering - some are pass-through, like redirections.
-                //these get filtered out first
-                List<Attribute> passThroughAttributes = updatedSession.findPassThroughAttributes();
+                    //render new HTML w/ new attributes
+                    final Flux<DataBuffer> dataBufferFlux = renderer.render(route.getTemplateHTML(), s);
+                    final String oldHTML = s.getLastRenderedHTML();
+                    final String newHtml = FluxUtils.dataBufferFluxToString(dataBufferFlux);
+                    s.setLastRenderedHTML(newHtml);
+                    sessionMemoryRepository.store(s);
 
-                //render new HTML w/ new attributes
-                final Flux<DataBuffer> dataBufferFlux = renderer.render(route.getTemplateHTML(), updatedSession);
-                final String oldHTML = updatedSession.getLastRenderedHTML();
-                final String newHtml = FluxUtils.dataBufferFluxToString(dataBufferFlux);
-                updatedSession.setLastRenderedHTML(newHtml);
-                sessionMemoryRepository.store(updatedSession);
-
-                //run diff engine old HTML vs new
-                updatedSession.getSink().push(mergeDiffs(diffEngine.calculate(oldHTML, newHtml), passThroughAttributes));
-                updatedSession.setDepth(0);
+                    //run diff engine old HTML vs new
+                    s.getSink().push(mergeDiffs(diffEngine.calculate(oldHTML, newHtml), passThroughAttributes));
+                    s.setDepth(0);
+                });
             }
         });
 

@@ -17,6 +17,7 @@ import org.springframework.context.expression.MapAccessor;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
 import org.springframework.stereotype.Component;
+import reactor.core.publisher.Mono;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
@@ -38,18 +39,18 @@ public class ActionHandler {
         this.resolver = resolver;
     }
 
-    public Session executeAndMerge(SocketAction socketAction, Route route, Session session) {
+    public Mono<Session> executeAndMerge(SocketAction socketAction, Route route, Session session) {
         //find controller from cache
         Object bean = route.getController();
 
         //execute action
-        final List<Attribute> attributes = execute(session, socketAction, bean);
+        final Mono<List<Attribute>> attributes = execute(session, socketAction, bean);
 
         //merge attributes with attributes from session
-        return session.merge(attributes);
+        return attributes.map(session::merge);
     }
 
-    private List<Attribute> execute(Session session, SocketAction socketAction, Object bean) {
+    private Mono<List<Attribute>> execute(Session session, SocketAction socketAction, Object bean) {
         Object result = null;
 
         if(socketAction.getAction() != null) {
@@ -91,22 +92,24 @@ public class ActionHandler {
                 result = SPEL_EXPRESSION_PARSER
                         .parseExpression(expression)
                         .getValue(evaluationContext, bean);
+                //if response is not a Mono<List<Attributes>> but a List<Attributes>, just wrap it!
+                if(result != null && !result.getClass().getName().contains("publisher.Mono")) {
+                    result = Mono.just(result);
+                }
             } else {
                 List<ServerSideDiff> validatorViolation = new ArrayList<>();
                 for(ValidationError violation : violations) {
                     validatorViolation.add(ServerSideDiff.buildValidation(violation.formContext() + "#" + violation.field(), resolver.resolveMessage(violation, session.getLocale())));
                 }
-                return List.of(new Attribute(StandardAttributeKeys.VALIDATION, validatorViolation));
+                return Mono.just(List.of(new Attribute(StandardAttributeKeys.VALIDATION, validatorViolation)));
             }
         }
 
         if(null == result) {
-            return new ArrayList<>();
+            return Mono.just(new ArrayList<>());
         }
-        return (List<Attribute>) result;
+        return (Mono<List<Attribute>>) result;
     }
-
-
 
     private static String handleArrayParsing(String expression) {
         Pattern pattern = Pattern.compile("\\[.*?]");

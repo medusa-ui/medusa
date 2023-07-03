@@ -5,6 +5,7 @@ import io.getmedusa.medusa.core.session.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.reactive.function.server.ServerRequest;
+import reactor.core.publisher.Mono;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -42,12 +43,12 @@ public class UIEventPageCallWrapper {
      * @param session incoming {@link Session}, optional in use internally
      * @return List of Attribute objects
      */
-    public List<Attribute> setupAttributes(ServerRequest request, Session session){
+    public Mono<List<Attribute>> setupAttributes(ServerRequest request, Session session){ //TODO
         try {
-            if(setupAttributesMethod == null) { return new ArrayList<>(); }
+            if(setupAttributesMethod == null) { return Mono.just(new ArrayList<>()); }
 
             if(setupAttributesMethod.getParameterCount() == 0) {
-                return (List<Attribute>) setupAttributesMethod.invoke(controller);
+                return returnMonoVersion(setupAttributesMethod.invoke(controller));
             }
 
             List<Object> arguments = new ArrayList<>();
@@ -58,10 +59,19 @@ public class UIEventPageCallWrapper {
                     arguments.add(session);
                 }
             }
-            return (List<Attribute>) setupAttributesMethod.invoke(controller, arguments.toArray());
+
+            return returnMonoVersion(setupAttributesMethod.invoke(controller, arguments.toArray()));
         } catch (InvocationTargetException | IllegalAccessException e) {
             logger.error("setup attributes failed due to: " + e.getMessage(), e);
             throw new IllegalStateException("setup attributes failed", e);
+        }
+    }
+
+    public static Mono<List<Attribute>> returnMonoVersion(Object methodResponse) {
+        if(methodResponse != null && !methodResponse.getClass().getName().contains("publisher.Mono")) {
+            return Mono.just((List<Attribute>) methodResponse);
+        } else {
+            return (Mono<List<Attribute>>) methodResponse;
         }
     }
 
@@ -82,7 +92,7 @@ public class UIEventPageCallWrapper {
         for(Method method : uiEventPageObject.getClass().getMethods()) {
             if (method.getName().equals(setupMethodName)) {
                 if (!returningAttributes(method)) {
-                    throw new RuntimeException(uiEventPageObject.getClass().getName() + "." + method.getName() + " should return a List<Attribute> but was " + method.getReturnType());
+                    throw new RuntimeException(uiEventPageObject.getClass().getName() + "." + method.getName() + " should return a Mono<List<Attribute>> or List<Attribute> but was " + method.getReturnType());
                 }
                 return method;
             }
@@ -90,8 +100,9 @@ public class UIEventPageCallWrapper {
         return null;
     }
 
-    private boolean returningAttributes(Method method){
-        return method.getReturnType().isAssignableFrom(List.class);
+    private boolean returningAttributes(Method method) {
+        return method.getGenericReturnType().getTypeName().equals("reactor.core.publisher.Mono<java.util.List<io.getmedusa.medusa.core.attributes.Attribute>>")
+        || method.getGenericReturnType().getTypeName().equals("java.util.List<io.getmedusa.medusa.core.attributes.Attribute>");
     }
 
     public String toFQDN() {

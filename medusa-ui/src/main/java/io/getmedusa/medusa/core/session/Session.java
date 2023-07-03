@@ -1,14 +1,18 @@
 package io.getmedusa.medusa.core.session;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import io.getmedusa.medusa.core.annotation.UIEventPageCallWrapper;
 import io.getmedusa.medusa.core.attributes.Attribute;
 import io.getmedusa.medusa.core.attributes.StandardAttributeKeys;
+import io.getmedusa.medusa.core.boot.RefDetection;
 import io.getmedusa.medusa.core.router.action.FileUploadMeta;
 import io.getmedusa.medusa.core.router.action.SocketSink;
 import io.getmedusa.medusa.core.router.request.Route;
 import io.getmedusa.medusa.core.util.AttributeUtils;
 import io.getmedusa.medusa.core.util.RandomUtils;
 import org.springframework.web.reactive.function.server.ServerRequest;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.util.*;
 
@@ -48,7 +52,7 @@ public class Session {
         this.id = RandomUtils.generateId();
         this.password = RandomUtils.generatePassword(id);
         this.hydraPath = findHydraPath(request.headers());
-        setLastParameters(route.getSetupAttributes(request, this));
+
         setLastUsedTemplate(route.getTemplateHTML());
         setLastUsedHash(route.generateHash());
         getTags().put(StandardSessionTagKeys.ROUTE, request.path());
@@ -217,5 +221,17 @@ public class Session {
     public Session withLocale(String localeString) {
         this.setLocale(Locale.forLanguageTag(localeString.trim()));
         return this;
+    }
+
+    public Flux<Session> setupAttributes(String ref, boolean fragmentFallback) {
+        if(!fragmentFallback) {
+            UIEventPageCallWrapper bean = RefDetection.INSTANCE.findBeanByRef(ref);
+            if(isInitialRender()) { //TODO ? what happens 'on action'?
+                //call controller startup and use for render (add to session? separate?)
+                Mono<List<Attribute>> attributes = bean.setupAttributes(null, this);
+                return attributes.flatMapMany(a -> Flux.just(merge(a)));
+            }
+        }
+        return Flux.just(this);
     }
 }
