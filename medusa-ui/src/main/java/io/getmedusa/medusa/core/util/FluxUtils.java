@@ -1,14 +1,19 @@
 package io.getmedusa.medusa.core.util;
 
+import io.getmedusa.medusa.core.attributes.Attribute;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DataBufferFactory;
 import org.springframework.core.io.buffer.DataBufferUtils;
 import org.springframework.core.io.buffer.DefaultDataBufferFactory;
+import reactor.core.CorePublisher;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 
 public final class FluxUtils {
 
@@ -40,5 +45,16 @@ public final class FluxUtils {
         DataBuffer buffer = bufferFactory.allocateBuffer(bytes.length);
         buffer.write(bytes);
         return buffer;
+    }
+
+    @SafeVarargs
+    public static Mono<List<Attribute>> join(CorePublisher<List<Attribute>> ... publishers) {
+        return Flux.concat(publishers).collectList().map(FluxUtils::mergeAttributes);
+    }
+
+    private static List<Attribute> mergeAttributes(List<List<Attribute>> multiList) {
+        List<Attribute> finalList = new ArrayList<>();
+        multiList.parallelStream().forEach(finalList::addAll);
+        return finalList;
     }
 }

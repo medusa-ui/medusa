@@ -11,7 +11,7 @@ const {
 function Medusa() {}
 const _M = new Medusa();
 
-const debugMode = false;
+const debugMode = true;
 const XRegExp = require('xregexp');
 
 const MAX_REQUEST_N = 2147483647;

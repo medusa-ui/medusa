@@ -16,8 +16,12 @@ public class ReactiveController {
     }
 
     public Mono<List<Attribute>> updateCounter(int amount, Session session) {
+        Flux<List<Attribute>> listA = Flux.just($$("listA_valueA", 1, "listA_valueB", 2));
+
         int counter = session.getAttribute("counter");
         counter += amount;
-        return Mono.just($$("counter", counter));
+        final Mono<List<Attribute>> listB = Mono.just($$("counter", counter));
+
+        return FluxUtils.join(listA, listB); //convenience method for joining multiple retrievals
     }
 }
