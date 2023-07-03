@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>io.getmedusa</groupId>
 	<artifactId>medusa-ui</artifactId>
-	<version>0.9.3</version>
+	<version>0.9.4-SNAPSHOT</version>
 	<name>medusa ui library</name>
 	<description>Medusa is an open-source bidirectional micro-frontend framework built in Java, on top of Spring Reactive and Thymeleaf.</description>
 	<licenses>
