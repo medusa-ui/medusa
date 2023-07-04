@@ -24,7 +24,7 @@
 
 	<properties>
 		<java.version>19</java.version>
-		<diff-engine.version>0.0.5</diff-engine.version>
+		<diff-engine.version>0.0.6</diff-engine.version>
 	</properties>
 
 	<dependencies>
