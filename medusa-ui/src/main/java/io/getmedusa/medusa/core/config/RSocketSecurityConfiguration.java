@@ -25,10 +25,8 @@ public class RSocketSecurityConfiguration {
 
     @Bean
     PayloadSocketAcceptorInterceptor authorization(RSocketSecurity security) {
-        security.authorizePayload(authorize ->
-                authorize
-                        .anyExchange().permitAll() // all connections, exchanges.
-        ).simpleAuthentication(Customizer.withDefaults()); //TODO JWT
+        security.authorizePayload(authorize -> authorize.anyExchange().permitAll())
+                .simpleAuthentication(s -> s.authenticationManager(new UserDetailsRepositoryReactiveAuthenticationManager(new SessionUserRepository())));
         return security.build();
     }
 }
