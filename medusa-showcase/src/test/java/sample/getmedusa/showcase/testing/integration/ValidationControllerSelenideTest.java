@@ -1,9 +1,12 @@
 package sample.getmedusa.showcase.testing.integration;
 
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import sample.getmedusa.showcase.testing.integration.meta.SelenideIntegrationTest;
+
+import java.util.Locale;
 
 import static com.codeborne.selenide.Condition.exactText;
 import static com.codeborne.selenide.Selenide.$;
@@ -12,7 +15,10 @@ import static org.openqa.selenium.By.className;
 import static org.openqa.selenium.By.id;
 
 class ValidationControllerSelenideTest extends SelenideIntegrationTest {
-
+    @BeforeAll
+    static void setLocale() {
+        Locale.setDefault(Locale.US);
+    }
     @BeforeEach
     void openPage(){
         openPage("validation");
@@ -28,9 +34,10 @@ class ValidationControllerSelenideTest extends SelenideIntegrationTest {
         $(id("btn_displayForm")).click();
 
         //validate error message
-        Assertions.assertEquals("email is not a valid email\n" +
-                "yearOfBirth must not be blank\n" +
-                "yearOfBirth fails the expected pattern", $("form ul").text());
+        Assertions.assertEquals("""
+                            email is not a valid email
+                            yearOfBirth must not be blank
+                            yearOfBirth fails the expected pattern""", $("form ul").text());
         Assertions.assertEquals("email is not a valid email", $("p[validation='email']").text());
 
         //correct data
