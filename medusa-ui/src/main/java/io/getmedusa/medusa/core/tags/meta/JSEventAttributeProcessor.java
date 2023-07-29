@@ -22,7 +22,7 @@ public abstract class JSEventAttributeProcessor extends AbstractAttributeTagProc
     private static final String BASIC_EXPRESSION = "\\{(.*?)}";
     protected static final String EVENT_TEMPLATE_M_DO_ACTION = "_M.doAction(event, " + FRAGMENT_REPLACEMENT + ", `%s`)";
     protected static final String EVENT_TEMPLATE_M_DO_ACTION_ONKEYUP = "_M.doActionOnKeyUp(%s, event, " + FRAGMENT_REPLACEMENT + ", `%s`)";
-    protected static final String SELECTOR_QUERY ="'${document.querySelector(`%s`).%s}'";
+    protected static final String SELECTOR_QUERY ="'${_M.findValueById(`%s`, `%s`)}'";
     protected static final String SELECTOR_THIS_REFERENCE ="'${%s.%s}'";
     protected static final String SELECTOR_DEFAULT_ATTRIBUTE ="value";
     protected static final String SELECTOR_ALLOWED_ATTRIBUTES ="accept alt checked class cols data dir disabled for href id lang list max media min multiple name open placeholder readonly rel required rows rowspan selected span target title type value width wrap";
@@ -56,6 +56,7 @@ public abstract class JSEventAttributeProcessor extends AbstractAttributeTagProc
                 String select = SELECTOR_DEFAULT_ATTRIBUTE;
                 String replaceValue;
                 String querySelector = elementValueMatcher.group(1);
+                if("form".equals(querySelector)) { continue; }
                 int index = querySelector.lastIndexOf(".");
                 // index == -1 => not found, index == 0 => class querySelector
                 if(index > 0 && SELECTOR_ALLOWED_ATTRIBUTES.contains(querySelector.substring(index + 1))) {

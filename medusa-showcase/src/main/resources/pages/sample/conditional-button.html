@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:m="https://www.getmedusa.io/medusa.xsd">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medusa - Component detail</title>
+</head>
+<body>
+
+<div id="container" m:ref="conditional-button">
+    <section id="hero">
+        <h1>Conditional button</h1>
+
+        <p class="lead">An example of a simple button that only conditionally shows up</p>
+
+        <a id="back-to-overview" href="/">Back to overview</a>
+    </section>
+
+    <h2>Conditional button</h2>
+    <p>This illustrates the combination of classic thymeleaf tags with medusa tags.
+        In this arbitrary example, the button will only be rendered if you enter a value in the text field that is divisible by 2.</p>
+
+    <section class="example">
+        <label>
+            <p>Number that shows button if divisible by 2:</p>
+            <input id="number-value" type="number" value="1" m:change="checkCondition(:{#number-value})" />
+        </label>
+        <br/>
+        <p><button th:if="${condition}" m:click="noAction()">Button that shows up conditionally</button></p>
+
+        <footer th:text="${version}"></footer>
+    </section>
+
+    <section class="client">
+        <h3>Client</h3>
+        <pre><code class="language-html hljs" th:text="${clientCode[0]}"></code></pre>
+    </section>
+
+    <section class="server">
+        <h3>Server</h3>
+        <pre><code class="language-java hljs" th:text="${serverCode[0]}"></code></pre>
+    </section>
+
+
+</div>
+</body>
+</html>

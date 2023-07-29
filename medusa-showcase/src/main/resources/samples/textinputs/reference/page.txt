@@ -1,0 +1,13 @@
+<section class="example">
+<p class="sample-paragraph">This is a paragraph</p>
+
+<input id="my_input" type="text" value="Hello world" />
+
+<form m:submit="display(:{form}, :{#my_input}, :{.example .sample-paragraph})">
+    <label for="firstName">First name: </label> <input type="text" id="firstName" name="firstName" value="도윤" />
+    <label for="lastName">Last name: </label> <input type="text" id="lastName" name="lastName" value="김" />
+    <input id="btn_displayName" type="submit" value="Submit">
+</form>
+
+<div class="example-result" th:text="${result}"></div>
+</section>

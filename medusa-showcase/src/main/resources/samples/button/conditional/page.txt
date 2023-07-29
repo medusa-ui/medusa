@@ -1,0 +1,6 @@
+<label>
+    <p>Number that shows button if divisible by 2:</p>
+    <input id="number-value" type="number" value="1" m:change="checkCondition(:{#number-value})" />
+</label>
+<br/>
+<p><button th:if="${condition}" m:click="noAction()">Button that shows up conditionally</button></p>

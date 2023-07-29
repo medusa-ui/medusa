@@ -18,6 +18,7 @@ public class MedusaOnSubmit extends JSEventAttributeProcessor {
     protected void doProcess(ITemplateContext context, IProcessableElementTag tag, AttributeName attributeName, String attributeValue, IElementTagStructureHandler
     structureHandler) {
         attributeValue = replaceAttributeValues(context, attributeValue);
+        attributeValue = replaceElementValues(attributeValue);
         structureHandler.setAttribute(eventName, eventTemplate.formatted(attributeValue));
     }
 }
