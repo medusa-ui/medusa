@@ -1,4 +1,4 @@
-package sample.getmedusa.showcase.samples.button.basic;
+package sample.getmedusa.showcase.samples.jshooks;
 
 import io.getmedusa.medusa.core.annotation.UIEventPage;
 import io.getmedusa.medusa.core.attributes.Attribute;

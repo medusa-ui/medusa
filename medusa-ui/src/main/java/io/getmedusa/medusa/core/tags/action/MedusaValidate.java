@@ -18,6 +18,8 @@ public class MedusaValidate extends JSEventAttributeProcessor {
     @Override
     protected void doProcess(ITemplateContext context, IProcessableElementTag tag, AttributeName attributeName, String attributeValue, IElementTagStructureHandler
     structureHandler) {
+        attributeValue = replaceAttributeValues(context, attributeValue);
+        attributeValue = replaceElementValues(attributeValue);
         IAttribute existingClass = tag.getAttribute("class");
         if("all".equals(attributeValue)) {
             //- replace m:validation="all" tag with class="error" validation="form-global", careful if it already has a class

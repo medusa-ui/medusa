@@ -24,14 +24,18 @@ public class Component {
                 new Component("Basic button", "basic-button",
                         new String[]{"/samples/button/basic/page.txt"},
                         new String[]{"/samples/button/basic/controller.txt"}),
-                new Component("Conditional button")
+                new Component("Conditional button", "conditional-button",
+                        new String[]{"/samples/button/conditional/page.txt"},
+                        new String[]{"/samples/button/conditional/controller.txt"})
         ));
 
         map.put("Text inputs", List.of(
                 new Component("Action on keyUp", "keyup",
                         new String[]{"/samples/textinputs/keyup/page_enter.txt", "/samples/textinputs/keyup/page_space.txt"},
                         new String[]{"/samples/textinputs/keyup/controller_enter.txt", "/samples/textinputs/keyup/controller_space.txt"}),
-                new Component("Submit with reference"),
+                new Component("Reference other fields", "submit-for-reference",
+                        new String[]{"/samples/textinputs/reference/page.txt"},
+                        new String[]{"/samples/textinputs/reference/controller.txt"}),
                 new Component("Form submit tag", "form-submit",
                         new String[]{"/samples/textinputs/formsubmit/page_map.txt", "/samples/textinputs/formsubmit/page_form.txt"},
                         new String[]{"/samples/textinputs/formsubmit/controller_map.txt", "/samples/textinputs/formsubmit/controller_form.txt"}),

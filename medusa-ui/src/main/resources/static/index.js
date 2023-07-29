@@ -13,6 +13,7 @@ const _M = new Medusa();
 
 const debugMode = false;
 const XRegExp = require('xregexp');
+const {f} = require("./websocket");
 
 const MAX_REQUEST_N = 2147483647;
 let stream;
@@ -502,6 +503,14 @@ getTargetAttributeIfExists = function(event, attribute) {
     } else {
         return null;
     }
+};
+
+Medusa.prototype.findValueById = function (id, attribute) {
+    let foundItem = document.querySelector(id);
+    if(foundItem === null) {
+        return null;
+    }
+    return foundItem[attribute] || foundItem.value || foundItem.textContent;
 };
 
 Medusa.prototype.doActionOnKeyUp = function(key, event, parentFragment, actionToExecute) {

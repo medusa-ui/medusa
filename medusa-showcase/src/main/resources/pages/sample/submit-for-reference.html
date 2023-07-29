@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:m="https://www.getmedusa.io/medusa.xsd">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medusa - Component detail</title>
+</head>
+<body>
+
+<div id="container" m:ref="submit-for-reference">
+    <section id="hero">
+        <h1>Referencing other fields</h1>
+
+        <p class="lead">An example of how you can send along different data with a method call to the backend.</p>
+
+        <a id="back-to-overview" href="/">Back to overview</a>
+    </section>
+
+    <h2>Referencing other fields with a submit</h2>
+    <p>You use the :{} notation to run a css selector at the moment of action. :{form} is specific for an m:submit call and references your own wrapping form.</p>
+    <p>This example includes an action taking a text value from a paragraph, a value from a text field and a form data.</p>
+
+    <section class="example">
+
+        <p class="sample-paragraph">This is a paragraph</p>
+
+        <p><input id="my_input" type="text" value="Hello world" /></p>
+
+        <div style="display: flex">
+            <form m:submit="display(:{form}, :{#my_input}, :{.example .sample-paragraph})">
+                <label for="firstName">First name: </label> <input type="text" id="firstName" name="firstName" value="도윤" />
+                <label for="lastName">Last name: </label> <input type="text" id="lastName" name="lastName" value="김" />
+                <input id="btn_displayName" type="submit" value="Submit">
+            </form>
+        </div>
+        <div class="example-result" th:text="${result}"></div>
+
+        <footer th:text="${version}"></footer>
+    </section>
+
+    <section class="client">
+        <h3>Client</h3>
+        <pre><code class="language-html hljs" th:text="${clientCode[0]}"></code></pre>
+    </section>
+
+    <section class="server">
+        <h3>Server</h3>
+        <pre><code class="language-java hljs" th:text="${serverCode[0]}"></code></pre>
+    </section>
+
+</div>
+</body>
+</html>
