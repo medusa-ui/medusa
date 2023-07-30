@@ -26,8 +26,8 @@
             </th:block>
 
             <th:block th:if="${percentage != 0}">
-                <p>Percentage uploaded: <span style="display: inline-block; font-size: 1.5em;" th:text="${percentage}">100</span> %</p>
-                <button th:if="${percentage == 100}" m:click="reset()">Reset</button>
+                <p id="prg_upload">Percentage uploaded: <span style="display: inline-block; font-size: 1.5em;" th:text="${percentage}">100</span> %</p>
+                <button id="reset" th:if="${percentage == 100}" m:click="reset()">Reset</button>
             </th:block>
         </form>
 
