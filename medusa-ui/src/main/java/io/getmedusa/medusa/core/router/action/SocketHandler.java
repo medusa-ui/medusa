@@ -13,7 +13,6 @@ import io.getmedusa.medusa.core.router.request.Route;
 import io.getmedusa.medusa.core.session.Session;
 import io.getmedusa.medusa.core.util.AttributeUtils;
 import io.getmedusa.medusa.core.util.FluxUtils;
-import io.getmedusa.medusa.core.validation.ValidationMessageResolver;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
@@ -44,7 +43,6 @@ public class SocketHandler {
     public SocketHandler(SessionMemoryRepository sessionMemoryRepository,
                          ActionHandler actionHandler,
                          Renderer renderer,
-                         ValidationMessageResolver resolver,
                          @Value("${medusa.allow-external-redirect:false}") boolean allowExternalRedirect){
         this.sessionMemoryRepository = sessionMemoryRepository;
         this.actionHandler = actionHandler;

@@ -9,7 +9,6 @@ import io.getmedusa.medusa.core.boot.RouteDetection;
 import io.getmedusa.medusa.core.memory.SessionMemoryRepository;
 import io.getmedusa.medusa.core.render.Renderer;
 import io.getmedusa.medusa.core.session.Session;
-import io.getmedusa.medusa.core.validation.ValidationMessageResolver;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -47,7 +46,7 @@ class SocketHandlerTest {
     @BeforeEach
     public void setup() {
         MockitoAnnotations.openMocks(this);
-        socketHandler = new SocketHandler(sessionMemoryRepository, actionHandler, renderer, Mockito.mock(ValidationMessageResolver.class), false);
+        socketHandler = new SocketHandler(sessionMemoryRepository, actionHandler, renderer, false);
     }
 
     @Test

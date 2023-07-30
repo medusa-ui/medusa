@@ -89,12 +89,18 @@ Medusa.prototype.uploadFileToMethod = async function (e, fragment, id) {
 
 const validateFiles = function (fragment, files, id) {
     let message = "Provided file size exceeds max file size";
+    let fileSizeOverridden = false;
 
     for(let possibleFileValidation of _M.validationsPossible) {
         if(possibleFileValidation['validation'] === 'MaxFileSize') {
             MAX_FILE_SIZE = BigInt(possibleFileValidation['value1']);
             message = possibleFileValidation['message'];
+            fileSizeOverridden = true;
         }
+    }
+
+    if(!fileSizeOverridden) {
+        MAX_FILE_SIZE = BigInt(10485760); // reset to default 10MB
     }
 
     let form = findFormByElementId(id);
@@ -126,7 +132,7 @@ async function fileToByteArray(fragment, file) {
 }
 
 const CHUNK_SIZE = 2000;
-let MAX_FILE_SIZE = 10485760; // default 10MB
+let MAX_FILE_SIZE = BigInt(10485760); // default 10MB
 
 function readFileChunk(fragment, file, fileID, expected_amount_of_chunks, index, offset) {
     const reader = new FileReader();
