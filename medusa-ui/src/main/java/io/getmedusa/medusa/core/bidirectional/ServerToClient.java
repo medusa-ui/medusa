@@ -1,5 +1,7 @@
 package io.getmedusa.medusa.core.bidirectional;
 
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
 import io.getmedusa.diffengine.Engine;
 import io.getmedusa.medusa.core.attributes.Attribute;
 import io.getmedusa.medusa.core.memory.SessionMemoryRepository;
@@ -15,6 +17,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 import static io.getmedusa.medusa.core.util.AttributeUtils.mergeDiffs;
 
@@ -94,6 +97,11 @@ public class ServerToClient {
         });
     }
 
+    private Cache<String, Long> lastSessionSent = Caffeine.newBuilder()
+            .maximumSize(2000L)
+            .expireAfterWrite(5, TimeUnit.SECONDS)
+            .build();
+
     public void sendUploadCompletionPercentage(String attributeName, DataChunk dataChunk, Session session) {
         Object attribute = session.getAttribute(attributeName);
         if(attribute == null) {
@@ -101,6 +109,15 @@ public class ServerToClient {
         }
         final double lastPercentage = Double.parseDouble(attribute.toString());
         if((dataChunk.getCompletion() - lastPercentage) > 1D || dataChunk.getCompletion() == 100D) {
+            if(dataChunk.getCompletion() != 100D) {
+                Long lastTimestamp = lastSessionSent.getIfPresent(session.getId());
+                if(lastTimestamp == null || (System.currentTimeMillis() - lastTimestamp) > 500L) {
+                    lastTimestamp = System.currentTimeMillis();
+                    lastSessionSent.put(session.getId(), lastTimestamp);
+                } else {
+                    return;
+                }
+            }
             sendAttributesToSessionIDs(
                     Attribute.$$(attributeName, Math.round(dataChunk.getCompletion())),
                     Collections.singletonList(session.getId())
