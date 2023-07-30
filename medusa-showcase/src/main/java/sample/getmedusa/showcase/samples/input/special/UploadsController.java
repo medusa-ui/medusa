@@ -3,6 +3,7 @@ package sample.getmedusa.showcase.samples.input.special;
 import io.getmedusa.medusa.core.annotation.MaxFileSize;
 import io.getmedusa.medusa.core.annotation.UIEventPage;
 import io.getmedusa.medusa.core.attributes.Attribute;
+import io.getmedusa.medusa.core.attributes.StandardAttributeKeys;
 import io.getmedusa.medusa.core.bidirectional.ServerToClient;
 import io.getmedusa.medusa.core.router.action.DataChunk;
 import io.getmedusa.medusa.core.router.action.FileUploadMeta;
@@ -34,7 +35,7 @@ public class UploadsController implements UploadableUI {
     }
 
     public List<Attribute> reset() {
-        return $$("percentage", 0, "image", null);
+        return $$("percentage", 0, "image", null, StandardAttributeKeys.LOADING,  "upload-done");
     }
 
     @Override
@@ -55,12 +56,16 @@ public class UploadsController implements UploadableUI {
         if (image.hasProgress(10) || image.isCompleted()) {
             logger.debug("partial file: {}, progress: {}, completion: {}", fileName, image.progress, image.completion);
             serverToClient.sendAttributesToSession($$("image", image), session);
+
+            if(dataChunk.isCompleted()) {
+                serverToClient.sendAttributesToSession($$(StandardAttributeKeys.LOADING,  "upload-done"), session);
+            }
         }
     }
 
     @Override
     public void onCancel(FileUploadMeta uploadMeta, Session session) {
-        serverToClient.sendAttributesToSession($$("percentage", 0), session);
+        serverToClient.sendAttributesToSession($$("percentage", 0, StandardAttributeKeys.LOADING,  "upload-done"), session);
     }
 
     public static class SessionImage {
