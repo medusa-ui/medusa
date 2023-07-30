@@ -25,6 +25,7 @@ public class Session {
     private String lastRenderedHTML;
     private List<Attribute> lastParameters = new ArrayList<>();
     private Map<String, String> tags = new HashMap<>();
+    private List<String> fragments = new ArrayList<>();
     private final String hydraPath;
     private boolean matched;
     private boolean initialRender = true;
@@ -233,5 +234,13 @@ public class Session {
             }
         }
         return Flux.just(this);
+    }
+
+    public void addFragmentTag(String bean) {
+        fragments.add(bean);
+    }
+
+    public List<String> getFragments() {
+        return fragments;
     }
 }

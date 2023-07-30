@@ -4,6 +4,7 @@ import io.getmedusa.medusa.core.boot.*;
 import io.getmedusa.medusa.core.boot.hydra.HydraConnectionController;
 import io.getmedusa.medusa.core.boot.hydra.model.meta.RenderedFragment;
 import io.getmedusa.medusa.core.session.Session;
+import io.getmedusa.medusa.core.session.StandardSessionTagKeys;
 import io.getmedusa.medusa.core.util.FluxUtils;
 import io.getmedusa.medusa.core.util.FragmentUtils;
 import io.getmedusa.medusa.core.util.LoaderStatics;
@@ -108,9 +109,14 @@ public class Renderer {
     private Mono<List<RenderedFragment>> renderLocalFragments(List<Fragment> localFragmentsToRender, Session session) {
         Flux<RenderedFragment> flux = Flux.empty();
         for (Fragment localFragment : localFragmentsToRender) {
+            session.addFragmentTag(getFragmentController(localFragment));
             flux = flux.concatWith(renderLocalFragment(localFragment, session));
         }
         return flux.collectList();
+    }
+
+    private static String getFragmentController(Fragment localFragment) {
+        return RefDetection.INSTANCE.findBeanByRef(localFragment.getRef()).getController().getClass().getName();
     }
 
     private Flux<RenderedFragment> renderLocalFragment(Fragment fragment, Session session) {

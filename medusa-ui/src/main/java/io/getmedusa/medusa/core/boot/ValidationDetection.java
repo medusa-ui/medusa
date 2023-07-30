@@ -138,6 +138,20 @@ public enum ValidationDetection {
 
     public long getMaxFileSize(Session session) {
         final String controller = session.getTag(StandardSessionTagKeys.CONTROLLER);
+        Long validation = findMaxFileSizeByController(controller);
+        if (validation != null) return validation;
+
+        if(!session.getFragments().isEmpty()) {
+            for(String fragment : session.getFragments()) {
+                Long fragmentValidation = findMaxFileSizeByController(fragment);
+                if (fragmentValidation != null) return fragmentValidation;
+            }
+        }
+
+        return DataSize.ofMegabytes(10).toBytes(); //default
+    }
+
+    private Long findMaxFileSizeByController(String controller) {
         ClassWithValidation classWithValidation = classesWithValidMethods.findByClassName(controller);
         if(classWithValidation != null) {
             MethodWithValidation uploadChunk = classWithValidation.findByKey("uploadChunk");
@@ -153,7 +167,7 @@ public enum ValidationDetection {
                 }
             }
         }
-        return DataSize.ofMegabytes(10).toBytes(); //default
+        return null;
     }
 
     record ValidationList(List<ClassWithValidation> classes) {

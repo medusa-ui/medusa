@@ -138,7 +138,7 @@ async function fileToByteArray(fragment, file) {
     readFileChunk(fragment, file, fileID, expected_amount_of_chunks, 0, 0);
 }
 
-const CHUNK_SIZE = 2000;
+const CHUNK_SIZE = 15000;
 let MAX_FILE_SIZE = BigInt(10485760); // default 10MB
 
 function readFileChunk(fragment, file, fileID, expected_amount_of_chunks, index, offset) {
