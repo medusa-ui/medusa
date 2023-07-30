@@ -4,6 +4,7 @@ import io.getmedusa.medusa.core.annotation.MaxFileSize;
 import io.getmedusa.medusa.core.annotation.UIEventPage;
 import io.getmedusa.medusa.core.attributes.Attribute;
 import io.getmedusa.medusa.core.bidirectional.ServerToClient;
+import io.getmedusa.medusa.core.attributes.StandardAttributeKeys;
 import io.getmedusa.medusa.core.router.action.DataChunk;
 import io.getmedusa.medusa.core.router.action.FileUploadMeta;
 import io.getmedusa.medusa.core.router.action.UploadableUI;
@@ -28,21 +29,31 @@ public class UploadsNewController implements UploadableUI {
     }
 
     public List<Attribute> reset() {
-        return $$("percentage", 0);
-        }
+        return $$("percentage", 0,
+                  "image", null,
+                  StandardAttributeKeys.LOADING,  "upload-done");
+    }
 
     @Override
     public void uploadChunk(@Valid @MaxFileSize("1MB") DataChunk dataChunk, Session session) {
         //this is a convenience method to update this session's attribute with the current upload process %
         serverToClient.sendUploadCompletionPercentage("percentage", dataChunk, session);
 
+        if(dataChunk.isCompleted()) {
+            serverToClient.sendAttributesToSession($$(StandardAttributeKeys.LOADING,  "upload-done"), session);
+        }
+
         //stream your dataChunk.getChunk() to dataChunk.getFileName() in some storage
         //don't try to store it all in memory, or you lose the benefit of chunking in the first place
-        }
+        //in this case, we render to the 'image' attribute
+    }
 
     @Override
     public void onCancel(FileUploadMeta uploadMeta, Session session) {
-        serverToClient.sendAttributesToSession($$("percentage", 0), session);
+        serverToClient.sendAttributesToSession($$(
+            "percentage", 0,
+            StandardAttributeKeys.LOADING,  "upload-done"
+        ), session);
     }
 
 }

@@ -68,9 +68,11 @@ document.addEventListener('keydown', (event) => {
     }
 }, false);
 
-
-Medusa.prototype.uploadFileToMethod = async function (e, fragment, id) {
-    e.preventDefault();
+Medusa.prototype.uploadFileToMethod = async function (event, fragment, id) {
+    if(typeof event !== "undefined") {
+        event.preventDefault();
+    }
+    startLoading(event);
     let files = document.getElementById(id).files;
     if(validateFiles(fragment, files, id) ) {
         for (const file of files) {
@@ -472,25 +474,22 @@ clearValidationErrorForField = function (form, name) {
 
 const buttonLoader = document.getElementById("m-template-button-load").content.firstElementChild.outerHTML;
 
-Medusa.prototype.doAction = function(event, parentFragment, actionToExecute) {
-    if(typeof event !== "undefined") {
-        event.preventDefault();
-    }
+function startLoading(event) {
     const target = event.target;
-    if(typeof target.attributes['data-loading-until'] !== 'undefined') {
-        const waitFor = getTargetAttributeIfExists(event,'data-loading-until');
-        const loadingStyle = getTargetAttributeIfExists(event,'data-loading-style');
+    if (typeof target.attributes['data-loading-until'] !== 'undefined') {
+        const waitFor = getTargetAttributeIfExists(event, 'data-loading-until');
+        const loadingStyle = getTargetAttributeIfExists(event, 'data-loading-style');
 
         let loader;
-        if(loadingStyle === 'top') {
+        if (loadingStyle === 'top') {
             loader = document.getElementById("m-top-load-bar");
-        } else if(loadingStyle === 'button') {
+        } else if (loadingStyle === 'button') {
             loader = null;
         } else {
             loader = document.getElementById("m-full-loader");
         }
 
-        if(typeof loader !== "undefined" && null != loader) {
+        if (typeof loader !== "undefined" && null != loader) {
             loader.setAttribute("waiting-for", waitFor);
             loader.removeAttribute("style");
         }
@@ -499,6 +498,13 @@ Medusa.prototype.doAction = function(event, parentFragment, actionToExecute) {
         target.setAttribute("disabled", true);
         target.innerHTML = buttonLoader + target.innerHTML;
     }
+}
+
+Medusa.prototype.doAction = function(event, parentFragment, actionToExecute) {
+    if(typeof event !== "undefined") {
+        event.preventDefault();
+    }
+    startLoading(event);
 
     sendMessage({
         "fragment": parentFragment,
