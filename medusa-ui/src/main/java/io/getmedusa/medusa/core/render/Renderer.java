@@ -1,10 +1,10 @@
 package io.getmedusa.medusa.core.render;
 
+import io.getmedusa.medusa.core.annotation.UIEventPageCallWrapper;
 import io.getmedusa.medusa.core.boot.*;
 import io.getmedusa.medusa.core.boot.hydra.HydraConnectionController;
 import io.getmedusa.medusa.core.boot.hydra.model.meta.RenderedFragment;
 import io.getmedusa.medusa.core.session.Session;
-import io.getmedusa.medusa.core.session.StandardSessionTagKeys;
 import io.getmedusa.medusa.core.util.FluxUtils;
 import io.getmedusa.medusa.core.util.FragmentUtils;
 import io.getmedusa.medusa.core.util.LoaderStatics;
@@ -116,7 +116,11 @@ public class Renderer {
     }
 
     private static String getFragmentController(Fragment localFragment) {
-        return RefDetection.INSTANCE.findBeanByRef(localFragment.getRef()).getController().getClass().getName();
+        final UIEventPageCallWrapper beanByRef = RefDetection.INSTANCE.findBeanByRef(localFragment.getRef());
+        if(beanByRef != null) {
+            return beanByRef.getController().getClass().getName();
+        }
+        return null;
     }
 
     private Flux<RenderedFragment> renderLocalFragment(Fragment fragment, Session session) {

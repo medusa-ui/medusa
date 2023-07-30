@@ -237,7 +237,9 @@ public class Session {
     }
 
     public void addFragmentTag(String bean) {
-        fragments.add(bean);
+        if(bean != null) {
+            fragments.add(bean);
+        }
     }
 
     public List<String> getFragments() {
