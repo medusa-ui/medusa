@@ -1,5 +1,6 @@
 package io.getmedusa.medusa.core.render;
 
+import io.getmedusa.medusa.core.annotation.UIEventPageCallWrapper;
 import io.getmedusa.medusa.core.boot.*;
 import io.getmedusa.medusa.core.boot.hydra.HydraConnectionController;
 import io.getmedusa.medusa.core.boot.hydra.model.meta.RenderedFragment;
@@ -108,9 +109,18 @@ public class Renderer {
     private Mono<List<RenderedFragment>> renderLocalFragments(List<Fragment> localFragmentsToRender, Session session) {
         Flux<RenderedFragment> flux = Flux.empty();
         for (Fragment localFragment : localFragmentsToRender) {
+            session.addFragmentTag(getFragmentController(localFragment));
             flux = flux.concatWith(renderLocalFragment(localFragment, session));
         }
         return flux.collectList();
+    }
+
+    private static String getFragmentController(Fragment localFragment) {
+        final UIEventPageCallWrapper beanByRef = RefDetection.INSTANCE.findBeanByRef(localFragment.getRef());
+        if(beanByRef != null) {
+            return beanByRef.getController().getClass().getName();
+        }
+        return null;
     }
 
     private Flux<RenderedFragment> renderLocalFragment(Fragment fragment, Session session) {
