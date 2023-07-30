@@ -1,8 +1,8 @@
 ---
 id: x74a3
 title: At startup initialization
-file_version: 1.1.2
-app_version: 1.8.5
+file_version: 1.1.3
+app_version: 1.13.13
 ---
 
 ## Before each bean initialization
@@ -23,13 +23,13 @@ It all starts with the `RootDetector`. This is the class that kicks off any init
 <!-- NOTE-swimm-snippet: the lines below link your snippet to Swimm -->
 ### 📄 medusa-ui/src/main/java/io/getmedusa/medusa/core/boot/RootDetector.java
 ```java
-23         public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
-24             RouteDetection.INSTANCE.consider(bean);
-25             RefDetection.INSTANCE.consider(bean);
-26             MethodDetection.INSTANCE.consider(bean);
-27             ValidationDetection.INSTANCE.consider(bean);
-28             return BeanPostProcessor.super.postProcessBeforeInitialization(bean, beanName);
-29         }
+28         public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
+29             RouteDetection.INSTANCE.consider(bean);
+30             RefDetection.INSTANCE.consider(bean);
+31             MethodDetection.INSTANCE.consider(bean);
+32             ValidationDetection.INSTANCE.consider(bean, resolver);
+33             return BeanPostProcessor.super.postProcessBeforeInitialization(bean, beanName);
+34         }
 ```
 
 <br/>
@@ -44,7 +44,7 @@ Just once during the startup process, only once: after all beans have been initi
 
 <br/>
 
-`postProcessAfterInitialization`<swm-token data-swm-token=":medusa-ui/src/main/java/io/getmedusa/medusa/core/boot/RootDetector.java:32:5:5:`    public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {`"/> would be called after each bean's initialization. By filtering on the `MedusaAutoConfiguration`<swm-token data-swm-token=":medusa-ui/src/main/java/io/getmedusa/medusa/core/config/MedusaAutoConfiguration.java:18:4:4:`public class MedusaAutoConfiguration {`"/> bean, we ensure it only occurs once. The auto-config bean also ends up being the one that gets called _last_.
+`postProcessAfterInitialization`<swm-token data-swm-token=":medusa-ui/src/main/java/io/getmedusa/medusa/core/boot/RootDetector.java:37:5:5:`    public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {`"/> would be called after each bean's initialization. By filtering on the `MedusaAutoConfiguration`<swm-token data-swm-token=":medusa-ui/src/main/java/io/getmedusa/medusa/core/config/MedusaAutoConfiguration.java:18:4:4:`public class MedusaAutoConfiguration {`"/> bean, we ensure it only occurs once. The auto-config bean also ends up being the one that gets called _last_.
 <!-- NOTE-swimm-snippet: the lines below link your snippet to Swimm -->
 ### 📄 medusa-ui/src/main/java/io/getmedusa/medusa/core/boot/RootDetector.java
 ```java

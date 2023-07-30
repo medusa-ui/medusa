@@ -6,6 +6,7 @@ import io.getmedusa.medusa.core.annotation.UIEventPageCallWrapper;
 import io.getmedusa.medusa.core.attributes.Attribute;
 import io.getmedusa.medusa.core.boot.RefDetection;
 import io.getmedusa.medusa.core.boot.RouteDetection;
+import io.getmedusa.medusa.core.boot.ValidationDetection;
 import io.getmedusa.medusa.core.memory.SessionMemoryRepository;
 import io.getmedusa.medusa.core.render.Renderer;
 import io.getmedusa.medusa.core.router.request.Route;
@@ -118,6 +119,9 @@ public class SocketHandler {
 
             final String fileId = fileMeta.getFileId();
             if("upload_start".equals(fileMeta.getsAct())) {
+                if(ValidationDetection.INSTANCE.getMaxFileSize(session) < fileMeta.getSize()) {
+                    throw new IllegalStateException("Bypassed front-end validation - file exceeds total size limit");
+                }
                 session.getPendingFileUploads().put(fileId, fileMeta);
             } else if("upload_cancel".equals(fileMeta.getsAct())) {
                 bean.onCancel(fileMeta,session);

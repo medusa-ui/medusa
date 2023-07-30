@@ -9,7 +9,7 @@ import static com.codeborne.selenide.Condition.*;
 import static com.codeborne.selenide.Selenide.$;
 import static org.openqa.selenium.By.id;
 
-public class UploadsControllerSelenideIntegrationTest extends SelenideIntegrationTest {
+class UploadsControllerSelenideIntegrationTest extends SelenideIntegrationTest {
 
     @BeforeEach
     void setup(){
@@ -30,10 +30,12 @@ public class UploadsControllerSelenideIntegrationTest extends SelenideIntegratio
         $(id("prg_upload")).shouldBe(appear);
 
         // and
-        $(id("prg_upload")).should(disappear);
-
-        // and
         $(id("img_upload")).shouldBe(visible);
+
+        $(id("reset")).shouldBe(visible);
+        $(id("reset")).click();
+
+        $(id("prg_upload")).should(disappear);
 
         // upload another file
         $(id("single_file")).uploadFromClasspath("tree_2.png");
@@ -41,9 +43,6 @@ public class UploadsControllerSelenideIntegrationTest extends SelenideIntegratio
 
         // then
         $(id("prg_upload")).shouldBe(appear);
-
-        // and
-        $(id("prg_upload")).should(disappear);
 
         // then
         $(id("img_upload")).shouldBe(visible);

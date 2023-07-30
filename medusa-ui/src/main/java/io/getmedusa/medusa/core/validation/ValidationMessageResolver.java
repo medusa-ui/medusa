@@ -49,4 +49,8 @@ public class ValidationMessageResolver implements EmbeddedValueResolverAware {
     public void setEmbeddedValueResolver(StringValueResolver resolver) {
         this.resolver = resolver;
     }
+
+    public String resolveValue(String rawValue) {
+        return resolver.resolveStringValue(rawValue);
+    }
 }

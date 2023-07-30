@@ -1,14 +1,27 @@
 <section>
-    <!-- just use a normal input[type="file"] element and provide its id to m:upload -->
-    <input type="file" id="single_file" name="filename" accept="image/*" />
-    <button m:upload="single_file">Upload a file</button>
+    <form>
+        <th:block th:if="${percentage == 0}">
+            <input type="file" name="filename" accept="image/*" />
 
-    <!-- show progress and once done, show the image -->
+            <!-- this is where your validation message would show up if file is too big -->
+            <p m:validation="single_file"></p>
+
+            <button id="btn_upload" m:upload="single_file">Upload a file (max 1MB)</button>
+
+        </th:block>
+
+        <!-- show progress -->
+        <th:block th:if="${percentage != 0}">
+            <p>Percentage uploaded: <span th:text="${percentage}"></span> %</p>
+            <button th:if="${percentage == 100}" m:click="reset()">Reset</button>
+        </th:block>
+    </form>
+
+    <!-- once done, show the image -->
     <th:block th:if="${null != image}">
        <p th:if="${image.completed}">
-          <img th:src="${image.base64ImageString}" th:alt="${image.name}" />
-          <p th:text="${image.name}"></p>
+           <img id="img_upload" th:src="${image.base64ImageString}" th:alt="${image.name}" style="max-width: 75%"/>
+           <span style="font-size: 10px;" th:text="${image.name}"></span>
        </p>
-       <p th:if="${false == image.completed}" th:text="${image.progress + '%'}"></p>
     </th:block>
 </section>

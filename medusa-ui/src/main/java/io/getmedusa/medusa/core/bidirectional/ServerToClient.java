@@ -4,6 +4,7 @@ import io.getmedusa.diffengine.Engine;
 import io.getmedusa.medusa.core.attributes.Attribute;
 import io.getmedusa.medusa.core.memory.SessionMemoryRepository;
 import io.getmedusa.medusa.core.render.Renderer;
+import io.getmedusa.medusa.core.router.action.DataChunk;
 import io.getmedusa.medusa.core.session.Session;
 import io.getmedusa.medusa.core.util.FluxUtils;
 import org.springframework.core.io.buffer.DataBuffer;
@@ -91,5 +92,19 @@ public class ServerToClient {
             updatedSession.getSink().push(mergeDiffs(diffEngine.calculate(oldHTML, newHtml), passThroughAttributes));
             updatedSession.setDepth(0);
         });
+    }
+
+    public void sendUploadCompletionPercentage(String attributeName, DataChunk dataChunk, Session session) {
+        Object attribute = session.getAttribute(attributeName);
+        if(attribute == null) {
+            attribute = 0;
+        }
+        final double lastPercentage = Double.parseDouble(attribute.toString());
+        if((dataChunk.getCompletion() - lastPercentage) > 1D || dataChunk.getCompletion() == 100D) {
+            sendAttributesToSessionIDs(
+                    Attribute.$$(attributeName, Math.round(dataChunk.getCompletion())),
+                    Collections.singletonList(session.getId())
+            );
+        }
     }
 }

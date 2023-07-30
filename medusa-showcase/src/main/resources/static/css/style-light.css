@@ -276,3 +276,8 @@ button:disabled {
   white-space: nowrap;
   padding-bottom: 0.5em;
 }
+#container code {
+  font-family: monospace;
+  font-size: 0.8em;
+  color: #c2a6f6;
+}

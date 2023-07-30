@@ -69,8 +69,10 @@ document.addEventListener('keydown', (event) => {
 }, false);
 
 
-Medusa.prototype.uploadFileToMethod = async function (fragment, files) {
-    if( validateFiles(fragment, files) ) {   //TODO allow configuration of client-side validation per page?
+Medusa.prototype.uploadFileToMethod = async function (e, fragment, id) {
+    e.preventDefault();
+    let files = document.getElementById(id).files;
+    if(validateFiles(fragment, files, id) ) {
         for (const file of files) {
             debugLog("upload: " + file.name);
             new Promise(function (resolve, reject) {
@@ -82,12 +84,31 @@ Medusa.prototype.uploadFileToMethod = async function (fragment, files) {
             }).catch(e => new Error(e));
         }
     }
+    return false;
 };
 
-const validateFiles = function (fragment, files) {
+const validateFiles = function (fragment, files, id) {
+    let message = "Provided file size exceeds max file size";
+    let fileSizeOverridden = false;
+
+    for(let possibleFileValidation of _M.validationsPossible) {
+        if(possibleFileValidation['validation'] === 'MaxFileSize') {
+            MAX_FILE_SIZE = BigInt(possibleFileValidation['value1']);
+            message = possibleFileValidation['message'];
+            fileSizeOverridden = true;
+        }
+    }
+
+    if(!fileSizeOverridden) {
+        MAX_FILE_SIZE = BigInt(10485760); // reset to default 10MB
+    }
+
+    let form = findFormByElementId(id);
+    clearAllValidation(form);
+
     for (const file of files) {
         if(file.size > MAX_FILE_SIZE) {
-            let message = "size > " + MAX_FILE_SIZE;
+            markFieldAsFailedValidation(form, id, message);
             sendFileError(fragment, file,message);
             debugLog(message + " for file: " + file.name + " with size: " + file.size)
             return false; // fail fast
@@ -96,16 +117,22 @@ const validateFiles = function (fragment, files) {
     return true;
 }
 
+function findFormByElementId(elementId) {
+    let currentElement = document.getElementById(elementId);
+    while (currentElement && currentElement.tagName !== 'FORM') {
+        currentElement = currentElement.parentElement;
+    }
+    return currentElement ? currentElement : document.body;
+}
+
 async function fileToByteArray(fragment, file) {
     const expected_amount_of_chunks = Math.ceil(file.size / CHUNK_SIZE);
     const fileID = sendFileStart(fragment, file);
     readFileChunk(fragment, file, fileID, expected_amount_of_chunks, 0, 0);
-
 }
 
-/* TODO should be possible to set dynamically */
 const CHUNK_SIZE = 2000;
-const MAX_FILE_SIZE = 1048576; // 1MB
+let MAX_FILE_SIZE = BigInt(10485760); // default 10MB
 
 function readFileChunk(fragment, file, fileID, expected_amount_of_chunks, index, offset) {
     const reader = new FileReader();
@@ -149,22 +176,6 @@ function sendFileError(fragment, file, message) {
             "mimeType": file.type,
             "size": file.size,
             "message": message, //TODO maybe not needed
-            "fileId": fileId
-        }
-    });
-    return fileId;
-}
-
-function sendFileCancel(fragment, file, message) { //TODO I dont think we ever send this manually, this happens if the socket connection dies
-    const fileId = crypto.randomUUID();
-    sendMessage({
-        "fragment" : fragment,
-        "fileMeta" : {
-            "sAct": "upload_cancel",
-            "fileName": file.name,
-            "mimeType": file.type,
-            "size": file.size,
-            "message": message,
             "fileId": fileId
         }
     });

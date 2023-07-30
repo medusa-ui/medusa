@@ -3,10 +3,12 @@ package io.getmedusa.medusa.core.security;
 import io.getmedusa.medusa.core.boot.ValidationDetection;
 import io.getmedusa.medusa.core.validation.ValidationError;
 import io.getmedusa.medusa.core.validation.ValidationExecutor;
+import io.getmedusa.medusa.core.validation.ValidationMessageResolver;
 import io.getmedusa.medusa.sample.ValidatorController;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import java.util.Set;
 
@@ -16,7 +18,7 @@ class ValidationExecutorTest {
 
     @BeforeEach
     void setup() {
-        ValidationDetection.INSTANCE.consider(bean);
+        ValidationDetection.INSTANCE.consider(bean, Mockito.mock(ValidationMessageResolver.class));
     }
 
     @Test

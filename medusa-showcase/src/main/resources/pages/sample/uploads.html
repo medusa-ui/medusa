@@ -9,24 +9,35 @@
 <div id="container" m:ref="uploads">
     <section id="hero">
         <h1>Uploading files</h1>
-        <p class="lead">An example of uploading a single file, or multiple files</p>
+        <p class="lead">An example of uploading a single file, or multiple files. Your controller needs to implements UploadableUI.</p>
         <a id="back-to-overview" href="/">Back to overview</a>
     </section>
     <h2>Upload a single file</h2>
-    <p>Files are upload in small chunks</p>
+    <p>Files are always uploaded in small chunks, represented by the DataChunk class. You can define max size validation via <code>@Valid @MaxFileSize("5MB") DataChunk dataChunks</code>. This will count for both a front-end and back-end check. Validation messages appear in elements tagged with the relevant m:validation attribute, similar to regular validation tags. You can also show progress via calling the <code>serverToClient.sendUploadCompletionPercentage("percentage", dataChunk, session);</code></p>
+    <p>That means your controller method will be called upon every small chunk. Uploading files in small chunks allows you to stream data to a server's storage without the need to load the entire file into memory. This drastically reduced the resource demands on the server.</p>
     <section class="example">
-
+        <form>
+            <th:block th:if="${percentage == 0}">
         <input type="file" id="single_file" name="filename" accept="image/*" />
+                <p m:validation="single_file"></p>
         <p></p>
-        <button id="btn_upload" m:upload="single_file">Upload a file</button>
+                <button id="btn_upload" m:upload="single_file">Upload a file (max 1MB)</button>
         <p></p>
+            </th:block>
+
+            <th:block th:if="${percentage != 0}">
+                <p id="prg_upload">Percentage uploaded: <span style="display: inline-block; font-size: 1.5em;" th:text="${percentage}">100</span> %</p>
+                <button id="reset" th:if="${percentage == 100}" m:click="reset()">Reset</button>
+            </th:block>
+        </form>
+
         <th:block th:if="${null != image}">
             <p th:if="${image.completed}">
                <img id="img_upload" th:src="${image.base64ImageString}" th:alt="${image.name}" style="max-width: 75%"/>
-               <p th:text="${image.name}"></p>
+               <span style="font-size: 10px;" th:text="${image.name}"></span>
             </p>
-            <p id="prg_upload" th:if="${false == image.completed}" th:text="${image.progress + '%'}"  style="font-size: 3em; color: grey"></p>
         </th:block>
+
         <footer th:text="${version}"></footer>
     </section>
 
