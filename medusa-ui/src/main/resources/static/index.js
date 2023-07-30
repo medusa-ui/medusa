@@ -68,13 +68,11 @@ document.addEventListener('keydown', (event) => {
     }
 }, false);
 
-
 Medusa.prototype.uploadFileToMethod = async function (event, fragment, id) {
     if(typeof event !== "undefined") {
         event.preventDefault();
     }
     startLoading(event);
-
     let files = document.getElementById(id).files;
     if(validateFiles(fragment, files, id) ) {
         for (const file of files) {
