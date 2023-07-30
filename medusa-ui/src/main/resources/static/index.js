@@ -13,7 +13,7 @@ const _M = new Medusa();
 
 const debugMode = false;
 const XRegExp = require('xregexp');
-const {f} = require("./websocket");
+const {f, cancel} = require("./websocket");
 
 const MAX_REQUEST_N = 2147483647;
 let stream;
@@ -72,9 +72,9 @@ Medusa.prototype.uploadFileToMethod = async function (event, fragment, id) {
     if(typeof event !== "undefined") {
         event.preventDefault();
     }
-    startLoading(event);
     let files = document.getElementById(id).files;
     if(validateFiles(fragment, files, id) ) {
+        startLoading(event);
         for (const file of files) {
             debugLog("upload: " + file.name);
             new Promise(function (resolve, reject) {
@@ -90,6 +90,10 @@ Medusa.prototype.uploadFileToMethod = async function (event, fragment, id) {
 };
 
 const validateFiles = function (fragment, files, id) {
+    if(files.length === 0) {
+        return false;
+    }
+
     let message = "Provided file size exceeds max file size";
     let fileSizeOverridden = false;
 
@@ -112,7 +116,8 @@ const validateFiles = function (fragment, files, id) {
         if(file.size > MAX_FILE_SIZE) {
             markFieldAsFailedValidation(form, id, message);
             sendFileError(fragment, file,message);
-            debugLog(message + " for file: " + file.name + " with size: " + file.size)
+            debugLog(message + " for file: " + file.name + " with size: " + file.size);
+            cancelAllLoading();
             return false; // fail fast
         }
     }
@@ -650,6 +655,12 @@ applyAllChanges = function (listOfDiffs) {
         if(typeof extend.postEvent === 'function') { extend.postEvent(diff); }
     }
     if(typeof extend.postRender === 'function') { extend.postRender(listOfDiffs); }
+};
+
+cancelAllLoading = function() {
+    for(const elem of document.querySelectorAll("[waiting-for]")) {
+        applyLoadingUpdate(elem.getAttribute("waiting-for"));
+    }
 };
 
 applyLoadingUpdate = function(loadingName) {
