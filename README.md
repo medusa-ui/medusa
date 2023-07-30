@@ -21,7 +21,7 @@ Add the maven dependency to an existing Spring Reactive project:
 <dependency>
     <groupId>io.getmedusa</groupId>
     <artifactId>medusa-ui</artifactId>
-    <version>0.9.4</version>
+    <version>0.9.5</version>
 </dependency>
 ```
 And you're done. After installing Medusa in your app, you can just write Thymeleaf, extend it with Medusa tags, and you'll see your components interacting directly with the controller. You only write Java and HTML.
