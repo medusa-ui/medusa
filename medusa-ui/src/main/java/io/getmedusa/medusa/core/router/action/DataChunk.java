@@ -1,5 +1,9 @@
 package io.getmedusa.medusa.core.router.action;
 
+/**
+ * DataChunks are part of an upload streaming through. The idea is that you do not wish to keep an entire file in memory.
+ * Use the @MaxFileSize annotation to specify a maximum size. If not specified, we default to 10MB
+ */
 public class DataChunk {
 
     private String fileId;
@@ -65,5 +69,9 @@ public class DataChunk {
 
     public void setMimeType(String mimeType) {
         this.mimeType = mimeType;
+    }
+
+    public boolean isCompleted() {
+        return getCompletion() == 100D;
     }
 }

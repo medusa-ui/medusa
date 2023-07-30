@@ -1,10 +1,12 @@
 package io.getmedusa.medusa.core.boot;
 
+import io.getmedusa.medusa.core.validation.ValidationMessageResolver;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import java.util.List;
 
@@ -15,7 +17,7 @@ class ValidationDetectionTest {
 
     @BeforeEach
     void setup() {
-        ValidationDetection.INSTANCE.consider(testControllerWithValid);
+        ValidationDetection.INSTANCE.consider(testControllerWithValid, Mockito.mock(ValidationMessageResolver.class));
     }
 
     @Test

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
+import io.getmedusa.medusa.core.annotation.MaxFileSize;
 import io.getmedusa.medusa.core.annotation.UIEventPageCallWrapper;
 import io.getmedusa.medusa.core.session.Session;
 import io.getmedusa.medusa.core.session.StandardSessionTagKeys;
@@ -13,6 +14,7 @@ import io.getmedusa.medusa.core.validation.ValidationExecutor;
 import io.getmedusa.medusa.core.validation.ValidationMessageResolver;
 import jakarta.validation.Valid;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
+import org.springframework.util.unit.DataSize;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
@@ -81,7 +83,7 @@ public enum ValidationDetection {
         return fragmentControllers;
     }
 
-    public void consider(Object bean) {
+    public void consider(Object bean, ValidationMessageResolver resolver) {
         Class beanClass = bean.getClass();
         for (Method method : beanClass.getMethods()) {
             Annotation[][] parameterAnnotations = method.getParameterAnnotations();
@@ -89,7 +91,7 @@ public enum ValidationDetection {
                 Annotation[] paramAnnotations = parameterAnnotations[i];
                 for (Annotation paramAnnotation : paramAnnotations) {
                     if (paramAnnotation.annotationType().equals(Valid.class)) {
-                        classesWithValidMethods.add(beanClass, method, i);
+                        classesWithValidMethods.add(beanClass, method, i, resolver);
                     }
                 }
             }
@@ -134,6 +136,26 @@ public enum ValidationDetection {
         return field;
     }
 
+    public long getMaxFileSize(Session session) {
+        final String controller = session.getTag(StandardSessionTagKeys.CONTROLLER);
+        ClassWithValidation classWithValidation = classesWithValidMethods.findByClassName(controller);
+        if(classWithValidation != null) {
+            MethodWithValidation uploadChunk = classWithValidation.findByKey("uploadChunk");
+            if(uploadChunk != null) {
+                for (ParamWithValidation param : uploadChunk.params()) {
+                    if (param.field().equals("dataChunk")) {
+                        for (Validation validation : param.validations()) {
+                            if (validation.type.equals(MaxFileSize.class)) {
+                                return DataSize.parse(validation.value()).toBytes();
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return DataSize.ofMegabytes(10).toBytes(); //default
+    }
+
     record ValidationList(List<ClassWithValidation> classes) {
         public ClassWithValidation findByKey(Class className) {
             String name = className.getName();
@@ -149,14 +171,14 @@ public enum ValidationDetection {
             return null;
         }
 
-        public void add(Class beanClass, Method method, int i) {
+        public void add(Class beanClass, Method method, int i, ValidationMessageResolver resolver) {
             ClassWithValidation clazz = findByKey(beanClass);
             if(clazz == null) {
                 final ClassWithValidation newClazz = new ClassWithValidation(beanClass.getName(), new ArrayList<>());
-                newClazz.add(method, i);
+                newClazz.add(method, i, resolver);
                 classes.add(newClazz);
             } else {
-                clazz.add(method, i);
+                clazz.add(method, i, resolver);
             }
         }
 
@@ -250,14 +272,14 @@ public enum ValidationDetection {
             return null;
         }
 
-        public void add(Method method, int i) {
+        public void add(Method method, int i, ValidationMessageResolver resolver) {
             MethodWithValidation m = findByKey(method);
             if(m == null) {
                 final MethodWithValidation newMethod = new MethodWithValidation(method.getName(), new ArrayList<>());
-                newMethod.add(method, i);
+                newMethod.add(method, i, resolver);
                 methods.add(newMethod);
             } else {
-                m.add(method, i);
+                m.add(method, i, resolver);
             }
         }
 
@@ -272,13 +294,13 @@ public enum ValidationDetection {
     }
 
     record MethodWithValidation(String method, List<ParamWithValidation> params) {
-        public void add(Method method, int i) {
+        public void add(Method method, int i, ValidationMessageResolver resolver) {
             Class<?> paramType = method.getParameterTypes()[i];
             List<Annotation> paramAnnotations = findValidationsOnDirectParam(method.getParameterAnnotations()[i]);
             if(!paramAnnotations.isEmpty()) {
                 Parameter parameter = method.getParameters()[i];
                 ParamWithValidation paramWithValidation = new ParamWithValidation(parameter.getName(), i, new ArrayList<>());
-                paramWithValidation.validations().addAll(AnnotationToValidation.findValidations(parameter));
+                paramWithValidation.validations().addAll(AnnotationToValidation.findValidations(parameter, resolver));
                 if (!paramWithValidation.validations.isEmpty()) {
                     params.add(paramWithValidation);
                 }
@@ -286,7 +308,7 @@ public enum ValidationDetection {
                 Field[] declaredFields = paramType.getDeclaredFields();
                 for (Field field : declaredFields) {
                     ParamWithValidation paramWithValidation = new ParamWithValidation(field.getName(), i, new ArrayList<>());
-                    paramWithValidation.validations().addAll(AnnotationToValidation.findValidations(field));
+                    paramWithValidation.validations().addAll(AnnotationToValidation.findValidations(field, resolver));
                     if (!paramWithValidation.validations.isEmpty()) {
                         params.add(paramWithValidation);
                     }
@@ -298,7 +320,8 @@ public enum ValidationDetection {
             if(parameterAnnotation.length == 0) return List.of();
             List<Annotation> annotations = new ArrayList<>();
             for(Annotation annotation : parameterAnnotation) {
-                if(annotation.annotationType().getPackageName().startsWith("jakarta.validation.constraints")) {
+                if(annotation.annotationType().getPackageName().startsWith("jakarta.validation.constraints") ||
+                        "io.getmedusa.medusa.core.annotation".equals(annotation.annotationType().getPackageName())) {
                     annotations.add(annotation);
                 }
             }

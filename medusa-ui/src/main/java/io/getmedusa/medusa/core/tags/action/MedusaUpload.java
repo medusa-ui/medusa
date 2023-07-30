@@ -14,7 +14,7 @@ public class MedusaUpload extends JSEventAttributeProcessor {
     //<button m:upload="myFile">upload file</button>
 
     public MedusaUpload() {
-        super("upload", "onclick", "_M.uploadFileToMethod(" + FRAGMENT_REPLACEMENT + ", document.getElementById('%s').files)");
+        super("upload", "onclick", "return _M.uploadFileToMethod(event, " + FRAGMENT_REPLACEMENT + ", '%s')");
     }
 
     @Override

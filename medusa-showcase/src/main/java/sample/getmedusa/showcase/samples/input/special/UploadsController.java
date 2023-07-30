@@ -1,11 +1,14 @@
 package sample.getmedusa.showcase.samples.input.special;
 
+import io.getmedusa.medusa.core.annotation.MaxFileSize;
 import io.getmedusa.medusa.core.annotation.UIEventPage;
 import io.getmedusa.medusa.core.attributes.Attribute;
 import io.getmedusa.medusa.core.bidirectional.ServerToClient;
 import io.getmedusa.medusa.core.router.action.DataChunk;
+import io.getmedusa.medusa.core.router.action.FileUploadMeta;
 import io.getmedusa.medusa.core.router.action.UploadableUI;
 import io.getmedusa.medusa.core.session.Session;
+import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,11 +30,19 @@ public class UploadsController implements UploadableUI {
     }
 
     public List<Attribute> setupAttributes() {
-        return $$("progress", 0 );
+        return $$("percentage", 0 );
+    }
+
+    public List<Attribute> reset() {
+        return $$("percentage", 0, "image", null);
     }
 
     @Override
-    public void uploadChunk(DataChunk dataChunk, Session session) {
+    public void uploadChunk(@Valid @MaxFileSize("1MB") DataChunk dataChunk, Session session) {
+        serverToClient.sendUploadCompletionPercentage("percentage", dataChunk, session);
+
+        //note: You generally DON'T DO THIS; we do it here purely for demo purposes
+        //but the core idea is that you use the datachunks to stream it to storage
         String fileName = dataChunk.getFileName();
         SessionImage image = session.getAttribute("image");
         if(image == null || !image.getName().equals(fileName)) { // check the name if there is a new image
@@ -45,6 +56,11 @@ public class UploadsController implements UploadableUI {
             logger.debug("partial file: {}, progress: {}, completion: {}", fileName, image.progress, image.completion);
             serverToClient.sendAttributesToSession($$("image", image), session);
         }
+    }
+
+    @Override
+    public void onCancel(FileUploadMeta uploadMeta, Session session) {
+        serverToClient.sendAttributesToSession($$("percentage", 0), session);
     }
 
     public static class SessionImage {

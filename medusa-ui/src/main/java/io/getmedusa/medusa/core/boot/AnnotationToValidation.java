@@ -1,6 +1,9 @@
 package io.getmedusa.medusa.core.boot;
 
+import io.getmedusa.medusa.core.annotation.MaxFileSize;
+import io.getmedusa.medusa.core.validation.ValidationMessageResolver;
 import jakarta.validation.constraints.*;
+import org.springframework.util.unit.DataSize;
 
 import java.lang.reflect.AnnotatedElement;
 import java.util.ArrayList;
@@ -10,7 +13,10 @@ public class AnnotationToValidation {
 
     private AnnotationToValidation() {}
 
-    public static List<ValidationDetection.Validation> findValidations(AnnotatedElement field) {
+    private static ValidationMessageResolver resolver;
+
+    public static List<ValidationDetection.Validation> findValidations(AnnotatedElement field, ValidationMessageResolver resolver) {
+        AnnotationToValidation.resolver = resolver;
         List<ValidationDetection.Validation> validations = new ArrayList<>();
 
         assertFalse(validations, field);
@@ -35,8 +41,15 @@ public class AnnotationToValidation {
         positive(validations, field);
         positiveOrZero(validations, field);
         size(validations, field);
-
+        maxFileSize(validations, field);
         return validations;
+    }
+
+    private static void maxFileSize(List<ValidationDetection.Validation> validations, AnnotatedElement field) {
+        MaxFileSize annotation = field.getAnnotation(MaxFileSize.class);
+        if(null != annotation) {
+            validations.add(new ValidationDetection.Validation(MaxFileSize.class, Long.toString(DataSize.parse(valueInterpreter(annotation.value())).toBytes()),null, annotation.message()));
+        }
     }
 
     private static void notBlank(List<ValidationDetection.Validation> validations, AnnotatedElement field) {
@@ -64,13 +77,13 @@ public class AnnotationToValidation {
     private static void decimalMax(List<ValidationDetection.Validation> validations, AnnotatedElement field) {
         DecimalMax annotation = field.getAnnotation(DecimalMax.class);
         if(null != annotation) {
-            validations.add(new ValidationDetection.Validation(DecimalMax.class, annotation.value(),null, annotation.message()));
+            validations.add(new ValidationDetection.Validation(DecimalMax.class, valueInterpreter(annotation.value()),null, annotation.message()));
         }
     }
     private static void decimalMin(List<ValidationDetection.Validation> validations, AnnotatedElement field) {
         DecimalMin annotation = field.getAnnotation(DecimalMin.class);
         if(null != annotation) {
-            validations.add(new ValidationDetection.Validation(DecimalMin.class, annotation.value(),null, annotation.message()));
+            validations.add(new ValidationDetection.Validation(DecimalMin.class, valueInterpreter(annotation.value()),null, annotation.message()));
         }
     }
 
@@ -84,7 +97,7 @@ public class AnnotationToValidation {
     private static void email(List<ValidationDetection.Validation> validations, AnnotatedElement field) {
         Email annotation = field.getAnnotation(Email.class);
         if(null != annotation) {
-            validations.add(new ValidationDetection.Validation(Email.class, annotation.regexp(),null, annotation.message()));
+            validations.add(new ValidationDetection.Validation(Email.class, valueInterpreter(annotation.regexp()),null, annotation.message()));
         }
     }
 
@@ -167,7 +180,7 @@ public class AnnotationToValidation {
     private static void pattern(List<ValidationDetection.Validation> validations, AnnotatedElement field) {
         Pattern annotation = field.getAnnotation(Pattern.class);
         if(null != annotation) {
-            validations.add(new ValidationDetection.Validation(Pattern.class, annotation.regexp(),null, annotation.message()));
+            validations.add(new ValidationDetection.Validation(Pattern.class, valueInterpreter(annotation.regexp()),null, annotation.message()));
         }
     }
 
@@ -189,5 +202,9 @@ public class AnnotationToValidation {
         if(null != annotation) {
             validations.add(new ValidationDetection.Validation(Size.class, Integer.toString(annotation.min()), Integer.toString(annotation.max()), annotation.message()));
         }
+    }
+
+    private static String valueInterpreter(String rawValue) {
+        return resolver.resolveValue(rawValue);
     }
 }

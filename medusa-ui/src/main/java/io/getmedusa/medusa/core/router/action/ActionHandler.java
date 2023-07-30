@@ -108,7 +108,10 @@ public class ActionHandler {
         if(null == result) {
             return Mono.just(new ArrayList<>());
         }
-        return (Mono<List<Attribute>>) result;
+        return ((Mono<List<Attribute>>) result).map(a -> {
+            a.stream().filter(b -> b.value() == null).forEach(c -> session.removeAttributeByName(c.name()));
+            return a.stream().filter(b -> b.value() != null).toList();
+        });
     }
 
     private static String handleArrayParsing(String expression) {
