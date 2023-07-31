@@ -19,7 +19,7 @@
         <form>
             <th:block th:if="${percentage == 0}">
         <input type="file" id="single_file" name="filename" accept="image/*" />
-                <p m:validation="single_file"></p>
+                <p id="validation_msg" m:validation="single_file"></p>
         <p></p>
                 <button id="btn_upload" m:upload="single_file" m:loading-until="upload-done" m:loading-style="top">Upload a file (max 1MB)</button>
         <p></p>
