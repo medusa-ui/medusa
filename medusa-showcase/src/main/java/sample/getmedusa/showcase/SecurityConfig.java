@@ -13,12 +13,13 @@ public class SecurityConfig {
 
     @Bean
     public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
-        return MedusaSecurity.defaultSecurity(http)
-                .authorizeExchange()
-                .pathMatchers("/secure/**").authenticated()
-                .pathMatchers("/secure/special-role/**").hasRole("SPECIAL")
-                .anyExchange().permitAll()
-                .and().build();
+        return MedusaSecurity
+                    .defaultSecurity(http)
+                    .authorizeExchange( auth ->
+                        auth.pathMatchers("/secure/**").authenticated()
+                            .pathMatchers("/secure/special-role/**").hasRole("SPECIAL")
+                            .anyExchange().permitAll()
+                    ).build();
     }
 
 }

@@ -1,5 +1,6 @@
 package io.getmedusa.medusa.core.security;
 
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.web.server.SecurityWebFiltersOrder;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 
@@ -14,8 +15,8 @@ public final class MedusaSecurity {
 
     public static ServerHttpSecurity defaultSecurity(ServerHttpSecurity http) {
         return http.addFilterBefore(new JWTTokenInterpreter(), SecurityWebFiltersOrder.AUTHENTICATION)
-                .formLogin().and()
-                .httpBasic().disable();
+                .formLogin(Customizer.withDefaults())
+                .httpBasic(ServerHttpSecurity.HttpBasicSpec::disable);
     }
 
 }
