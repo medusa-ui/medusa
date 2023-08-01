@@ -16,17 +16,16 @@ import java.util.concurrent.TimeUnit;
 @Configuration
 public class WebClientConfig {
 
-    protected static final int TIMEOUT_MILLISECONDS = 2000; /*TODO configurable via medusa.webclient-timeout property?*/
-
     @Bean
-    public WebClient webClient() {
+    public WebClient webClient(MedusaConfigurationProperties medusaConfigurationProperties) {
+        int webclientTimeout = medusaConfigurationProperties.getHydra().getWebclientTimeout();
         HttpClient httpClient = HttpClient.create()
-                .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, TIMEOUT_MILLISECONDS)
-                .responseTimeout(Duration.ofMillis(TIMEOUT_MILLISECONDS))
+                .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, webclientTimeout)
+                .responseTimeout(Duration.ofMillis(webclientTimeout))
                 .resolver(DefaultAddressResolverGroup.INSTANCE)
                 .doOnConnected(conn ->
-                        conn.addHandlerLast(new ReadTimeoutHandler(TIMEOUT_MILLISECONDS, TimeUnit.MILLISECONDS))
-                                .addHandlerLast(new WriteTimeoutHandler(TIMEOUT_MILLISECONDS, TimeUnit.MILLISECONDS)));
+                        conn.addHandlerLast(new ReadTimeoutHandler(webclientTimeout, TimeUnit.MILLISECONDS))
+                                .addHandlerLast(new WriteTimeoutHandler(webclientTimeout, TimeUnit.MILLISECONDS)));
 
         return WebClient.builder()
                 .clientConnector(new ReactorClientHttpConnector(httpClient))

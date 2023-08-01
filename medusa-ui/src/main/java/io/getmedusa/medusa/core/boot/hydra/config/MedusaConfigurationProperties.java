@@ -43,6 +43,10 @@ public class MedusaConfigurationProperties {
          * The connection URI
          */
         private String uri;
+        /**
+         * The responseTimeout for the webclient
+         */
+        private int webclientTimeout = 2000;
 
         public Secret getSecret() {
             return secret;
@@ -58,6 +62,14 @@ public class MedusaConfigurationProperties {
 
         public void setUri(String uri) {
             this.uri = uri;
+        }
+
+        public int getWebclientTimeout() {
+            return webclientTimeout;
+        }
+
+        public void setWebclientTimeout(int webclientTimeout) {
+            this.webclientTimeout = webclientTimeout;
         }
 
         public String registrationURL(){
