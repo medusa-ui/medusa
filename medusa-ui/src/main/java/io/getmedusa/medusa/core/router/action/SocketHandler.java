@@ -79,14 +79,17 @@ public class SocketHandler {
 
                     //render new HTML w/ new attributes
                     final Flux<DataBuffer> dataBufferFlux = renderer.render(route.getTemplateHTML(), s);
-                    final String oldHTML = s.getLastRenderedHTML();
-                    final String newHtml = FluxUtils.dataBufferFluxToString(dataBufferFlux);
-                    s.setLastRenderedHTML(newHtml);
-                    sessionMemoryRepository.store(s);
+                    dataBufferFlux.subscribe(buffer -> {
+                        final String oldHTML = s.getLastRenderedHTML();
+                        final String newHtml = FluxUtils.dataBufferToString(buffer);
+                        s.setLastRenderedHTML(newHtml);
+                        System.out.println("newHTML: " + newHtml);
+                        sessionMemoryRepository.store(s);
 
-                    //run diff engine old HTML vs new
-                    s.getSink().push(mergeDiffs(diffEngine.calculate(oldHTML, newHtml), passThroughAttributes));
-                    s.setDepth(0);
+                        //run diff engine old HTML vs new
+                        s.getSink().push(mergeDiffs(diffEngine.calculate(oldHTML, newHtml), passThroughAttributes));
+                        s.setDepth(0);
+                    });
                 });
             }
         });

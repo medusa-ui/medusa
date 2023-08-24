@@ -25,23 +25,18 @@ public interface IRequestStreamHandler {
                                                Renderer renderer,
                                                SessionMemoryRepository sessionMemoryRepository) {
         Route.URIs.add(request.uri().getScheme() + "://" + request.uri().getAuthority());
-        return ok()
-                .contentType(MediaType.TEXT_HTML)
-                .body(renderWithSession(request, route, renderer, sessionMemoryRepository), DataBuffer.class);
-    }
 
-    private Flux<DataBuffer> renderWithSession(ServerRequest request, Route route, Renderer renderer, SessionMemoryRepository sessionMemoryRepository) {
         final Session session = new Session(route, request);
-        return route.getSetupAttributes(request, session).flatMapMany(
-                setupAttributes -> {
-                    session.setLastParameters(setupAttributes);
-
-                    final Flux<DataBuffer> render = renderer.render(route.getTemplateHTML(), session);
-                    session.setLastRenderedHTML(FluxUtils.dataBufferFluxToString(render));
-                    sessionMemoryRepository.store(session);
-                    return render;
-                }
-        );
+        return route.getSetupAttributes(request, session).flatMap(sAttributes -> {
+            session.setLastParameters(sAttributes);
+            Mono<DataBuffer> bufferMono = DataBufferUtils.join(renderer.render(route.getTemplateHTML(), session));
+            return bufferMono.flatMap(r -> {
+                String renderedHTML = FluxUtils.dataBufferToString(r);
+                session.setLastRenderedHTML(renderedHTML);
+                sessionMemoryRepository.store(session);
+                return ok().contentType(MediaType.TEXT_HTML).body(Mono.just(renderedHTML), String.class);
+            });
+        });
     }
 
 }

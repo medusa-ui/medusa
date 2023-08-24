@@ -81,10 +81,9 @@ public class Session {
     }
 
     public void setLastRenderedHTML(String lastRenderedHTML) {
-        /*System.out.println("---");
-        System.out.println(lastRenderedHTML);
-        System.out.println("---");*/
-        this.lastRenderedHTML = lastRenderedHTML;
++        if(!lastRenderedHTML.isBlank()) {
++            this.lastRenderedHTML = lastRenderedHTML;
++        }
     }
 
     public List<Attribute> getLastParameters() {
