@@ -1,5 +1,6 @@
 package io.getmedusa.medusa.core.boot.hydra;
 
+import io.getmedusa.medusa.core.attributes.Attribute;
 import io.getmedusa.medusa.core.boot.Fragment;
 import io.getmedusa.medusa.core.boot.RefDetection;
 import io.getmedusa.medusa.core.boot.hydra.model.FragmentRequestWrapper;
@@ -19,8 +20,10 @@ import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 @RestController
 @ConditionalOnProperty(name = "medusa.hydra.uri")
@@ -46,7 +49,20 @@ public class IncomingFragmentRequestController {
         if(this.publicKey.equals(publicKey)) {
             for (Fragment request : fragmentRequestWrapper.getRequests()) {
                 final String rawHTML = RefDetection.INSTANCE.findRef(request.getRef());
-                final Flux<DataBuffer> bufferFlux = renderer.renderFragment(rawHTML, fragmentRequestWrapper.getAttributes(), Locale.US); //TODO locale
+
+                //not just the attributes from the origin, but also from the fragment's controller ...
+                final Mono<List<Attribute>> localAttributes = RefDetection.INSTANCE.findBeanByRef(request.getRef()).setupAttributes(null, null);
+
+                final Mono<Map<String, Object>> attributeMerge = localAttributes.map(a -> {
+                    final Map<String, Object> attributes = new HashMap<>(fragmentRequestWrapper.getAttributes());
+                    a.forEach(attribute -> attributes.putIfAbsent(attribute.name(), attribute.value()));
+                    return attributes;
+                });
+
+                final Flux<DataBuffer> bufferFlux = attributeMerge.flatMapMany(merged -> {
+                    return renderer.renderFragment(rawHTML, merged, Locale.US); //TODO locale
+                });
+
                 flux = flux.concatWith(bufferFlux.map(dataBuffer -> {
                     final RenderedFragment renderedFragment = new RenderedFragment();
                     renderedFragment.setId(request.getId());
