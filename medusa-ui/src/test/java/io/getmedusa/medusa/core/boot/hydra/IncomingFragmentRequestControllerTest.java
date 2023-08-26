@@ -55,7 +55,32 @@ class IncomingFragmentRequestControllerTest {
 
     @Test
     void testNoImpactByDefault() {
-        Assertions.fail("TODO");
+        Map<String, Object> attr = new HashMap<>();
+        attr.put("aaa", 123);
+        attr.put("bbb", 456);
+
+        Fragment f = new Fragment();
+        f.setRef("ref-sample");
+
+        final FragmentRequestWrapper fragmentRequestWrapper = new FragmentRequestWrapper();
+        fragmentRequestWrapper.setAttributes(attr);
+        fragmentRequestWrapper.setRequests(List.of(f));
+
+        final Mono<List<RenderedFragment>> mono = controller.requestFragmentRender(fragmentRequestWrapper, PUBLIC, RESPONSE);
+        final List<RenderedFragment> renderedFragments = mono.block();
+
+        Assertions.assertNotNull(renderedFragments);
+        Assertions.assertEquals(1, renderedFragments.size());
+        RenderedFragment fragment = renderedFragments.get(0);
+        Assertions.assertNotNull(fragment);
+
+        Mockito.verify(renderer).renderFragment(Mockito.nullable(String.class), mapArgumentCaptor.capture(), Mockito.any(Locale.class));
+        final Map<String, Object> attributesForFragmentRender = mapArgumentCaptor.getValue();
+
+        System.out.println(attributesForFragmentRender);
+        Assertions.assertTrue(attributesForFragmentRender.containsKey("alwaysPresent"), "Missing alwaysPresent -- This should be an attribute from fragment's setup");
+
+        Assertions.assertEquals(1, attributesForFragmentRender.size());
     }
 
     @Test

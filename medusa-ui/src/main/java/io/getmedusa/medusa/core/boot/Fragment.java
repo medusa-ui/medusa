@@ -1,5 +1,6 @@
 package io.getmedusa.medusa.core.boot;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Fragment {
@@ -8,8 +9,8 @@ public class Fragment {
     private String service;
     private String ref;
 
-    private List<String> imports;
-    private List<String> exports;
+    private List<String> imports = new ArrayList<>();
+    private List<String> exports = new ArrayList<>();
 
     private String fallback;
 
