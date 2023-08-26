@@ -170,7 +170,7 @@ public class HydraConnectionController {
         wrapper.setAttributes(attributes);
         wrapper.setRequests(requests);
 
-        return Flux.merge(selfFragments.flatMapMany(Flux::fromIterable), requestFragmentURL
+        Flux<RenderedFragment> renderedFragmentFlux = requestFragmentURL
                 .bodyValue(wrapper)
                 .exchangeToMono(response -> {
                     if (response.statusCode().equals(HttpStatus.OK)) {
@@ -180,9 +180,10 @@ public class HydraConnectionController {
                     }
                 })
                 .map(x -> Arrays.stream(x).toList())
-                .doOnError(err -> {})
+                .doOnError(Throwable::printStackTrace)
                 .onErrorReturn(List.of())
-                .flatMapMany(Flux::fromIterable)).collectList();
+                .flatMapMany(Flux::fromIterable);
+        return Flux.merge(selfFragments.flatMapMany(Flux::fromIterable), renderedFragmentFlux).collectList();
     }
 
     public boolean isInactive() {

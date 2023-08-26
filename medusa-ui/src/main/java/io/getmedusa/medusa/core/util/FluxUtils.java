@@ -21,6 +21,8 @@ public final class FluxUtils {
 
     private static final DataBufferFactory bufferFactory = new DefaultDataBufferFactory();
 
+    /*Almost never a good idea, best to handle the Flux*/
+    @Deprecated
     public static String dataBufferFluxToString(Flux<DataBuffer> flux) {
         try(ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
             DataBufferUtils
