@@ -162,6 +162,7 @@ public class HydraConnectionController {
         }
     }
 
+    //this is on the requester side; see IncomingFragmentRequestController#requestFragmentRender for logic on the receiving side
     public Mono<List<RenderedFragment>> askHydraForFragment(Mono<List<RenderedFragment>> selfFragments, Map<String, List<Fragment>> requests, Map<String, Object> attributes) {
         if(requests.isEmpty()) {
             return selfFragments;
