@@ -62,22 +62,7 @@ class IncomingFragmentRequestControllerTest {
         Fragment f = new Fragment();
         f.setRef("ref-sample");
 
-        final FragmentRequestWrapper fragmentRequestWrapper = new FragmentRequestWrapper();
-        fragmentRequestWrapper.setAttributes(attr);
-        fragmentRequestWrapper.setRequests(List.of(f));
-
-        final Mono<List<RenderedFragment>> mono = controller.requestFragmentRender(fragmentRequestWrapper, PUBLIC, RESPONSE);
-        final List<RenderedFragment> renderedFragments = mono.block();
-
-        Assertions.assertNotNull(renderedFragments);
-        Assertions.assertEquals(1, renderedFragments.size());
-        RenderedFragment fragment = renderedFragments.get(0);
-        Assertions.assertNotNull(fragment);
-
-        Mockito.verify(renderer).renderFragment(Mockito.nullable(String.class), mapArgumentCaptor.capture(), Mockito.any(Locale.class));
-        final Map<String, Object> attributesForFragmentRender = mapArgumentCaptor.getValue();
-
-        System.out.println(attributesForFragmentRender);
+        final Map<String, Object> attributesForFragmentRender = testIncomingFragment(attr, f);
         Assertions.assertTrue(attributesForFragmentRender.containsKey("alwaysPresent"), "Missing alwaysPresent -- This should be an attribute from fragment's setup");
 
         Assertions.assertEquals(1, attributesForFragmentRender.size());
@@ -93,22 +78,7 @@ class IncomingFragmentRequestControllerTest {
         f.setRef("ref-sample");
         f.setImports(List.of("bbb"));
 
-        final FragmentRequestWrapper fragmentRequestWrapper = new FragmentRequestWrapper();
-        fragmentRequestWrapper.setAttributes(attr);
-        fragmentRequestWrapper.setRequests(List.of(f));
-
-        final Mono<List<RenderedFragment>> mono = controller.requestFragmentRender(fragmentRequestWrapper, PUBLIC, RESPONSE);
-        final List<RenderedFragment> renderedFragments = mono.block();
-
-        Assertions.assertNotNull(renderedFragments);
-        Assertions.assertEquals(1, renderedFragments.size());
-        RenderedFragment fragment = renderedFragments.get(0);
-        Assertions.assertNotNull(fragment);
-
-        Mockito.verify(renderer).renderFragment(Mockito.nullable(String.class), mapArgumentCaptor.capture(), Mockito.any(Locale.class));
-        final Map<String, Object> attributesForFragmentRender = mapArgumentCaptor.getValue();
-
-        System.out.println(attributesForFragmentRender);
+        final Map<String, Object> attributesForFragmentRender = testIncomingFragment(attr, f);
         Assertions.assertTrue(attributesForFragmentRender.containsKey("alwaysPresent"), "Missing alwaysPresent -- This should be an attribute from fragment's setup");
         Assertions.assertTrue(attributesForFragmentRender.containsKey("bbb"), "Missing bbb -- This should be an attribute from origin through import");
 
@@ -125,6 +95,14 @@ class IncomingFragmentRequestControllerTest {
         f.setRef("ref-sample");
         f.setImports(List.of("bbb as zzz"));
 
+        final Map<String, Object> attributesForFragmentRender = testIncomingFragment(attr, f);
+        Assertions.assertTrue(attributesForFragmentRender.containsKey("alwaysPresent"), "Missing alwaysPresent -- This should be an attribute from fragment's setup");
+        Assertions.assertTrue(attributesForFragmentRender.containsKey("zzz"), "Missing zzz -- This should be an attribute from origin through import w/ alias");
+
+        Assertions.assertEquals(2, attributesForFragmentRender.size());
+    }
+
+    private Map<String, Object> testIncomingFragment(Map<String, Object> attr, Fragment f) {
         final FragmentRequestWrapper fragmentRequestWrapper = new FragmentRequestWrapper();
         fragmentRequestWrapper.setAttributes(attr);
         fragmentRequestWrapper.setRequests(List.of(f));
@@ -141,10 +119,7 @@ class IncomingFragmentRequestControllerTest {
         final Map<String, Object> attributesForFragmentRender = mapArgumentCaptor.getValue();
 
         System.out.println(attributesForFragmentRender);
-        Assertions.assertTrue(attributesForFragmentRender.containsKey("alwaysPresent"), "Missing alwaysPresent -- This should be an attribute from fragment's setup");
-        Assertions.assertTrue(attributesForFragmentRender.containsKey("zzz"), "Missing zzz -- This should be an attribute from origin through import w/ alias");
-
-        Assertions.assertEquals(2, attributesForFragmentRender.size());
+        return attributesForFragmentRender;
     }
 
 
