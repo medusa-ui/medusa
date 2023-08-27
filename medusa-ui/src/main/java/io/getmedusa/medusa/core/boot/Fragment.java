@@ -8,10 +8,8 @@ public class Fragment {
     private String id;
     private String service;
     private String ref;
-
     private List<String> imports = new ArrayList<>();
     private List<String> exports = new ArrayList<>();
-
     private String fallback;
 
     public String getId() {
@@ -68,6 +66,8 @@ public class Fragment {
         f.service = this.service;
         f.ref = this.ref;
         f.fallback = this.fallback;
+        f.imports = this.imports;
+        f.exports = this.exports;
         return f;
     }
 
@@ -77,6 +77,8 @@ public class Fragment {
                 "id='" + id + '\'' +
                 ", service='" + service + '\'' +
                 ", ref='" + ref + '\'' +
+                ", imports=" + imports +
+                ", exports=" + exports +
                 ", fallback='" + fallback + '\'' +
                 '}';
     }

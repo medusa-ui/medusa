@@ -23,6 +23,7 @@ class JSONUtilsTest {
         Fragment fragment = new Fragment();
         fragment.setRef("xyz");
         fragment.setService("test");
+        fragment.setImports(List.of("x", "z as b"));
         List<Fragment> fragments = List.of(fragment, fragment);
         String json = JSONUtils.serialize(fragments);
         System.out.println(json);

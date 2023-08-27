@@ -26,4 +26,12 @@ public class FragmentRequestWrapper {
     public void setRequests(List<Fragment> requests) {
         this.requests = requests;
     }
+
+    @Override
+    public String toString() {
+        return "FragmentRequestWrapper{" +
+                "attributes=" + attributes +
+                ", requests=" + requests +
+                '}';
+    }
 }

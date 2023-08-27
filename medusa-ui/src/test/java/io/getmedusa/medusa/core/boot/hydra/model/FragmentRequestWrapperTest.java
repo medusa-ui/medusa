@@ -18,6 +18,7 @@ class FragmentRequestWrapperTest {
         Fragment request = new Fragment();
         request.setService("xyz");
         request.setRef("234");
+        request.setImports(List.of("XYZ as TRW"));
         wrapper.setRequests(List.of(request));
         wrapper.setAttributes(new HashMap<>());
 
