@@ -25,4 +25,12 @@ public class FragmentHydraRequestWrapper {
     public void setRequests(Map<String, List<Fragment>> requests) {
         this.requests = requests;
     }
+
+    @Override
+    public String toString() {
+        return "FragmentHydraRequestWrapper{" +
+                "attributes=" + attributes +
+                ", requests=" + requests +
+                '}';
+    }
 }

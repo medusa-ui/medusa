@@ -1,11 +1,15 @@
 package io.getmedusa.medusa.core.boot;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Fragment {
 
     private String id;
     private String service;
     private String ref;
-
+    private List<String> imports = new ArrayList<>();
+    private List<String> exports = new ArrayList<>();
     private String fallback;
 
     public String getId() {
@@ -40,12 +44,30 @@ public class Fragment {
         this.fallback = fallback;
     }
 
+    public List<String> getImports() {
+        return imports;
+    }
+
+    public void setImports(List<String> imports) {
+        this.imports = imports;
+    }
+
+    public List<String> getExports() {
+        return exports;
+    }
+
+    public void setExports(List<String> exports) {
+        this.exports = exports;
+    }
+
     public Fragment clone() {
         Fragment f = new Fragment();
         f.id = this.id;
         f.service = this.service;
         f.ref = this.ref;
         f.fallback = this.fallback;
+        f.imports = this.imports;
+        f.exports = this.exports;
         return f;
     }
 
@@ -55,6 +77,8 @@ public class Fragment {
                 "id='" + id + '\'' +
                 ", service='" + service + '\'' +
                 ", ref='" + ref + '\'' +
+                ", imports=" + imports +
+                ", exports=" + exports +
                 ", fallback='" + fallback + '\'' +
                 '}';
     }
