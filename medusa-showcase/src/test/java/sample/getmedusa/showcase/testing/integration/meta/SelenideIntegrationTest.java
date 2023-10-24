@@ -4,9 +4,9 @@ package sample.getmedusa.showcase.testing.integration.meta;
 import com.codeborne.selenide.Configuration;
 import com.codeborne.selenide.Selenide;
 import com.codeborne.selenide.junit5.TextReportExtension;
+import io.github.bonigarcia.wdm.WebDriverManager;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.openqa.selenium.chrome.ChromeOptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,12 +24,10 @@ public abstract class SelenideIntegrationTest {
 
     @BeforeAll /* use application.properties to set selenide.headless=false */
     static void setup( @Value("${selenide.headless:true}") Boolean headless) {
+        WebDriverManager.chromedriver().setup();
         Configuration.headless=headless;
         Configuration.screenshots=false;
         Configuration.browser="chrome";
-        ChromeOptions options = new ChromeOptions();
-        options.addArguments("--remote-allow-origins=*");
-        Configuration.browserCapabilities = options;
     }
 
     protected void openPage(String page) {
