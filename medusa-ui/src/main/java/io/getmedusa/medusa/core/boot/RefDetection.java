@@ -74,7 +74,9 @@ public enum RefDetection {
         return detectedRefs.getOrDefault(key, null);
     }
 
-    public UIEventPageCallWrapper findBeanByRef(String key) { return refToBeanMap.getOrDefault(key, new UIEventPageCallWrapper(null)); }
+    public UIEventPageCallWrapper findBeanByRef(String key) {
+        return refToBeanMap.getOrDefault(key, new UIEventPageCallWrapper(null)); //TODO why UIEventPageCallWrapper with no controller as default?
+    }
 
     private UIEventPage retrieveAnnotation(Object bean) {
         return bean.getClass().getAnnotation(UIEventPage.class);
