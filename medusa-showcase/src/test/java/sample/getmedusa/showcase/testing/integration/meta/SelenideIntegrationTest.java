@@ -3,10 +3,12 @@ package sample.getmedusa.showcase.testing.integration.meta;
 
 import com.codeborne.selenide.Configuration;
 import com.codeborne.selenide.Selenide;
+import com.codeborne.selenide.WebDriverRunner;
 import com.codeborne.selenide.junit5.TextReportExtension;
+import io.github.bonigarcia.wdm.WebDriverManager;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.openqa.selenium.chrome.ChromeOptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,13 +25,22 @@ public abstract class SelenideIntegrationTest {
     private int port;
 
     @BeforeAll /* use application.properties to set selenide.headless=false */
-    static void setup( @Value("${selenide.headless:true}") Boolean headless) {
+    static void setup( @Value("${selenide.headless:true}") Boolean headless, @Value("${selenide.browser:chrome}") String browser) {
+        switch (browser) {
+            case "chrome" ->  WebDriverManager.chromedriver().setup();
+            case "firefox" -> WebDriverManager.firefoxdriver().setup();
+            case "edge" -> WebDriverManager.edgedriver().setup();
+            default -> WebDriverManager.chromiumdriver().setup();
+        }
         Configuration.headless=headless;
         Configuration.screenshots=false;
-        Configuration.browser="chrome";
-        ChromeOptions options = new ChromeOptions();
-        options.addArguments("--remote-allow-origins=*");
-        Configuration.browserCapabilities = options;
+        Configuration.browser=browser;
+    }
+
+    @AfterEach
+    public void close(){
+        if(WebDriverRunner.isFirefox())
+            WebDriverRunner.closeWindow();
     }
 
     protected void openPage(String page) {
