@@ -1,7 +1,7 @@
 # Docker multi-stage build
 
 # 1. Building the App with Maven
-FROM maven:3-amazoncorretto-19 as build
+FROM maven:3-amazoncorretto-21 as build
 
 COPY ./medusa-ui /medusa-ui
 WORKDIR /medusa-ui
@@ -17,7 +17,7 @@ WORKDIR /showcase
 RUN mvn -B clean install -DskipTests=true
 
 # Just using the build artifact and then removing the build-container
-FROM amazoncorretto:19.0.0-alpine
+FROM amazoncorretto:21.0.1-alpine
 
 VOLUME /tmp
 
