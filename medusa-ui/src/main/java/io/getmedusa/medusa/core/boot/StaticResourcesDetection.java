@@ -45,7 +45,7 @@ public enum StaticResourcesDetection {
         Set<String> set = new HashSet<>();
 
         PathMatchingResourcePatternResolver resourcePatternResolver = new PathMatchingResourcePatternResolver(this.getClass().getClassLoader());
-        List<Resource> resources = new ArrayList<>(List.of(resourcePatternResolver.getResources("**")));
+        List<Resource> resources = new ArrayList<>(List.of(resourcePatternResolver.getResources("classpath*:/**/*.*")));
 
         for(String key : WEB_JAR_ASSET_LOCATOR.getAllWebJars().keySet()) {
             String version = WEB_JAR_ASSET_LOCATOR.getAllWebJars().get(key).getVersion();
