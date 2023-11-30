@@ -28,11 +28,12 @@
     <p>You'd end up with a project with a pom like such:</p>
     <pre><code class="language-xml hljs" th:text="${samplePom}"></code></pre>
     <h2>Add Medusa</h2>
-    <p>Next, add Medusa:</p>
+    <p>Next, add Medusa via an additional Maven dependency:</p>
+    <p>See <a href="https://central.sonatype.com/artifact/io.getmedusa/medusa-ui">Maven Central</a></p>
     <pre><code class="language-xml hljs">&lt;dependency&gt;
     &lt;groupId&gt;io.getmedusa&lt;/groupId&gt;
     &lt;artifactId&gt;medusa-ui&lt;/artifactId&gt;
-    &lt;version&gt;0.9.0&lt;/version&gt;
+    &lt;version&gt;0.9.5&lt;/version&gt;
 &lt;/dependency&gt;</code></pre>
     <p>And you're done. Your first step would be to create a Controller class and relevant page. Look at our samples in the showcase for ideas on where to start.</p>
     <h2>Consider Hydra</h2>
