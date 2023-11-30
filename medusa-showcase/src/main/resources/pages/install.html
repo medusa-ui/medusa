@@ -21,13 +21,22 @@
 <m:fragment ref="darkmode"></m:fragment>
 
 <section id="container">
+    <h1>Greenfield setup</h1>
+    <a id="back-to-overview" href="/">Back to overview</a>
+    <p>The easiest way to start a Medusa instance is from scratch. If you have that luxury, you can just use our <a href="https://github.com/medusa-ui/medusa-template">quickstart template</a>. This is a very lightweight, minimal setup. </p>
+    <p>It contains two controllers. A simple hello world controller, and a fragment controller. The hello world shows a page with a counter that initializes at 0 and can increase with a button press.</p>
+    <p>It also embeds a fragment. The fragment shows the current time. The fragment's controller initializes with the current time, and has scheduling enabled to showcase bi-directionality.</p>
+    <p>A scheduled job, running every second, pushes a new date to you if you're on the hello-world page.</p>
+    <p>Using this template, you can get up and running instantly.</p>
+    
     <h1>Getting started</h1>
     <a id="back-to-overview" href="/">Back to overview</a>
+    <p>Assuming you do not have a greenfield project but an existing one, look to the steps below to add medusa.</p>
     <h2>Standard Reactive Spring Setup</h2>
     <p>Installation of a Medusa-based app is very easy. Simply set up a maven project with Reactive Spring from <a target="_blank" href="https://start.spring.io/#!type=maven-project&language=java&platformVersion=3.2.0&packaging=jar&jvmVersion=21&groupId=com.example&artifactId=demo&name=demo&description=Demo%20project%20for%20Spring%20Boot&packageName=com.example.demo&dependencies=webflux,thymeleaf">start.spring.io</a></p>
-    <p>You'd end up with a JDK21 project with a pom containing <i>spring-boot-starter-thymeleaf</i> and <i>spring-boot-starter-webflux</i></p>
-    <h2>Add Medusa</h2>
-    <p>Next, add Medusa via an additional Maven dependency:</p>
+    <p>You'd need a JDK21 project with a pom containing <i>spring-boot-starter-thymeleaf</i> and <i>spring-boot-starter-webflux</i></p>
+    <h2>Next, add Medusa</h2>
+    <p>Add Medusa via an additional Maven dependency:</p>
     <p>See <a href="https://central.sonatype.com/artifact/io.getmedusa/medusa-ui">Maven Central</a></p>
     <pre><code class="language-xml hljs">&lt;dependency&gt;
     &lt;groupId&gt;io.getmedusa&lt;/groupId&gt;
