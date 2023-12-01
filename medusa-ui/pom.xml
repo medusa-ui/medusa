@@ -175,7 +175,7 @@
 				<!-- run with mvn rewrite:run -->
 				<groupId>org.openrewrite.maven</groupId>
 				<artifactId>rewrite-maven-plugin</artifactId>
-				<version>5.14.0</version>
+				<version>5.14.1</version>
 				<configuration>
 					<activeRecipes>
 						<recipe>org.openrewrite.java.cleanup.CommonStaticAnalysis</recipe>
