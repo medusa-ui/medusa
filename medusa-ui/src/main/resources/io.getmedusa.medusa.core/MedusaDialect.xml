@@ -1,0 +1,29 @@
+<!--
+Medusa dialect.
+This enables autocompletion in HTML-files when used with IntelliJ
+-->
+<dialect xmlns="http://www.thymeleaf.org/extras/dialect"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://www.thymeleaf.org/extras/dialect
+	                    http://www.thymeleaf.org/xsd/thymeleaf-extras-dialect-3.0.xsd"
+         prefix="m"
+         namespace-strict="false"
+         namespace-uri="https://www.getmedusa.io"
+         class="io.getmedusa.medusa.core.tags.MedusaDialect">
+
+    <attribute-processor name="click"         class="io.getmedusa.medusa.core.tags.action.MedusaOnClick"/>
+    <attribute-processor name="change"        class="io.getmedusa.medusa.core.tags.action.MedusaOnChange"/>
+    <attribute-processor name="enter"         class="io.getmedusa.medusa.core.tags.action.MedusaOnEnter"/>
+    <attribute-processor name="keyup"         class="io.getmedusa.medusa.core.tags.action.MedusaOnKeyUp"/>
+    <attribute-processor name="click"         class="io.getmedusa.medusa.core.tags.action.MedusaOnSelect"/>
+    <attribute-processor name="select"        class="io.getmedusa.medusa.core.tags.action.MedusaOnSelect"/>
+    <attribute-processor name="upload"        class="io.getmedusa.medusa.core.tags.action.MedusaUpload"/>
+    <attribute-processor name="validate"      class="io.getmedusa.medusa.core.tags.action.MedusaValidate"/>
+    <attribute-processor name="ref"           class="io.getmedusa.medusa.core.tags.attribute.MedusaRefAttribute"/>
+    <attribute-processor name="loading-until" class="io.getmedusa.medusa.core.tags.attribute.MedusaLoadingAttribute"/>
+    <attribute-processor name="loading-style" class="io.getmedusa.medusa.core.tags.attribute.MedusaLoadingAttribute">
+        <restrictions values="top full bottom"/> <!-- does not work -->
+    </attribute-processor>
+
+    <element-processor name="fragment" class="io.getmedusa.medusa.core.tags.attribute.MedusaFragmentAttribute" />
+</dialect>
