@@ -9,14 +9,14 @@
   },
   "license": "MIT",
   "dependencies": {
-    "@braintree/sanitize-url": "^6.0.4",
+    "@braintree/sanitize-url": "^7.0.0",
     "rsocket-composite-metadata": "^1.0.0-alpha.3",
     "rsocket-core": "^1.0.0-alpha.3",
     "rsocket-flowable": "^0.0.27",
     "rsocket-types": "^0.0.27",
     "rsocket-websocket-client": "^1.0.0-alpha.3",
     "uglifyify": "^5.0.2",
-    "ws": "^8.13.0",
+    "ws": "^8.14.2",
     "xregexp": "^5.1.1"
   }
 }

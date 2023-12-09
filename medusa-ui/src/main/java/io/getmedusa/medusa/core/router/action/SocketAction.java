@@ -1,5 +1,7 @@
 package io.getmedusa.medusa.core.router.action;
 
+import io.getmedusa.medusa.core.tags.meta.JSEventAttributeProcessor;
+
 import java.util.Map;
 
 //incoming browser change
@@ -11,6 +13,9 @@ public class SocketAction {
     private Map<String, Object> metadata;
 
     public String getFragment() {
+        if(JSEventAttributeProcessor.FRAGMENT.equals(fragment)) {
+            return null;
+        }
         return fragment;
     }
 

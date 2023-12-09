@@ -16,7 +16,8 @@ public abstract class JSEventAttributeProcessor extends AbstractAttributeTagProc
     //`search('${document.querySelector("input").value}')`
     private final SpelExpressionParser spelExpressionParser = new SpelExpressionParser();
 
-    public static final String FRAGMENT_REPLACEMENT = "'__FRAGMENT__'";
+    public static final String FRAGMENT = "__FRAGMENT__";
+    public static final String FRAGMENT_REPLACEMENT = "'" + FRAGMENT + "'";
     public static final String QUERY_SELECTOR_PREFIX = ":"; // avoid collisions with existing Thymeleaf Standard Expression Syntax
     public static final String VARIABLE_PREFIX = "\\$"; // Thymeleaf Standard Expression Syntax for Variable
     private static final String BASIC_EXPRESSION = "\\{(.*?)}";
