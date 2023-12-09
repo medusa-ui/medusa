@@ -67,6 +67,8 @@ public enum FragmentDetection {
                 fragment.setService(orSelfAsDefault(refElement.attributes().get("service")));
                 fragment.setRef(refElement.attributes().get("ref"));
                 fragment.setId("$#FRGM-" + RandomUtils.generateId());
+                fragment.setImports(toList(refElement.attributes().get("imports")));
+                fragment.setExports(toList(refElement.attributes().get("exports")));
 
                 detectedFragments.put(fragment.getId(), fragment);
                 if(null != bean) {
@@ -85,6 +87,19 @@ public enum FragmentDetection {
             return prepFile(bean, outerHtml.replace(refElement.outerHtml(), fragment.getId()));
         }
         return html;
+    }
+
+    private List<String> toList(String importOrExport) {
+        if(null == importOrExport || importOrExport.isEmpty()) {
+            return new ArrayList<>();
+        } else {
+            String[] elements = importOrExport.split(",");
+            List<String> list = new ArrayList<>();
+            for(String elem : elements) {
+                list.add(elem.trim());
+            }
+            return list;
+        }
     }
 
     public Map<String, List<String>> getRootFragmentsUsed() {
@@ -133,6 +148,8 @@ public enum FragmentDetection {
             final Fragment clonedFragment = fragment.clone();
             clonedFragment.setService(service);
             clonedFragment.setRef(SpELUtils.parseExpression(fragment.getRef(), session));
+            clonedFragment.setImports(fragment.getImports());
+            clonedFragment.setExports(fragment.getExports());
             newFragments.add(clonedFragment);
         }
         return newFragments;

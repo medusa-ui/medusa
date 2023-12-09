@@ -87,6 +87,13 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
+			<groupId>io.github.bonigarcia</groupId>
+			<artifactId>webdrivermanager</artifactId>
+			<version>5.5.3</version>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
 			<groupId>org.seleniumhq.selenium</groupId>
 			<artifactId>selenium-http-jdk-client</artifactId>
 			<version>4.13.0</version>

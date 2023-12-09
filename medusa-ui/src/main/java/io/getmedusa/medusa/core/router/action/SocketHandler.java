@@ -83,7 +83,6 @@ public class SocketHandler {
                         final String oldHTML = s.getLastRenderedHTML();
                         final String newHtml = FluxUtils.dataBufferToString(buffer);
                         s.setLastRenderedHTML(newHtml);
-//                        System.out.println("newHTML: " + newHtml);
                         sessionMemoryRepository.store(s);
 
                         //run diff engine old HTML vs new

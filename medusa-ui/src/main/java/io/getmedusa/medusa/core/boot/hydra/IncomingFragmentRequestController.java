@@ -20,10 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 
 @RestController
 @ConditionalOnProperty(name = "medusa.hydra.uri")
@@ -41,23 +38,42 @@ public class IncomingFragmentRequestController {
         this.publicKey = publicKey;
     }
 
+    //this is on the receiving side; see HydraConnectionController#askHydraForFragment for logic on the requester side
     @PostMapping("/h/fragment/{publicKey}/requestFragment")
     public Mono<List<RenderedFragment>> requestFragmentRender(@RequestBody FragmentRequestWrapper fragmentRequestWrapper,
                                                               @PathVariable String publicKey,
                                                               ServerHttpResponse response) {
         Flux<RenderedFragment> flux = Flux.empty();
         if(this.publicKey.equals(publicKey)) {
-            for (Fragment request : fragmentRequestWrapper.getRequests()) {
+            for (final Fragment request : fragmentRequestWrapper.getRequests()) {
                 final String rawHTML = RefDetection.INSTANCE.findRef(request.getRef());
 
                 //not just the attributes from the origin, but also from the fragment's controller ...
                 final Mono<List<Attribute>> localAttributes = RefDetection.INSTANCE.findBeanByRef(request.getRef()).setupAttributes(null, null);
 
-                final Mono<Map<String, Object>> attributeMerge = localAttributes.map(a -> {
-                    final Map<String, Object> attributes = new HashMap<>(fragmentRequestWrapper.getAttributes());
-                    a.forEach(attribute -> attributes.putIfAbsent(attribute.name(), attribute.value()));
-                    return attributes;
-                });
+                final Mono<Map<String, Object>> attributeMerge = localAttributes
+                        .map(a -> {
+                            final Map<String, Object> attributes = new HashMap<>();
+                            for(Attribute localAttribute : a) {
+                                attributes.put(localAttribute.name(), localAttribute.value());
+                            }
+
+                            for(String i : request.getImports()) {
+                                String alias = i;
+                                String key = i;
+                                if(i.contains(" as ")) {
+                                    String[] splitI = i.split(" as ");
+                                    key = splitI[0];
+                                    alias = splitI[1];
+                                }
+                                final Object o = fragmentRequestWrapper.getAttributes().getOrDefault(key, null);
+                                if(o != null) {
+                                    attributes.put(alias, o);
+                                }
+                            }
+
+                            return attributes;
+                        });
 
                 final Flux<DataBuffer> bufferFlux = attributeMerge.flatMapMany(merged -> {
                     return renderer.renderFragment(rawHTML, merged, Locale.US); //TODO locale

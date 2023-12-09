@@ -117,7 +117,7 @@ public class Renderer {
 
     private static String getFragmentController(Fragment localFragment) {
         final UIEventPageCallWrapper beanByRef = RefDetection.INSTANCE.findBeanByRef(localFragment.getRef());
-        if(beanByRef != null) {
+        if(null != beanByRef && null != beanByRef.getController()) {
             return beanByRef.getController().getClass().getName();
         }
         return null;
