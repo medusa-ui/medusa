@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:m="http://www.getmedusa.io">
+<head>
+    <meta charset="UTF-8" />
+    <title>Import fragment</title>
+</head>
+<body>
+<section>
+
+    <p>Fragment value outside of fragment: <span th:text="${rootValue}">Some numerical value goes here</span>.</p>
+
+    <p>Fragment begins here:</p>
+
+    <m:fragment service="self" ref="import-ref-fragment" imports="rootValue, rootValue as innerValue">
+        <p style="color:red;">Fragment could not be loaded!</p>
+    </m:fragment>
+
+</section>
+</body>
+</html>

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.getmedusa.medusa.core.annotation.UIEventPageCallWrapper;
 import io.getmedusa.medusa.core.attributes.Attribute;
 import io.getmedusa.medusa.core.attributes.StandardAttributeKeys;
+import io.getmedusa.medusa.core.boot.Fragment;
 import io.getmedusa.medusa.core.boot.RefDetection;
 import io.getmedusa.medusa.core.router.action.FileUploadMeta;
 import io.getmedusa.medusa.core.router.action.SocketSink;
@@ -81,7 +82,7 @@ public class Session {
     }
 
     public void setLastRenderedHTML(String lastRenderedHTML) {
-        if(!lastRenderedHTML.isBlank()) {
+        if(lastRenderedHTML == null || !lastRenderedHTML.isBlank()) {
             this.lastRenderedHTML = lastRenderedHTML;
         }
     }
@@ -243,5 +244,53 @@ public class Session {
 
     public List<String> getFragments() {
         return fragments;
+    }
+
+    public Session isolateImports(Fragment fragment) {
+        Session newSession = this.cloneSession();
+        List<Attribute> newAttributes = new ArrayList<>();
+
+        if(fragment != null) {
+            for(String importRef : fragment.getImports()) {
+                String key = importRef;
+                String alias = importRef;
+
+                if(alias.contains(" as ")) {
+                    String[] splitI = alias.split(" as ");
+                    key = splitI[0];
+                    alias = splitI[1];
+                }
+
+                final String searchKey = key;
+                final String attrAlias = alias;
+
+                Optional<Attribute> attribute = getLastParameters().stream()
+                        .filter(a -> searchKey.equals(a.name()))
+                        .findFirst();
+                attribute.ifPresent(a -> newAttributes.add(new Attribute(attrAlias, a.value())));
+            }
+        }
+
+        newSession.setLastParameters(newAttributes);
+        return newSession;
+    }
+
+    private Session cloneSession() {
+        Session session = new Session();
+
+        session.setLastUsedTemplate(getLastUsedTemplate());
+        session.setLastUsedHash(getLastUsedHash());
+        session.setLastRenderedHTML(getLastRenderedHTML());
+        session.setLastParameters(getLastParameters());
+        session.setTags(getTags());
+        session.setInitialRender(isInitialRender());
+        session.setLocale(getLocale());
+
+        return session;
+    }
+
+    public void cleanAndIsolateExports(Fragment fragment) {
+        //setLastParameters(new ArrayList<>(rootParameters));
+        //rootParameters = new ArrayList<>();
     }
 }
