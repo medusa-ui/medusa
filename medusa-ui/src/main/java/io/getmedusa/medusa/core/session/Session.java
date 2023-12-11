@@ -190,6 +190,7 @@ public class Session {
         List<Attribute> passThrough = this.lastParameters.stream()
                 .filter(p -> StandardAttributeKeys.findAllPassThroughKeys().contains(p.name()))
                 .toList();
+        lastParameters = new ArrayList<>(lastParameters);
         lastParameters.removeAll(passThrough);
         return passThrough;
     }
