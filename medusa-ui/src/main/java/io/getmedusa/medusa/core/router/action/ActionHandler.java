@@ -43,11 +43,15 @@ public class ActionHandler {
         //find controller from cache
         Object bean = route.getController();
 
+        Session subSession = session.findSubSession(socketAction.getFragment());
+
         //execute action
-        final Mono<List<Attribute>> attributes = execute(session, socketAction, bean);
+        final Mono<List<Attribute>> attributes = execute(subSession, socketAction, bean);
 
         //merge attributes with attributes from session
-        return attributes.map(session::merge);
+        return attributes
+                .map(subSession::merge)
+                .map(x -> session);
     }
 
     private Mono<List<Attribute>> execute(Session session, SocketAction socketAction, Object bean) {

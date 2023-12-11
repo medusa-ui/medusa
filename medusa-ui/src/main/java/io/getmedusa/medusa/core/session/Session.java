@@ -33,6 +33,7 @@ public class Session {
     private Locale locale = Locale.US;
 
     private Map<String, FileUploadMeta> pendingFileUploads = new HashMap<>();
+    private Map<String, Session> subSessions = new HashMap<>();
 
     private int depth;
     @JsonIgnore
@@ -121,6 +122,11 @@ public class Session {
 
     public void setInitialRender(boolean initialRender) {
         this.initialRender = initialRender;
+        if(this.subSessions != null) {
+            for (Session s : this.subSessions.values()) {
+                s.initialRender = initialRender;
+            }
+        }
     }
 
     public boolean isInitialRender() {
@@ -132,6 +138,7 @@ public class Session {
         for(Attribute attribute : newAttributes) {
             map.put(attribute.name(), attribute.value());
         }
+
         this.lastParameters = new ArrayList<>();
         for(Map.Entry<String, Object> entry : map.entrySet()) {
             this.lastParameters.add(new Attribute(entry.getKey(), entry.getValue()));
@@ -247,8 +254,8 @@ public class Session {
     }
 
     public Session isolateImports(Fragment fragment) {
-        Session newSession = this.cloneSession();
-        List<Attribute> newAttributes = new ArrayList<>();
+        Session newSession = findSubSession(fragment.getRef());
+        Set<Attribute> newAttributes = new HashSet<>(newSession.lastParameters);
 
         if(fragment != null) {
             for(String importRef : fragment.getImports()) {
@@ -271,13 +278,12 @@ public class Session {
             }
         }
 
-        newSession.setLastParameters(newAttributes);
+        newSession.setLastParameters(new ArrayList<>(newAttributes));
         return newSession;
     }
 
     private Session cloneSession() {
         Session session = new Session();
-
         session.setLastUsedTemplate(getLastUsedTemplate());
         session.setLastUsedHash(getLastUsedHash());
         session.setLastRenderedHTML(getLastRenderedHTML());
@@ -292,5 +298,15 @@ public class Session {
     public void cleanAndIsolateExports(Fragment fragment) {
         //setLastParameters(new ArrayList<>(rootParameters));
         //rootParameters = new ArrayList<>();
+    }
+
+    public Session findSubSession(String fragment) {
+        if(fragment == null) {
+            return this;
+        }
+
+        final Session session = this.subSessions.getOrDefault(fragment, this.cloneSession());
+        this.subSessions.put(fragment, session);
+        return session;
     }
 }
