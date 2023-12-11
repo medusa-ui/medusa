@@ -7,8 +7,14 @@
 <body>
 
 <div m:ref="import-ref-fragment">
+    <section style="border: 1px solid red; margin: 1em;">
     <p>Fragment value inside of fragment: <span th:text="${rootValue}">Some numerical value goes here</span>.</p>
     <p>Fragment value inside of fragment (with alias): <span th:text="${innerValue}">Some numerical value goes here</span>.</p>
+
+        <span id="counter_value" th:text="${counter}"></span>
+
+        <button id="btn_update"  m:click="updateCounter(1)">Increase counter</button>
+    </section>
 </div>
 
 </body>
