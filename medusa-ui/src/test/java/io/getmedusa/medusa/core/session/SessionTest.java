@@ -56,9 +56,10 @@ class SessionTest {
     //this can be extended with explicit imports from root/exports to root via fragment
     @Test
     void testIsolationImports() {
-        final Session session = new Session();
+        Session session = new Session();
         session.setLastRenderedHTML("hello");
         session.setLastParameters(Attribute.$$("test", 123, "test2", 456));
+
         Assertions.assertEquals(2, session.getLastParameters().size(), "Expected to start w/ 2 items");
 
         final Session fragmentSessionNoFragment = session.isolateImports(null);
@@ -67,13 +68,12 @@ class SessionTest {
                 fragmentSessionNoFragment.getLastRenderedHTML(),
                 "Excepted data like lastRenderedHTML still to be present");
 
-        Assertions.assertEquals(0,
+        Assertions.assertEquals(2,
                 fragmentSessionNoFragment.getLastParameters().size(),
-                "With no imports, expected list to be empty");
-
-        session.cleanAndIsolateExports(null);
+                "With no fragment, expected list to be same as root session, so 2");
 
         Fragment fragment = new Fragment();
+        fragment.setRef("x");
         fragment.setImports(Arrays.asList("test", "test2 as newValue"));
 
         final Session fragmentSession = session.isolateImports(fragment);
@@ -87,7 +87,6 @@ class SessionTest {
         Assertions.assertEquals(2, session.getLastParameters().size(), "Expected to end w/ 2 items");
         Assertions.assertTrue(session.getLastParameters().stream().anyMatch(a -> "test".equals(a.name())), "Expected one of the attributes to be 'test'");
         Assertions.assertTrue(session.getLastParameters().stream().anyMatch(a -> "test2".equals(a.name())), "Expected one of the attributes to be 'test2'");
-
     }
 
     //session.cleanAndIsolateExports(fragment);

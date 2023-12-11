@@ -254,7 +254,7 @@ public class Session {
     }
 
     public Session isolateImports(Fragment fragment) {
-        Session newSession = findSubSession(fragment.getRef());
+        Session newSession = findSubSession((fragment != null) ? fragment.getRef() : null);
         Set<Attribute> newAttributes = new HashSet<>(newSession.lastParameters);
 
         if(fragment != null) {
@@ -274,6 +274,12 @@ public class Session {
                 Optional<Attribute> attribute = getLastParameters().stream()
                         .filter(a -> searchKey.equals(a.name()))
                         .findFirst();
+
+                if(!searchKey.equals(attrAlias)) {
+                    final Optional<Attribute> aliasedAttr = newAttributes.stream().filter(a -> a.name().equals(searchKey)).findFirst();
+                    aliasedAttr.ifPresent(newAttributes::remove);
+                }
+
                 attribute.ifPresent(a -> newAttributes.add(new Attribute(attrAlias, a.value())));
             }
         }
