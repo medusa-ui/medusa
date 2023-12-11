@@ -258,6 +258,9 @@ public class Session {
         Set<Attribute> newAttributes = new HashSet<>(newSession.lastParameters);
 
         if(fragment != null) {
+            final Set<String> keysToPotentiallyRemove = new HashSet<>();
+            final Set<String> keysOK = new HashSet<>();
+
             for(String importRef : fragment.getImports()) {
                 String key = importRef;
                 String alias = importRef;
@@ -276,11 +279,24 @@ public class Session {
                         .findFirst();
 
                 if(!searchKey.equals(attrAlias)) {
-                    final Optional<Attribute> aliasedAttr = newAttributes.stream().filter(a -> a.name().equals(searchKey)).findFirst();
-                    aliasedAttr.ifPresent(newAttributes::remove);
+                    keysToPotentiallyRemove.add(searchKey);
+                } else {
+                    keysOK.add(searchKey);
                 }
 
                 attribute.ifPresent(a -> newAttributes.add(new Attribute(attrAlias, a.value())));
+            }
+
+            //convoluted way, but in case of re-use of keys in import, only throw away if no re-use is found
+            //ie imports="rootValue, rootValue as innerValue"
+            //would otherwise mean rootValue is deemed NOK, because it's used as alias
+            //instead, it is ok because it's also used as a normal import
+            keysToPotentiallyRemove.removeAll(keysOK);
+            if(!keysToPotentiallyRemove.isEmpty()) {
+                for(String searchKey : keysToPotentiallyRemove) {
+                    final Optional<Attribute> aliasedAttr = newAttributes.stream().filter(a -> a.name().equals(searchKey)).findFirst();
+                    aliasedAttr.ifPresent(newAttributes::remove);
+                }
             }
         }
 
