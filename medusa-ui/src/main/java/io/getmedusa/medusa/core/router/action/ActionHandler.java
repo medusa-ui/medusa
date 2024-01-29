@@ -67,7 +67,7 @@ public class ActionHandler {
             StandardEvaluationContext evaluationContext = new StandardEvaluationContext();
             evaluationContext.addPropertyAccessor(new MapAccessor());
 
-            Class<Object> formClass = FormDetection.INSTANCE.getFormClass(clazz, methodName);
+            Class formClass = FormDetection.INSTANCE.getFormClass(clazz, methodName);
             if(formClass != null) {
                 evaluationContext.setTypeConverter(new PojoTypeConverter(formClass).getConverter());
             }
@@ -108,10 +108,14 @@ public class ActionHandler {
         if(null == result) {
             return Mono.just(new ArrayList<>());
         }
-        return ((Mono<List<Attribute>>) result).map(a -> {
-            a.stream().filter(b -> b.value() == null).forEach(c -> session.removeAttributeByName(c.name()));
-            return a.stream().filter(b -> b.value() != null).toList();
-        });
+        try {
+            return ((Mono<List<Attribute>>) result).map(a -> {
+                a.stream().filter(b -> b.value() == null).forEach(c -> session.removeAttributeByName(c.name()));
+                return a.stream().filter(b -> b.value() != null).toList();
+            });
+        } catch (ClassCastException e) {
+            return Mono.just(new ArrayList<>());
+        }
     }
 
     private static String handleArrayParsing(String expression) {

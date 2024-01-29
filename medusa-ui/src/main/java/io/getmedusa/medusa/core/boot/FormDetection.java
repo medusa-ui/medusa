@@ -14,7 +14,7 @@ public enum FormDetection {
 
     INSTANCE;
 
-    private final Map<String, Map<String, Class>> formObjects = new HashMap<>();
+    private final Map<String, Map<String, Class<?>>> formObjects = new HashMap<>();
 
     void prepFile(final String html, Object bean) {
         if (html.contains(":{form}")) {
@@ -22,17 +22,17 @@ public enum FormDetection {
             final Elements elemsContainingForm = document.getElementsByAttributeValueContaining("m:submit", ":{form}");
             for(Element element : elemsContainingForm) {
                 final ParsedOperation parsedOperation = parseOperation(element.attr("m:submit"));
-                Class formClass = findArgInMethod(parsedOperation, bean);
+                Class<?> formClass = findArgInMethod(parsedOperation, bean);
 
                 final String beanClass = bean.getClass().getName();
-                Map<String, Class> classMap = formObjects.getOrDefault(beanClass, new HashMap<>());
+                Map<String, Class<?>> classMap = formObjects.getOrDefault(beanClass, new HashMap<>());
                 classMap.put(parsedOperation.operation(), formClass);
                 formObjects.put(beanClass, classMap);
             }
         }
     }
 
-    private Class findArgInMethod(ParsedOperation parsedOperation, Object bean) {
+    private Class<?> findArgInMethod(ParsedOperation parsedOperation, Object bean) {
         for(Method method : bean.getClass().getMethods()) {
             if(method.getName().equals(parsedOperation.operation)) {
                 int indexCorrectionWithSession = 0;
@@ -60,7 +60,7 @@ public enum FormDetection {
         return new ParsedOperation(operation, formArg);
     }
 
-    public Class<Object> getFormClass(String clazz, String methodName) {
+    public Class getFormClass(String clazz, String methodName) {
         return formObjects.getOrDefault(clazz, new HashMap<>()).getOrDefault(methodName, null);
     }
 

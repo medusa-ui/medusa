@@ -36,13 +36,13 @@ class FormDetectionTest {
         Assertions.assertEquals(FormDetection.INSTANCE.getFormClass(SessionTestController.class.getName(), "displayName"), BigDecimal.class);
     }
 
-    private class TestController {
+    private static class TestController {
         public List<Attribute> displayName(Integer i, BigDecimal form, String s){
             return null;
         }
     }
 
-    private class SessionTestController {
+    private static class SessionTestController {
         public List<Attribute> displayName(Session session, Integer i, BigDecimal form, String s){
             return null;
         }
