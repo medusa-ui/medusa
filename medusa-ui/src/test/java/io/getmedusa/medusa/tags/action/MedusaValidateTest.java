@@ -20,7 +20,7 @@ class MedusaValidateTest extends MedusaTagTest {
 
     private final String basicTemplateHTML = """
             <!DOCTYPE html>
-            <html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:m="https://www.getmedusa.io/medusa.xsd">
+            <html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:m="http://www.getmedusa.io">
             <body>
                 <form m:submit="doNoValidationForm(:{form})" class="wrapper">
                     <h1>No validation check</h1>
@@ -36,7 +36,7 @@ class MedusaValidateTest extends MedusaTagTest {
 
     private final String withClassesHTML = """
             <!DOCTYPE html>
-            <html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:m="https://www.getmedusa.io/medusa.xsd">
+            <html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:m="http://www.getmedusa.io">
             <body>
                 <form m:submit="doNoValidationForm(:{form})" class="wrapper">
                     <h1>No validation check</h1>

@@ -22,7 +22,7 @@ class MedusaOnClickTest extends MedusaTagTest {
 
     private final String basicTemplateHTML = """
             <!DOCTYPE html>
-            <html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:m="https://www.getmedusa.io/medusa.xsd">
+            <html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:m="http://www.getmedusa.io">
             <body>
                 <p>Value: <span th:text="${counter}"></span></p>
                 <button m:click="increment()">increment</button>
@@ -32,7 +32,7 @@ class MedusaOnClickTest extends MedusaTagTest {
 
     private final String parameterTemplateHTML = """
             <!DOCTYPE html>
-            <html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:m="https://www.getmedusa.io/medusa.xsd">
+            <html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:m="http://www.getmedusa.io">
             <body>
                 <p>Value: <span th:text="${counter}"></span></p>
                 <button m:click="increment(2,'some text')">increment</button>
@@ -42,7 +42,7 @@ class MedusaOnClickTest extends MedusaTagTest {
 
     private final String attributeTemplateHTML = """
             <!DOCTYPE html>
-            <html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:m="https://www.getmedusa.io/medusa.xsd">
+            <html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:m="http://www.getmedusa.io">
             <body>
                 <p>Value: <span th:text="${counter}"></span></p>
                 <button m:click="action(${one},${two})">do it</button>
@@ -52,7 +52,7 @@ class MedusaOnClickTest extends MedusaTagTest {
 
     private final String elementValueTemplateHTML = """
             <!DOCTYPE html>
-            <html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:m="https://www.getmedusa.io/medusa.xsd">
+            <html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:m="http://www.getmedusa.io">
             <body>
                 <span id="elm_1">42</span>
                 <input id="elm_2" value="some text">
@@ -63,7 +63,7 @@ class MedusaOnClickTest extends MedusaTagTest {
 
     private final String complexTemplateHTML = """
             <!DOCTYPE html>
-            <html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:m="https://www.getmedusa.io/medusa.xsd">
+            <html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:m="http://www.getmedusa.io">
             <body>
                 <span id="elm_1">42</span>
                 <input id="elm_2" value="some text">

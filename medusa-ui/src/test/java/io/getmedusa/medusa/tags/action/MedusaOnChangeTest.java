@@ -8,7 +8,7 @@ public class MedusaOnChangeTest extends MedusaTagTest {
 
     private final String basicTemplateHTML = """
             <!DOCTYPE html>
-            <html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:m="https://www.getmedusa.io/medusa.xsd">
+            <html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:m="http://www.getmedusa.io">
             <body>
                 <div><input id="cnt" m:change="action(:{#cnt})" value="42"></div>
             </body>
@@ -17,7 +17,7 @@ public class MedusaOnChangeTest extends MedusaTagTest {
 
     private final String selectTemplateHTML = """
             <!DOCTYPE html>
-            <html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:m="https://www.getmedusa.io/medusa.xsd">
+            <html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:m="http://www.getmedusa.io">
             <body>
                 <div>
                     <select name="search" id="search-select" m:change="search(:{#search-select})">
@@ -31,7 +31,7 @@ public class MedusaOnChangeTest extends MedusaTagTest {
 
     private final String thisTemplateHTML = """
             <!DOCTYPE html>
-            <html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:m="https://www.getmedusa.io/medusa.xsd">
+            <html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:m="http://www.getmedusa.io">
             <body>
                 <div><input m:change="action(:{this.value})" value="42"></div>
             </body>

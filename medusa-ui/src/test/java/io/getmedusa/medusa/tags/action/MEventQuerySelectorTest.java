@@ -8,7 +8,7 @@ class MEventQuerySelectorTest extends MedusaTagTest {
 
     private final String thisTemplateHTML = """
             <!DOCTYPE html>
-            <html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:m="https://www.getmedusa.io/medusa.xsd">
+            <html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:m="http://www.getmedusa.io">
             <body>
                 <div><input m:change="action(:{this})"></div>
             </body>
@@ -17,7 +17,7 @@ class MEventQuerySelectorTest extends MedusaTagTest {
 
     private final String thisValueTemplateHTML = """
             <!DOCTYPE html>
-            <html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:m="https://www.getmedusa.io/medusa.xsd">
+            <html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:m="http://www.getmedusa.io">
             <body>
                 <div><input m:change="action(:{this.value})"></div>
             </body>
@@ -26,7 +26,7 @@ class MEventQuerySelectorTest extends MedusaTagTest {
 
     private final String thisAttributeTemplateHTML = """
             <!DOCTYPE html>
-            <html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:m="https://www.getmedusa.io/medusa.xsd">
+            <html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:m="http://www.getmedusa.io">
             <body>
                 <div><input type="text" m:change="action(:{this.type})"></div>
             </body>
@@ -35,7 +35,7 @@ class MEventQuerySelectorTest extends MedusaTagTest {
 
     private final String elementIDTemplateHTML = """
             <!DOCTYPE html>
-            <html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:m="https://www.getmedusa.io/medusa.xsd">
+            <html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:m="http://www.getmedusa.io">
             <body>
                 <div><input id="my-id"></div>
                 <div><button m:click="action(:{form}, :{#my-id})">click me</button></div>
@@ -45,7 +45,7 @@ class MEventQuerySelectorTest extends MedusaTagTest {
 
     private final String elementIDValueTemplateHTML = """
             <!DOCTYPE html>
-            <html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:m="https://www.getmedusa.io/medusa.xsd">
+            <html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:m="http://www.getmedusa.io">
             <body>
                 <div><input id="my-id"></div>
                 <div><button m:click="action(:{#my-id.value})">click me</button></div>
@@ -55,7 +55,7 @@ class MEventQuerySelectorTest extends MedusaTagTest {
 
     private final String elementIDAttributeTemplateHTML = """
             <!DOCTYPE html>
-            <html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:m="https://www.getmedusa.io/medusa.xsd">
+            <html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:m="http://www.getmedusa.io">
             <body>
                 <div><input type="text" id="my-id"></div>
                 <div><button m:click="action(:{#my-id}, :{#my-id.type})">click me</button></div>
@@ -65,7 +65,7 @@ class MEventQuerySelectorTest extends MedusaTagTest {
 
     private final String classTemplateHTML = """
             <!DOCTYPE html>
-            <html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:m="https://www.getmedusa.io/medusa.xsd">
+            <html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:m="http://www.getmedusa.io">
             <body>
                 <div><input class="my-class"></div>
                 <div><button m:click="action(:{.my-class})">click me</button></div>
@@ -75,7 +75,7 @@ class MEventQuerySelectorTest extends MedusaTagTest {
 
     private final String classValueTemplateHTML = """
             <!DOCTYPE html>
-            <html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:m="https://www.getmedusa.io/medusa.xsd">
+            <html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:m="http://www.getmedusa.io">
             <body>
                 <div><input class="my-class"></div>
                 <div><button m:click="action(:{.my-class.value})">click me</button></div>
@@ -84,7 +84,7 @@ class MEventQuerySelectorTest extends MedusaTagTest {
             """;
     private final String classAttributeTemplateHTML = """
             <!DOCTYPE html>
-            <html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:m="https://www.getmedusa.io/medusa.xsd">
+            <html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:m="http://www.getmedusa.io">
             <body>
                 <div><input type="text" class="my-class"></div>
                 <div><button m:click="action(:{.my-class},:{.my-class.type})">click me</button></div>
@@ -93,7 +93,7 @@ class MEventQuerySelectorTest extends MedusaTagTest {
             """;
     private final String multiClassTemplateHTML = """
             <!DOCTYPE html>
-            <html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:m="https://www.getmedusa.io/medusa.xsd">
+            <html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:m="http://www.getmedusa.io">
             <body>
                 <div><input type="text" class="my-class my-sub-class"></div>
                 <div><button m:click="action(:{.my-class.my-sub-class})">click me</button></div>
@@ -102,7 +102,7 @@ class MEventQuerySelectorTest extends MedusaTagTest {
             """;
     private final String multiClassAttributeTemplateHTML = """
             <!DOCTYPE html>
-            <html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:m="https://www.getmedusa.io/medusa.xsd">
+            <html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:m="http://www.getmedusa.io">
             <body>
                 <div><input type="text" class="my-class my-sub-class"></div>
                 <div><button m:click="action(:{.my-class.my-sub-class.type})">click me</button></div>
