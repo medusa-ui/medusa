@@ -9,17 +9,17 @@
 
     <attribute-processor name="click"         class="io.getmedusa.medusa.core.tags.action.MedusaOnClick"/>
     <attribute-processor name="change"        class="io.getmedusa.medusa.core.tags.action.MedusaOnChange"/>
+    <attribute-processor name="controller"    class="io.getmedusa.medusa.core.tags.attribute.MedusaControllerAttribute"/>
     <attribute-processor name="enter"         class="io.getmedusa.medusa.core.tags.action.MedusaOnEnter"/>
     <attribute-processor name="keyup"         class="io.getmedusa.medusa.core.tags.action.MedusaOnKeyUp"/>
-    <attribute-processor name="click"         class="io.getmedusa.medusa.core.tags.action.MedusaOnSelect"/>
-    <attribute-processor name="select"        class="io.getmedusa.medusa.core.tags.action.MedusaOnSelect"/>
-    <attribute-processor name="upload"        class="io.getmedusa.medusa.core.tags.action.MedusaUpload"/>
-    <attribute-processor name="validate"      class="io.getmedusa.medusa.core.tags.action.MedusaValidate"/>
-    <attribute-processor name="ref"           class="io.getmedusa.medusa.core.tags.attribute.MedusaRefAttribute"/>
     <attribute-processor name="loading-until" class="io.getmedusa.medusa.core.tags.attribute.MedusaLoadingAttribute"/>
     <attribute-processor name="loading-style" class="io.getmedusa.medusa.core.tags.attribute.MedusaLoadingAttribute">
         <restrictions values="top full bottom"/> <!-- does not work -->
     </attribute-processor>
+    <attribute-processor name="ref"           class="io.getmedusa.medusa.core.tags.attribute.MedusaRefAttribute"/>
+    <attribute-processor name="select"        class="io.getmedusa.medusa.core.tags.action.MedusaOnSelect"/>
+    <attribute-processor name="upload"        class="io.getmedusa.medusa.core.tags.action.MedusaUpload"/>
+    <attribute-processor name="validate"      class="io.getmedusa.medusa.core.tags.action.MedusaValidate"/>
 
     <element-processor name="fragment" class="io.getmedusa.medusa.core.tags.attribute.MedusaFragmentAttribute" />
 </dialect>
