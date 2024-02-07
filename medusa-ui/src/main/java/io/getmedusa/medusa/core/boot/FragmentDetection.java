@@ -138,6 +138,11 @@ public enum FragmentDetection {
         return newFragments;
     }
 
+    public List<Fragment> handleFragmentResolution(List<Fragment> fragments) {
+        Session session = Session.getCurrentSession();
+        return resolveFragments(fragments, session);
+    }
+
     public void clear() {
         detectedFragments.clear();
     }
