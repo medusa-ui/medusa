@@ -171,17 +171,6 @@
 					<target>${java.version}</target>
 				</configuration>
 			</plugin>
-			<plugin>
-				<!-- run with mvn rewrite:run -->
-				<groupId>org.openrewrite.maven</groupId>
-				<artifactId>rewrite-maven-plugin</artifactId>
-				<version>5.22.0</version>
-				<configuration>
-					<activeRecipes>
-						<recipe>org.openrewrite.java.cleanup.CommonStaticAnalysis</recipe>
-					</activeRecipes>
-				</configuration>
-			</plugin>
 		</plugins>
 	</build>
 
