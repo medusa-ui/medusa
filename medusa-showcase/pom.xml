@@ -16,6 +16,12 @@
 	<properties>
 		<java.version>19</java.version>
 		<selenide.version>7.2.0</selenide.version>
+		<webdrivermanager.version>5.7.0</webdrivermanager.version>
+		<selenium-java.version>4.18.1</selenium-java.version>
+		<selenium-http-jdk-client.version>4.13.0</selenium-http-jdk-client.version>
+		<sentry-spring-boot-starter-jakarta.version>7.4.0</sentry-spring-boot-starter-jakarta.version>
+		<webjars-locator.version>0.50</webjars-locator.version>
+		<highlightjs.version>11.5.0</highlightjs.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -27,12 +33,12 @@
 		<dependency>
 			<groupId>org.webjars</groupId>
 			<artifactId>highlightjs</artifactId>
-			<version>11.5.0</version>
+			<version>${highlightjs.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.webjars</groupId>
 			<artifactId>webjars-locator</artifactId>
-			<version>0.50</version>
+			<version>${webjars-locator.version}</version>
 		</dependency>
 
 		<dependency>
@@ -50,7 +56,7 @@
 		<dependency>
 			<groupId>io.sentry</groupId>
 			<artifactId>sentry-spring-boot-starter-jakarta</artifactId>
-			<version>7.4.0</version>
+			<version>${sentry-spring-boot-starter-jakarta.version}</version>
 		</dependency>
 
 		<!-- integration testing -->
@@ -70,26 +76,20 @@
 		<dependency>
 			<groupId>io.github.bonigarcia</groupId>
 			<artifactId>webdrivermanager</artifactId>
-			<version>5.7.0</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.httpcomponents.client5</groupId>
-			<artifactId>httpclient5</artifactId>
-			<version>5.3.1</version>
+			<version>${webdrivermanager.version}</version>
 			<scope>test</scope>
 		</dependency>
 
 		<dependency>
 			<groupId>org.seleniumhq.selenium</groupId>
 			<artifactId>selenium-java</artifactId>
-			<version>4.18.1</version>
+			<version>${selenium-java.version}</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.seleniumhq.selenium</groupId>
 			<artifactId>selenium-http-jdk-client</artifactId>
-			<version>4.13.0</version>
+			<version>${selenium-http-jdk-client.version}</version>
 			<scope>test</scope>
 		</dependency>
 

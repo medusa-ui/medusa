@@ -25,6 +25,12 @@
 	<properties>
 		<java.version>19</java.version>
 		<diff-engine.version>0.0.6</diff-engine.version>
+		<blockhound.version>1.0.8.RELEASE</blockhound.version>
+		<jakarta.validation-api.version>3.0.2</jakarta.validation-api.version>
+		<webjars-locator.version>0.50</webjars-locator.version>
+		<commons-text.version>1.11.0</commons-text.version>
+		<java-jwt-auth0.version>4.4.0</java-jwt-auth0.version>
+		<caffeine.version>3.1.8</caffeine.version>
 	</properties>
 
 	<dependencies>
@@ -32,7 +38,7 @@
 		<dependency>
 			<groupId>io.projectreactor.tools</groupId>
 			<artifactId>blockhound</artifactId>
-			<version>1.0.8.RELEASE</version>
+			<version>${blockhound.version}</version>
 			<scope>provided</scope>
 		</dependency>
 
@@ -44,13 +50,13 @@
 		<dependency>
 			<groupId>jakarta.validation</groupId>
 			<artifactId>jakarta.validation-api</artifactId>
-			<version>3.0.2</version>
+			<version>${jakarta.validation-api.version}</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.webjars</groupId>
 			<artifactId>webjars-locator</artifactId>
-			<version>0.50</version>
+			<version>${webjars-locator.version}</version>
 			<exclusions>
 				<exclusion>
 					<artifactId>commons-text</artifactId>
@@ -61,7 +67,7 @@
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-text</artifactId>
-			<version>1.11.0</version>
+			<version>${commons-text.version}</version>
 		</dependency>
 
 
@@ -93,7 +99,7 @@
 		<dependency>
 			<groupId>com.auth0</groupId>
 			<artifactId>java-jwt</artifactId>
-			<version>4.4.0</version>
+			<version>${java-jwt-auth0.version}</version>
 			<exclusions>
 				<exclusion>
 					<artifactId>jackson-databind</artifactId>
@@ -111,7 +117,7 @@
 		<dependency>
 			<groupId>com.github.ben-manes.caffeine</groupId>
 			<artifactId>caffeine</artifactId>
-			<version>3.1.8</version>
+			<version>${caffeine.version}</version>
 		</dependency>
 
 		<dependency>
