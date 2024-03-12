@@ -10,8 +10,8 @@ import sample.getmedusa.showcase.core.Versions;
 @SpringBootApplication
 public class Application {
 
-	@Value("${medusa.version}")
-	private String medusaVersion;
+	@Value("${java.version:21}") String javaVersion;
+	@Value("${medusa.version:0.9.5}") String medusaVersion;
 
 	public static void main(String[] args) {
 		SpringApplication.run(Application.class, args);
@@ -19,7 +19,7 @@ public class Application {
 
 	@EventListener(ApplicationReadyEvent.class)
 	void setVersions() {
-		Versions.V_JDK = System.getProperty("java.version");
+		Versions.V_JDK = javaVersion;
 		Versions.V_MEDUSA_UI = medusaVersion;
 	}
 
