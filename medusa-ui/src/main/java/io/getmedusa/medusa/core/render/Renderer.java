@@ -38,7 +38,7 @@ import static org.springframework.http.MediaType.TEXT_HTML;
 @Component
 public class Renderer {
 
-    public static final String CDATA_START = "//<![CDATA[ ";
+    public static final String CDATA_START = "//<![CDATA[";
     public static final String CDATA_END = "//]]>";
     protected static final String END_OF_BODY = "</body>";
 
