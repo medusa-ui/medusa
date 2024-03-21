@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.getmedusa.medusa.core.annotation.UIEventPageCallWrapper;
 import io.getmedusa.medusa.core.attributes.Attribute;
 import io.getmedusa.medusa.core.attributes.StandardAttributeKeys;
+import io.getmedusa.medusa.core.boot.Fragment;
 import io.getmedusa.medusa.core.boot.RefDetection;
 import io.getmedusa.medusa.core.router.action.FileUploadMeta;
 import io.getmedusa.medusa.core.router.action.SocketSink;
@@ -32,6 +33,7 @@ public class Session {
     private Locale locale = Locale.US;
 
     private Map<String, FileUploadMeta> pendingFileUploads = new HashMap<>();
+    private Map<String, Session> subSessions = new HashMap<>();
 
     private int depth;
     @JsonIgnore
@@ -81,7 +83,7 @@ public class Session {
     }
 
     public void setLastRenderedHTML(String lastRenderedHTML) {
-        if(!lastRenderedHTML.isBlank()) {
+        if(lastRenderedHTML == null || !lastRenderedHTML.isBlank()) {
             this.lastRenderedHTML = lastRenderedHTML;
         }
     }
@@ -120,6 +122,11 @@ public class Session {
 
     public void setInitialRender(boolean initialRender) {
         this.initialRender = initialRender;
+        if(this.subSessions != null) {
+            for (Session s : this.subSessions.values()) {
+                s.initialRender = initialRender;
+            }
+        }
     }
 
     public boolean isInitialRender() {
@@ -131,6 +138,7 @@ public class Session {
         for(Attribute attribute : newAttributes) {
             map.put(attribute.name(), attribute.value());
         }
+
         this.lastParameters = new ArrayList<>();
         for(Map.Entry<String, Object> entry : map.entrySet()) {
             this.lastParameters.add(new Attribute(entry.getKey(), entry.getValue()));
@@ -182,6 +190,7 @@ public class Session {
         List<Attribute> passThrough = this.lastParameters.stream()
                 .filter(p -> StandardAttributeKeys.findAllPassThroughKeys().contains(p.name()))
                 .toList();
+        lastParameters = new ArrayList<>(lastParameters);
         lastParameters.removeAll(passThrough);
         return passThrough;
     }
@@ -243,5 +252,84 @@ public class Session {
 
     public List<String> getFragments() {
         return fragments;
+    }
+
+    public Session isolateImports(Fragment fragment) {
+        Session newSession = findSubSession((fragment != null) ? fragment.getRef() : null);
+        Set<Attribute> newAttributes = new HashSet<>(newSession.lastParameters);
+
+        if(fragment != null) {
+            final Set<String> keysToPotentiallyRemove = new HashSet<>();
+            final Set<String> keysOK = new HashSet<>();
+
+            for(String importRef : fragment.getImports()) {
+                String key = importRef;
+                String alias = importRef;
+
+                if(alias.contains(" as ")) {
+                    String[] splitI = alias.split(" as ");
+                    key = splitI[0];
+                    alias = splitI[1];
+                }
+
+                final String searchKey = key;
+                final String attrAlias = alias;
+
+                Optional<Attribute> attribute = getLastParameters().stream()
+                        .filter(a -> searchKey.equals(a.name()))
+                        .findFirst();
+
+                if(!searchKey.equals(attrAlias)) {
+                    keysToPotentiallyRemove.add(searchKey);
+                } else {
+                    keysOK.add(searchKey);
+                }
+
+                attribute.ifPresent(a -> newAttributes.add(new Attribute(attrAlias, a.value())));
+            }
+
+            //convoluted way, but in case of re-use of keys in import, only throw away if no re-use is found
+            //ie imports="rootValue, rootValue as innerValue"
+            //would otherwise mean rootValue is deemed NOK, because it's used as alias
+            //instead, it is ok because it's also used as a normal import
+            keysToPotentiallyRemove.removeAll(keysOK);
+            if(!keysToPotentiallyRemove.isEmpty()) {
+                for(String searchKey : keysToPotentiallyRemove) {
+                    final Optional<Attribute> aliasedAttr = newAttributes.stream().filter(a -> a.name().equals(searchKey)).findFirst();
+                    aliasedAttr.ifPresent(newAttributes::remove);
+                }
+            }
+        }
+
+        newSession.setLastParameters(new ArrayList<>(newAttributes));
+        return newSession;
+    }
+
+    private Session cloneSession() {
+        Session session = new Session();
+        session.setLastUsedTemplate(getLastUsedTemplate());
+        session.setLastUsedHash(getLastUsedHash());
+        session.setLastRenderedHTML(getLastRenderedHTML());
+        session.setLastParameters(getLastParameters());
+        session.setTags(getTags());
+        session.setInitialRender(isInitialRender());
+        session.setLocale(getLocale());
+
+        return session;
+    }
+
+    public void cleanAndIsolateExports(Fragment fragment) {
+        //setLastParameters(new ArrayList<>(rootParameters));
+        //rootParameters = new ArrayList<>();
+    }
+
+    public Session findSubSession(String fragment) {
+        if(fragment == null) {
+            return this;
+        }
+
+        final Session session = this.subSessions.getOrDefault(fragment, this.cloneSession());
+        this.subSessions.put(fragment, session);
+        return session;
     }
 }

@@ -117,7 +117,7 @@ public class Renderer {
 
     private static String getFragmentController(Fragment localFragment) {
         final UIEventPageCallWrapper beanByRef = RefDetection.INSTANCE.findBeanByRef(localFragment.getRef());
-        if(beanByRef != null) {
+        if(null != beanByRef && null != beanByRef.getController()) {
             return beanByRef.getController().getClass().getName();
         }
         return null;
@@ -132,14 +132,13 @@ public class Renderer {
             rawHTML = fragment.getFallback();
         }
 
-        //TODO deal with the export/imports here as well later on
-
         final String html = rawHTML;
 
-        return session.setupAttributes(ref, fragmentFallback).flatMap(s -> renderFragment(html, s).map(dataBuffer -> {
+        return session.isolateImports(fragment).setupAttributes(ref, fragmentFallback).flatMap(s -> renderFragment(html, s).map(dataBuffer -> {
             final RenderedFragment renderedFragment = new RenderedFragment();
             renderedFragment.setId(fragment.getId());
             renderedFragment.setRenderedHTML(FragmentUtils.addFragmentRefToHTML(FluxUtils.dataBufferToString(dataBuffer), ref));
+            session.cleanAndIsolateExports(fragment);
             return renderedFragment;
         }));
     }
