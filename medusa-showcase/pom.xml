@@ -20,7 +20,7 @@
 		<webdrivermanager.version>5.8.0</webdrivermanager.version>
 		<selenium-java.version>4.19.1</selenium-java.version>
 		<selenium-http-jdk-client.version>4.13.0</selenium-http-jdk-client.version>
-		<sentry-spring-boot-starter-jakarta.version>7.6.0</sentry-spring-boot-starter-jakarta.version>
+		<sentry-spring-boot-starter-jakarta.version>7.8.0</sentry-spring-boot-starter-jakarta.version>
 		<webjars-locator.version>0.52</webjars-locator.version>
 		<highlightjs.version>11.5.0</highlightjs.version>
 	</properties>
