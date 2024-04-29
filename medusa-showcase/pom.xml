@@ -16,7 +16,7 @@
 	<properties>
 		<java.version>21</java.version>
 		<medusa-ui.version>${project.version}</medusa-ui.version>
-		<selenide.version>7.2.3</selenide.version>
+		<selenide.version>7.3.1</selenide.version>
 		<webdrivermanager.version>5.8.0</webdrivermanager.version>
 		<selenium-java.version>4.20.0</selenium-java.version>
 		<selenium-http-jdk-client.version>4.13.0</selenium-http-jdk-client.version>
