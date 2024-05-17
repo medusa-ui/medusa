@@ -18,7 +18,7 @@
 		<medusa-ui.version>${project.version}</medusa-ui.version>
 		<selenide.version>7.3.1</selenide.version>
 		<webdrivermanager.version>5.8.0</webdrivermanager.version>
-		<selenium-java.version>4.20.0</selenium-java.version>
+		<selenium-java.version>4.21.0</selenium-java.version>
 		<selenium-http-jdk-client.version>4.13.0</selenium-http-jdk-client.version>
 		<sentry-spring-boot-starter-jakarta.version>7.9.0</sentry-spring-boot-starter-jakarta.version>
 		<webjars-locator.version>0.52</webjars-locator.version>
