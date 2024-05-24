@@ -27,7 +27,7 @@ public abstract class SelenideIntegrationTest {
         WebDriverManager.firefoxdriver().setup();
         Configuration.headless=headless;
         Configuration.screenshots=false;
-        Configuration.browser="chrome";
+        Configuration.browser="firefox";
     }
 
     protected void openPage(String page) {
