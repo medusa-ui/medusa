@@ -24,7 +24,7 @@ public abstract class SelenideIntegrationTest {
 
     @BeforeAll /* use application.properties to set selenide.headless=false */
     static void setup( @Value("${selenide.headless:true}") Boolean headless) {
-        WebDriverManager.chromedriver().setup();
+        WebDriverManager.firefoxdriver().setup();
         Configuration.headless=headless;
         Configuration.screenshots=false;
         Configuration.browser="chrome";
