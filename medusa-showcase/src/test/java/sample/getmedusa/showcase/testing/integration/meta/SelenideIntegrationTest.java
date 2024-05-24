@@ -27,7 +27,6 @@ public abstract class SelenideIntegrationTest {
         WebDriverManager.chromedriver().setup();
         Configuration.headless=headless;
         Configuration.screenshots=false;
-        Configuration.browser="chrome";
     }
 
     protected void openPage(String page) {
