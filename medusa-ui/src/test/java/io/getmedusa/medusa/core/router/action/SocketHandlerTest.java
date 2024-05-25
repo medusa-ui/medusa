@@ -59,6 +59,7 @@ class SocketHandlerTest {
         RouteDetection.INSTANCE.consider(new SampleController());
 
         Session session = new Session();
+        session.setLastRenderedHTML("test-a");
         Mockito.when(sessionMemoryRepository.retrieve(anyString(), any())).thenReturn(session);
         Mockito.when(actionHandler.executeAndMerge(any(), any(), any())).thenReturn(Mono.just(session));
         Mockito.when(renderer.render(anyString(), any())).thenReturn(createDataBuffer("test"));

@@ -4,7 +4,6 @@ package sample.getmedusa.showcase.testing.integration.meta;
 import com.codeborne.selenide.Configuration;
 import com.codeborne.selenide.Selenide;
 import com.codeborne.selenide.junit5.TextReportExtension;
-import io.github.bonigarcia.wdm.WebDriverManager;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.slf4j.Logger;
@@ -24,9 +23,9 @@ public abstract class SelenideIntegrationTest {
 
     @BeforeAll /* use application.properties to set selenide.headless=false */
     static void setup( @Value("${selenide.headless:true}") Boolean headless) {
-        WebDriverManager.chromedriver().setup();
         Configuration.headless=headless;
         Configuration.screenshots=false;
+        Configuration.browser="chrome";
     }
 
     protected void openPage(String page) {
