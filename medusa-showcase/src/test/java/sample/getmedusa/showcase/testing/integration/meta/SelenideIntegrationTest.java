@@ -21,11 +21,14 @@ public abstract class SelenideIntegrationTest {
     @LocalServerPort
     private int port;
 
-    @BeforeAll /* use application.properties to set selenide.headless=false */
-    static void setup( @Value("${selenide.headless:true}") Boolean headless) {
+    /* use application.properties to change Configuration options */
+    @BeforeAll
+    static void setup(@Value("${selenide.headless:true}") Boolean headless,
+                      @Value("${selenide.screenshots:false}") Boolean screenshots,
+                      @Value("${selenide.browser:chrome}") String browser) {
         Configuration.headless=headless;
-        Configuration.screenshots=false;
-        Configuration.browser="chrome";
+        Configuration.screenshots=screenshots;
+        Configuration.browser=browser;
     }
 
     protected void openPage(String page) {
