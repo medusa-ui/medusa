@@ -9,7 +9,7 @@
   },
   "license": "MIT",
   "dependencies": {
-    "@braintree/sanitize-url": "^7.0.3",
+    "@braintree/sanitize-url": "^7.0.4",
     "rsocket-composite-metadata": "^1.0.0-alpha.3",
     "rsocket-core": "^1.0.0-alpha.3",
     "rsocket-flowable": "^0.0.28",
