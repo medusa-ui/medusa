@@ -17,7 +17,7 @@ WORKDIR /showcase
 RUN mvn -B clean install -DskipTests=true
 
 # Just using the build artifact and then removing the build-container
-FROM amazoncorretto:21.0.1-alpine
+FROM amazoncorretto:22.0.2-alpine3.20
 
 VOLUME /tmp
 
