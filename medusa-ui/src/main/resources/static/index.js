@@ -676,12 +676,12 @@ applyLoadingUpdate = function(loadingName) {
     }
 };
 
-runFunction = function(name, arguments) {
+runFunction = function(name, args) {
     const fn = window[name];
     if(typeof fn !== 'function')
         return;
 
-    fn.apply(window, arguments);
+    fn.apply(window, args);
 };
 
 handleIncomingChange = function (obj) {
