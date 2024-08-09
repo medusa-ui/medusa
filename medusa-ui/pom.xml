@@ -31,6 +31,10 @@
 		<commons-text.version>1.12.0</commons-text.version>
 		<java-jwt-auth0.version>4.4.0</java-jwt-auth0.version>
 		<caffeine.version>3.1.8</caffeine.version>
+		<!-- plugin version -->
+		<openrewrite.version>5.38.0</openrewrite.version>
+		<gpg.version>3.2.4</gpg.version>
+		<nexus-staging.version>1.7.0</nexus-staging.version>
 	</properties>
 
 	<dependencies>
@@ -181,7 +185,7 @@
 				<!-- run with mvn rewrite:run -->
 				<groupId>org.openrewrite.maven</groupId>
 				<artifactId>rewrite-maven-plugin</artifactId>
-				<version>5.38.0</version>
+				<version>${openrewrite.version}</version>
 				<configuration>
 					<activeRecipes>
 						<recipe>org.openrewrite.java.cleanup.CommonStaticAnalysis</recipe>
@@ -238,7 +242,7 @@
 					<plugin>
 						<groupId>org.sonatype.plugins</groupId>
 						<artifactId>nexus-staging-maven-plugin</artifactId>
-						<version>1.7.0</version>
+						<version>${nexus-staging.version}</version>
 						<extensions>true</extensions>
 						<configuration>
 							<serverId>ossrh</serverId>
@@ -249,7 +253,7 @@
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-gpg-plugin</artifactId>
-						<version>3.2.4</version>
+						<version>${gpg.version}</version>
 						<executions>
 							<execution>
 								<id>sign-artifacts</id>
