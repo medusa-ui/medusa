@@ -32,7 +32,7 @@
 		<java-jwt-auth0.version>4.4.0</java-jwt-auth0.version>
 		<caffeine.version>3.1.8</caffeine.version>
 		<!-- plugin version -->
-		<openrewrite.version>5.45.1</openrewrite.version>
+		<openrewrite.version>5.46.0</openrewrite.version>
 		<gpg.version>3.2.7</gpg.version>
 		<nexus-staging.version>1.7.0</nexus-staging.version>
 	</properties>
