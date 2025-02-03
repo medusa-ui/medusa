@@ -26,7 +26,7 @@
 		<java.version>21</java.version>
 		<diff-engine.version>0.0.6</diff-engine.version>
 		<blockhound.version>1.0.10.RELEASE</blockhound.version>
-		<jakarta.validation-api.version>3.1.0</jakarta.validation-api.version>
+		<jakarta.validation-api.version>3.1.1</jakarta.validation-api.version>
 		<webjars-locator.version>0.52</webjars-locator.version>
 		<commons-text.version>1.13.0</commons-text.version>
 		<java-jwt-auth0.version>4.5.0</java-jwt-auth0.version>
