@@ -19,7 +19,7 @@
 		<selenide.version>7.7.3</selenide.version>
 		<sentry-spring-boot-starter-jakarta.version>8.3.0</sentry-spring-boot-starter-jakarta.version>
 		<webjars-locator.version>0.52</webjars-locator.version>
-		<highlightjs.version>11.10.0</highlightjs.version>
+		<highlightjs.version>11.11.1</highlightjs.version>
 	</properties>
 	<dependencies>
 		<dependency>
