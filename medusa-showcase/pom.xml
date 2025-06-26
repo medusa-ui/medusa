@@ -17,7 +17,7 @@
 		<java.version>21</java.version>
 		<medusa-ui.version>${project.version}</medusa-ui.version>
 		<selenide.version>7.9.3</selenide.version>
-		<sentry-spring-boot-starter-jakarta.version>8.14.0</sentry-spring-boot-starter-jakarta.version>
+		<sentry-spring-boot-starter-jakarta.version>8.15.0</sentry-spring-boot-starter-jakarta.version>
 		<webjars-locator.version>0.52</webjars-locator.version>
 		<highlightjs.version>11.11.1</highlightjs.version>
 	</properties>
