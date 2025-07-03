@@ -33,7 +33,7 @@
 		<caffeine.version>3.2.1</caffeine.version>
 		<!-- plugin version -->
 		<openrewrite.version>6.11.0</openrewrite.version>
-		<gpg.version>3.2.7</gpg.version>
+		<gpg.version>3.2.8</gpg.version>
 		<nexus-staging.version>1.7.0</nexus-staging.version>
 	</properties>
 
