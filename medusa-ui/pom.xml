@@ -25,14 +25,14 @@
 	<properties>
 		<java.version>21</java.version>
 		<diff-engine.version>0.0.6</diff-engine.version>
-		<blockhound.version>1.0.15.RELEASE</blockhound.version>
+		<blockhound.version>1.0.16.RELEASE</blockhound.version>
 		<jakarta.validation-api.version>3.1.1</jakarta.validation-api.version>
 		<webjars-locator.version>0.52</webjars-locator.version>
 		<commons-text.version>1.15.0</commons-text.version>
 		<java-jwt-auth0.version>4.5.0</java-jwt-auth0.version>
 		<caffeine.version>3.2.3</caffeine.version>
 		<!-- plugin version -->
-		<openrewrite.version>6.27.0</openrewrite.version>
+		<openrewrite.version>6.28.0</openrewrite.version>
 		<gpg.version>3.2.8</gpg.version>
 		<nexus-staging.version>1.7.0</nexus-staging.version>
 	</properties>
