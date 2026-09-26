@@ -30,7 +30,7 @@
 		<webjars-locator.version>0.52</webjars-locator.version>
 		<commons-text.version>1.15.0</commons-text.version>
 		<java-jwt-auth0.version>4.6.1</java-jwt-auth0.version>
-		<caffeine.version>3.2.4</caffeine.version>
+		<caffeine.version>3.3.0</caffeine.version>
 		<!-- plugin version -->
 		<openrewrite.version>6.46.1</openrewrite.version>
 		<gpg.version>3.2.8</gpg.version>
